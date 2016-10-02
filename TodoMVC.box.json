@@ -5,12 +5,10 @@
       "_type": "Window",
       "_name": "task_list",
       "todos": {
-        "_type": "Jack",
-        "shape": "Array<Todo>"
+        "_type": "Jack<[Todo]>",
       },
       "todo_creation": {
-        "_type": "Plug",
-        "shape": "string"
+        "_type": "Plug<string>",
       },
       "_contents": [
         {
@@ -26,7 +24,7 @@
         {
           "_type": "Ul",
           "_contents": {
-            "_type": "map",
+            "_type": "BoxMap",
             "_wires": [
               {
                 "_type": "Wire",
@@ -39,8 +37,7 @@
                 "value": {
                   "_type": "Box",
                   "todo": {
-                    "_type": "Jack",
-                    "shape": "Todo"
+                    "_type": "Jack<Todo>",
                   },
                   "_contents": {
                     "_type": "Li",
