@@ -1,0 +1,74 @@
+{
+  "_type": "App",
+  "_contents": [
+    {
+      "_type": "Window",
+      "_name": "task_list",
+      "todos": {
+        "_type": "Jack",
+        "shape": "Array<Todo>"
+      },
+      "todo_creation": {
+        "_type": "Plug",
+        "shape": "string"
+      },
+      "_contents": [
+        {
+          "_type": "InputText",
+          "onKey": {
+            "_type": "Wire",
+            "to": "todo_creation"
+          }
+        },
+        {
+          "_type": "Ul",
+          "_contents": {
+            "_type": "map",
+            "array": {
+              "_type": "Wire",
+              "from": "todos"
+            },
+            "mapper": {
+              "_type": "Box",
+              "todo": {
+                "_type": "Jack",
+                "shape": "Todo"
+              },
+              "_contents": {
+                "_type": "Li",
+                "_contents": {
+                  "_type": "Span",
+                  "textContent": {
+                    "_type": "GetProperty",
+                    "object": {
+                      "_type": "Wire",
+                      "from": "todo"
+                    },
+                    "property_name": "title"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "_type": "Switch",
+          "_contents": [
+              {
+                "_type": "SwitchButton",
+                "title": "All"
+              },
+              {
+                "_type": "SwitchButton",
+                "title": "Active"
+              },
+              {
+                "_type": "SwitchButton",
+                "title": "Completed"
+              }
+          ]
+        }
+      ]
+    }
+  ]
+}
