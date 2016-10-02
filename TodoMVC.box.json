@@ -46,21 +46,27 @@
                     "_type": "Li",
                     "_contents": {
                       "_type": "Span",
-                      "textContent": {
-                        "_type": "ObjectProperty",
-                        "_wires": [
-                          {
-                            "_type": "Wire",
-                            "to": "object",
-                            "from": "todo"
-                          },
-                          {
-                            "_type": "Wire",
-                            "to": "property_name",
-                            "value": "title"
+                      "_wires": [
+                        {
+                          "_type": "Wire",
+                          "to": "textContent",
+                          "value": {
+                            "_type": "ObjectProperty",
+                            "_wires": [
+                              {
+                                "_type": "Wire",
+                                "to": "object",
+                                "from": "todo"
+                              },
+                              {
+                                "_type": "Wire",
+                                "to": "property_name",
+                                "value": "title"
+                              }
+                            ]
                           }
-                        ]
-                      }
+                        }
+                      ]
                     }
                   }
                 }
