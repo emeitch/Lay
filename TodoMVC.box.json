@@ -15,40 +15,57 @@
       "_contents": [
         {
           "_type": "InputText",
-          "onKey": {
-            "_type": "Wire",
-            "to": "todo_creation"
-          }
+          "_wires": [
+              {
+                "_type": "Wire",
+                "to": "todo_creation",
+                "from": "onKey"
+              }
+          ]
         },
         {
           "_type": "Ul",
           "_contents": {
             "_type": "map",
-            "array": {
-              "_type": "Wire",
-              "from": "todos"
-            },
-            "mapper": {
-              "_type": "Box",
-              "todo": {
-                "_type": "Jack",
-                "shape": "Todo"
+            "_wires": [
+              {
+                "_type": "Wire",
+                "to": "array",
+                "from": "todos"
               },
-              "_contents": {
-                "_type": "Li",
-                "_contents": {
-                  "_type": "Span",
-                  "textContent": {
-                    "_type": "GetProperty",
-                    "object": {
-                      "_type": "Wire",
-                      "from": "todo"
-                    },
-                    "property_name": "title"
+              {
+                "_type": "Wire",
+                "to": "box",
+                "value": {
+                  "_type": "Box",
+                  "todo": {
+                    "_type": "Jack",
+                    "shape": "Todo"
+                  },
+                  "_contents": {
+                    "_type": "Li",
+                    "_contents": {
+                      "_type": "Span",
+                      "textContent": {
+                        "_type": "ObjectProperty",
+                        "_wires": [
+                          {
+                            "_type": "Wire",
+                            "to": "object",
+                            "from": "todo"
+                          },
+                          {
+                            "_type": "Wire",
+                            "to": "property_name",
+                            "value": "title"
+                          }
+                        ]
+                      }
+                    }
                   }
                 }
               }
-            }
+            ]
           }
         },
         {
