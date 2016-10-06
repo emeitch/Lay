@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>lay prototype</title>
+<script src="maquette.min.js"></script>
+<script>
+var json = {
+  TodoMVC: {
+    presentation: {
+      _type: "HTML",
+      window: {
+        _type: "Window",
+        document: {
+          _type: "Document",
+          styleSheets: [
+            {
+              _type: "CSSStyleSheet",
+              href: "base.css"
+            },
+            {
+              _type: "CSSStyleSheet",
+              href: "index.css"
+            }
+          ],
+          _blocks: [
+            {
+              _type: "Input",
+              type: "text"
+            },
+            {
+              _type: "Ul",
+              _blocks: [
+                {
+                  _type: "Li",
+                  _blocks: [
+                    {
+                      _type: "Input",
+                      type: "checkbox"
+                    },
+                    {
+                      _type: "Span",
+                      _blocks: [
+                        "Todo"
+                      ]
+                    },
+                    {
+                      _type: "Input",
+                      type: "button",
+                      value: "X"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+
+var h = maquette.h;
+var projector = maquette.createProjector();
+
+function vdom(app) {
+  function traverse(node) {
+    if (typeof(node) === "string") return node;
+    
+    var tag = node._type;
+    var properties = Object
+      .getOwnPropertyNames(node)
+      .filter(n => n[0] != "_")
+      .reduce((p, c) => {
+          p[c] = node[c]; return p 
+        } , {});
+    var children = node._blocks ? node._blocks : []
+    return h(tag, properties, children.map(c => traverse(c)));
+  }
+  
+  var doc = app.presentation.window.document;
+  return h('div', doc._blocks.map(traverse));
+}
+
+// Initializes the projector 
+document.addEventListener('DOMContentLoaded', function () {
+   projector.append(document.body, () => vdom(json.TodoMVC));
+});
+
+</script>
+</head>
+<body>
+</body>
+</html>
