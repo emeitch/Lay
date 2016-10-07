@@ -1,59 +1,223 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="utf-8">
 <title>lay prototype</title>
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./index.css">
 <script src="maquette.min.js"></script>
 <script>
 var json = {
   TodoMVC: {
     presentation: {
-      _type: "HTML",
-      window: {
-        _type: "Window",
-        document: {
-          _type: "Document",
-          styleSheets: [
-            {
-              _type: "CSSStyleSheet",
-              href: "base.css"
-            },
-            {
-              _type: "CSSStyleSheet",
-              href: "index.css"
-            }
-          ],
-          _blocks: [
-            {
-              _type: "Input",
-              type: "text"
-            },
-            {
-              _type: "Ul",
-              _blocks: [
-                {
-                  _type: "Li",
-                  _blocks: [
-                    {
-                      _type: "Input",
-                      type: "checkbox"
-                    },
-                    {
-                      _type: "Span",
-                      _blocks: [
-                        "Todo"
-                      ]
-                    },
-                    {
-                      _type: "Input",
-                      type: "button",
-                      value: "X"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
+      _type: "DOM::Document",
+      body: {
+        _type: "Body",
+        _blocks: [
+          {
+            _type: "Section",
+            class: "todoapp",
+            _blocks: [
+              {
+                _type: "Div",
+                _blocks: [
+                  {
+                    _type: "Header",
+                    class: "header",
+                    _blocks: [
+                      {
+                        _type: "H1",
+                        _blocks: [
+                          "todos"
+                        ]
+                      },
+                      {
+                        _type: "Input",
+                        class: "new-todo",
+                        placeholder: "What needs to be done?"
+                      }
+                    ]
+                  },
+                  {
+                    _type: "Section",
+                    class: "main",
+                    _blocks: [
+                      {
+                        _type: "Input",
+                        class: "toggle-all",
+                        type: "checkbox"
+                      },
+                      {
+                        _type: "Ul",
+                        class: "todo-list",
+                        _blocks: [
+                          {
+                            _type: "Li",
+                            _blocks: [
+                              {
+                                _type: "Div",
+                                class: "view",
+                                _blocks: [
+                                  {
+                                    _type: "Input",
+                                    class: "toggle",
+                                    type: "checkbox",
+                                  },
+                                  {
+                                    _type: "Label",
+                                    _blocks: [
+                                      "buy a milk"
+                                    ]
+                                  },
+                                  {
+                                    _type: "Button",
+                                    class: "destroy",
+                                  }
+                                ]
+                              },
+                              {
+                                _type: "Input",
+                                class: "edit",
+                                value: "buy a milk",
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    _type: "Footer",
+                    class: "footer",
+                    _blocks: [
+                      {
+                        _type: "Span",
+                        class: "todo-count",
+                        _blocks: [
+                          {
+                            _type: "Strong",
+                            _blocks: [
+                              "1"
+                            ]
+                          },
+                          {
+                            _type: "Span",
+                          },
+                          {
+                            _type: "Span",
+                            _blocks: [
+                              "item"
+                            ]
+                          },
+                          {
+                            _type: "Span",
+                            _blocks: [
+                              " left"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        _type: "Ul",
+                        class: "filters",
+                        _blocks: [
+                          {
+                            _type: "Li",
+                            _blocks: [
+                              {
+                                _type: "A",
+                                href: "#/",
+                                class: "selected",
+                                _blocks: [
+                                  "All"
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            _type: "Span",
+                          },
+                          {
+                            _type: "Li",
+                            _blocks: [
+                              {
+                                _type: "A",
+                                href: "#/active",
+                                _blocks: [
+                                  "Active"
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            _type: "Span",
+                          },
+                          {
+                            _type: "Li",
+                            _blocks: [
+                              {
+                                _type: "A",
+                                href: "#/completed",
+                                _blocks: [
+                                  "Compoleted"
+                                ]
+                              }
+                            ]
+                          },
+                        ]
+                      },
+                      {
+                        _type: "Button",
+                        class: "clear-completed",
+                        _blocks: [
+                          "Clear Completed"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            _type: "Footer",
+            class: "info",
+            _blocks: [
+              {
+                _type: "P",
+                _blocks: [
+                  "Double-click to edit a todo"
+                ]
+              },
+              {
+                _type: "P",
+                _blocks: [
+                  "Created by ",
+                  {
+                    _type: "A",
+                    href: "http://github.com/emeitch/",
+                    _blocks: [
+                      "Hideyuki MORITA (emeitch)"
+                    ]
+                  }
+                ]
+              },
+              {
+                _type: "P",
+                _blocks: [
+                  "Part of ",
+                  {
+                    _type: "A",
+                    href: "http://todomvc.com",
+                    _blocks: [
+                      "TodoMVC"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     }
   }
@@ -77,13 +241,13 @@ function vdom(app) {
     return h(tag, properties, children.map(c => traverse(c)));
   }
   
-  var doc = app.presentation.window.document;
-  return h('div', doc._blocks.map(traverse));
+  var body = app.presentation.body;
+  return traverse(body);
 }
 
 // Initializes the projector 
-document.addEventListener('DOMContentLoaded', function () {
-   projector.append(document.body, () => vdom(json.TodoMVC));
+window.document.addEventListener('DOMContentLoaded', function () {
+   projector.replace(window.document.body, () => vdom(json.TodoMVC));
 });
 
 </script>
