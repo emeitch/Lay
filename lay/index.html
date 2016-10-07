@@ -9,6 +9,22 @@
 <script>
 var json = {
   TodoMVC: {
+    domain: {
+      tasks: [
+        {
+          title: "buy a milk",
+          completed: false,
+        },
+        {
+          title: "buy a coffee",
+          completed: false,
+        },
+        {
+          title: "buy a tea",
+          completed: true,
+        }
+      ]
+    },
     presentation: {
       _type: "DOM::Document",
       body: {
@@ -52,33 +68,49 @@ var json = {
                         class: "todo-list",
                         _blocks: [
                           {
-                            _type: "Li",
+                            _type: "domain.tasks.map",
+                            task: "Task",
                             _blocks: [
                               {
-                                _type: "Div",
-                                class: "view",
+                                _type: "Li",
                                 _blocks: [
                                   {
-                                    _type: "Input",
-                                    class: "toggle",
-                                    type: "checkbox",
-                                  },
-                                  {
-                                    _type: "Label",
+                                    _type: "Div",
+                                    class: "view",
                                     _blocks: [
-                                      "buy a milk"
+                                      {
+                                        _type: "Input",
+                                        class: "toggle",
+                                        type: "checkbox",
+                                      },
+                                      {
+                                        _type: "Label",
+                                        _blocks: [
+                                          {
+                                            _type: "Ref",
+                                            _blocks: [
+                                              "task.title"
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        _type: "Button",
+                                        class: "destroy",
+                                      }
                                     ]
                                   },
                                   {
-                                    _type: "Button",
-                                    class: "destroy",
+                                    _type: "Input",
+                                    class: "edit",
+                                    value: {
+                                      _type: "Ref",
+                                      _blocks: [
+                                        "task.title"
+                                      ],
+                                    }
                                   }
                                 ]
-                              },
-                              {
-                                _type: "Input",
-                                class: "edit",
-                                value: "buy a milk",
                               }
                             ]
                           }
@@ -226,23 +258,113 @@ var json = {
 var h = maquette.h;
 var projector = maquette.createProjector();
 
+// todo: 上から探索しているだけで、レキシカルな探索になってない
+function searchRef(tree, refererPath, key) {
+  function _traverseRef(node, path) {
+    if (!node || path.length == 0) {
+      return undefined;
+    } else if (Object.getOwnPropertyNames(node).includes(key)) {
+      return node[key];
+    } else {
+      var restLength = path.length - 1
+      var rest = path.slice(-restLength);
+      return _traverseRef(node[path[0]], rest);
+    }
+  }
+  return _traverseRef(tree, refererPath);
+}
+// //// test
+// var tree = {
+//   a: 1,
+//   b: 2, 
+//   c:{
+//     ca: 4,
+//     cb: {
+//       cba: "b",
+//       cbb: "ca",
+//       cbc: "nothing"
+//     }
+//   }
+// };
+// console.log(searchRef(tree, ["c", "cb", "cba"], "b")); // 2
+// console.log(searchRef(tree, ["c", "cb", "cbb"], "ca")); // 4
+// console.log(searchRef(tree, ["c", "cb", "cbc"], "nothing")); // undefined
+
+function flatten(array) {
+  return Array.prototype.concat.apply([], array);
+}
+
 function vdom(app) {
-  function traverse(node) {
-    if (typeof(node) === "string") return node;
+  function _traverse(node, path, context) {
+    if (typeof(node) === "string") {
+      return [node];
+    };
     
-    var tag = node._type;
+    var type = node._type;
     var properties = Object
       .getOwnPropertyNames(node)
       .filter(n => n[0] != "_")
       .reduce((p, c) => {
           p[c] = node[c]; return p 
         } , {});
-    var children = node._blocks ? node._blocks : []
-    return h(tag, properties, children.map(c => traverse(c)));
+    var blocks = node._blocks ? node._blocks : []
+    
+    if (type === "Ref") {
+      var p = path.concat(["_blocks"]);
+      return flatten(blocks.map(block => {
+        var symbols = block.split(".");
+        var ref = (context && context[symbols[0]]) || searchRef(app, path, symbols[0]);
+        if (ref) {
+          var restLength = symbols.length - 1;
+          var rest = symbols.slice(-restLength);
+          for (var sym of rest) {
+            if (sym == "map") {
+              var argName = Object.keys(properties)[0];          
+              ref = flatten(ref.map(arg => {
+                var p = path.concat(["_blocks"]);
+                var ctx = {};
+                ctx[argName] = arg; // todo: 何重にもmapされることを考えると重ねる必要あり!
+                return flatten(blocks.map(b => _traverse(b, p, ctx)));
+              }));
+            } else {
+              ref = ref[sym];
+            }
+          }
+          return ref;
+        } else {
+          throw "ref not found";
+        }
+      }));
+    }
+    
+    var symbols = type.split(".");
+    var ref = (context && context[symbols[0]]) || searchRef(app, path, symbols[0]);
+    if (ref) {
+      var restLength = symbols.length - 1;
+      var rest = symbols.slice(-restLength);
+      for (var sym of rest) {
+        if (sym == "map") {
+          var argName = Object.keys(properties)[0];          
+          ref = flatten(ref.map(arg => {
+            var p = path.concat(["_blocks"]);
+            var ctx = {};
+            ctx[argName] = arg; // todo: 何重にもmapされることを考えると重ねる必要あり!
+            return flatten(blocks.map(b => _traverse(b, p, ctx)));
+          }));
+        } else {
+          ref = ref[sym];
+        }
+      }
+      return ref;
+    }
+    
+    var p = path.concat(["_blocks"]);
+    var children = flatten(blocks.map(b => _traverse(b, p, context)));
+    return [h(type, properties, children)];
   }
   
   var body = app.presentation.body;
-  return traverse(body);
+  return _traverse(body, ["presentation", "body"])[0];
 }
 
 // Initializes the projector 
