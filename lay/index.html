@@ -26,68 +26,68 @@ var json = {
       ]
     },
     presentation: {
-      _type: "DOM::Document",
+      _constructor: "DOM::Document",
       body: {
-        _type: "Body",
+        _constructor: "Body",
         _blocks: [
           {
-            _type: "Section",
+            _constructor: "Section",
             class: "todoapp",
             _blocks: [
               {
-                _type: "Div",
+                _constructor: "Div",
                 _blocks: [
                   {
-                    _type: "Header",
+                    _constructor: "Header",
                     class: "header",
                     _blocks: [
                       {
-                        _type: "H1",
+                        _constructor: "H1",
                         _blocks: [
                           "todos"
                         ]
                       },
                       {
-                        _type: "Input",
+                        _constructor: "Input",
                         class: "new-todo",
                         placeholder: "What needs to be done?"
                       }
                     ]
                   },
                   {
-                    _type: "Section",
+                    _constructor: "Section",
                     class: "main",
                     _blocks: [
                       {
-                        _type: "Input",
+                        _constructor: "Input",
                         class: "toggle-all",
                         type: "checkbox"
                       },
                       {
-                        _type: "Ul",
+                        _constructor: "Ul",
                         class: "todo-list",
                         _blocks: [
                           {
-                            _type: "domain.tasks.map",
+                            _constructor: "domain.tasks.map",
                             task: "Task",
                             _blocks: [
                               {
-                                _type: "Li",
+                                _constructor: "Li",
                                 _blocks: [
                                   {
-                                    _type: "Div",
+                                    _constructor: "Div",
                                     class: "view",
                                     _blocks: [
                                       {
-                                        _type: "Input",
+                                        _constructor: "Input",
                                         class: "toggle",
                                         type: "checkbox",
                                       },
                                       {
-                                        _type: "Label",
+                                        _constructor: "Label",
                                         _blocks: [
                                           {
-                                            _type: "Ref",
+                                            _constructor: "Ref",
                                             _blocks: [
                                               "task.title"
                                             ]
@@ -95,16 +95,16 @@ var json = {
                                         ]
                                       },
                                       {
-                                        _type: "Button",
+                                        _constructor: "Button",
                                         class: "destroy",
                                       }
                                     ]
                                   },
                                   {
-                                    _type: "Input",
+                                    _constructor: "Input",
                                     class: "edit",
                                     value: {
-                                      _type: "Ref",
+                                      _constructor: "Ref",
                                       _blocks: [
                                         "task.title"
                                       ],
@@ -119,30 +119,30 @@ var json = {
                     ]
                   },
                   {
-                    _type: "Footer",
+                    _constructor: "Footer",
                     class: "footer",
                     _blocks: [
                       {
-                        _type: "Span",
+                        _constructor: "Span",
                         class: "todo-count",
                         _blocks: [
                           {
-                            _type: "Strong",
+                            _constructor: "Strong",
                             _blocks: [
                               "1"
                             ]
                           },
                           {
-                            _type: "Span",
+                            _constructor: "Span",
                           },
                           {
-                            _type: "Span",
+                            _constructor: "Span",
                             _blocks: [
                               "item"
                             ]
                           },
                           {
-                            _type: "Span",
+                            _constructor: "Span",
                             _blocks: [
                               " left"
                             ]
@@ -150,14 +150,14 @@ var json = {
                         ]
                       },
                       {
-                        _type: "Ul",
+                        _constructor: "Ul",
                         class: "filters",
                         _blocks: [
                           {
-                            _type: "Li",
+                            _constructor: "Li",
                             _blocks: [
                               {
-                                _type: "A",
+                                _constructor: "A",
                                 href: "#/",
                                 class: "selected",
                                 _blocks: [
@@ -167,13 +167,13 @@ var json = {
                             ]
                           },
                           {
-                            _type: "Span",
+                            _constructor: "Span",
                           },
                           {
-                            _type: "Li",
+                            _constructor: "Li",
                             _blocks: [
                               {
-                                _type: "A",
+                                _constructor: "A",
                                 href: "#/active",
                                 _blocks: [
                                   "Active"
@@ -182,13 +182,13 @@ var json = {
                             ]
                           },
                           {
-                            _type: "Span",
+                            _constructor: "Span",
                           },
                           {
-                            _type: "Li",
+                            _constructor: "Li",
                             _blocks: [
                               {
-                                _type: "A",
+                                _constructor: "A",
                                 href: "#/completed",
                                 _blocks: [
                                   "Compoleted"
@@ -199,7 +199,7 @@ var json = {
                         ]
                       },
                       {
-                        _type: "Button",
+                        _constructor: "Button",
                         class: "clear-completed",
                         _blocks: [
                           "Clear Completed"
@@ -212,21 +212,21 @@ var json = {
             ]
           },
           {
-            _type: "Footer",
+            _constructor: "Footer",
             class: "info",
             _blocks: [
               {
-                _type: "P",
+                _constructor: "P",
                 _blocks: [
                   "Double-click to edit a todo"
                 ]
               },
               {
-                _type: "P",
+                _constructor: "P",
                 _blocks: [
                   "Created by ",
                   {
-                    _type: "A",
+                    _constructor: "A",
                     href: "http://github.com/emeitch/",
                     _blocks: [
                       "Hideyuki MORITA (emeitch)"
@@ -235,11 +235,11 @@ var json = {
                 ]
               },
               {
-                _type: "P",
+                _constructor: "P",
                 _blocks: [
                   "Part of ",
                   {
-                    _type: "A",
+                    _constructor: "A",
                     href: "http://todomvc.com",
                     _blocks: [
                       "TodoMVC"
@@ -300,7 +300,7 @@ function vdom(app) {
       return [node];
     };
     
-    var type = node._type;
+    var constructor = node._constructor;
     var properties = Object
       .getOwnPropertyNames(node)
       .filter(n => n[0] != "_")
@@ -309,7 +309,7 @@ function vdom(app) {
         } , {});
     var blocks = node._blocks ? node._blocks : []
     
-    if (type === "Ref") {
+    if (constructor === "Ref") {
       var p = path.concat(["_blocks"]);
       return flatten(blocks.map(block => {
         var symbols = block.split(".");
@@ -337,7 +337,7 @@ function vdom(app) {
       }));
     }
     
-    var symbols = type.split(".");
+    var symbols = constructor.split(".");
     var ref = (context && context[symbols[0]]) || searchRef(app, path, symbols[0]);
     if (ref) {
       var restLength = symbols.length - 1;
@@ -360,7 +360,7 @@ function vdom(app) {
     
     var p = path.concat(["_blocks"]);
     var children = flatten(blocks.map(b => _traverse(b, p, context)));
-    return [h(type, properties, children)];
+    return [h(constructor, properties, children)];
   }
   
   var body = app.presentation.body;
