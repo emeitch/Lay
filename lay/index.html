@@ -88,9 +88,7 @@ var json = {
                                         _blocks: [
                                           {
                                             _constructor: "Ref",
-                                            _blocks: [
-                                              "task.title"
-                                            ]
+                                            path: "task.title"
                                           }
                                         ]
                                       },
@@ -105,9 +103,7 @@ var json = {
                                     class: "edit",
                                     value: {
                                       _constructor: "Ref",
-                                      _blocks: [
-                                        "task.title"
-                                      ],
+                                      path: "task.title"
                                     }
                                   }
                                 ]
@@ -311,30 +307,28 @@ function vdom(app) {
     
     if (constructor === "Ref") {
       var p = path.concat(["_blocks"]);
-      return flatten(blocks.map(block => {
-        var symbols = block.split(".");
-        var ref = (context && context[symbols[0]]) || searchRef(app, path, symbols[0]);
-        if (ref) {
-          var restLength = symbols.length - 1;
-          var rest = symbols.slice(-restLength);
-          for (var sym of rest) {
-            if (sym == "map") {
-              var argName = Object.keys(properties)[0];          
-              ref = flatten(ref.map(arg => {
-                var p = path.concat(["_blocks"]);
-                var ctx = {};
-                ctx[argName] = arg; // todo: 何重にもmapされることを考えると重ねる必要あり!
-                return flatten(blocks.map(b => _traverse(b, p, ctx)));
-              }));
-            } else {
-              ref = ref[sym];
-            }
+      var symbols = properties.path.split(".");
+      var ref = (context && context[symbols[0]]) || searchRef(app, path, symbols[0]);
+      if (ref) {
+        var restLength = symbols.length - 1;
+        var rest = symbols.slice(-restLength);
+        for (var sym of rest) {
+          if (sym == "map") {
+            var argName = Object.keys(properties)[0];          
+            ref = flatten(ref.map(arg => {
+              var p = path.concat(["_blocks"]);
+              var ctx = {};
+              ctx[argName] = arg; // todo: 何重にもmapされることを考えると重ねる必要あり!
+              return flatten(blocks.map(b => _traverse(b, p, ctx)));
+            }));
+          } else {
+            ref = ref[sym];
           }
-          return ref;
-        } else {
-          throw "ref not found";
         }
-      }));
+        return ref;
+      } else {
+        throw "ref not found";
+      };
     }
     
     var symbols = constructor.split(".");
