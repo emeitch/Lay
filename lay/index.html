@@ -291,12 +291,12 @@ function flatten(array) {
 }
 
 function vdom(app) {
-  function _traverse(node, path, context) {
+  function _traverse(node, path, context) {    
     if (typeof(node) === "string") {
       return [node];
     };
-    
-    var constructor = node._constructor;
+        
+    var constructorName = node._constructor;
     var properties = Object
       .getOwnPropertyNames(node)
       .filter(n => n[0] != "_")
@@ -305,35 +305,14 @@ function vdom(app) {
         } , {});
     var blocks = node._blocks ? node._blocks : []
     
-    if (constructor === "Ref") {
-      var p = path.concat(["_blocks"]);
-      var symbols = properties.path.split(".");
+    function _getReference(refpath) {
+      var symbols = refpath.split(".");
       var ref = (context && context[symbols[0]]) || searchRef(app, path, symbols[0]);
-      if (ref) {
-        var restLength = symbols.length - 1;
-        var rest = symbols.slice(-restLength);
-        for (var sym of rest) {
-          if (sym == "map") {
-            var argName = Object.keys(properties)[0];          
-            ref = flatten(ref.map(arg => {
-              var p = path.concat(["_blocks"]);
-              var ctx = {};
-              ctx[argName] = arg; // todo: 何重にもmapされることを考えると重ねる必要あり!
-              return flatten(blocks.map(b => _traverse(b, p, ctx)));
-            }));
-          } else {
-            ref = ref[sym];
-          }
-        }
-        return ref;
-      } else {
-        throw "ref not found";
-      };
-    }
-    
-    var symbols = constructor.split(".");
-    var ref = (context && context[symbols[0]]) || searchRef(app, path, symbols[0]);
-    if (ref) {
+      
+      if (ref === undefined) {
+        throw `"${ref}"(Ref{path:${path}}) not found`
+      }
+      
       var restLength = symbols.length - 1;
       var rest = symbols.slice(-restLength);
       for (var sym of rest) {
@@ -347,14 +326,28 @@ function vdom(app) {
           }));
         } else {
           ref = ref[sym];
+          if (ref === undefined) {
+            throw `"${ref}"(Ref{path:${path}}) not found`;
+          }
         }
       }
+      
       return ref;
     }
     
-    var p = path.concat(["_blocks"]);
-    var children = flatten(blocks.map(b => _traverse(b, p, context)));
-    return [h(constructor, properties, children)];
+    if (constructorName === "Ref") {
+      return _getReference(properties.path);
+    }
+    
+    try {
+      constructor = _getReference(constructorName);
+      return constructor; // todo: 取り出せたコンストラクタ実態の実行が必要
+    } catch(e) {
+      // todo: dom向け特別処理なので一般化する
+      var p = path.concat(["_blocks"]);
+      var children = flatten(blocks.map(b => _traverse(b, p, context)));
+      return [h(constructorName, properties, children)];
+    }
   }
   
   var body = app.presentation.body;
