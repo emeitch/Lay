@@ -9,21 +9,34 @@
 <script>
 var json = {
   TodoMVC: {
+    _constructor: "Module",
     domain: {
-      tasks: [
-        {
-          title: "buy a milk",
-          completed: false,
-        },
-        {
-          title: "buy a coffee",
-          completed: false,
-        },
-        {
-          title: "buy a tea",
-          completed: true,
-        }
-      ]
+      _constructor: "Module",
+      Task: {
+        _constructor: "Entity",
+        title: "string",
+        completed: "bool"
+      },
+      tasks: {
+        _constructor: "Array",
+        _blocks: [
+          {
+            _constructor: "Task",
+            title: "buy a milk",
+            completed: false,
+          },
+          {
+            _constructor: "Task",
+            title: "buy a coffee",
+            completed: false,
+          },
+          {
+            _constructor: "Task",
+            title: "buy a tea",
+            completed: true,
+          }
+        ]
+      }
     },
     presentation: {
       _constructor: "DOM::Document",
@@ -305,18 +318,21 @@ function vdom(app) {
         } , {});
     var blocks = node._blocks ? node._blocks : []
     
-    function _getReference(refpath) {
-      var symbols = refpath.split(".");
+    function _getReference(refPath) {
+      var symbols = refPath.split(".");
       var ref = (context && context[symbols[0]]) || searchRef(app, path, symbols[0]);
       
       if (ref === undefined) {
-        throw `"${ref}"(Ref{path:${path}}) not found`
+        throw `"${ref}"(Ref{path:"${refPath}"}) not found`
       }
       
       var restLength = symbols.length - 1;
       var rest = symbols.slice(-restLength);
       for (var sym of rest) {
         if (sym == "map") {
+          if (ref._constructor = "Array") {
+            ref = ref._blocks;
+          }
           var argName = Object.keys(properties)[0];          
           ref = flatten(ref.map(arg => {
             var p = path.concat(["_blocks"]);
