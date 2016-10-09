@@ -349,8 +349,8 @@ class Node {
           .reduce((p, s) => p[s], this);
         const map = new Node();
         map._construct = (node, parent) => {
-          const block = node._defaults[0]; // todo: ブロックが1つとは限らない...
-          const key = block._propertyNames[0]; // todo: プロパティが1つとは限らない...
+          const block = node._defaults[0];
+          const key = block._propertyNames[0]; // todo key値の型と一致するか確認
           const result = new Node({}, parent);
           result._constructor = "Array";
           result._defaults = mapped._defaults.map(item => {
