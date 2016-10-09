@@ -303,6 +303,85 @@ function flatten(array) {
   return Array.prototype.concat.apply([], array);
 }
 
+
+const PRIMITIVE_TYPES = [
+  "number",
+  "string",
+  "boolean"
+];
+
+class Node {
+  constructor(src, parent=undefined) {
+    this._parent = parent;
+
+    const type = typeof(src);
+    if (PRIMITIVE_TYPES.includes(type)) {
+      this._constructor = type;
+      this._value = src;
+    }
+    
+    // var nameOfConstructor = node._constructor;
+    // if (!nameOfConstructor) {
+    //   nameOfConstructor = "Box";
+    // }
+    
+    Object.getOwnPropertyNames(src)
+    .filter(n => n[0] != "_")
+    .forEach(c => {
+      this[c] = new Node(src[c], this);
+    });
+    
+    var blocks = src._blocks ? src._blocks : [];
+    this._blocks = blocks.map(b => new Node(b, this));
+  }
+  
+  _ref(path) {
+    const syms = path.split(".");
+    if (this[syms[0]]) {
+      return syms.reduce((p, s) => p[s], this);
+    } else {
+      return this._parent._ref(path);
+    }
+  }
+  
+  value() {
+    return this._value;
+  }
+}
+
+// // test
+// console.log(new Node({
+//   a: 1,
+//   b: 2,
+//   c: {
+//     ca: 3
+//   }
+// })._ref("c.ca").value() == 3);
+// 
+// var src = {
+//   a: {
+//     aa: 1,
+//     ab: 2
+//   },
+//   b: 3,
+//   c: {
+//     ca: {
+//       a: {
+//         ab: 4
+//       },
+//       caa: {
+//         caaa: 5
+//       },
+//       cab: {
+//         caaa: 6
+//       }
+//     }
+//   }
+// };
+// console.log(new Node(src)._ref("c")._ref("a.ab").value() == 2);
+// console.log(new Node(src)._ref("c.ca")._ref("a.ab").value() == 4);
+// console.log(new Node(src)._ref("c.ca.caa.caaa")._ref("a.ab").value() == 4);
+
 function vdom(app) {
   function _traverse(node, path, context) {    
     if (typeof(node) === "string") {
