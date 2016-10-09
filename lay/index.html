@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="./index.css">
 <script src="maquette.min.js"></script>
 <script>
-var json = {
+var jsonObject = {
   TodoMVC: {
     _constructor: "Module",
     domain: {
@@ -82,42 +82,47 @@ var json = {
                         _blocks: [
                           {
                             _constructor: "domain.tasks.map",
-                            task: "Task",
                             _blocks: [
                               {
-                                _constructor: "Li",
+                                _constructor: "Box",
+                                task: "Task",
                                 _blocks: [
                                   {
-                                    _constructor: "Div",
-                                    class: "view",
+                                    _constructor: "Li",
                                     _blocks: [
                                       {
-                                        _constructor: "Input",
-                                        class: "toggle",
-                                        type: "checkbox",
-                                      },
-                                      {
-                                        _constructor: "Label",
+                                        _constructor: "Div",
+                                        class: "view",
                                         _blocks: [
                                           {
-                                            _constructor: "Ref",
-                                            path: "task.title"
+                                            _constructor: "Input",
+                                            class: "toggle",
+                                            type: "checkbox",
+                                          },
+                                          {
+                                            _constructor: "Label",
+                                            _blocks: [
+                                              {
+                                                _constructor: "Ref",
+                                                _path: "task.title"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            _constructor: "Button",
+                                            class: "destroy",
                                           }
                                         ]
                                       },
                                       {
-                                        _constructor: "Button",
-                                        class: "destroy",
+                                        _constructor: "Input",
+                                        class: "edit",
+                                        value: {
+                                          _constructor: "Ref",
+                                          _path: "task.title"
+                                        }
                                       }
                                     ]
-                                  },
-                                  {
-                                    _constructor: "Input",
-                                    class: "edit",
-                                    value: {
-                                      _constructor: "Ref",
-                                      path: "task.title"
-                                    }
                                   }
                                 ]
                               }
@@ -200,7 +205,7 @@ var json = {
                                 _constructor: "A",
                                 href: "#/completed",
                                 _blocks: [
-                                  "Compoleted"
+                                  "Completed"
                                 ]
                               }
                             ]
@@ -264,45 +269,9 @@ var json = {
   }
 }
 
-var h = maquette.h;
-var projector = maquette.createProjector();
-
-// todo: 上から探索しているだけで、レキシカルな探索になってない
-function searchRef(tree, refererPath, key) {
-  function _traverseRef(node, path) {
-    if (!node || path.length == 0) {
-      return undefined;
-    } else if (Object.getOwnPropertyNames(node).includes(key)) {
-      return node[key];
-    } else {
-      var restLength = path.length - 1
-      var rest = path.slice(-restLength);
-      return _traverseRef(node[path[0]], rest);
-    }
-  }
-  return _traverseRef(tree, refererPath);
-}
-// //// test
-// var tree = {
-//   a: 1,
-//   b: 2, 
-//   c:{
-//     ca: 4,
-//     cb: {
-//       cba: "b",
-//       cbb: "ca",
-//       cbc: "nothing"
-//     }
-//   }
-// };
-// console.log(searchRef(tree, ["c", "cb", "cba"], "b")); // 2
-// console.log(searchRef(tree, ["c", "cb", "cbb"], "ca")); // 4
-// console.log(searchRef(tree, ["c", "cb", "cbc"], "nothing")); // undefined
-
 function flatten(array) {
   return Array.prototype.concat.apply([], array);
 }
-
 
 const PRIMITIVE_TYPES = [
   "number",
@@ -310,20 +279,42 @@ const PRIMITIVE_TYPES = [
   "boolean"
 ];
 
+const HTML_TAGS = [
+  "Body",
+  "Section",
+  "Footer",
+  "Header",
+  "P",
+  "Ul",
+  "Li",
+  "Input",
+  "Button",
+  "Div",
+  "Span",
+  "H1",
+  "Label",
+  "Strong",
+  "A",
+]
+
 class Node {
-  constructor(src, parent=undefined) {
+  constructor(src={}, parent=undefined) {
     this._parent = parent;
 
     const type = typeof(src);
     if (PRIMITIVE_TYPES.includes(type)) {
-      this._constructor = type;
+      this._constructor = "primitive"
       this._value = src;
+      this._blocks = [];
+      return;
     }
     
-    // var nameOfConstructor = node._constructor;
-    // if (!nameOfConstructor) {
-    //   nameOfConstructor = "Box";
-    // }
+    this._constructor = src._constructor ? src._constructor : "Box";
+    
+    // for Ref
+    if (src._path) {
+      this._path = src._path;
+    }
     
     Object.getOwnPropertyNames(src)
     .filter(n => n[0] != "_")
@@ -335,20 +326,128 @@ class Node {
     this._blocks = blocks.map(b => new Node(b, this));
   }
   
+  get _propertyNames() {
+    return Object.getOwnPropertyNames(this)
+      .filter(n => n[0] != "_");
+  }
+  
+  get _properties() {
+    return this._propertyNames
+      .reduce((r, n) => {
+        r[n] = this[n];
+        return r;
+      }, {});
+  }
+  
   _ref(path) {
     const syms = path.split(".");
     if (this[syms[0]]) {
-      return syms.reduce((p, s) => p[s], this);
-    } else {
+      if (syms[syms.length-1] == "map") {
+        // todo: map用特別処理なのであとで標準化
+        const mapped = syms
+          .slice(0, syms.length-1)
+          .reduce((p, s) => p[s], this);
+        const map = new Node();
+        map._construct = (node, parent) => {
+          const block = node._blocks[0]; // todo: ブロックが1つとは限らない...
+          const key = block._propertyNames[0]; // todo: プロパティが1つとは限らない...
+          const result = new Node({}, parent);
+          result._constructor = "Array";
+          result._blocks = mapped._blocks.map(item => {
+            const n = new Node({}, result);
+            n._constructor = block._constructor;
+            n[key] = item;
+            n._blocks = block._blocks
+            
+            return n._expand(result);
+          });
+          
+          return result;
+        }
+        
+        return map;
+      }
+      
+      return syms.reduce((p, s) => p[s], this);      
+    }
+    
+    if (this._parent) { 
       return this._parent._ref(path);
     }
+    
+    return undefined;
   }
   
-  value() {
-    return this._value;
+  _expand(parent=undefined) {
+    let expanded;
+    const constructor = this._ref(this._constructor);
+    if (constructor && constructor._construct) {
+      expanded = constructor._construct(this, parent);
+    } else {
+      expanded = new Node({}, parent);
+      expanded._constructor = this._constructor;
+      this._propertyNames.forEach(n => {
+        expanded[n] = this[n]._expand(expanded);
+      });
+      
+      expanded._blocks = this._blocks.map(b => b._expand(expanded));
+      
+      if (this._value) {
+        expanded._value = this._value;
+      }
+      
+      if (this._path) {
+        expanded._path = this._path;
+      }
+    }
+           
+    return expanded;
+  }
+  
+  _eval() {
+    if (this._constructor == "primitive") {
+      return this._value;
+    }
+    
+    if (this._constructor == "Ref") {
+      return this._ref(this._path);
+    }
+    
+    return this;
+  }
+  
+  _render() {
+    if (this._constructor == "primitive") {
+      return [this._eval()];
+    }
+    
+    if (this._constructor == "Ref") {
+      return flatten([this._eval()._render()]);
+    }
+
+    if (HTML_TAGS.includes(this._constructor)) {
+      const tag = this._constructor;
+      const properties = this._propertyNames.reduce((r, n) => Object.assign(r, {[n]: this[n]._render()[0]}), {});
+      const children = flatten(this._blocks.map(b => b._render()));
+      return [maquette.h(
+        tag,
+        properties,
+        children
+      )];
+    }
+    
+    if (this._constructor == "Box") {
+      return flatten(this._blocks.map(b => b._render()));
+    }
+    
+    if (this._constructor == "Array") {
+      return flatten(this._blocks.map(b => b._render()));
+    }
+    
+    console.log(this);
+    throw `${this} render() undefined.`
   }
 }
-
 // // test
 // console.log(new Node({
 //   a: 1,
@@ -356,7 +455,7 @@ class Node {
 //   c: {
 //     ca: 3
 //   }
-// })._ref("c.ca").value() == 3);
+// })._ref("c.ca")._value == 3);
 // 
 // var src = {
 //   a: {
@@ -378,80 +477,50 @@ class Node {
 //     }
 //   }
 // };
-// console.log(new Node(src)._ref("c")._ref("a.ab").value() == 2);
-// console.log(new Node(src)._ref("c.ca")._ref("a.ab").value() == 4);
-// console.log(new Node(src)._ref("c.ca.caa.caaa")._ref("a.ab").value() == 4);
+// console.log(new Node(src)._ref("c")._ref("a.ab")._value == 2);
+// console.log(new Node(src)._ref("c.ca")._ref("a.ab")._value == 4);
+// console.log(new Node(src)._ref("c.ca.caa.caaa")._ref("a.ab")._value == 4);
+// 
+// console.log(new Node({
+//   a: {
+//     _constructor: "Array",
+//     _blocks: [
+//       "hoge",
+//       "fuga"
+//     ]
+//   },
+//   b: {
+//     _constructor: "a.map",
+//     _blocks: [
+//       {
+//         text: "string",
+//         _blocks: [
+//           {
+//             _constructor: "Span",
+//             _blocks: [
+//               {
+//                 _constructor: "Ref",
+//                 _path: "text"
+//               }
+//             ]
+//           }
+//         ]
+//       }
+//     ]
+//   }
+// })._expand());
 
-function vdom(app) {
-  function _traverse(node, path, context) {    
-    if (typeof(node) === "string") {
-      return [node];
-    };
-        
-    var constructorName = node._constructor;
-    var properties = Object
-      .getOwnPropertyNames(node)
-      .filter(n => n[0] != "_")
-      .reduce((p, c) => {
-          p[c] = node[c]; return p 
-        } , {});
-    var blocks = node._blocks ? node._blocks : []
-    
-    function _getReference(refPath) {
-      var symbols = refPath.split(".");
-      var ref = (context && context[symbols[0]]) || searchRef(app, path, symbols[0]);
-      
-      if (ref === undefined) {
-        throw `"${ref}"(Ref{path:"${refPath}"}) not found`
-      }
-      
-      var restLength = symbols.length - 1;
-      var rest = symbols.slice(-restLength);
-      for (var sym of rest) {
-        if (sym == "map") {
-          if (ref._constructor = "Array") {
-            ref = ref._blocks;
-          }
-          var argName = Object.keys(properties)[0];          
-          ref = flatten(ref.map(arg => {
-            var p = path.concat(["_blocks"]);
-            var ctx = {};
-            ctx[argName] = arg; // todo: 何重にもmapされることを考えると重ねる必要あり!
-            return flatten(blocks.map(b => _traverse(b, p, ctx)));
-          }));
-        } else {
-          ref = ref[sym];
-          if (ref === undefined) {
-            throw `"${ref}"(Ref{path:${path}}) not found`;
-          }
-        }
-      }
-      
-      return ref;
-    }
-    
-    if (constructorName === "Ref") {
-      return _getReference(properties.path);
-    }
-    
-    try {
-      constructor = _getReference(constructorName);
-      return constructor; // todo: 取り出せたコンストラクタ実態の実行が必要
-    } catch(e) {
-      // todo: dom向け特別処理なので一般化する
-      var p = path.concat(["_blocks"]);
-      var children = flatten(blocks.map(b => _traverse(b, p, context)));
-      return [h(constructorName, properties, children)];
-    }
-  }
-  
-  var body = app.presentation.body;
-  return _traverse(body, ["presentation", "body"])[0];
+function vdom(app) { 
+  const body = app.presentation.body;
+  return body._expand()._render()[0];
 }
 
+const tree = new Node(jsonObject);
+
 // Initializes the projector 
+var projector = maquette.createProjector();
 window.document.addEventListener('DOMContentLoaded', function () {
-   projector.replace(window.document.body, () => vdom(json.TodoMVC));
+   projector.replace(window.document.body, () => vdom(tree.TodoMVC));
 });
 
 </script>
