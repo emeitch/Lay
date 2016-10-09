@@ -18,7 +18,7 @@ var jsonObject = {
         completed: "bool"
       },
       tasks: {
-        _constructor: "Array",
+        _constructor: "Box",
         _defaults: [
           {
             _constructor: "Task",
@@ -352,7 +352,7 @@ class Node {
           const block = node._defaults[0];
           const key = block._propertyNames[0]; // todo key値の型と一致するか確認
           const result = new Node({}, parent);
-          result._constructor = "Array";
+          result._constructor = "Box";
           result._defaults = mapped._defaults.map(item => {
             const n = new Node({}, result);
             n._constructor = block._constructor;
@@ -440,10 +440,6 @@ class Node {
       return flatten(this._defaults.map(b => b._render()));
     }
     
-    if (this._constructor == "Array") {
-      return flatten(this._defaults.map(b => b._render()));
-    }
-    
     console.log(this);
     throw `${this} render() undefined.`
   }
@@ -483,7 +479,7 @@ class Node {
 // 
 // console.log(new Node({
 //   a: {
-//     _constructor: "Array",
+//     _constructor: "Box",
 //     _defaults: [
 //       "hoge",
 //       "fuga"
