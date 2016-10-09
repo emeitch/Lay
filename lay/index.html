@@ -19,7 +19,7 @@ var jsonObject = {
       },
       tasks: {
         _constructor: "Array",
-        _blocks: [
+        _defaults: [
           {
             _constructor: "Task",
             title: "buy a milk",
@@ -42,21 +42,21 @@ var jsonObject = {
       _constructor: "DOM::Document",
       body: {
         _constructor: "Body",
-        _blocks: [
+        _defaults: [
           {
             _constructor: "Section",
             class: "todoapp",
-            _blocks: [
+            _defaults: [
               {
                 _constructor: "Div",
-                _blocks: [
+                _defaults: [
                   {
                     _constructor: "Header",
                     class: "header",
-                    _blocks: [
+                    _defaults: [
                       {
                         _constructor: "H1",
-                        _blocks: [
+                        _defaults: [
                           "todos"
                         ]
                       },
@@ -70,7 +70,7 @@ var jsonObject = {
                   {
                     _constructor: "Section",
                     class: "main",
-                    _blocks: [
+                    _defaults: [
                       {
                         _constructor: "Input",
                         class: "toggle-all",
@@ -79,21 +79,21 @@ var jsonObject = {
                       {
                         _constructor: "Ul",
                         class: "todo-list",
-                        _blocks: [
+                        _defaults: [
                           {
                             _constructor: "domain.tasks.map",
-                            _blocks: [
+                            _defaults: [
                               {
                                 _constructor: "Box",
                                 task: "Task",
-                                _blocks: [
+                                _defaults: [
                                   {
                                     _constructor: "Li",
-                                    _blocks: [
+                                    _defaults: [
                                       {
                                         _constructor: "Div",
                                         class: "view",
-                                        _blocks: [
+                                        _defaults: [
                                           {
                                             _constructor: "Input",
                                             class: "toggle",
@@ -101,7 +101,7 @@ var jsonObject = {
                                           },
                                           {
                                             _constructor: "Label",
-                                            _blocks: [
+                                            _defaults: [
                                               {
                                                 _constructor: "Ref",
                                                 _path: "task.title"
@@ -135,14 +135,14 @@ var jsonObject = {
                   {
                     _constructor: "Footer",
                     class: "footer",
-                    _blocks: [
+                    _defaults: [
                       {
                         _constructor: "Span",
                         class: "todo-count",
-                        _blocks: [
+                        _defaults: [
                           {
                             _constructor: "Strong",
-                            _blocks: [
+                            _defaults: [
                               "1"
                             ]
                           },
@@ -151,13 +151,13 @@ var jsonObject = {
                           },
                           {
                             _constructor: "Span",
-                            _blocks: [
+                            _defaults: [
                               "item"
                             ]
                           },
                           {
                             _constructor: "Span",
-                            _blocks: [
+                            _defaults: [
                               " left"
                             ]
                           }
@@ -166,15 +166,15 @@ var jsonObject = {
                       {
                         _constructor: "Ul",
                         class: "filters",
-                        _blocks: [
+                        _defaults: [
                           {
                             _constructor: "Li",
-                            _blocks: [
+                            _defaults: [
                               {
                                 _constructor: "A",
                                 href: "#/",
                                 class: "selected",
-                                _blocks: [
+                                _defaults: [
                                   "All"
                                 ]
                               }
@@ -185,11 +185,11 @@ var jsonObject = {
                           },
                           {
                             _constructor: "Li",
-                            _blocks: [
+                            _defaults: [
                               {
                                 _constructor: "A",
                                 href: "#/active",
-                                _blocks: [
+                                _defaults: [
                                   "Active"
                                 ]
                               }
@@ -200,11 +200,11 @@ var jsonObject = {
                           },
                           {
                             _constructor: "Li",
-                            _blocks: [
+                            _defaults: [
                               {
                                 _constructor: "A",
                                 href: "#/completed",
-                                _blocks: [
+                                _defaults: [
                                   "Completed"
                                 ]
                               }
@@ -215,7 +215,7 @@ var jsonObject = {
                       {
                         _constructor: "Button",
                         class: "clear-completed",
-                        _blocks: [
+                        _defaults: [
                           "Clear Completed"
                         ]
                       }
@@ -228,21 +228,21 @@ var jsonObject = {
           {
             _constructor: "Footer",
             class: "info",
-            _blocks: [
+            _defaults: [
               {
                 _constructor: "P",
-                _blocks: [
+                _defaults: [
                   "Double-click to edit a todo"
                 ]
               },
               {
                 _constructor: "P",
-                _blocks: [
+                _defaults: [
                   "Created by ",
                   {
                     _constructor: "A",
                     href: "http://github.com/emeitch/",
-                    _blocks: [
+                    _defaults: [
                       "Hideyuki MORITA (emeitch)"
                     ]
                   }
@@ -250,12 +250,12 @@ var jsonObject = {
               },
               {
                 _constructor: "P",
-                _blocks: [
+                _defaults: [
                   "Part of ",
                   {
                     _constructor: "A",
                     href: "http://todomvc.com",
-                    _blocks: [
+                    _defaults: [
                       "TodoMVC"
                     ]
                   }
@@ -305,7 +305,7 @@ class Node {
     if (PRIMITIVE_TYPES.includes(type)) {
       this._constructor = "primitive"
       this._value = src;
-      this._blocks = [];
+      this._defaults = [];
       return;
     }
     
@@ -322,8 +322,8 @@ class Node {
       this[c] = new Node(src[c], this);
     });
     
-    var blocks = src._blocks ? src._blocks : [];
-    this._blocks = blocks.map(b => new Node(b, this));
+    var defaults = src._defaults ? src._defaults : [];
+    this._defaults = defaults.map(b => new Node(b, this));
   }
   
   get _propertyNames() {
@@ -349,15 +349,15 @@ class Node {
           .reduce((p, s) => p[s], this);
         const map = new Node();
         map._construct = (node, parent) => {
-          const block = node._blocks[0]; // todo: ブロックが1つとは限らない...
+          const block = node._defaults[0]; // todo: ブロックが1つとは限らない...
           const key = block._propertyNames[0]; // todo: プロパティが1つとは限らない...
           const result = new Node({}, parent);
           result._constructor = "Array";
-          result._blocks = mapped._blocks.map(item => {
+          result._defaults = mapped._defaults.map(item => {
             const n = new Node({}, result);
             n._constructor = block._constructor;
             n[key] = item;
-            n._blocks = block._blocks
+            n._defaults = block._defaults
             
             return n._expand(result);
           });
@@ -390,7 +390,7 @@ class Node {
         expanded[n] = this[n]._expand(expanded);
       });
       
-      expanded._blocks = this._blocks.map(b => b._expand(expanded));
+      expanded._defaults = this._defaults.map(b => b._expand(expanded));
       
       if (this._value) {
         expanded._value = this._value;
@@ -428,7 +428,7 @@ class Node {
     if (HTML_TAGS.includes(this._constructor)) {
       const tag = this._constructor;
       const properties = this._propertyNames.reduce((r, n) => Object.assign(r, {[n]: this[n]._render()[0]}), {});
-      const children = flatten(this._blocks.map(b => b._render()));
+      const children = flatten(this._defaults.map(b => b._render()));
       return [maquette.h(
         tag,
         properties,
@@ -437,11 +437,11 @@ class Node {
     }
     
     if (this._constructor == "Box") {
-      return flatten(this._blocks.map(b => b._render()));
+      return flatten(this._defaults.map(b => b._render()));
     }
     
     if (this._constructor == "Array") {
-      return flatten(this._blocks.map(b => b._render()));
+      return flatten(this._defaults.map(b => b._render()));
     }
     
     console.log(this);
@@ -484,20 +484,20 @@ class Node {
 // console.log(new Node({
 //   a: {
 //     _constructor: "Array",
-//     _blocks: [
+//     _defaults: [
 //       "hoge",
 //       "fuga"
 //     ]
 //   },
 //   b: {
 //     _constructor: "a.map",
-//     _blocks: [
+//     _defaults: [
 //       {
 //         text: "string",
-//         _blocks: [
+//         _defaults: [
 //           {
 //             _constructor: "Span",
-//             _blocks: [
+//             _defaults: [
 //               {
 //                 _constructor: "Ref",
 //                 _path: "text"
