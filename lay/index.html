@@ -297,12 +297,12 @@ const HTML_TAGS = [
   "A",
 ]
 
-function box(...args) {
-  return new Box(...args);
+function box(src={}, parent=undefined) {
+  return new Box(src, parent);
 }
 
 class Box {
-  constructor(src={}, parent=undefined) {
+  constructor(src, parent) {
     this._parent = parent;
 
     const type = typeof(src);
@@ -328,6 +328,26 @@ class Box {
     
     var contents = src._contents ? src._contents : [];
     this._contents = contents.map(b => box(b, this));
+  }
+  
+  _copy(parent) {
+    let b = new this.constructor({}, parent);
+    b._constructor = this._constructor;
+    this._propertyNames.forEach(n => {
+      b[n] = this[n]._expand(b);
+    });
+    
+    b._contents = this._contents.map(c => c._expand(b));
+    
+    if (this._value) {
+      b._value = this._value;
+    }
+    
+    if (this._path) {
+      b._path = this._path;
+    }
+    
+    return b;
   }
   
   get _propertyNames() {
@@ -382,29 +402,12 @@ class Box {
   }
   
   _expand(parent=undefined) {
-    let expanded;
     const constructor = this._ref(this._constructor);
     if (constructor && constructor._construct) {
-      expanded = constructor._construct(this, parent);
+      return constructor._construct(this, parent);
     } else {
-      expanded = box({}, parent);
-      expanded._constructor = this._constructor;
-      this._propertyNames.forEach(n => {
-        expanded[n] = this[n]._expand(expanded);
-      });
-      
-      expanded._contents = this._contents.map(b => b._expand(expanded));
-      
-      if (this._value) {
-        expanded._value = this._value;
-      }
-      
-      if (this._path) {
-        expanded._path = this._path;
-      }
+      return this._copy(parent);
     }
-           
-    return expanded;
   }
   
   _eval() {
