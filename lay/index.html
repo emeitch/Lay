@@ -297,6 +297,10 @@ const HTML_TAGS = [
   "A",
 ]
 
+function box(...args) {
+  return new Box(...args);
+}
+
 class Box {
   constructor(src={}, parent=undefined) {
     this._parent = parent;
@@ -319,11 +323,11 @@ class Box {
     Object.getOwnPropertyNames(src)
     .filter(n => n[0] != "_")
     .forEach(c => {
-      this[c] = new Box(src[c], this);
+      this[c] = box(src[c], this);
     });
     
     var contents = src._contents ? src._contents : [];
-    this._contents = contents.map(b => new Box(b, this));
+    this._contents = contents.map(b => box(b, this));
   }
   
   get _propertyNames() {
@@ -347,17 +351,17 @@ class Box {
         const mapped = syms
           .slice(0, syms.length-1)
           .reduce((p, s) => p[s], this);
-        const map = new Box();
+        const map = box();
         map._construct = (src, parent) => {
-          const box = src._contents[0];
-          const key = box._propertyNames[0]; // todo key値の型と一致するか確認
-          const dst = new Box({}, parent);
+          const block = src._contents[0];
+          const key = block._propertyNames[0]; // todo key値の型と一致するか確認
+          const dst = box({}, parent);
           dst._constructor = "Box";
           dst._contents = mapped._contents.map(item => {
-            const n = new Box({}, dst);
-            n._constructor = box._constructor;
+            const n = box({}, dst);
+            n._constructor = block._constructor;
             n[key] = item;
-            n._contents = box._contents
+            n._contents = block._contents
             
             return n._expand(dst);
           });
@@ -383,7 +387,7 @@ class Box {
     if (constructor && constructor._construct) {
       expanded = constructor._construct(this, parent);
     } else {
-      expanded = new Box({}, parent);
+      expanded = box({}, parent);
       expanded._constructor = this._constructor;
       this._propertyNames.forEach(n => {
         expanded[n] = this[n]._expand(expanded);
@@ -444,7 +448,7 @@ class Box {
   }
 }
 // // test
-// console.log(new Box({
+// console.log(box({
 //   a: 1,
 //   b: 2,
 //   c: {
@@ -472,11 +476,11 @@ class Box {
 //     }
 //   }
 // };
-// console.log(new Box(src)._ref("c")._ref("a.ab")._value == 2);
-// console.log(new Box(src)._ref("c.ca")._ref("a.ab")._value == 4);
-// console.log(new Box(src)._ref("c.ca.caa.caaa")._ref("a.ab")._value == 4);
+// console.log(box(src)._ref("c")._ref("a.ab")._value == 2);
+// console.log(box(src)._ref("c.ca")._ref("a.ab")._value == 4);
+// console.log(box(src)._ref("c.ca.caa.caaa")._ref("a.ab")._value == 4);
 // 
-// console.log(new Box({
+// console.log(box({
 //   a: {
 //     _constructor: "Box",
 //     _contents: [
@@ -510,7 +514,7 @@ function vdom(app) {
   return body._expand()._render()[0];
 }
 
-const tree = new Box(jsonObject);
+const tree = box(jsonObject);
 
 // Initializes the projector 
 var projector = maquette.createProjector();
