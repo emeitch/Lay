@@ -330,10 +330,10 @@ class Box {
     copy._constructor = this._constructor;
     
     this._propertyNames.forEach(n => {
-      copy[n] = this[n]._expand(copy);
+      copy[n] = this[n]._copy(copy);
     });
     
-    copy._contents = this._contents.map(c => c._expand(copy));
+    copy._contents = this._contents.map(c => c._copy(copy));
         
     return copy;
   }
@@ -389,12 +389,17 @@ class Box {
     return undefined;
   }
   
-  _expand(parent=undefined) {
+  _expand(parent=this._parent) {
     const constructor = this._ref(this._constructor);
     if (constructor && constructor._construct) {
       return constructor._construct(this, parent);
     } else {
-      return this._copy(parent);
+      let copy = this._copy(parent);
+      copy._propertyNames.forEach(n => {
+        copy[n] = copy[n]._expand(copy);
+      });
+      copy._contents = copy._contents.map(c => c._expand(copy));
+      return copy;
     }
   }
   
@@ -405,8 +410,6 @@ class Box {
   _render() {
     if (HTML_TAGS.includes(this._constructor)) {
       const tag = this._constructor;
-      //console.log(this);
-      //console.log(this._propertyNames);
       const properties = this._propertyNames.reduce((r, n) => Object.assign(r, {[n]: this[n]._render()[0]}), {});
       const children = flatten(this._contents.map(b => b._render()));
       return [maquette.h(
@@ -431,7 +434,6 @@ class Primitive extends Box {
     
     this._constructor = "primitive"
     this._value = src;
-    this._contents = [];
   }
   
   _copy(parent) {
