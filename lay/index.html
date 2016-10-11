@@ -298,18 +298,19 @@ const HTML_TAGS = [
 ]
 
 function box(src={}, parent=undefined) {
+  const type = typeof(src);
+  if (PRIMITIVE_TYPES.includes(type)) {
+    return new Primitive(src, parent);
+  }
+
   return new Box(src, parent);
 }
 
 class Box {
   constructor(src, parent) {
     this._parent = parent;
-
-    const type = typeof(src);
-    if (PRIMITIVE_TYPES.includes(type)) {
-      this._constructor = "primitive"
-      this._value = src;
-      this._contents = [];
+    // todo 継承クラス作成途中の暫定処理なので後で除去
+    if (!src) {
       return;
     }
     
@@ -411,10 +412,6 @@ class Box {
   }
   
   _eval() {
-    if (this._constructor == "primitive") {
-      return this._value;
-    }
-    
     if (this._constructor == "Ref") {
       return this._ref(this._path);
     }
@@ -423,10 +420,6 @@ class Box {
   }
   
   _render() {
-    if (this._constructor == "primitive") {
-      return [this._eval()];
-    }
-    
     if (this._constructor == "Ref") {
       return flatten([this._eval()._render()]);
     }
@@ -448,6 +441,23 @@ class Box {
     
     console.log(this);
     throw `${this} render() undefined.`
+  }
+}
+
+class Primitive extends Box {
+  constructor(src, parent) {
+    super(undefined, parent);
+    this._constructor = "primitive"
+    this._value = src;
+    this._contents = [];
+  }
+  
+  _eval() {
+    return this._value;
+  }
+  
+  _render() {
+    return [this._eval()];
   }
 }
 // // test
