@@ -313,18 +313,16 @@ function box(src={}, parent=undefined) {
 class Box {
   constructor(src, parent) {
     this._parent = parent;
-    // todo 継承クラス作成途中の暫定処理なので後で除去
-    if (!src) {
-      return;
-    }
     
     this._constructor = src._constructor ? src._constructor : "Box";
     
-    Object.getOwnPropertyNames(src)
-    .filter(n => n[0] != "_")
-    .forEach(c => {
-      this[c] = box(src[c], this);
-    });
+    if (typeof(src) === "object") {
+      Object.getOwnPropertyNames(src)
+      .filter(n => n[0] != "_")
+      .forEach(c => {
+        this[c] = box(src[c], this);
+      });
+    }
     
     var contents = src._contents ? src._contents : [];
     this._contents = contents.map(b => box(b, this));
@@ -433,7 +431,7 @@ class Box {
 
 class Primitive extends Box {
   constructor(src, parent) {
-    super(undefined, parent);
+    super(src, parent);
     
     this._constructor = "primitive"
     this._value = src;
