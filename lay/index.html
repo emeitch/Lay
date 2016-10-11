@@ -9,16 +9,13 @@
 <script>
 var jsonObject = {
   TodoMVC: {
-    _constructor: "Module",
     domain: {
-      _constructor: "Module",
       Task: {
         _constructor: "Entity",
         title: "string",
         completed: "bool"
       },
       tasks: {
-        _constructor: "Box",
         _contents: [
           {
             _constructor: "Task",
@@ -84,7 +81,6 @@ var jsonObject = {
                             _constructor: "domain.tasks.map",
                             _contents: [
                               {
-                                _constructor: "Box",
                                 task: "Task",
                                 _contents: [
                                   {
