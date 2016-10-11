@@ -302,6 +302,10 @@ function box(src={}, parent=undefined) {
   if (PRIMITIVE_TYPES.includes(type)) {
     return new Primitive(src, parent);
   }
+  
+  if (src._constructor === "Ref") {
+    return new Ref(src, parent);
+  }
 
   return new Box(src, parent);
 }
@@ -316,11 +320,6 @@ class Box {
     
     this._constructor = src._constructor ? src._constructor : "Box";
     
-    // for Ref
-    if (src._path) {
-      this._path = src._path;
-    }
-    
     Object.getOwnPropertyNames(src)
     .filter(n => n[0] != "_")
     .forEach(c => {
@@ -332,23 +331,17 @@ class Box {
   }
   
   _copy(parent) {
-    let b = new this.constructor({}, parent);
-    b._constructor = this._constructor;
+    let copy = new this.constructor({}, parent);
+    
+    copy._constructor = this._constructor;
+    
     this._propertyNames.forEach(n => {
-      b[n] = this[n]._expand(b);
+      copy[n] = this[n]._expand(copy);
     });
     
-    b._contents = this._contents.map(c => c._expand(b));
-    
-    if (this._value) {
-      b._value = this._value;
-    }
-    
-    if (this._path) {
-      b._path = this._path;
-    }
-    
-    return b;
+    copy._contents = this._contents.map(c => c._expand(copy));
+        
+    return copy;
   }
   
   get _propertyNames() {
@@ -411,21 +404,15 @@ class Box {
     }
   }
   
-  _eval() {
-    if (this._constructor == "Ref") {
-      return this._ref(this._path);
-    }
-    
+  _eval() {    
     return this;
   }
   
   _render() {
-    if (this._constructor == "Ref") {
-      return flatten([this._eval()._render()]);
-    }
-
     if (HTML_TAGS.includes(this._constructor)) {
       const tag = this._constructor;
+      //console.log(this);
+      //console.log(this._propertyNames);
       const properties = this._propertyNames.reduce((r, n) => Object.assign(r, {[n]: this[n]._render()[0]}), {});
       const children = flatten(this._contents.map(b => b._render()));
       return [maquette.h(
@@ -447,9 +434,16 @@ class Box {
 class Primitive extends Box {
   constructor(src, parent) {
     super(undefined, parent);
+    
     this._constructor = "primitive"
     this._value = src;
     this._contents = [];
+  }
+  
+  _copy(parent) {
+    let copy = super._copy(parent);
+    copy._value = this._value;
+    return copy;
   }
   
   _eval() {
@@ -458,6 +452,27 @@ class Primitive extends Box {
   
   _render() {
     return [this._eval()];
+  }
+}
+
+class Ref extends Box {
+  constructor(src, parent) {
+    super(src, parent);
+    this._path = src._path;
+  }
+  
+  _copy(parent) {
+    let copy = super._copy(parent);
+    copy._path = this._path;
+    return copy;
+  }
+
+  _eval() {
+    return this._ref(this._path);
+  }
+  
+  _render() {
+    return flatten([this._eval()._render()]);
   }
 }
 // // test
