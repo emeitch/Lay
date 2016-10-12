@@ -318,7 +318,7 @@ class Box {
   constructor(src, parent) {
     this._parent = parent;
     
-    this._constructor = src._constructor ? src._constructor : "Box";
+    this._constructorPath = src._constructor ? src._constructor : "Box"
     
     if (typeof(src) === "object") {
       Object.getOwnPropertyNames(src)
@@ -335,7 +335,7 @@ class Box {
   _copy(parent) {
     let copy = new this.constructor({}, parent);
     
-    copy._constructor = this._constructor;
+    copy._constructorPath = this._constructorPath;
     
     this._propertyNames.forEach(n => {
       copy[n] = this[n]._copy(copy);
@@ -383,7 +383,7 @@ class Box {
   }
   
   _expand(parent=this._parent) {
-    const constructor = this._ref(this._constructor);
+    const constructor = this._ref(this._constructorPath);
     return constructor._construct(this, parent);
   }
   
@@ -417,8 +417,6 @@ class Box {
 class Primitive extends Box {
   constructor(src, parent) {
     super(src, parent);
-    
-    this._constructor = "primitive"
     this._value = src;
   }
   
