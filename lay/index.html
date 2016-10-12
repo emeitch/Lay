@@ -302,6 +302,10 @@ function box(src={}, parent=undefined) {
   if (src._constructor === "Ref") {
     return new Ref(src, parent);
   }
+  
+  if (HTML_TAGS.includes(src._constructor)) {
+    return new DOM(src, parent);
+  }
 
   return new Box(src, parent);
 }
@@ -408,23 +412,7 @@ class Box {
   }
   
   _render() {
-    if (HTML_TAGS.includes(this._constructor)) {
-      const tag = this._constructor;
-      const properties = this._propertyNames.reduce((r, n) => Object.assign(r, {[n]: this[n]._render()[0]}), {});
-      const children = flatten(this._contents.map(b => b._render()));
-      return [maquette.h(
-        tag,
-        properties,
-        children
-      )];
-    }
-    
-    if (this._constructor == "Box") {
-      return flatten(this._contents.map(b => b._render()));
-    }
-    
-    console.log(this);
-    throw `${this} render() undefined.`
+    return flatten(this._contents.map(b => b._render()));
   }
 }
 
@@ -470,6 +458,29 @@ class Ref extends Box {
   _render() {
     return flatten([this._eval()._render()]);
   }
+}
+
+class DOM extends Box {
+  constructor(src, parent) {
+    super(src, parent);
+    this._tag = src._constructor;
+  }
+
+  _copy(parent) {
+    let copy = super._copy(parent);
+    copy._tag = this._tag;
+    return copy;
+  }
+
+  _render() {
+    const properties = this._propertyNames.reduce((r, n) => Object.assign(r, {[n]: this[n]._render()[0]}), {});
+    const children = flatten(this._contents.map(b => b._render()));
+    return [maquette.h(
+      this._tag,
+      properties,
+      children
+    )];
+  }  
 }
 // // test
 // console.log(box({
