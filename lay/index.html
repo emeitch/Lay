@@ -363,24 +363,7 @@ class Box {
         const mapped = syms
           .slice(0, syms.length-1)
           .reduce((p, s) => p[s], this);
-        const map = box();
-        map._construct = (src, parent) => {
-          const block = src._contents[0];
-          const key = block._propertyNames[0]; // todo key値の型と一致するか確認
-          const dst = box({}, parent);
-          dst._constructor = "Box";
-          dst._contents = mapped._contents.map(item => {
-            const n = box({}, dst);
-            n._constructor = block._constructor;
-            n[key] = item;
-            n._contents = block._contents
-            
-            return n._expand(dst);
-          });
-          return dst;
-        }
-        
-        return map;
+        return new Map({}, mapped);
       }
       
       return syms.reduce((p, s) => p[s], this);      
@@ -480,7 +463,22 @@ class DOM extends Box {
       properties,
       children
     )];
-  }  
+  }
+}
+
+class Map extends Box {
+  _construct(src, parent) {
+    const block = src._contents[0];
+    const key = block._propertyNames[0]; // todo key値の型と一致するか確認
+    const dst = src._copy(parent);
+    dst._contents = this._parent._contents.map(item => {
+      // todo _contentsにMapボックスが存在すると無限ループになるのをうまく解決 / そもそも_contentsがMapボックスになる状況のセマンティクスとは何か?
+      const n = block._copy(dst);
+      n[key] = item;
+      return n._expand(dst);
+    });
+    return dst;
+  }
 }
 // // test
 // console.log(box({
