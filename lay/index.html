@@ -306,6 +306,10 @@ function box(src={}, parent=undefined) {
   if (HTML_TAGS.includes(src._constructor)) {
     return new DOM(src, parent);
   }
+  
+  if (src._constructor === "Entity") {
+    return new Entity(src, parent);
+  }
 
   return new Box(src, parent);
 }
@@ -431,6 +435,9 @@ class Primitive extends Box {
   _render() {
     return [this._eval()];
   }
+}
+
+class Entity extends Box {
 }
 
 class Ref extends Box {
