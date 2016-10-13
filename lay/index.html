@@ -348,8 +348,18 @@ class Box {
     return this._items[0];
   }
   
-  _construct(src, parent) {
-    return src._clone(parent);
+  _eval(parent=undefined) {
+    const proto = this._ref(this._protoPath);
+    return proto._apply(this, parent);
+  }
+  
+  _apply(args, parent) {
+    let result = args._clone(parent);
+    result._keys.forEach(n => {
+      result[n] = result[n]._eval(result);
+    });
+    result._items = result._items.map(c => c._eval(result));
+    return result;
   }
   
   _ref(path) {
@@ -366,19 +376,7 @@ class Box {
     return box(); // todo ダミーBoxを返している状況なので変更する
   }
   
-  _expand(parent=this._parent) {
-    const proto = this._ref(this._protoPath);
-    const result = proto._construct(this, parent);
-    
-    result._keys.forEach(n => {
-      result[n] = result[n]._expand(result);
-    });
-    result._items = result._items.map(c => c._expand(result));
-    
-    return result;
-  }
-  
-  _eval() {    
+  get _value() {    
     return this;
   }
   
@@ -388,14 +386,15 @@ class Box {
   
   get map() {
     class Map extends Box {
-      _construct(src, parent) {
-        const key = src._item._keys[0]; // todo key値の型と一致するか確認
+      _apply(argbox, parent) {
+        const block = argbox._item;
+        const barg = argbox._item._keys[0]; // todo key値の型と一致するか確認
         const dst = box({}, parent);
         dst._items = this._parent._items.map(item => {
           // todo _itemsにMapボックスが存在すると無限ループになるのをうまく解決 / そもそも_itemsがMapボックスになる状況のセマンティクスとは何か?
-          const n = src._item._clone(dst);
-          n[key] = item;
-          return n;
+          const n = block._clone(dst);
+          n[barg] = item;
+          return n._eval(dst);
         });
         return dst;
       }
@@ -407,21 +406,21 @@ class Box {
 class Primitive extends Box {
   constructor(src, parent) {
     super(src, parent);
-    this._value = src;
+    this._val = src;
   }
   
   _clone(parent) {
     let copy = super._clone(parent);
-    copy._value = this._value;
+    copy._val = this._val;
     return copy;
   }
   
-  _eval() {
-    return this._value;
+  get _value() {
+    return this._val;
   }
   
   _render() {
-    return [this._eval()];
+    return [this._value];
   }
 }
 
@@ -440,12 +439,12 @@ class Ref extends Box {
     return copy;
   }
 
-  _eval() {
+  get _value() {
     return this._ref(this._path);
   }
   
   _render() {
-    return flatten([this._eval()._render()]);
+    return flatten([this._value._render()]);
   }
 }
 
@@ -472,71 +471,8 @@ class DOM extends Box {
   }
 }
 
-// // test
-// console.log(box({
-//   a: 1,
-//   b: 2,
-//   c: {
-//     ca: 3
-//   }
-// })._ref("c.ca")._value == 3);
-// 
-// var src = {
-//   a: {
-//     aa: 1,
-//     ab: 2
-//   },
-//   b: 3,
-//   c: {
-//     ca: {
-//       a: {
-//         ab: 4
-//       },
-//       caa: {
-//         caaa: 5
-//       },
-//       cab: {
-//         caaa: 6
-//       }
-//     }
-//   }
-// };
-// console.log(box(src)._ref("c")._ref("a.ab")._value == 2);
-// console.log(box(src)._ref("c.ca")._ref("a.ab")._value == 4);
-// console.log(box(src)._ref("c.ca.caa.caaa")._ref("a.ab")._value == 4);
-// 
-// console.log(box({
-//   a: {
-//     _proto: "Box",
-//     _items: [
-//       "hoge",
-//       "fuga"
-//     ]
-//   },
-//   b: {
-//     _proto: "a.map",
-//     _items: [
-//       {
-//         text: "string",
-//         _items: [
-//           {
-//             _proto: "Span",
-//             _items: [
-//               {
-//                 _proto: "Ref",
-//                 _path: "text"
-//               }
-//             ]
-//           }
-//         ]
-//       }
-//     ]
-//   }
-// })._expand());
-
 function vdom(app) { 
-  const body = app.presentation.body;
-  return body._expand()._render()[0];
+  return app._eval().presentation.body._render()[0];
 }
 
 const tree = box(jsonObject);
