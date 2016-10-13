@@ -11,24 +11,24 @@ var jsonObject = {
   TodoMVC: {
     domain: {
       Task: {
-        _constructor: "Entity",
+        _proto: "Entity",
         title: "string",
         completed: "bool"
       },
       tasks: {
         _contents: [
           {
-            _constructor: "Task",
+            _proto: "Task",
             title: "buy a milk",
             completed: false,
           },
           {
-            _constructor: "Task",
+            _proto: "Task",
             title: "buy a coffee",
             completed: false,
           },
           {
-            _constructor: "Task",
+            _proto: "Task",
             title: "buy a tea",
             completed: true,
           }
@@ -36,85 +36,85 @@ var jsonObject = {
       }
     },
     presentation: {
-      _constructor: "DOM::Document",
+      _proto: "DOM::Document",
       body: {
-        _constructor: "Body",
+        _proto: "Body",
         _contents: [
           {
-            _constructor: "Section",
+            _proto: "Section",
             class: "todoapp",
             _contents: [
               {
-                _constructor: "Div",
+                _proto: "Div",
                 _contents: [
                   {
-                    _constructor: "Header",
+                    _proto: "Header",
                     class: "header",
                     _contents: [
                       {
-                        _constructor: "H1",
+                        _proto: "H1",
                         _contents: [
                           "todos"
                         ]
                       },
                       {
-                        _constructor: "Input",
+                        _proto: "Input",
                         class: "new-todo",
                         placeholder: "What needs to be done?"
                       }
                     ]
                   },
                   {
-                    _constructor: "Section",
+                    _proto: "Section",
                     class: "main",
                     _contents: [
                       {
-                        _constructor: "Input",
+                        _proto: "Input",
                         class: "toggle-all",
                         type: "checkbox"
                       },
                       {
-                        _constructor: "Ul",
+                        _proto: "Ul",
                         class: "todo-list",
                         _contents: [
                           {
-                            _constructor: "domain.tasks.map",
+                            _proto: "domain.tasks.map",
                             _contents: [
                               {
                                 task: "Task",
                                 _contents: [
                                   {
-                                    _constructor: "Li",
+                                    _proto: "Li",
                                     _contents: [
                                       {
-                                        _constructor: "Div",
+                                        _proto: "Div",
                                         class: "view",
                                         _contents: [
                                           {
-                                            _constructor: "Input",
+                                            _proto: "Input",
                                             class: "toggle",
                                             type: "checkbox",
                                           },
                                           {
-                                            _constructor: "Label",
+                                            _proto: "Label",
                                             _contents: [
                                               {
-                                                _constructor: "Ref",
+                                                _proto: "Ref",
                                                 _path: "task.title"
                                               }
                                             ]
                                           },
                                           {
-                                            _constructor: "Button",
+                                            _proto: "Button",
                                             class: "destroy",
                                           }
                                         ]
                                       },
                                       {
-                                        _constructor: "Input",
+                                        _proto: "Input",
                                         class: "edit",
                                         value: {
-                                          _constructor: "Ref",
+                                          _proto: "Ref",
                                           _path: "task.title"
                                         }
                                       }
@@ -129,30 +129,30 @@ var jsonObject = {
                     ]
                   },
                   {
-                    _constructor: "Footer",
+                    _proto: "Footer",
                     class: "footer",
                     _contents: [
                       {
-                        _constructor: "Span",
+                        _proto: "Span",
                         class: "todo-count",
                         _contents: [
                           {
-                            _constructor: "Strong",
+                            _proto: "Strong",
                             _contents: [
                               "1"
                             ]
                           },
                           {
-                            _constructor: "Span",
+                            _proto: "Span",
                           },
                           {
-                            _constructor: "Span",
+                            _proto: "Span",
                             _contents: [
                               "item"
                             ]
                           },
                           {
-                            _constructor: "Span",
+                            _proto: "Span",
                             _contents: [
                               " left"
                             ]
@@ -160,14 +160,14 @@ var jsonObject = {
                         ]
                       },
                       {
-                        _constructor: "Ul",
+                        _proto: "Ul",
                         class: "filters",
                         _contents: [
                           {
-                            _constructor: "Li",
+                            _proto: "Li",
                             _contents: [
                               {
-                                _constructor: "A",
+                                _proto: "A",
                                 href: "#/",
                                 class: "selected",
                                 _contents: [
@@ -177,13 +177,13 @@ var jsonObject = {
                             ]
                           },
                           {
-                            _constructor: "Span",
+                            _proto: "Span",
                           },
                           {
-                            _constructor: "Li",
+                            _proto: "Li",
                             _contents: [
                               {
-                                _constructor: "A",
+                                _proto: "A",
                                 href: "#/active",
                                 _contents: [
                                   "Active"
@@ -192,13 +192,13 @@ var jsonObject = {
                             ]
                           },
                           {
-                            _constructor: "Span",
+                            _proto: "Span",
                           },
                           {
-                            _constructor: "Li",
+                            _proto: "Li",
                             _contents: [
                               {
-                                _constructor: "A",
+                                _proto: "A",
                                 href: "#/completed",
                                 _contents: [
                                   "Completed"
@@ -209,7 +209,7 @@ var jsonObject = {
                         ]
                       },
                       {
-                        _constructor: "Button",
+                        _proto: "Button",
                         class: "clear-completed",
                         _contents: [
                           "Clear Completed"
@@ -222,21 +222,21 @@ var jsonObject = {
             ]
           },
           {
-            _constructor: "Footer",
+            _proto: "Footer",
             class: "info",
             _contents: [
               {
-                _constructor: "P",
+                _proto: "P",
                 _contents: [
                   "Double-click to edit a todo"
                 ]
               },
               {
-                _constructor: "P",
+                _proto: "P",
                 _contents: [
                   "Created by ",
                   {
-                    _constructor: "A",
+                    _proto: "A",
                     href: "http://github.com/emeitch/",
                     _contents: [
                       "Hideyuki MORITA (emeitch)"
@@ -245,11 +245,11 @@ var jsonObject = {
                 ]
               },
               {
-                _constructor: "P",
+                _proto: "P",
                 _contents: [
                   "Part of ",
                   {
-                    _constructor: "A",
+                    _proto: "A",
                     href: "http://todomvc.com",
                     _contents: [
                       "TodoMVC"
@@ -299,15 +299,15 @@ function box(src={}, parent=undefined) {
     return new Primitive(src, parent);
   }
   
-  if (src._constructor === "Ref") {
+  if (src._proto === "Ref") {
     return new Ref(src, parent);
   }
   
-  if (HTML_TAGS.includes(src._constructor)) {
+  if (HTML_TAGS.includes(src._proto)) {
     return new DOM(src, parent);
   }
   
-  if (src._constructor === "Entity") {
+  if (src._proto === "Entity") {
     return new Entity(src, parent);
   }
 
@@ -318,7 +318,7 @@ class Box {
   constructor(src, parent) {
     this._parent = parent;
     
-    this._constructorPath = src._constructor ? src._constructor : "Box"
+    this._protoPath = src._proto ? src._proto : "Box"
     
     if (typeof(src) === "object") {
       Object.getOwnPropertyNames(src)
@@ -335,7 +335,7 @@ class Box {
   _copy(parent) {
     let copy = new this.constructor({}, parent);
     
-    copy._constructorPath = this._constructorPath;
+    copy._protoPath = this._protoPath;
     
     this._propertyNames.forEach(n => {
       copy[n] = this[n]._copy(copy);
@@ -383,7 +383,7 @@ class Box {
   }
   
   _expand(parent=this._parent) {
-    const constructor = this._ref(this._constructorPath);
+    const constructor = this._ref(this._protoPath);
     return constructor._construct(this, parent);
   }
   
@@ -462,7 +462,7 @@ class Ref extends Box {
 class DOM extends Box {
   constructor(src, parent) {
     super(src, parent);
-    this._tag = src._constructor;
+    this._tag = src._proto;
   }
 
   _copy(parent) {
@@ -517,23 +517,23 @@ class DOM extends Box {
 // 
 // console.log(box({
 //   a: {
-//     _constructor: "Box",
+//     _proto: "Box",
 //     _contents: [
 //       "hoge",
 //       "fuga"
 //     ]
 //   },
 //   b: {
-//     _constructor: "a.map",
+//     _proto: "a.map",
 //     _contents: [
 //       {
 //         text: "string",
 //         _contents: [
 //           {
-//             _constructor: "Span",
+//             _proto: "Span",
 //             _contents: [
 //               {
-//                 _constructor: "Ref",
+//                 _proto: "Ref",
 //                 _path: "text"
 //               }
 //             ]
