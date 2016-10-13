@@ -317,16 +317,16 @@ class Box {
     this._items = items.map(b => box(b, this));
   }
   
-  _copy(parent) {
+  _clone(parent) {
     let copy = new this.constructor({}, parent);
     
     copy._protoPath = this._protoPath;
     
     this._keys.forEach(n => {
-      copy[n] = this[n]._copy(copy);
+      copy[n] = this[n]._clone(copy);
     });
     
-    copy._items = this._items.map(c => c._copy(copy));
+    copy._items = this._items.map(c => c._clone(copy));
         
     return copy;
   }
@@ -349,12 +349,7 @@ class Box {
   }
   
   _construct(src, parent) {
-    let copy = src._copy(parent);
-    copy._keys.forEach(n => {
-      copy[n] = copy[n]._expand(copy);
-    });
-    copy._items = copy._items.map(c => c._expand(copy));
-    return copy;
+    return src._clone(parent);
   }
   
   _ref(path) {
@@ -373,7 +368,14 @@ class Box {
   
   _expand(parent=this._parent) {
     const proto = this._ref(this._protoPath);
-    return proto._construct(this, parent);
+    const result = proto._construct(this, parent);
+    
+    result._keys.forEach(n => {
+      result[n] = result[n]._expand(result);
+    });
+    result._items = result._items.map(c => c._expand(result));
+    
+    return result;
   }
   
   _eval() {    
@@ -391,9 +393,9 @@ class Box {
         const dst = box({}, parent);
         dst._items = this._parent._items.map(item => {
           // todo _itemsにMapボックスが存在すると無限ループになるのをうまく解決 / そもそも_itemsがMapボックスになる状況のセマンティクスとは何か?
-          const n = src._item._copy(dst);
+          const n = src._item._clone(dst);
           n[key] = item;
-          return n._expand(dst);
+          return n;
         });
         return dst;
       }
@@ -408,8 +410,8 @@ class Primitive extends Box {
     this._value = src;
   }
   
-  _copy(parent) {
-    let copy = super._copy(parent);
+  _clone(parent) {
+    let copy = super._clone(parent);
     copy._value = this._value;
     return copy;
   }
@@ -432,8 +434,8 @@ class Ref extends Box {
     this._path = src._path;
   }
   
-  _copy(parent) {
-    let copy = super._copy(parent);
+  _clone(parent) {
+    let copy = super._clone(parent);
     copy._path = this._path;
     return copy;
   }
@@ -453,18 +455,18 @@ class DOM extends Box {
     this._tag = src._proto;
   }
 
-  _copy(parent) {
-    let copy = super._copy(parent);
+  _clone(parent) {
+    let copy = super._clone(parent);
     copy._tag = this._tag;
     return copy;
   }
 
   _render() {
-    const properties = this._keys.reduce((r, n) => Object.assign(r, {[n]: this[n]._render()[0]}), {});
+    const attrs = this._keys.reduce((r, n) => Object.assign(r, {[n]: this[n]._render()[0]}), {});
     const children = flatten(this._items.map(b => b._render()));
     return [maquette.h(
       this._tag,
-      properties,
+      attrs,
       children
     )];
   }
