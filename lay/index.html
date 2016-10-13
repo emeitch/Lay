@@ -400,7 +400,7 @@ class Box {
       _construct(src, parent) {
         const block = src._contents[0];
         const key = block._propertyNames[0]; // todo key値の型と一致するか確認
-        const dst = src._copy(parent);
+        const dst = box({}, parent);
         dst._contents = this._parent._contents.map(item => {
           // todo _contentsにMapボックスが存在すると無限ループになるのをうまく解決 / そもそも_contentsがMapボックスになる状況のセマンティクスとは何か?
           const n = block._copy(dst);
