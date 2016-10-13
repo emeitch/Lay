@@ -300,13 +300,11 @@ class Box {
     
     this._protoPath = src._proto ? src._proto : "Box"
     
-    if (typeof(src) === "object") {
-      Object.getOwnPropertyNames(src)
-      .filter(n => n[0] != "_")
-      .forEach(c => {
-        this[c] = box(src[c], this);
-      });
-    }
+    Object.getOwnPropertyNames(src)
+    .filter(n => n[0] != "_")
+    .forEach(c => {
+      this[c] = box(src[c], this);
+    });
     
     let items = [];
     if (src._item) {
@@ -331,6 +329,10 @@ class Box {
     return copy;
   }
   
+  get _proto() {
+    return this._ref(this._protoPath);
+  }
+  
   get _keys() {
     return Object.getOwnPropertyNames(this)
       .filter(n => n[0] != "_");
@@ -349,8 +351,7 @@ class Box {
   }
   
   _eval(parent=undefined) {
-    const proto = this._ref(this._protoPath);
-    return proto._apply(this, parent);
+    return this._proto._apply(this, parent);
   }
   
   _apply(args, parent) {
@@ -374,10 +375,6 @@ class Box {
     }
     
     return box(); // todo ダミーBoxを返している状況なので変更する
-  }
-  
-  get _value() {    
-    return this;
   }
   
   _render() {
@@ -405,7 +402,7 @@ class Box {
 
 class Primitive extends Box {
   constructor(src, parent) {
-    super(src, parent);
+    super({_proto: "Primitive"}, parent);
     this._val = src;
   }
   
@@ -415,17 +412,21 @@ class Primitive extends Box {
     return copy;
   }
   
-  get _value() {
-    return this._val;
-  }
-  
   _render() {
-    return [this._value];
+    return [this._val];
   }
 }
 
 class Entity extends Box {
 }
+
+class RefProto extends Box {
+  _apply(argbox, parent) {
+    const b = argbox._ref(argbox._path);
+    return b._eval();
+  }
+}
+const REF_PROTO = new RefProto({});
 
 class Ref extends Box {
   constructor(src, parent) {
@@ -433,18 +434,14 @@ class Ref extends Box {
     this._path = src._path;
   }
   
+  get _proto() {
+    return REF_PROTO;
+  }
+  
   _clone(parent) {
     let copy = super._clone(parent);
     copy._path = this._path;
     return copy;
-  }
-
-  get _value() {
-    return this._ref(this._path);
-  }
-  
-  _render() {
-    return flatten([this._value._render()]);
   }
 }
 
@@ -471,8 +468,9 @@ class DOM extends Box {
   }
 }
 
-function vdom(app) { 
-  return app._eval().presentation.body._render()[0];
+function vdom(src) { 
+  const app = src._eval();
+  return app.presentation.body._render()[0];
 }
 
 const tree = box(jsonObject);
