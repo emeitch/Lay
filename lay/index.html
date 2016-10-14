@@ -81,6 +81,7 @@ var jsonObject = {
                             _proto: "domain.tasks.map",
                             _items: [
                               {
+                                _proto: "Lambda",
                                 task: "Task",
                                 _items: [
                                   {
@@ -279,6 +280,10 @@ function box(src={}, parent=undefined) {
     return new Primitive(src, parent);
   }
   
+  if (src._proto === "Arr") {
+    return new Arr(src, parent);
+  }
+  
   if (src._proto === "Ref") {
     return new Ref(src, parent);
   }
@@ -359,7 +364,9 @@ class Box {
     result._keys.forEach(n => {
       result[n] = result[n]._eval(result);
     });
-    result._items = result._items.map(c => c._eval(result));
+    let arr = new Arr({});
+    arr._items = result._items.map(c => c._eval(result));
+    result._items = arr._flatten()._items;
     return result;
   }
   
@@ -386,7 +393,7 @@ class Box {
       _apply(argbox, parent) {
         const block = argbox._item;
         const barg = argbox._item._keys[0]; // todo key値の型と一致するか確認
-        const dst = box({}, parent);
+        const dst = new Arr({}, parent);
         dst._items = this._parent._items.map(item => {
           // todo _itemsにMapボックスが存在すると無限ループになるのをうまく解決 / そもそも_itemsがMapボックスになる状況のセマンティクスとは何か?
           const n = block._clone(dst);
@@ -418,6 +425,20 @@ class Primitive extends Box {
 }
 
 class Entity extends Box {
+}
+
+class Arr extends Box {
+  _flatten(parent=this._parent) {
+    const result = this._clone(parent);
+    result._items = this._items.reduce((a, item) => {
+      if (item instanceof Arr) {
+        return a.concat(item._items);
+      } else {
+        return a.concat([item]);
+      }
+    }, []);
+    return result;
+  }
 }
 
 class RefProto extends Box {
