@@ -415,11 +415,7 @@ class Box {
     
     return box(); // todo ダミーBoxを返している状況なので変更する
   }
-  
-  _render() {
-    return flatten(this._stuff._items.map(b => b._render()));
-  }
-  
+    
   get map() {
     class Map extends Box {
       _apply(argbox, parent) {
@@ -449,8 +445,8 @@ class Primitive extends Box {
     return copy;
   }
   
-  _render() {
-    return [this._val];
+  _value() {
+    return this._val;
   }
 }
 
@@ -479,6 +475,10 @@ class Ref extends Box {
     let copy = super._clone(parent);
     copy._path = this._path;
     return copy;
+  }
+  
+  _value() {
+    return this._ref(this._path)._value();
   }
 }
 
@@ -511,8 +511,18 @@ class DOM extends Box {
   }
 
   _render() {
-    const attrs = this._keys.reduce((r, n) => Object.assign(r, {[n]: this[n]._render()[0]}), {});
-    const children = flatten(this._stuff._items.map(b => b._render()));
+    const attrs = this._keys.reduce((r, n) => Object.assign(r, {[n]: this[n]._val}), {});
+    const children = flatten(this._stuff._items.map(b => {
+      if (b._value) {
+        return b._value();
+      }
+      
+      if (b._render) {
+        return b._render();
+      }
+      
+      return [];
+    }));
     return [maquette.h(
       this._tag,
       attrs,
