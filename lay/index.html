@@ -16,7 +16,7 @@ var jsonObject = {
         completed: "bool"
       },
       tasks: {
-        _items: [
+        _stuff: [
           {
             _proto: "Task",
             title: "buy a milk",
@@ -39,21 +39,21 @@ var jsonObject = {
       _proto: "DOM::Document",
       body: {
         _proto: "Body",
-        _items: [
+        _stuff: [
           {
             _proto: "Section",
             class: "todoapp",
-            _items: [
+            _stuff: [
               {
                 _proto: "Div",
-                _items: [
+                _stuff: [
                   {
                     _proto: "Header",
                     class: "header",
-                    _items: [
+                    _stuff: [
                       {
                         _proto: "H1",
-                        _items: [
+                        _stuff: [
                           "todos"
                         ]
                       },
@@ -67,7 +67,7 @@ var jsonObject = {
                   {
                     _proto: "Section",
                     class: "main",
-                    _items: [
+                    _stuff: [
                       {
                         _proto: "Input",
                         class: "toggle-all",
@@ -76,21 +76,21 @@ var jsonObject = {
                       {
                         _proto: "Ul",
                         class: "todo-list",
-                        _items: [
+                        _stuff: [
                           {
                             _proto: "domain.tasks.map",
-                            _items: [
+                            _stuff: [
                               {
                                 _proto: "Lambda",
                                 task: "Task",
-                                _items: [
+                                _stuff: [
                                   {
                                     _proto: "Li",
-                                    _items: [
+                                    _stuff: [
                                       {
                                         _proto: "Div",
                                         class: "view",
-                                        _items: [
+                                        _stuff: [
                                           {
                                             _proto: "Input",
                                             class: "toggle",
@@ -98,7 +98,7 @@ var jsonObject = {
                                           },
                                           {
                                             _proto: "Label",
-                                            _items: [
+                                            _stuff: [
                                               {
                                                 _proto: "Ref",
                                                 _path: "task.title"
@@ -132,40 +132,40 @@ var jsonObject = {
                   {
                     _proto: "Footer",
                     class: "footer",
-                    _items: [
+                    _stuff: [
                       {
                         _proto: "Span",
                         class: "todo-count",
-                        _items: [
+                        _stuff: [
                           {
                             _proto: "Strong",
-                            _item: "1"
+                            _stuff: "1"
                           },
                           {
                             _proto: "Span",
                           },
                           {
                             _proto: "Span",
-                            _item: "item"
+                            _stuff: "item"
                           },
                           {
                             _proto: "Span",
-                            _item: " left"
+                            _stuff: " left"
                           }
                         ]
                       },
                       {
                         _proto: "Ul",
                         class: "filters",
-                        _items: [
+                        _stuff: [
                           {
                             _proto: "Li",
-                            _items: [
+                            _stuff: [
                               {
                                 _proto: "A",
                                 href: "#/",
                                 class: "selected",
-                                _item: "All"
+                                _stuff: "All"
                               }
                             ]
                           },
@@ -174,11 +174,11 @@ var jsonObject = {
                           },
                           {
                             _proto: "Li",
-                            _items: [
+                            _stuff: [
                               {
                                 _proto: "A",
                                 href: "#/active",
-                                _item: "Active"
+                                _stuff: "Active"
                               }
                             ]
                           },
@@ -187,11 +187,11 @@ var jsonObject = {
                           },
                           {
                             _proto: "Li",
-                            _items: [
+                            _stuff: [
                               {
                                 _proto: "A",
                                 href: "#/completed",
-                                _item: "Completed"
+                                _stuff: "Completed"
                               }
                             ]
                           },
@@ -200,7 +200,7 @@ var jsonObject = {
                       {
                         _proto: "Button",
                         class: "clear-completed",
-                        _item: "Clear Completed"
+                        _stuff: "Clear Completed"
                       }
                     ]
                   }
@@ -211,30 +211,30 @@ var jsonObject = {
           {
             _proto: "Footer",
             class: "info",
-            _items: [
+            _stuff: [
               {
                 _proto: "P",
-                _item: "Double-click to edit a todo"
+                _stuff: "Double-click to edit a todo"
               },
               {
                 _proto: "P",
-                _items: [
+                _stuff: [
                   "Created by ",
                   {
                     _proto: "A",
                     href: "http://github.com/emeitch/",
-                    _item: "Hideyuki MORITA (emeitch)"
+                    _stuff: "Hideyuki MORITA (emeitch)"
                   }
                 ]
               },
               {
                 _proto: "P",
-                _items: [
+                _stuff: [
                   "Part of ",
                   {
                     _proto: "A",
                     href: "http://todomvc.com",
-                    _item: "TodoMVC"
+                    _stuff: "TodoMVC"
                   }
                 ]
               }
@@ -280,10 +280,6 @@ function box(src={}, parent=undefined) {
     return new Primitive(src, parent);
   }
   
-  if (src._proto === "Arr") {
-    return new Arr(src, parent);
-  }
-  
   if (src._proto === "Ref") {
     return new Ref(src, parent);
   }
@@ -299,10 +295,48 @@ function box(src={}, parent=undefined) {
   return new Box(src, parent);
 }
 
+class Stuff {
+  constructor(items=[]) {
+    this._items = items;
+  }
+  
+  get _one() {
+    return this._items[0];
+  }
+  
+  _clone(parent) {
+    let clone = new this.constructor([], parent);
+    clone._items = this._items.map(c => c._clone(parent));
+    return clone;
+  }
+  
+  _eval(parent) {
+    let result = this._clone(parent);
+    result._items = this._items.map(c => c._eval(parent))
+    return result._flatten(parent);
+  }
+  
+  _flatten(parent) {
+    const flatten = this._clone(parent);
+    flatten._items = this._items.reduce((a, item) => {
+      if (item instanceof Stuff) {
+        return a.concat(item._items);
+      } else {
+        return a.concat([item]);
+      }
+    }, []);
+    return flatten;
+  }
+  
+  _map(f) {
+    const result = new Stuff(this._items.map(f));
+    return result;
+  }
+}
+
 class Box {
   constructor(src, parent) {
     this._parent = parent;
-    
     this._protoPath = src._proto ? src._proto : "Box"
     
     Object.getOwnPropertyNames(src)
@@ -312,26 +346,22 @@ class Box {
     });
     
     let items = [];
-    if (src._item) {
-      items = [src._item];
-    } else if (src._items) {
-      items = src._items;
+    if (Array.isArray(src._stuff)) {
+      items = src._stuff;
+    } else if (src._stuff) {
+      items = [src._stuff];
     }
-    this._items = items.map(b => box(b, this));
+    this._stuff = new Stuff(items.map(b => box(b, this)));
   }
   
   _clone(parent) {
-    let copy = new this.constructor({}, parent);
-    
-    copy._protoPath = this._protoPath;
-    
+    let clone = new this.constructor({}, parent);
+    clone._protoPath = this._protoPath;
     this._keys.forEach(n => {
-      copy[n] = this[n]._clone(copy);
+      clone[n] = this[n]._clone(clone);
     });
-    
-    copy._items = this._items.map(c => c._clone(copy));
-        
-    return copy;
+    clone._stuff = this._stuff._clone(clone);
+    return clone;
   }
   
   get _proto() {
@@ -352,7 +382,7 @@ class Box {
   }
   
   get _item() {
-    return this._items[0];
+    return this._stuff._one;
   }
   
   _eval(parent=undefined) {
@@ -364,9 +394,7 @@ class Box {
     result._keys.forEach(n => {
       result[n] = result[n]._eval(result);
     });
-    let arr = new Arr({});
-    arr._items = result._items.map(c => c._eval(result));
-    result._items = arr._flatten()._items;
+    result._stuff = result._stuff._eval(result);
     return result;
   }
   
@@ -377,7 +405,7 @@ class Box {
       return syms.reduce((p, s) => p[s], this);      
     }
     
-    if (this._parent) { 
+    if (this._parent) {
       return this._parent._ref(path);
     }
     
@@ -385,7 +413,7 @@ class Box {
   }
   
   _render() {
-    return flatten(this._items.map(b => b._render()));
+    return flatten(this._stuff._items.map(b => b._render()));
   }
   
   get map() {
@@ -393,14 +421,12 @@ class Box {
       _apply(argbox, parent) {
         const block = argbox._item;
         const barg = argbox._item._keys[0]; // todo key値の型と一致するか確認
-        const dst = new Arr({}, parent);
-        dst._items = this._parent._items.map(item => {
-          // todo _itemsにMapボックスが存在すると無限ループになるのをうまく解決 / そもそも_itemsがMapボックスになる状況のセマンティクスとは何か?
-          const n = block._clone(dst);
+        return this._parent._stuff._map(item => {
+          // todo _stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそも_stuffがMapボックスになる状況のセマンティクスとは何か?
+          const n = block._clone(parent);
           n[barg] = item;
-          return n._eval(dst);
+          return n._eval(parent);
         });
-        return dst;
       }
     }
     return new Map({}, this);
@@ -425,20 +451,6 @@ class Primitive extends Box {
 }
 
 class Entity extends Box {
-}
-
-class Arr extends Box {
-  _flatten(parent=this._parent) {
-    const result = this._clone(parent);
-    result._items = this._items.reduce((a, item) => {
-      if (item instanceof Arr) {
-        return a.concat(item._items);
-      } else {
-        return a.concat([item]);
-      }
-    }, []);
-    return result;
-  }
 }
 
 class RefProto extends Box {
@@ -480,7 +492,7 @@ class DOM extends Box {
 
   _render() {
     const attrs = this._keys.reduce((r, n) => Object.assign(r, {[n]: this[n]._render()[0]}), {});
-    const children = flatten(this._items.map(b => b._render()));
+    const children = flatten(this._stuff._items.map(b => b._render()));
     return [maquette.h(
       this._tag,
       attrs,
@@ -491,6 +503,7 @@ class DOM extends Box {
 
 function vdom(src) { 
   const app = src._eval();
+  console.log(app);
   return app.presentation.body._render()[0];
 }
 
