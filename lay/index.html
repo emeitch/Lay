@@ -284,6 +284,10 @@ function box(src={}, parent=undefined) {
     return new Ref(src, parent);
   }
   
+  if (src._proto === "Lambda") {
+    return new Lambda(src, parent);
+  }
+  
   if (HTML_TAGS.includes(src._proto)) {
     return new DOM(src, parent);
   }
@@ -291,7 +295,7 @@ function box(src={}, parent=undefined) {
   if (src._proto === "Entity") {
     return new Entity(src, parent);
   }
-
+  
   return new Box(src, parent);
 }
 
@@ -475,6 +479,22 @@ class Ref extends Box {
     let copy = super._clone(parent);
     copy._path = this._path;
     return copy;
+  }
+}
+
+class LambdaProto extends Box {
+  _apply(argbox, parent) {
+    // argbox内のブロック引数を参照できるようにするために
+    // argboxを親として_itemを_evalしてから
+    // parentを親とする_itemのcloneを返す
+    let item = argbox._item._eval(argbox);
+    return item._clone(parent);
+  }
+}
+const LAMBDA_PROTO = new LambdaProto({});
+class Lambda extends Box {
+  get _proto() {
+    return LAMBDA_PROTO;
   }
 }
 
