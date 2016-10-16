@@ -101,7 +101,7 @@ var jsonObject = {
                                             _stuff: [
                                               {
                                                 _proto: "Ref",
-                                                _path: "task.title"
+                                                path: "task.title"
                                               }
                                             ]
                                           },
@@ -116,7 +116,7 @@ var jsonObject = {
                                         class: "edit",
                                         value: {
                                           _proto: "Ref",
-                                          _path: "task.title"
+                                          path: "task.title"
                                         }
                                       }
                                     ]
@@ -250,13 +250,13 @@ function flatten(array) {
   return Array.prototype.concat.apply([], array);
 }
 
-const PRIMITIVE_TYPES = [
+const PRIMITIVETYPES = [
   "number",
   "string",
   "boolean"
 ];
 
-const HTML_TAGS = [
+const HTMLTAGS = [
   "Body",
   "Section",
   "Footer",
@@ -276,7 +276,7 @@ const HTML_TAGS = [
 
 function box(src={}) {
   const type = typeof(src);
-  if (PRIMITIVE_TYPES.includes(type)) {
+  if (PRIMITIVETYPES.includes(type)) {
     return new Primitive(src);
   }
   
@@ -288,7 +288,7 @@ function box(src={}) {
     return new Lambda(src);
   }
   
-  if (HTML_TAGS.includes(src._proto)) {
+  if (HTMLTAGS.includes(src._proto)) {
     return new DOM(src);
   }
   
@@ -301,30 +301,30 @@ function box(src={}) {
 
 class Stuff {
   constructor(items=[]) {
-    this._items = items;
+    this.items = items;
   }
   
-  get _one() {
-    return this._items[0];
+  get one() {
+    return this.items[0];
   }
     
-  _clone() {
+  clone() {
     let clone = new this.constructor([]);
-    clone._items = this._items.map(c => c._clone());
+    clone.items = this.items.map(c => c.clone());
     return clone;
   }
   
-  _eval(context) {
-    let result = this._clone();
-    result._items = this._items.map(c => c._eval(context))
-    return result._flatten();
+  eval(context) {
+    let result = this.clone();
+    result.items = this.items.map(c => c.eval(context))
+    return result.flatten();
   }
   
-  _flatten() {
-    const flatten = this._clone();
-    flatten._items = this._items.reduce((a, item) => {
+  flatten() {
+    const flatten = this.clone();
+    flatten.items = this.items.reduce((a, item) => {
       if (item instanceof Stuff) {
-        return a.concat(item._items);
+        return a.concat(item.items);
       } else {
         return a.concat([item]);
       }
@@ -332,129 +332,124 @@ class Stuff {
     return flatten;
   }
   
-  _map(f) {
-    const result = new Stuff(this._items.map(f));
+  map(f) {
+    const result = new Stuff(this.items.map(f));
     return result;
   }
 }
 
 class Box {
   constructor(src) {
-    this._protoPath = src._proto ? src._proto : "Box"
+    this.protoPath = "Box"
+    this.stuff = new Stuff();
     
+    // todo Map Boxを動的に生成しているが、本当はstaticに設定したい
+    // 静的に配備しようとすると、MapがBoxを継承している関係上、無限ループとなる。
+    // Box/Stuff/Mapを抽象化するクラスを定義し、無限ループにならないようにしたい
+    const b = this;
+    this.props = new (class {
+      get map() {
+        const m = new Map({});
+        m.target = b;
+        return m;
+      }
+    });
     Object.getOwnPropertyNames(src)
-    .filter(n => n[0] != "_")
-    .forEach(c => {
-      this[c] = box(src[c]);
+    .forEach(k => {
+      const v = src[k]
+      if (k === "_proto") {
+        this.protoPath = v;
+      } else if (k === "_stuff") {
+        const items = Array.isArray(v) ? v : [v];
+        this.stuff = new Stuff(items.map(i => box(i)));
+      } else {
+        this.props[k] = box(v);
+      }
     });
-    
-    let items = [];
-    if (Array.isArray(src._stuff)) {
-      items = src._stuff;
-    } else if (src._stuff) {
-      items = [src._stuff];
-    }
-    this._stuff = new Stuff(items.map(b => box(b)));
   }
     
-  _clone() {
-    let clone = new this.constructor({});
-    clone._protoPath = this._protoPath;
-    this._keys.forEach(n => {
-      clone[n] = this[n]._clone();
+  clone() {
+    let c = new this.constructor({});
+    c.protoPath = this.protoPath;
+    c.stuff = this.stuff.clone();
+    this.keys.forEach(n => {
+      c.props[n] = this.props[n].clone();
     });
-    clone._stuff = this._stuff._clone();
-    return clone;
+    return c;
   }
   
-  _proto(context) {
-    return this._ref(this._protoPath, context);
+  proto(context) {
+    return this.ref(this.protoPath, context);
   }
   
-  get _keys() {
-    return Object.getOwnPropertyNames(this)
-      .filter(n => n[0] != "_");
+  get keys() {
+    return Object.getOwnPropertyNames(this.props)
+  }
+    
+  eval(context=[]) {
+    const proto = this.proto(context);
+    return proto.apply(this, context);
   }
   
-  get _props() {
-    return this._keys
-      .reduce((r, n) => {
-        r[n] = this[n];
-        return r;
-      }, {});
-  }
-  
-  get _item() {
-    return this._stuff._one;
-  }
-  
-  _eval(context=[]) {
-    const proto = this._proto(context);
-    return proto._apply(this, context);
-  }
-  
-  _apply(args, context) {
-    let result = args._clone();
+  apply(args, context) {
+    let result = args.clone();
     
     context = context.slice() // duplication
     context.push(result);
     
-    result._keys.forEach(n => {
-      result[n] = result[n]._eval(context);
+    result.keys.forEach(n => {
+      result.props[n] = result.props[n].eval(context);
     });
-    result._stuff = result._stuff._eval(context);
+    
+    result.stuff = result.stuff.eval(context);
     return result;
   }
   
-  _ref(path, context) {
-    const syms = path.split(".");
+  ref(path, context) {
+    const keys = path.split(".");
     
-    if (this[syms[0]]) {
-      return syms.reduce((p, s) => p[s], this);      
+    if (this.props[keys[0]]) {
+      return keys.reduce((b, s) => b.props[s], this);      
     }
     
     context = context.slice(); // duplication
     const parent = context.pop(); // with side-effects for context
     if (parent) {
-      return parent._ref(path, context);
+      return parent.ref(path, context);
     }
     
     return box(); // todo ダミーBoxを返している状況なので変更する
   }
     
   get map() {
-    class Map extends Box {
-      _apply(argbox, context) {
-        const block = argbox._item;
-        const barg = argbox._item._keys[0]; // todo key値の型と一致するか確認
-        return this._target._stuff._map(item => {
-          // todo _stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそも_stuffがMapボックスになる状況のセマンティクスとは何か?
-          const n = block._clone();
-          n[barg] = item;
-          return n._eval(context);
-        });
-      }
-    }
-    let m = new Map({});
-    m._target = this;
-    return m;
+  }
+}
+
+class Map extends Box {
+  apply(argbox, context) {
+    const block = argbox.stuff.one;
+    const barg = block.keys[0]; // todo key値の型と一致するか確認
+    return this.target.stuff.map(item => {
+      // todo stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそもstuffがMapボックスになる状況のセマンティクスとは何か?
+      const b = block.clone();
+      b.props[barg] = item;
+      return b.eval(context);
+    });
   }
 }
 
 class Primitive extends Box {
   constructor(src) {
-    super({_proto: "Primitive"});
-    this._val = src;
+    super({
+      _proto: "Primitive",
+    });
+    this.value = src
   }
   
-  _clone() {
-    let copy = super._clone();
-    copy._val = this._val;
-    return copy;
-  }
-  
-  _value() {
-    return this._val;
+  clone() {
+    const c = super.clone();
+    c.value = this.value;
+    return c;
   }
 }
 
@@ -462,79 +457,69 @@ class Entity extends Box {
 }
 
 class RefProto extends Box {
-  _apply(argbox, context) {
-    const b = argbox._ref(argbox._path, context);
-    return b._eval(context);
+  apply(argbox, context) {
+    const b = argbox.ref(argbox.props.path.value, context);
+    return b.eval(context);
   }
 }
-const REF_PROTO = new RefProto({});
+const REFPROTO = new RefProto({});
 
 class Ref extends Box {
-  constructor(src) {
-    super(src);
-    this._path = src._path;
+  proto(context) {
+    return REFPROTO;
   }
-  
-  _proto(context) {
-    return REF_PROTO;
-  }
-  
-  _clone() {
-    let copy = super._clone();
-    copy._path = this._path;
-    return copy;
-  }
-  
-  _value() {
-    return this._ref(this._path)._value();
-  }
+    
+  // todo おそらくもう不要
+  // value() {
+  //   return this.ref(this.props.path).value();
+  // }
 }
 
 class LambdaProto extends Box {
-  _apply(argbox, context) {
+  apply(argbox, context) {
     // argbox内のブロック引数を参照できるようにするために
     // argboxをコンテキストに追加し
-    // _itemのみを_evalした結果を返し簡約する
-    
+    // itemのみをevalした結果を返し簡約する
     context = context.slice() // duplication
     context.push(argbox);
-    return argbox._item._eval(context);
+    const item = argbox.stuff.one;
+    return item.eval(context);
   }
 }
-const LAMBDA_PROTO = new LambdaProto({});
+const LAMBDAPROTO = new LambdaProto({});
 class Lambda extends Box {
-  _proto(context) {
-    return LAMBDA_PROTO;
+  proto(context) {
+    return LAMBDAPROTO;
   }
 }
 
 class DOM extends Box {
   constructor(src) {
     super(src);
-    this._tag = src._proto;
+    this.tag = src._proto;
+  }
+  
+  clone() {
+    const c = super.clone();
+    c.tag = this.tag;
+    return c;
   }
 
-  _clone() {
-    let copy = super._clone();
-    copy._tag = this._tag;
-    return copy;
-  }
-
-  _render() {
-    const attrs = this._keys.reduce((r, n) => Object.assign(r, {[n]: this[n]._val}), {});
-    const children = flatten(this._stuff._items.map(b => {
-      if (b._value) {
-        return b._value();
+  render() {
+    const attrs = this.keys.reduce((r, n) => Object.assign(r, {[n]: this.props[n].value}), {});
+    const children = flatten(this.stuff.items.map(b => {
+      if (b.value) {
+        return b.value;
       }
       
-      if (b._render) {
-        return b._render();
+      if (b.render) {
+        return b.render();
       }
       
       return [];
     }));
     return [maquette.h(
-      this._tag,
+      this.tag,
       attrs,
       children
     )];
@@ -542,17 +527,17 @@ class DOM extends Box {
 }
 
 function vdom(src) { 
-  const app = src._eval();
+  const app = src.eval();
   console.log(app);
-  return app.presentation.body._render()[0];
+  return app.props.presentation.props.body.render()[0];
 }
 
-const tree = box(jsonObject);
+const src = box(jsonObject).props.TodoMVC;
 
 // Initializes the projector 
 var projector = maquette.createProjector();
 window.document.addEventListener('DOMContentLoaded', function () {
-   projector.replace(window.document.body, () => vdom(tree.TodoMVC));
+   projector.replace(window.document.body, () => vdom(src));
 });
 
 </script>
