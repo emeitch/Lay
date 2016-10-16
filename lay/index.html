@@ -340,8 +340,11 @@ class Stuff {
 
 class Box {
   constructor(src) {
-    this.protoPath = "Box"
-    this.stuff = new Stuff();
+    this.protoPath = src._proto ? src._proto : "Box";
+    
+    const stuff = src._stuff;
+    const items = stuff ? (Array.isArray(stuff) ? stuff : [stuff]) : [];
+    this.stuff = new Stuff(items.map(i => box(i)));
     
     // todo Map Boxを動的に生成しているが、本当はstaticに設定したい
     // 静的に配備しようとすると、MapがBoxを継承している関係上、無限ループとなる。
@@ -355,16 +358,9 @@ class Box {
       }
     });
     Object.getOwnPropertyNames(src)
+    .filter(k => k[0] !== '_')
     .forEach(k => {
-      const v = src[k]
-      if (k === "_proto") {
-        this.protoPath = v;
-      } else if (k === "_stuff") {
-        const items = Array.isArray(v) ? v : [v];
-        this.stuff = new Stuff(items.map(i => box(i)));
-      } else {
-        this.props[k] = box(v);
-      }
+      this.props[k] = box(src[k]);
     });
   }
     
