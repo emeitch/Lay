@@ -274,29 +274,29 @@ const HTML_TAGS = [
   "A",
 ]
 
-function box(src={}, parent=undefined) {
+function box(src={}) {
   const type = typeof(src);
   if (PRIMITIVE_TYPES.includes(type)) {
-    return new Primitive(src, parent);
+    return new Primitive(src);
   }
   
   if (src._proto === "Ref") {
-    return new Ref(src, parent);
+    return new Ref(src);
   }
   
   if (src._proto === "Lambda") {
-    return new Lambda(src, parent);
+    return new Lambda(src);
   }
   
   if (HTML_TAGS.includes(src._proto)) {
-    return new DOM(src, parent);
+    return new DOM(src);
   }
   
   if (src._proto === "Entity") {
-    return new Entity(src, parent);
+    return new Entity(src);
   }
   
-  return new Box(src, parent);
+  return new Box(src);
 }
 
 class Stuff {
@@ -307,21 +307,21 @@ class Stuff {
   get _one() {
     return this._items[0];
   }
-  
-  _clone(parent) {
-    let clone = new this.constructor([], parent);
-    clone._items = this._items.map(c => c._clone(parent));
+    
+  _clone() {
+    let clone = new this.constructor([]);
+    clone._items = this._items.map(c => c._clone());
     return clone;
   }
   
-  _eval(parent) {
-    let result = this._clone(parent);
-    result._items = this._items.map(c => c._eval(parent))
-    return result._flatten(parent);
+  _eval(context) {
+    let result = this._clone();
+    result._items = this._items.map(c => c._eval(context))
+    return result._flatten();
   }
   
-  _flatten(parent) {
-    const flatten = this._clone(parent);
+  _flatten() {
+    const flatten = this._clone();
     flatten._items = this._items.reduce((a, item) => {
       if (item instanceof Stuff) {
         return a.concat(item._items);
@@ -339,14 +339,13 @@ class Stuff {
 }
 
 class Box {
-  constructor(src, parent) {
-    this._parent = parent;
+  constructor(src) {
     this._protoPath = src._proto ? src._proto : "Box"
     
     Object.getOwnPropertyNames(src)
     .filter(n => n[0] != "_")
     .forEach(c => {
-      this[c] = box(src[c], this);
+      this[c] = box(src[c]);
     });
     
     let items = [];
@@ -355,21 +354,21 @@ class Box {
     } else if (src._stuff) {
       items = [src._stuff];
     }
-    this._stuff = new Stuff(items.map(b => box(b, this)));
+    this._stuff = new Stuff(items.map(b => box(b)));
   }
-  
-  _clone(parent) {
-    let clone = new this.constructor({}, parent);
+    
+  _clone() {
+    let clone = new this.constructor({});
     clone._protoPath = this._protoPath;
     this._keys.forEach(n => {
-      clone[n] = this[n]._clone(clone);
+      clone[n] = this[n]._clone();
     });
-    clone._stuff = this._stuff._clone(clone);
+    clone._stuff = this._stuff._clone();
     return clone;
   }
   
-  get _proto() {
-    return this._ref(this._protoPath);
+  _proto(context) {
+    return this._ref(this._protoPath, context);
   }
   
   get _keys() {
@@ -389,28 +388,35 @@ class Box {
     return this._stuff._one;
   }
   
-  _eval(parent=undefined) {
-    return this._proto._apply(this, parent);
+  _eval(context=[]) {
+    const proto = this._proto(context);
+    return proto._apply(this, context);
   }
   
-  _apply(args, parent) {
-    let result = args._clone(parent);
+  _apply(args, context) {
+    let result = args._clone();
+    
+    context = context.slice() // duplication
+    context.push(result);
+    
     result._keys.forEach(n => {
-      result[n] = result[n]._eval(result);
+      result[n] = result[n]._eval(context);
     });
-    result._stuff = result._stuff._eval(result);
+    result._stuff = result._stuff._eval(context);
     return result;
   }
   
-  _ref(path) {
+  _ref(path, context) {
     const syms = path.split(".");
     
     if (this[syms[0]]) {
       return syms.reduce((p, s) => p[s], this);      
     }
     
-    if (this._parent) {
-      return this._parent._ref(path);
+    context = context.slice(); // duplication
+    const parent = context.pop(); // with side-effects for context
+    if (parent) {
+      return parent._ref(path, context);
     }
     
     return box(); // todo ダミーBoxを返している状況なので変更する
@@ -418,29 +424,31 @@ class Box {
     
   get map() {
     class Map extends Box {
-      _apply(argbox, parent) {
+      _apply(argbox, context) {
         const block = argbox._item;
         const barg = argbox._item._keys[0]; // todo key値の型と一致するか確認
-        return this._parent._stuff._map(item => {
+        return this._target._stuff._map(item => {
           // todo _stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそも_stuffがMapボックスになる状況のセマンティクスとは何か?
-          const n = block._clone(parent);
+          const n = block._clone();
           n[barg] = item;
-          return n._eval(parent);
+          return n._eval(context);
         });
       }
     }
-    return new Map({}, this);
+    let m = new Map({});
+    m._target = this;
+    return m;
   }
 }
 
 class Primitive extends Box {
-  constructor(src, parent) {
-    super({_proto: "Primitive"}, parent);
+  constructor(src) {
+    super({_proto: "Primitive"});
     this._val = src;
   }
   
-  _clone(parent) {
-    let copy = super._clone(parent);
+  _clone() {
+    let copy = super._clone();
     copy._val = this._val;
     return copy;
   }
@@ -454,25 +462,25 @@ class Entity extends Box {
 }
 
 class RefProto extends Box {
-  _apply(argbox, parent) {
-    const b = argbox._ref(argbox._path);
-    return b._eval();
+  _apply(argbox, context) {
+    const b = argbox._ref(argbox._path, context);
+    return b._eval(context);
   }
 }
 const REF_PROTO = new RefProto({});
 
 class Ref extends Box {
-  constructor(src, parent) {
-    super(src, parent);
+  constructor(src) {
+    super(src);
     this._path = src._path;
   }
   
-  get _proto() {
+  _proto(context) {
     return REF_PROTO;
   }
   
-  _clone(parent) {
-    let copy = super._clone(parent);
+  _clone() {
+    let copy = super._clone();
     copy._path = this._path;
     return copy;
   }
@@ -483,29 +491,31 @@ class Ref extends Box {
 }
 
 class LambdaProto extends Box {
-  _apply(argbox, parent) {
+  _apply(argbox, context) {
     // argbox内のブロック引数を参照できるようにするために
-    // argboxを親として_itemを_evalしてから
-    // parentを親とする_itemのcloneを返す
-    let item = argbox._item._eval(argbox);
-    return item._clone(parent);
+    // argboxをコンテキストに追加し
+    // _itemのみを_evalした結果を返し簡約する
+    
+    context = context.slice() // duplication
+    context.push(argbox);
+    return argbox._item._eval(context);
   }
 }
 const LAMBDA_PROTO = new LambdaProto({});
 class Lambda extends Box {
-  get _proto() {
+  _proto(context) {
     return LAMBDA_PROTO;
   }
 }
 
 class DOM extends Box {
-  constructor(src, parent) {
-    super(src, parent);
+  constructor(src) {
+    super(src);
     this._tag = src._proto;
   }
 
-  _clone(parent) {
-    let copy = super._clone(parent);
+  _clone() {
+    let copy = super._clone();
     copy._tag = this._tag;
     return copy;
   }
