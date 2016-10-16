@@ -101,7 +101,7 @@ var jsonObject = {
                                             _stuff: [
                                               {
                                                 _proto: "Ref",
-                                                path: "task.title"
+                                                _path: "task.title"
                                               }
                                             ]
                                           },
@@ -116,7 +116,7 @@ var jsonObject = {
                                         class: "edit",
                                         value: {
                                           _proto: "Ref",
-                                          path: "task.title"
+                                          _path: "task.title"
                                         }
                                       }
                                     ]
@@ -458,13 +458,24 @@ class Entity extends Box {
 
 class RefProto extends Box {
   apply(argbox, context) {
-    const b = argbox.ref(argbox.props.path.value, context);
+    const b = argbox.ref(argbox.path, context);
     return b.eval(context);
   }
 }
 const REFPROTO = new RefProto({});
 
 class Ref extends Box {
+  constructor(src) {
+    super(src);
+    this.path = src._path
+  }
+  
+  clone() {
+    const c = super.clone();
+    c.path = this.path;
+    return c;
+  }
+
   proto(context) {
     return REFPROTO;
   }
