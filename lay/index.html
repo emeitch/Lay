@@ -343,7 +343,7 @@ class Stuff {
 }
 
 class Box {
-  static parse(src) {
+  static parse(src, ...inheritedOptions) {
     const protoPath = src._proto ? src._proto : "Box";
     
     const stf = src._stuff;
@@ -354,7 +354,7 @@ class Box {
       .filter(k => k[0] !== '_')
       .reduce((p, k) => Object.assign(p, {[k]: box(src[k])}), {});
     
-    return new this(protoPath, props, stuff);
+    return new this(protoPath, props, stuff, ...inheritedOptions);
   }
   
   constructor(protoPath="Box", props=undefined, stuff=new Stuff()) {
@@ -442,11 +442,12 @@ class Map extends Box {
 
 class Primitive extends Box {
   static parse(src) {
-    const b = super.parse({
-      _proto: "Primitive",
-    });
-    b.value = src
-    return b;
+    return super.parse({_proto: "Primitive"}, src);
+  }
+  
+  constructor(protoPath, props, stuff, value) {
+    super(protoPath, props, stuff);
+    this.value = value;
   }
 }
 
@@ -463,9 +464,12 @@ const REFPROTO = new RefProto({});
 
 class Ref extends Box {
   static parse(src) {
-    const b = super.parse(src);
-    b.path = src._path;
-    return b;
+    return super.parse(src, src._path);
+  }
+  
+  constructor(protoPath, props, stuff, path) {
+    super(protoPath, props, stuff);
+    this.path = path;
   }
 
   proto(context) {
@@ -492,10 +496,9 @@ class Lambda extends Box {
 }
 
 class DOM extends Box {
-  static parse(src) {
-    const b = super.parse(src);
-    b.tag = src._proto;
-    return b;
+  constructor(protoPath, props, stuff) {
+    super(protoPath, props, stuff);
+    this.tag = protoPath;
   }
   
   render() {
