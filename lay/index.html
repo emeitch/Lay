@@ -274,10 +274,6 @@ const HTMLTAGS = [
   "A",
 ]
 
-function parse(jsonObject) {
-  
-}
-
 function box(src={}) {
   const type = typeof(src);
   if (PRIMITIVETYPES.includes(type)) {
@@ -301,6 +297,24 @@ function box(src={}) {
   }
   
   return Box.parse(src);
+}
+
+class Props {
+  constructor(raw={}) {
+    Object.assign(this, raw);
+  }
+  
+  eval(context) {
+    const keys = Object.getOwnPropertyNames(this);
+    const raw = keys.reduce((p, k) => 
+      Object.assign(p, {[k]: this[k].eval(context)}),
+      {});
+    return new this.constructor(raw);
+  }
+  
+  map(owner) {
+    return Map.create(owner);
+  }
 }
 
 class Stuff {
@@ -350,32 +364,18 @@ class Box {
     const items = stf ? (Array.isArray(stf) ? stf : [stf]) : [];
     const stuff = new Stuff(items.map(i => box(i)));
     
-    const props = Object.getOwnPropertyNames(src)
+    const raw = Object.getOwnPropertyNames(src)
       .filter(k => k[0] !== '_')
       .reduce((p, k) => Object.assign(p, {[k]: box(src[k])}), {});
+    const props = new Props(raw);
     
     return new this(protoPath, props, stuff, ...inheritedOptions);
   }
   
-  constructor(protoPath="Box", props=undefined, stuff=new Stuff()) {
+  constructor(protoPath="Box", props=new Props(), stuff=new Stuff()) {
     this.protoPath = protoPath;
-    this.props = this.create_props(props ? props : {});
+    this.props = props;
     this.stuff = stuff;
-  }
-  
-  create_props(src_props) {
-    // todo Map Boxを動的に生成しているが、本当はstaticに設定したい
-    // 静的に配備しようとすると、MapがBoxを継承している関係上、無限ループとなる。
-    // Box/Stuff/Mapを抽象化するクラスを定義し、無限ループにならないようにしたい
-    const b = this;
-    return Object.assign(new (class {
-      get map() {
-        const m = new Map({});
-        m.target = b;
-        return m;
-      }
-    }),
-    src_props);
   }
     
   clone(params) {
@@ -399,13 +399,11 @@ class Box {
     context = context.slice() // duplication
     context.push(argbox);
 
-    const props = argbox.keys.reduce((p, k) => Object.assign(p, {
-      [k]: argbox.props[k].eval(context)
-    }), {});
+    const props = argbox.props.eval(context);
     const stuff = argbox.stuff.eval(context);
 
     return argbox.clone({
-      props: this.create_props(props), 
+      props,
       stuff 
     });
   }
@@ -414,7 +412,14 @@ class Box {
     const keys = path.split(".");
     
     if (this.props[keys[0]]) {
-      return keys.reduce((b, s) => b.props[s], this);      
+      return keys.reduce((b, s) => {
+        const p = b.props[s];
+        if (typeof(p) == "function") {
+          return p(b);
+        } else {
+          return p;
+        }
+      }, this);      
     }
     
     context = context.slice(); // duplication
@@ -428,10 +433,19 @@ class Box {
 }
 
 class Map extends Box {
+  static create(owner) {
+    return new this("Map", undefined, undefined, owner)
+  }
+  
+  constructor(protoPath, props, stuff, owner) {
+    super(protoPath, props, stuff)
+    this.owner = owner;
+  }
+  
   apply(argbox, context) {
     const block = argbox.stuff.one;
     const barg = block.keys[0]; // todo key値の型と一致するか確認
-    return this.target.stuff.map(item => {
+    return this.owner.stuff.map(item => {
       // todo stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそもstuffがMapボックスになる状況のセマンティクスとは何か?
       const b = block.clone();
       b.props[barg] = item;
