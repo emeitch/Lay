@@ -299,7 +299,8 @@ function box(src={}) {
   return Box.parse(src);
 }
 
-class Props {
+// Props base class for getOwnPropertyNames
+class PropsBase {
   constructor(raws={}) {
     Object.assign(this, raws);
   }
@@ -311,7 +312,8 @@ class Props {
       {});
     return new this.constructor(raws);
   }
-  
+}
+class Props extends PropsBase {
   map(owner) {
     return Map.create(owner);
   }
