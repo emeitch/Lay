@@ -406,12 +406,12 @@ class Box {
     const keys = path.split(".");
     
     if (this.props[keys[0]]) {
-      return keys.reduce((b, s) => {
-        const p = b.props[s];
-        if (typeof(p) == "function") {
-          return p(b);
+      return keys.reduce((b, k) => {
+        const prop = b.props[k];
+        if (typeof(prop) == "function") {
+          return prop(b);
         } else {
-          return p;
+          return prop;
         }
       }, this);      
     }
