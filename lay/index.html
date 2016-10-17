@@ -300,16 +300,16 @@ function box(src={}) {
 }
 
 class Props {
-  constructor(raw={}) {
-    Object.assign(this, raw);
+  constructor(raws={}) {
+    Object.assign(this, raws);
   }
   
   eval(context) {
     const keys = Object.getOwnPropertyNames(this);
-    const raw = keys.reduce((p, k) => 
+    const raws = keys.reduce((p, k) => 
       Object.assign(p, {[k]: this[k].eval(context)}),
       {});
-    return new this.constructor(raw);
+    return new this.constructor(raws);
   }
   
   map(owner) {
@@ -318,58 +318,52 @@ class Props {
 }
 
 class Stuff {
-  constructor(items=[]) {
-    this.items = items;
+  constructor(raws=[]) {
+    this.raws = raws;
   }
   
   get one() {
-    return this.items[0];
-  }
-    
-  clone() {
-    let clone = new this.constructor([]);
-    clone.items = this.items.map(c => c.clone());
-    return clone;
+    return this.raws[0];
   }
   
   eval(context) {
-    let result = this.clone();
-    result.items = this.items.map(c => c.eval(context))
-    return result.flatten();
+    const raws = this.raws.map(c => c.eval(context));
+    return new this.constructor(raws).flatten();
   }
   
   flatten() {
-    const flatten = this.clone();
-    flatten.items = this.items.reduce((a, item) => {
-      if (item instanceof Stuff) {
-        return a.concat(item.items);
+    const raws = this.raws.reduce((a, raw) => {
+      if (raw instanceof Stuff) {
+        return a.concat(raw.raws);
       } else {
-        return a.concat([item]);
+        return a.concat([raw]);
       }
     }, []);
-    return flatten;
+    return new this.constructor(raws);
   }
   
   map(f) {
-    const result = new Stuff(this.items.map(f));
-    return result;
+    return new Stuff(this.raws.map(f));
   }
 }
 
 class Box {
   static parse(src, ...inheritedOptions) {
     const protoPath = src._proto ? src._proto : "Box";
-    
-    const stf = src._stuff;
-    const items = stf ? (Array.isArray(stf) ? stf : [stf]) : [];
-    const stuff = new Stuff(items.map(i => box(i)));
-    
-    const raw = Object.getOwnPropertyNames(src)
+        
+    const props = Object.getOwnPropertyNames(src)
       .filter(k => k[0] !== '_')
       .reduce((p, k) => Object.assign(p, {[k]: box(src[k])}), {});
-    const props = new Props(raw);
-    
-    return new this(protoPath, props, stuff, ...inheritedOptions);
+
+    const s = src._stuff;
+    const stf = s ? (Array.isArray(s) ? s : [s]) : [];
+    const stuff = stf.map(i => box(i));
+        
+    return new this(
+      protoPath, 
+      new Props(props),
+      new Stuff(stuff),
+      ...inheritedOptions);
   }
   
   constructor(protoPath="Box", props=new Props(), stuff=new Stuff()) {
@@ -517,7 +511,7 @@ class DOM extends Box {
   
   render() {
     const attrs = this.keys.reduce((r, n) => Object.assign(r, {[n]: this.props[n].value}), {});
-    const children = flatten(this.stuff.items.map(b => {
+    const children = flatten(this.stuff.raws.map(b => {
       if (b.value) {
         return b.value;
       }
