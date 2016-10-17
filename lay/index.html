@@ -305,6 +305,10 @@ class PropsBase {
     Object.assign(this, raws);
   }
   
+  clone(params) {
+    return Object.assign(new this.constructor(), this, params);
+  }
+  
   eval(context) {
     const keys = Object.getOwnPropertyNames(this);
     const raws = keys.reduce((p, k) => 
@@ -322,6 +326,10 @@ class Props extends PropsBase {
 class Stuff {
   constructor(raws=[]) {
     this.raws = raws;
+  }
+  
+  clone(params) {
+    return Object.assign(new this.constructor(), this, params);
   }
   
   get one() {
@@ -443,8 +451,8 @@ class Map extends Box {
     const barg = block.keys[0]; // todo key値の型と一致するか確認
     return this.owner.stuff.map(item => {
       // todo stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそもstuffがMapボックスになる状況のセマンティクスとは何か?
-      const b = block.clone();
-      b.props[barg] = item;
+      const props = block.props.clone({[barg]: item});
+      const b = block.clone({props});
       return b.eval(context);
     });
   }
