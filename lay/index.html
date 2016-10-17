@@ -349,7 +349,7 @@ class Stuff {
 
 class Box {
   static parse(src, ...inheritedOptions) {
-    const protoPath = src._proto ? src._proto : "Box";
+    const proto = src._proto ? src._proto : "Box";
         
     const props = Object.getOwnPropertyNames(src)
       .filter(k => k[0] !== '_')
@@ -360,14 +360,14 @@ class Box {
     const stuff = stf.map(i => box(i));
         
     return new this(
-      protoPath, 
+      proto, 
       new Props(props),
       new Stuff(stuff),
       ...inheritedOptions);
   }
   
-  constructor(protoPath="Box", props=new Props(), stuff=new Stuff()) {
-    this.protoPath = protoPath;
+  constructor(proto="Box", props=new Props(), stuff=new Stuff()) {
+    this.proto = proto;
     this.props = props;
     this.stuff = stuff;
   }
@@ -376,8 +376,8 @@ class Box {
     return Object.assign(new this.constructor(), this, params);
   }
   
-  proto(context) {
-    return this.ref(this.protoPath, context);
+  prototype(context) {
+    return this.ref(this.proto, context);
   }
   
   get keys() {
@@ -385,8 +385,8 @@ class Box {
   }
     
   eval(context=[]) {
-    const proto = this.proto(context);
-    return proto.apply(this, context);
+    const prototype = this.prototype(context);
+    return prototype.apply(this, context);
   }
   
   apply(argbox, context) {
@@ -431,8 +431,8 @@ class Map extends Box {
     return new this("Map", undefined, undefined, owner)
   }
   
-  constructor(protoPath, props, stuff, owner) {
-    super(protoPath, props, stuff)
+  constructor(proto, props, stuff, owner) {
+    super(proto, props, stuff)
     this.owner = owner;
   }
   
@@ -453,8 +453,8 @@ class Primitive extends Box {
     return super.parse({_proto: "Primitive"}, src);
   }
   
-  constructor(protoPath, props, stuff, value) {
-    super(protoPath, props, stuff);
+  constructor(proto, props, stuff, value) {
+    super(proto, props, stuff);
     this.value = value;
   }
 }
@@ -462,30 +462,30 @@ class Primitive extends Box {
 class Entity extends Box {
 }
 
-class RefProto extends Box {
+class RefPrototype extends Box {
   apply(argbox, context) {
     const b = argbox.ref(argbox.path, context);
     return b.eval(context);
   }
 }
-const REFPROTO = new RefProto({});
+const REF_PROTOTYPE = new RefPrototype({});
 
 class Ref extends Box {
   static parse(src) {
     return super.parse(src, src._path);
   }
   
-  constructor(protoPath, props, stuff, path) {
-    super(protoPath, props, stuff);
+  constructor(proto, props, stuff, path) {
+    super(proto, props, stuff);
     this.path = path;
   }
 
-  proto(context) {
-    return REFPROTO;
+  prototype(context) {
+    return REF_PROTOTYPE;
   }
 }
 
-class LambdaProto extends Box {
+class LambdaPrototype extends Box {
   apply(argbox, context) {
     // argbox内のブロック引数を参照できるようにするために
     // argboxをコンテキストに追加し
@@ -496,17 +496,17 @@ class LambdaProto extends Box {
     return item.eval(context);
   }
 }
-const LAMBDAPROTO = new LambdaProto({});
+const LAMBDA_PROTOTYPE = new LambdaPrototype({});
 class Lambda extends Box {
-  proto(context) {
-    return LAMBDAPROTO;
+  prototype(context) {
+    return LAMBDA_PROTOTYPE;
   }
 }
 
 class DOM extends Box {
-  constructor(protoPath, props, stuff) {
-    super(protoPath, props, stuff);
-    this.tag = protoPath;
+  constructor(proto, props, stuff) {
+    super(proto, props, stuff);
+    this.tag = proto;
   }
   
   render() {
