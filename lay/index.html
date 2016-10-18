@@ -375,7 +375,7 @@ class Box {
       new Stuff(stuff),
       ...inheritedOptions);
   }
-  
+      
   constructor(proto="Box", props=new Props(), stuff=new Stuff()) {
     this.proto = proto;
     this.props = props;
@@ -472,31 +472,43 @@ class Primitive extends Box {
 class Entity extends Box {
 }
 
-class RefPrototype extends Box {
-  apply(argbox, context) {
-    const b = argbox.ref(argbox.path, context);
-    return b.eval(context);
+const PrototypeMixin = Base => class extends Base {
+  static prototypeBox() {
+    if (!this.proto) {
+      if (!this.apply) {
+        throw `#{this} don't have static apply method.`
+      }
+      
+      const proto = new Box();
+      proto.apply = this.apply;
+      this.proto = proto;
+    }
+    return this.proto;
+  }
+
+  prototype(context) {
+    return this.constructor.prototypeBox();
   }
 }
-const REF_PROTOTYPE = new RefPrototype({});
 
-class Ref extends Box {
+class Ref extends PrototypeMixin(Box) {
   static parse(src) {
     return super.parse(src, src._path);
+  }
+  
+  static apply(argbox, context) {
+    const b = argbox.ref(argbox.path, context);
+    return b.eval(context);
   }
   
   constructor(proto, props, stuff, path) {
     super(proto, props, stuff);
     this.path = path;
   }
-
-  prototype(context) {
-    return REF_PROTOTYPE;
-  }
 }
 
-class LambdaPrototype extends Box {
-  apply(argbox, context) {
+class Lambda extends PrototypeMixin(Box) {
+  static apply(argbox, context) {
     // argbox内のブロック引数を参照できるようにするために
     // argboxをコンテキストに追加し
     // itemのみをevalした結果を返し簡約する
@@ -504,12 +516,6 @@ class LambdaPrototype extends Box {
     context.push(argbox);
     const item = argbox.stuff.one;
     return item.eval(context);
-  }
-}
-const LAMBDA_PROTOTYPE = new LambdaPrototype({});
-class Lambda extends Box {
-  prototype(context) {
-    return LAMBDA_PROTOTYPE;
   }
 }
 
