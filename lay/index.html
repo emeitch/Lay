@@ -139,10 +139,14 @@ var jsonObject = {
                         _stuff: [
                           {
                             _proto: "Strong",
-                            _stuff: "1"
+                            _stuff: {
+                              _proto: "Ref",
+                              _path: "domain.tasks.count"
+                            }
                           },
                           {
                             _proto: "Span",
+                            _stuff: " "
                           },
                           {
                             _proto: "Span",
@@ -321,6 +325,10 @@ class Props extends PropsBase {
   map(owner) {
     return Map.create(owner);
   }
+  
+  count(owner) {
+    return Primitive.create(owner.stuff.raws.length)
+  }
 }
 
 class Stuff {
@@ -459,6 +467,10 @@ class Map extends Box {
 }
 
 class Primitive extends Box {
+  static create(value) {
+    return new this("Primitive", undefined, undefined, value);
+  }
+  
   static parse(src) {
     return super.parse({_proto: "Primitive"}, src);
   }
