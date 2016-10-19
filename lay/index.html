@@ -276,7 +276,7 @@ const HTML_TAGS = [
 function box(src={}) {
   const type = typeof(src);
   if (LITERAL_TYPES.includes(type)) {
-    return Literal.parse(src);
+    return new Box(JSON.stringify(src));
   }
     
   if (src._op === "Lambda") {
@@ -395,6 +395,7 @@ class Box {
     
   eval(context=[]) {
     const operator = this.operator(context);
+    console.log(operator);
     return operator.apply(this, context);
   }
   
@@ -422,7 +423,7 @@ class Box {
         } else {
           return prop;
         }
-      }, this);      
+      }, this);
     }
     
     context = context.slice(); // duplication
@@ -431,6 +432,22 @@ class Box {
       return parent.ref(path, context);
     }
     
+    try {
+      const parsed = JSON.parse(path);
+      const type = typeof(parsed)
+      if (type === "number") {
+        return Literal.create(parsed);
+      } else if (type === "string") {
+        return Literal.create(parsed);
+      } else if (type === "boolean") {
+        return Literal.create(parsed);
+      }
+    } catch(e) {
+      if (e.constructor !== SyntaxError) {
+        throw e;
+      }
+    }
+        
     return box(); // todo ダミーBoxを返している状況なので変更する
   }
 }
@@ -447,10 +464,11 @@ class Map extends Box {
   
   apply(operand, context) {
     const block = operand.stuff.one;
-    const barg = block.keys[0]; // todo key値の型と一致するか確認
+    const argkey = block.keys[0]; // todo key値の型と一致するか確認
     return this.owner.stuff.map(item => {
       // todo stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそもstuffがMapボックスになる状況のセマンティクスとは何か?
-      const props = block.props.clone({[barg]: item});
+      const arg = item.eval();
+      const props = block.props.clone({[argkey]: arg});
       const b = block.clone({props});
       return b.eval(context);
     });
