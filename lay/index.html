@@ -76,52 +76,65 @@ var jsonObject = {
                       {
                         _op: "Ul",
                         class: "todo-list",
-                        _stuff: [
-                          {
-                            _op: "domain.tasks.map",
-                            _stuff: [
-                              {
-                                _op: "Lambda",
-                                task: "Task",
-                                _stuff: [
-                                  {
-                                    _op: "Li",
-                                    _stuff: [
-                                      {
-                                        _op: "Div",
-                                        class: "view",
-                                        _stuff: [
-                                          {
-                                            _op: "Input",
-                                            class: "toggle",
-                                            type: "checkbox",
-                                          },
-                                          {
-                                            _op: "Label",
-                                            _stuff: {
-                                              _op: "task.title",
+                        _stuff: {
+                          _op: "Chain",
+                          _stuff: [
+                            { _op: "domain" },
+                            { _op: "tasks" },
+                            { 
+                              _op: "map",
+                              _stuff: [
+                                {
+                                  _op: "Lambda",
+                                  task: "Task",
+                                  _stuff: [
+                                    {
+                                      _op: "Li",
+                                      _stuff: [
+                                        {
+                                          _op: "Div",
+                                          class: "view",
+                                          _stuff: [
+                                            {
+                                              _op: "Input",
+                                              class: "toggle",
+                                              type: "checkbox",
+                                            },
+                                            {
+                                              _op: "Label",
+                                              _stuff: {
+                                                _op: "Chain",
+                                                _stuff: [
+                                                  { _op: "task" },
+                                                  { _op: "title" }
+                                                ]
+                                              }
+                                            },
+                                            {
+                                              _op: "Button",
+                                              class: "destroy",
                                             }
-                                          },
-                                          {
-                                            _op: "Button",
-                                            class: "destroy",
+                                          ]
+                                        },
+                                        {
+                                          _op: "Input",
+                                          class: "edit",
+                                          value: {
+                                            _op: "Chain",
+                                            _stuff: [
+                                              { _op: "task" },
+                                              { _op: "title" }
+                                            ]
                                           }
-                                        ]
-                                      },
-                                      {
-                                        _op: "Input",
-                                        class: "edit",
-                                        value: {
-                                          _op: "task.title"
                                         }
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
                       }
                     ]
                   },
@@ -136,7 +149,12 @@ var jsonObject = {
                           {
                             _op: "Strong",
                             _stuff: {
-                              _op: "domain.tasks.count",
+                              _op: "Chain",
+                              _stuff: [
+                                { _op: "domain" },
+                                { _op: "tasks" },
+                                { _op: "count" }
+                              ]
                             }
                           },
                           {
@@ -278,19 +296,23 @@ function box(src={}) {
   if (LITERAL_TYPES.includes(type)) {
     return new Box(JSON.stringify(src));
   }
-    
-  if (src._op === "Lambda") {
-    return Lambda.parse(src);
+  
+  if (src._op === "Chain") {
+    return Chain.parse(src);
   }
   
-  if (HTML_TAGS.includes(src._op)) {
-    return DOM.parse(src);
+  if (src._op === "Lambda") {
+    return Lambda.parse(src);
   }
   
   if (src._op === "Entity") {
     return Entity.parse(src);
   }
   
+  if (HTML_TAGS.includes(src._op)) {
+    return DOM.parse(src);
+  }
+    
   return Box.parse(src);
 }
 
@@ -356,6 +378,29 @@ class Stuff {
   }
 }
 
+const OperatorMixin = Base => class extends Base {
+  static operator() {
+    if (!this.op) {
+      const [op, ctx] = (new Box()).default_ref();
+
+      if (this.apply) {
+        op.apply = this.apply;
+      }
+      
+      if (this.isPrototype) {
+        op.isPrototype = this.isPrototype
+      }
+      
+      this.op = op;
+    }
+    return this.op;
+  }
+
+  operator(context) {
+    return [this.constructor.operator(), context];
+  }
+}
+
 class Box {
   static parse(src, ...inheritedOptions) {
     const op = src._op ? src._op : "Box";
@@ -384,63 +429,58 @@ class Box {
   clone(params) {
     return Object.assign(new this.constructor(), this, params);
   }
-  
-  operator(context) {
-    return this.ref(this.op, context);
-  }
-  
+
   get keys() {
     return Object.getOwnPropertyNames(this.props)
   }
-    
-  eval(context=[]) {
-    const operator = this.operator(context);
-    console.log(operator);
-    return operator.apply(this, context);
+  
+  default_ref() {
+    // todo ダミーBoxを返している状況なので変更する
+    return [new (class extends Box {
+      isPrototype() {
+        return true;
+      }
+      
+      apply(operand, context) {
+        context = context.slice() // duplication
+        context.push(operand);
+
+        const props = operand.props.eval(context);
+        const stuff = operand.stuff.eval(context);
+
+        return operand.clone({
+          props,
+          stuff 
+        });
+      }
+    }), []];
   }
   
-  apply(operand, context) {
-    context = context.slice() // duplication
-    context.push(operand);
-
-    const props = operand.props.eval(context);
-    const stuff = operand.stuff.eval(context);
-
-    return operand.clone({
-      props,
-      stuff 
-    });
-  }
-  
-  ref(path, context) {
-    const keys = path.split(".");
-    
-    if (this.props[keys[0]]) {
-      return keys.reduce((b, k) => {
-        const prop = b.props[k];
-        if (typeof(prop) == "function") {
-          return prop(b);
-        } else {
-          return prop;
-        }
-      }, this);
+  ref(op, context) {
+    if (this.props[op]) {
+      const prop = this.props[op];
+      if (typeof(prop) == "function") {
+        return [prop(this), context];
+      } else {
+        return [prop, context];
+      }
     }
     
     context = context.slice(); // duplication
     const parent = context.pop(); // with side-effects for context
     if (parent) {
-      return parent.ref(path, context);
+      return parent.ref(op, context);
     }
     
     try {
-      const parsed = JSON.parse(path);
+      const parsed = JSON.parse(op);
       const type = typeof(parsed)
       if (type === "number") {
-        return Literal.create(parsed);
+        return [Literal.create(parsed), context];
       } else if (type === "string") {
-        return Literal.create(parsed);
+        return [Literal.create(parsed), context];
       } else if (type === "boolean") {
-        return Literal.create(parsed);
+        return [Literal.create(parsed), context];
       }
     } catch(e) {
       if (e.constructor !== SyntaxError) {
@@ -448,8 +488,39 @@ class Box {
       }
     }
         
-    return box(); // todo ダミーBoxを返している状況なので変更する
+    // todo もしかしてもうこれを返す必要ない?
+    return this.default_ref();
   }
+  
+  isPrototype() {
+    return false;
+  }
+  
+  operator(context) {
+    context = context.slice(); // duplication
+    const parent = context.pop(); // with side-effects for context
+    
+    if (parent) {
+      return parent.ref(this.op, context);  
+    } else {
+      return this.default_ref();
+    }
+  }
+  
+  eval(context=[]) {
+    const [operator, foundContext] = this.operator(context);
+    const result = operator.apply(this, context);
+    
+    if (!operator.isPrototype()) {
+      return result.eval(foundContext);
+    }
+      
+    return result;
+  }
+  
+  apply(operand, context) {
+    return this;
+  }  
 }
 
 class Map extends Box {
@@ -475,32 +546,9 @@ class Map extends Box {
   }
 }
 
-const OperatorMixin = Base => class extends Base {
-  static operator() {
-    if (!this.op) {
-      if (!this.apply) {
-        throw `#{this} don't have static apply method.`
-      }
-      
-      const op = new Box();
-      op.apply = this.apply;
-      this.op = op;
-    }
-    return this.op;
-  }
-
-  operator(context) {
-    return this.constructor.operator();
-  }
-}
-
 class Literal extends Box {
   static create(value) {
     return new this("Literal", undefined, undefined, value);
-  }
-  
-  static parse(src) {
-    return super.parse({_op: "Literal"}, src);
   }
   
   constructor(op, props, stuff, value) {
@@ -508,12 +556,21 @@ class Literal extends Box {
     this.value = value;
   }
   
-  apply(operand, context) {
-    return this;
+  isPrototype() {
+    return true;
   }
 }
 
-class Entity extends Box {
+class Chain extends OperatorMixin(Box) {
+  static apply(operand, context) {
+    const receiver = operand.stuff.one;
+    const raws = operand.stuff.raws;
+    const chain = raws.slice(-(raws.length-1));
+    return chain.reduce((result, chained) => {
+      return chained.eval([result]);
+    },
+    receiver.eval(context));
+  }
 }
 
 class Lambda extends OperatorMixin(Box) {
@@ -528,6 +585,18 @@ class Lambda extends OperatorMixin(Box) {
   }
 }
 
+class Entity extends Box {
+  apply(operand, context) {
+    const [op, ctx] = (new Box()).default_ref();
+    const result = op.apply(operand, context);
+    return result;
+  }
+  
+  isPrototype() {
+    return true;
+  }
+}
+
 class DOM extends Box {
   constructor(op, props, stuff) {
     super(op, props, stuff);
@@ -537,8 +606,8 @@ class DOM extends Box {
   render() {
     const attrs = this.keys.reduce((r, n) => Object.assign(r, {[n]: this.props[n].value}), {});
     const children = flatten(this.stuff.raws.map(b => {
-      if (b.value) {
-        return b.value;
+      if (b.value != undefined) {
+        return b.value.toString();
       }
       
       if (b.render) {
