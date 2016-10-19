@@ -398,14 +398,14 @@ class Box {
     return operator.apply(this, context);
   }
   
-  apply(argbox, context) {
+  apply(operand, context) {
     context = context.slice() // duplication
-    context.push(argbox);
+    context.push(operand);
 
-    const props = argbox.props.eval(context);
-    const stuff = argbox.stuff.eval(context);
+    const props = operand.props.eval(context);
+    const stuff = operand.stuff.eval(context);
 
-    return argbox.clone({
+    return operand.clone({
       props,
       stuff 
     });
@@ -445,8 +445,8 @@ class Map extends Box {
     this.owner = owner;
   }
   
-  apply(argbox, context) {
-    const block = argbox.stuff.one;
+  apply(operand, context) {
+    const block = operand.stuff.one;
     const barg = block.keys[0]; // todo key値の型と一致するか確認
     return this.owner.stuff.map(item => {
       // todo stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそもstuffがMapボックスになる状況のセマンティクスとは何か?
@@ -490,7 +490,7 @@ class Literal extends Box {
     this.value = value;
   }
   
-  apply(argbox, context) {
+  apply(operand, context) {
     return this;
   }
 }
@@ -499,13 +499,13 @@ class Entity extends Box {
 }
 
 class Lambda extends OperatorMixin(Box) {
-  static apply(argbox, context) {
-    // argbox内のブロック引数を参照できるようにするために
-    // argboxをコンテキストに追加し
+  static apply(operand, context) {
+    // operand内のブロック引数を参照できるようにするために
+    // operandをコンテキストに追加し
     // itemのみをevalした結果を返し簡約する
     context = context.slice() // duplication
-    context.push(argbox);
-    const item = argbox.stuff.one;
+    context.push(operand);
+    const item = operand.stuff.one;
     return item.eval(context);
   }
 }
