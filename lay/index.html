@@ -11,24 +11,24 @@ var jsonObject = {
   TodoMVC: {
     domain: {
       Task: {
-        _proto: "Entity",
+        _op: "Entity",
         title: "string",
         completed: "bool"
       },
       tasks: {
         _stuff: [
           {
-            _proto: "Task",
+            _op: "Task",
             title: "buy a milk",
             completed: false,
           },
           {
-            _proto: "Task",
+            _op: "Task",
             title: "buy a coffee",
             completed: false,
           },
           {
-            _proto: "Task",
+            _op: "Task",
             title: "buy a tea",
             completed: true,
           }
@@ -36,86 +36,86 @@ var jsonObject = {
       }
     },
     presentation: {
-      _proto: "DOM::Document",
+      _op: "DOM::Document",
       body: {
-        _proto: "Body",
+        _op: "Body",
         _stuff: [
           {
-            _proto: "Section",
+            _op: "Section",
             class: "todoapp",
             _stuff: [
               {
-                _proto: "Div",
+                _op: "Div",
                 _stuff: [
                   {
-                    _proto: "Header",
+                    _op: "Header",
                     class: "header",
                     _stuff: [
                       {
-                        _proto: "H1",
+                        _op: "H1",
                         _stuff: [
                           "todos"
                         ]
                       },
                       {
-                        _proto: "Input",
+                        _op: "Input",
                         class: "new-todo",
                         placeholder: "What needs to be done?"
                       }
                     ]
                   },
                   {
-                    _proto: "Section",
+                    _op: "Section",
                     class: "main",
                     _stuff: [
                       {
-                        _proto: "Input",
+                        _op: "Input",
                         class: "toggle-all",
                         type: "checkbox"
                       },
                       {
-                        _proto: "Ul",
+                        _op: "Ul",
                         class: "todo-list",
                         _stuff: [
                           {
-                            _proto: "domain.tasks.map",
+                            _op: "domain.tasks.map",
                             _stuff: [
                               {
-                                _proto: "Lambda",
+                                _op: "Lambda",
                                 task: "Task",
                                 _stuff: [
                                   {
-                                    _proto: "Li",
+                                    _op: "Li",
                                     _stuff: [
                                       {
-                                        _proto: "Div",
+                                        _op: "Div",
                                         class: "view",
                                         _stuff: [
                                           {
-                                            _proto: "Input",
+                                            _op: "Input",
                                             class: "toggle",
                                             type: "checkbox",
                                           },
                                           {
-                                            _proto: "Label",
+                                            _op: "Label",
                                             _stuff: [
                                               {
-                                                _proto: "Ref",
+                                                _op: "Ref",
                                                 _path: "task.title"
                                               }
                                             ]
                                           },
                                           {
-                                            _proto: "Button",
+                                            _op: "Button",
                                             class: "destroy",
                                           }
                                         ]
                                       },
                                       {
-                                        _proto: "Input",
+                                        _op: "Input",
                                         class: "edit",
                                         value: {
-                                          _proto: "Ref",
+                                          _op: "Ref",
                                           _path: "task.title"
                                         }
                                       }
@@ -130,43 +130,43 @@ var jsonObject = {
                     ]
                   },
                   {
-                    _proto: "Footer",
+                    _op: "Footer",
                     class: "footer",
                     _stuff: [
                       {
-                        _proto: "Span",
+                        _op: "Span",
                         class: "todo-count",
                         _stuff: [
                           {
-                            _proto: "Strong",
+                            _op: "Strong",
                             _stuff: {
-                              _proto: "Ref",
+                              _op: "Ref",
                               _path: "domain.tasks.count"
                             }
                           },
                           {
-                            _proto: "Span",
+                            _op: "Span",
                             _stuff: " "
                           },
                           {
-                            _proto: "Span",
+                            _op: "Span",
                             _stuff: "item"
                           },
                           {
-                            _proto: "Span",
+                            _op: "Span",
                             _stuff: " left"
                           }
                         ]
                       },
                       {
-                        _proto: "Ul",
+                        _op: "Ul",
                         class: "filters",
                         _stuff: [
                           {
-                            _proto: "Li",
+                            _op: "Li",
                             _stuff: [
                               {
-                                _proto: "A",
+                                _op: "A",
                                 href: "#/",
                                 class: "selected",
                                 _stuff: "All"
@@ -174,26 +174,26 @@ var jsonObject = {
                             ]
                           },
                           {
-                            _proto: "Span",
+                            _op: "Span",
                           },
                           {
-                            _proto: "Li",
+                            _op: "Li",
                             _stuff: [
                               {
-                                _proto: "A",
+                                _op: "A",
                                 href: "#/active",
                                 _stuff: "Active"
                               }
                             ]
                           },
                           {
-                            _proto: "Span",
+                            _op: "Span",
                           },
                           {
-                            _proto: "Li",
+                            _op: "Li",
                             _stuff: [
                               {
-                                _proto: "A",
+                                _op: "A",
                                 href: "#/completed",
                                 _stuff: "Completed"
                               }
@@ -202,7 +202,7 @@ var jsonObject = {
                         ]
                       },
                       {
-                        _proto: "Button",
+                        _op: "Button",
                         class: "clear-completed",
                         _stuff: "Clear Completed"
                       }
@@ -213,30 +213,30 @@ var jsonObject = {
             ]
           },
           {
-            _proto: "Footer",
+            _op: "Footer",
             class: "info",
             _stuff: [
               {
-                _proto: "P",
+                _op: "P",
                 _stuff: "Double-click to edit a todo"
               },
               {
-                _proto: "P",
+                _op: "P",
                 _stuff: [
                   "Created by ",
                   {
-                    _proto: "A",
+                    _op: "A",
                     href: "http://github.com/emeitch/",
                     _stuff: "Hideyuki MORITA (emeitch)"
                   }
                 ]
               },
               {
-                _proto: "P",
+                _op: "P",
                 _stuff: [
                   "Part of ",
                   {
-                    _proto: "A",
+                    _op: "A",
                     href: "http://todomvc.com",
                     _stuff: "TodoMVC"
                   }
@@ -284,19 +284,19 @@ function box(src={}) {
     return Primitive.parse(src);
   }
   
-  if (src._proto === "Ref") {
+  if (src._op === "Ref") {
     return Ref.parse(src);
   }
   
-  if (src._proto === "Lambda") {
+  if (src._op === "Lambda") {
     return Lambda.parse(src);
   }
   
-  if (HTMLTAGS.includes(src._proto)) {
+  if (HTMLTAGS.includes(src._op)) {
     return DOM.parse(src);
   }
   
-  if (src._proto === "Entity") {
+  if (src._op === "Entity") {
     return Entity.parse(src);
   }
   
@@ -367,7 +367,7 @@ class Stuff {
 
 class Box {
   static parse(src, ...inheritedOptions) {
-    const proto = src._proto ? src._proto : "Box";
+    const op = src._op ? src._op : "Box";
         
     const props = Object.getOwnPropertyNames(src)
       .filter(k => k[0] !== '_')
@@ -378,14 +378,14 @@ class Box {
     const stuff = stf.map(i => box(i));
         
     return new this(
-      proto, 
+      op, 
       new Props(props),
       new Stuff(stuff),
       ...inheritedOptions);
   }
       
-  constructor(proto="Box", props=new Props(), stuff=new Stuff()) {
-    this.proto = proto;
+  constructor(op="Box", props=new Props(), stuff=new Stuff()) {
+    this.op = op;
     this.props = props;
     this.stuff = stuff;
   }
@@ -394,8 +394,8 @@ class Box {
     return Object.assign(new this.constructor(), this, params);
   }
   
-  prototype(context) {
-    return this.ref(this.proto, context);
+  operator(context) {
+    return this.ref(this.op, context);
   }
   
   get keys() {
@@ -403,8 +403,8 @@ class Box {
   }
     
   eval(context=[]) {
-    const prototype = this.prototype(context);
-    return prototype.apply(this, context);
+    const operator = this.operator(context);
+    return operator.apply(this, context);
   }
   
   apply(argbox, context) {
@@ -449,8 +449,8 @@ class Map extends Box {
     return new this("Map", undefined, undefined, owner)
   }
   
-  constructor(proto, props, stuff, owner) {
-    super(proto, props, stuff)
+  constructor(op, props, stuff, owner) {
+    super(op, props, stuff)
     this.owner = owner;
   }
   
@@ -472,11 +472,11 @@ class Primitive extends Box {
   }
   
   static parse(src) {
-    return super.parse({_proto: "Primitive"}, src);
+    return super.parse({_op: "Primitive"}, src);
   }
   
-  constructor(proto, props, stuff, value) {
-    super(proto, props, stuff);
+  constructor(op, props, stuff, value) {
+    super(op, props, stuff);
     this.value = value;
   }
 }
@@ -484,26 +484,26 @@ class Primitive extends Box {
 class Entity extends Box {
 }
 
-const PrototypeMixin = Base => class extends Base {
-  static prototypeBox() {
-    if (!this.proto) {
+const OperatorMixin = Base => class extends Base {
+  static operator() {
+    if (!this.op) {
       if (!this.apply) {
         throw `#{this} don't have static apply method.`
       }
       
-      const proto = new Box();
-      proto.apply = this.apply;
-      this.proto = proto;
+      const op = new Box();
+      op.apply = this.apply;
+      this.op = op;
     }
-    return this.proto;
+    return this.op;
   }
 
-  prototype(context) {
-    return this.constructor.prototypeBox();
+  operator(context) {
+    return this.constructor.operator();
   }
 }
 
-class Ref extends PrototypeMixin(Box) {
+class Ref extends OperatorMixin(Box) {
   static parse(src) {
     return super.parse(src, src._path);
   }
@@ -513,13 +513,13 @@ class Ref extends PrototypeMixin(Box) {
     return b.eval(context);
   }
   
-  constructor(proto, props, stuff, path) {
-    super(proto, props, stuff);
+  constructor(op, props, stuff, path) {
+    super(op, props, stuff);
     this.path = path;
   }
 }
 
-class Lambda extends PrototypeMixin(Box) {
+class Lambda extends OperatorMixin(Box) {
   static apply(argbox, context) {
     // argbox内のブロック引数を参照できるようにするために
     // argboxをコンテキストに追加し
@@ -532,9 +532,9 @@ class Lambda extends PrototypeMixin(Box) {
 }
 
 class DOM extends Box {
-  constructor(proto, props, stuff) {
-    super(proto, props, stuff);
-    this.tag = proto;
+  constructor(op, props, stuff) {
+    super(op, props, stuff);
+    this.tag = op;
   }
   
   render() {
