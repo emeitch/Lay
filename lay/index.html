@@ -140,8 +140,7 @@ var jsonObject = {
                           {
                             _op: "Strong",
                             _stuff: {
-                              _op: "Ref",
-                              _path: "domain.tasks.count"
+                              _op: "domain.tasks.count",
                             }
                           },
                           {
@@ -466,24 +465,6 @@ class Map extends Box {
   }
 }
 
-class Primitive extends Box {
-  static create(value) {
-    return new this("Primitive", undefined, undefined, value);
-  }
-  
-  static parse(src) {
-    return super.parse({_op: "Primitive"}, src);
-  }
-  
-  constructor(op, props, stuff, value) {
-    super(op, props, stuff);
-    this.value = value;
-  }
-}
-
-class Entity extends Box {
-}
-
 const OperatorMixin = Base => class extends Base {
   static operator() {
     if (!this.op) {
@@ -501,6 +482,28 @@ const OperatorMixin = Base => class extends Base {
   operator(context) {
     return this.constructor.operator();
   }
+}
+
+class Primitive extends Box {
+  static create(value) {
+    return new this("Primitive", undefined, undefined, value);
+  }
+  
+  static parse(src) {
+    return super.parse({_op: "Primitive"}, src);
+  }
+  
+  constructor(op, props, stuff, value) {
+    super(op, props, stuff);
+    this.value = value;
+  }
+  
+  apply(argbox, context) {
+    return this;
+  }
+}
+
+class Entity extends Box {
 }
 
 class Ref extends OperatorMixin(Box) {
