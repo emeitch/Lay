@@ -98,12 +98,9 @@ var jsonObject = {
                                           },
                                           {
                                             _op: "Label",
-                                            _stuff: [
-                                              {
-                                                _op: "Ref",
-                                                _path: "task.title"
-                                              }
-                                            ]
+                                            _stuff: {
+                                              _op: "task.title",
+                                            }
                                           },
                                           {
                                             _op: "Button",
@@ -115,8 +112,7 @@ var jsonObject = {
                                         _op: "Input",
                                         class: "edit",
                                         value: {
-                                          _op: "Ref",
-                                          _path: "task.title"
+                                          _op: "task.title"
                                         }
                                       }
                                     ]
@@ -282,11 +278,7 @@ function box(src={}) {
   if (PRIMITIVETYPES.includes(type)) {
     return Primitive.parse(src);
   }
-  
-  if (src._op === "Ref") {
-    return Ref.parse(src);
-  }
-  
+    
   if (src._op === "Lambda") {
     return Lambda.parse(src);
   }
@@ -504,22 +496,6 @@ class Primitive extends Box {
 }
 
 class Entity extends Box {
-}
-
-class Ref extends OperatorMixin(Box) {
-  static parse(src) {
-    return super.parse(src, src._path);
-  }
-  
-  static apply(argbox, context) {
-    const b = argbox.ref(argbox.path, context);
-    return b.eval(context);
-  }
-  
-  constructor(op, props, stuff, path) {
-    super(op, props, stuff);
-    this.path = path;
-  }
 }
 
 class Lambda extends OperatorMixin(Box) {
