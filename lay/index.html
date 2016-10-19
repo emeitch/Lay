@@ -249,13 +249,13 @@ function flatten(array) {
   return Array.prototype.concat.apply([], array);
 }
 
-const PRIMITIVETYPES = [
+const LITERAL_TYPES = [
   "number",
   "string",
   "boolean"
 ];
 
-const HTMLTAGS = [
+const HTML_TAGS = [
   "Body",
   "Section",
   "Footer",
@@ -275,15 +275,15 @@ const HTMLTAGS = [
 
 function box(src={}) {
   const type = typeof(src);
-  if (PRIMITIVETYPES.includes(type)) {
-    return Primitive.parse(src);
+  if (LITERAL_TYPES.includes(type)) {
+    return Literal.parse(src);
   }
     
   if (src._op === "Lambda") {
     return Lambda.parse(src);
   }
   
-  if (HTMLTAGS.includes(src._op)) {
+  if (HTML_TAGS.includes(src._op)) {
     return DOM.parse(src);
   }
   
@@ -318,7 +318,7 @@ class Props extends PropsBase {
   }
   
   count(owner) {
-    return Primitive.create(owner.stuff.raws.length)
+    return Literal.create(owner.stuff.raws.length)
   }
 }
 
@@ -476,13 +476,13 @@ const OperatorMixin = Base => class extends Base {
   }
 }
 
-class Primitive extends Box {
+class Literal extends Box {
   static create(value) {
-    return new this("Primitive", undefined, undefined, value);
+    return new this("Literal", undefined, undefined, value);
   }
   
   static parse(src) {
-    return super.parse({_op: "Primitive"}, src);
+    return super.parse({_op: "Literal"}, src);
   }
   
   constructor(op, props, stuff, value) {
