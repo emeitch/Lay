@@ -383,12 +383,12 @@ const OperatorMixin = Base => class extends Base {
     if (!this.op) {
       const [op, ctx] = (new Box()).default_ref();
 
+      if (this.isTerminator) {
+        op.isTerminator = this.isTerminator
+      }
+
       if (this.apply) {
         op.apply = this.apply;
-      }
-      
-      if (this.isPrototype) {
-        op.isPrototype = this.isPrototype
       }
       
       this.op = op;
@@ -437,7 +437,7 @@ class Box {
   default_ref() {
     // todo ダミーBoxを返している状況なので変更する
     return [new (class extends Box {
-      isPrototype() {
+      isTerminator() {
         return true;
       }
       
@@ -491,11 +491,7 @@ class Box {
     // todo もしかしてもうこれを返す必要ない?
     return this.default_ref();
   }
-  
-  isPrototype() {
-    return false;
-  }
-  
+    
   operator(context) {
     context = context.slice(); // duplication
     const parent = context.pop(); // with side-effects for context
@@ -507,11 +503,15 @@ class Box {
     }
   }
   
+  isTerminator() {
+    return false;
+  }
+    
   eval(context=[]) {
     const [operator, foundContext] = this.operator(context);
     const result = operator.apply(this, context);
     
-    if (!operator.isPrototype()) {
+    if (!operator.isTerminator()) {
       return result.eval(foundContext);
     }
       
@@ -556,7 +556,7 @@ class Literal extends Box {
     this.value = value;
   }
   
-  isPrototype() {
+  isTerminator() {
     return true;
   }
 }
@@ -586,14 +586,14 @@ class Lambda extends OperatorMixin(Box) {
 }
 
 class Entity extends Box {
+  isTerminator() {
+    return true;
+  }
+
   apply(operand, context) {
     const [op, ctx] = (new Box()).default_ref();
     const result = op.apply(operand, context);
     return result;
-  }
-  
-  isPrototype() {
-    return true;
   }
 }
 
