@@ -379,25 +379,41 @@ class Stuff {
 }
 
 const OperatorMixin = Base => class extends Base {
-  static operator() {
+  static asOperator() {
     if (!this.op) {
-      const [op, ctx] = (new Box()).default_ref();
-
-      if (this.isTerminator) {
-        op.isTerminator = this.isTerminator
+      if (!this.apply) {
+        throw "no implementation for static apply";
       }
 
-      if (this.apply) {
-        op.apply = this.apply;
-      }
-      
+      const op = new Box();
+      op.apply = this.apply;
       this.op = op;
     }
+    
     return this.op;
   }
 
   operator(context) {
-    return [this.constructor.operator(), context];
+    return [this.constructor.asOperator(), context];
+  }
+}
+
+const TerminatorMixin = Base => class extends Base {
+  isTerminator() {
+    return true;
+  }
+  
+  apply(operand, context) {
+    context = context.slice() // duplication
+    context.push(operand);
+
+    const props = operand.props.eval(context);
+    const stuff = operand.stuff.eval(context);
+
+    return operand.clone({
+      props,
+      stuff 
+    });
   }
 }
 
@@ -433,29 +449,7 @@ class Box {
   get keys() {
     return Object.getOwnPropertyNames(this.props)
   }
-  
-  default_ref() {
-    // todo ダミーBoxを返している状況なので変更する
-    return [new (class extends Box {
-      isTerminator() {
-        return true;
-      }
-      
-      apply(operand, context) {
-        context = context.slice() // duplication
-        context.push(operand);
-
-        const props = operand.props.eval(context);
-        const stuff = operand.stuff.eval(context);
-
-        return operand.clone({
-          props,
-          stuff 
-        });
-      }
-    }), []];
-  }
-  
+    
   ref(op, context) {
     if (this.props[op]) {
       const prop = this.props[op];
@@ -488,19 +482,22 @@ class Box {
       }
     }
         
-    // todo もしかしてもうこれを返す必要ない?
-    return this.default_ref();
+    return undefined
   }
     
   operator(context) {
     context = context.slice(); // duplication
     const parent = context.pop(); // with side-effects for context
     
+    let operator;
     if (parent) {
-      return parent.ref(this.op, context);  
-    } else {
-      return this.default_ref();
+      operator = parent.ref(this.op, context);
     }
+    if (!operator) {
+      operator = [DEFAULT_OPERATOR, []];
+    }
+    
+    return operator;
   }
   
   isTerminator() {
@@ -522,6 +519,10 @@ class Box {
     return this;
   }  
 }
+
+class DefaultOperator extends TerminatorMixin(Box) {
+}
+const DEFAULT_OPERATOR = new DefaultOperator();
 
 class Map extends Box {
   static create(owner) {
@@ -546,7 +547,7 @@ class Map extends Box {
   }
 }
 
-class Literal extends Box {
+class Literal extends TerminatorMixin(Box) {
   static create(value) {
     return new this("Literal", undefined, undefined, value);
   }
@@ -555,10 +556,10 @@ class Literal extends Box {
     super(op, props, stuff);
     this.value = value;
   }
-  
-  isTerminator() {
-    return true;
-  }
+
+  apply(operand, context) {
+    return this;
+  }  
 }
 
 class Chain extends OperatorMixin(Box) {
@@ -585,16 +586,7 @@ class Lambda extends OperatorMixin(Box) {
   }
 }
 
-class Entity extends Box {
-  isTerminator() {
-    return true;
-  }
-
-  apply(operand, context) {
-    const [op, ctx] = (new Box()).default_ref();
-    const result = op.apply(operand, context);
-    return result;
-  }
+class Entity extends TerminatorMixin(Box) {
 }
 
 class DOM extends Box {
