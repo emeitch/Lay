@@ -36,7 +36,6 @@ var jsonObject = {
       }
     },
     presentation: {
-      _op: "DOM::Document",
       body: {
         _op: "Body",
         _stuff: [
@@ -289,26 +288,14 @@ const HTML_TAGS = [
   "Label",
   "Strong",
   "A",
-]
+];
 
 function box(src={}) {
   const type = typeof(src);
   if (LITERAL_TYPES.includes(type)) {
     return new Box(JSON.stringify(src));
   }
-  
-  if (src._op === "Chain") {
-    return Chain.parse(src);
-  }
-  
-  if (src._op === "Lambda") {
-    return Lambda.parse(src);
-  }
-  
-  if (src._op === "Entity") {
-    return Entity.parse(src);
-  }
-  
+    
   if (HTML_TAGS.includes(src._op)) {
     return DOM.parse(src);
   }
@@ -378,45 +365,6 @@ class Stuff {
   }
 }
 
-const OperatorMixin = Base => class extends Base {
-  static asOperator() {
-    if (!this.op) {
-      if (!this.apply) {
-        throw "no implementation for static apply";
-      }
-
-      const op = new Box();
-      op.apply = this.apply;
-      this.op = op;
-    }
-    
-    return this.op;
-  }
-
-  operator(context) {
-    return [this.constructor.asOperator(), context];
-  }
-}
-
-const TerminatorMixin = Base => class extends Base {
-  isTerminator() {
-    return true;
-  }
-  
-  apply(operand, context) {
-    context = context.slice() // duplication
-    context.push(operand);
-
-    const props = operand.props.eval(context);
-    const stuff = operand.stuff.eval(context);
-
-    return operand.clone({
-      props,
-      stuff 
-    });
-  }
-}
-
 class Box {
   static parse(src, ...inheritedOptions) {
     const op = src._op ? src._op : "Box";
@@ -435,11 +383,20 @@ class Box {
       new Stuff(stuff),
       ...inheritedOptions);
   }
+  
+  static plugin(key, box) {
+    if (!this.plugins) {
+      this.plugins = {};
+    }
+    
+    this.plugins[key] = box;
+  }
       
-  constructor(op="Box", props=new Props(), stuff=new Stuff()) {
+  constructor(op="Box", props=new Props(), stuff=new Stuff(), evaluated=false) {
     this.op = op;
     this.props = props;
     this.stuff = stuff;
+    this.evaluated = evaluated;
   }
     
   clone(params) {
@@ -449,8 +406,12 @@ class Box {
   get keys() {
     return Object.getOwnPropertyNames(this.props)
   }
-    
-  ref(op, context) {
+  
+  isExtention() {
+    return this.keys.length > 0 || this.stuff.raws.length > 0;
+  }
+      
+  ref(op, context) {    
     if (this.props[op]) {
       const prop = this.props[op];
       if (typeof(prop) == "function") {
@@ -464,6 +425,11 @@ class Box {
     const parent = context.pop(); // with side-effects for context
     if (parent) {
       return parent.ref(op, context);
+    }
+    
+    const plugin = this.constructor.plugins[op];
+    if (plugin) {
+      return [plugin, []];
     }
     
     try {
@@ -488,41 +454,52 @@ class Box {
   operator(context) {
     context = context.slice(); // duplication
     const parent = context.pop(); // with side-effects for context
-    
+
     let operator;
     if (parent) {
       operator = parent.ref(this.op, context);
+    } else {
+      operator = [this.constructor.plugins[this.op], []];
     }
+    
     if (!operator) {
-      operator = [DEFAULT_OPERATOR, []];
+      throw "Operator not found"
     }
     
     return operator;
   }
-  
-  isTerminator() {
-    return false;
-  }
-    
+      
   eval(context=[]) {
+    if (this.evaluated) {
+      return this;
+    }
+    
     const [operator, foundContext] = this.operator(context);
     const result = operator.apply(this, context);
-    
-    if (!operator.isTerminator()) {
-      return result.eval(foundContext);
-    }
-      
-    return result;
+    return result.eval(foundContext);
   }
   
   apply(operand, context) {
-    return this;
+    // Not a Extention is a Reference
+    if (!operand.isExtention()) {
+      return this;
+    }
+        
+    // Extention application
+    context = context.slice() // duplication
+    context.push(operand);
+
+    const props = operand.props.eval(context);
+    const stuff = operand.stuff.eval(context);
+
+    return operand.clone({
+      props,
+      stuff,
+      evaluated: true
+    });
   }  
 }
-
-class DefaultOperator extends TerminatorMixin(Box) {
-}
-const DEFAULT_OPERATOR = new DefaultOperator();
+Box.plugin("Box", new Box(undefined, undefined, undefined, true));
 
 class Map extends Box {
   static create(owner) {
@@ -547,13 +524,13 @@ class Map extends Box {
   }
 }
 
-class Literal extends TerminatorMixin(Box) {
+class Literal extends Box {
   static create(value) {
-    return new this("Literal", undefined, undefined, value);
+    return new this(value);
   }
   
-  constructor(op, props, stuff, value) {
-    super(op, props, stuff);
+  constructor(value) {
+    super("Literal", undefined, undefined, true);
     this.value = value;
   }
 
@@ -562,8 +539,8 @@ class Literal extends TerminatorMixin(Box) {
   }  
 }
 
-class Chain extends OperatorMixin(Box) {
-  static apply(operand, context) {
+class Chain extends Box {
+  apply(operand, context) {
     const receiver = operand.stuff.one;
     const raws = operand.stuff.raws;
     const chain = raws.slice(-(raws.length-1));
@@ -573,9 +550,10 @@ class Chain extends OperatorMixin(Box) {
     receiver.eval(context));
   }
 }
+Box.plugin("Chain", new Chain());
 
-class Lambda extends OperatorMixin(Box) {
-  static apply(operand, context) {
+class Lambda extends Box {
+  apply(operand, context) {
     // operand内のブロック引数を参照できるようにするために
     // operandをコンテキストに追加し
     // itemのみをevalした結果を返し簡約する
@@ -585,14 +563,17 @@ class Lambda extends OperatorMixin(Box) {
     return item.eval(context);
   }
 }
+Box.plugin("Lambda", new Lambda());
 
-class Entity extends TerminatorMixin(Box) {
+class Entity extends Box {
 }
+Box.plugin("Entity", new Entity());
 
 class DOM extends Box {
-  constructor(op, props, stuff) {
-    super(op, props, stuff);
-    this.tag = op;
+  constructor(tag, props, stuff) {
+    // todo 適切なopを指定する
+    super("Box", props, stuff);
+    this.tag = tag;
   }
   
   render() {
