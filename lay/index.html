@@ -187,6 +187,7 @@ var jsonObject = {
                           },
                           {
                             _op: "Span",
+                            class: "span"
                           },
                           {
                             _op: "Li",
@@ -200,6 +201,7 @@ var jsonObject = {
                           },
                           {
                             _op: "Span",
+                            class: "span"
                           },
                           {
                             _op: "Li",
@@ -313,10 +315,10 @@ class PropsBase {
     return Object.assign(new this.constructor(), this, params);
   }
   
-  eval(context) {
+  eval(tree, context) {
     const keys = Object.getOwnPropertyNames(this);
     const raws = keys.reduce((p, k) => 
-      Object.assign(p, {[k]: this[k].eval(context)}),
+      Object.assign(p, {[k]: this[k].eval(tree, context)}),
       {});
     return new this.constructor(raws);
   }
@@ -344,8 +346,8 @@ class Stuff {
     return this.raws[0];
   }
   
-  eval(context) {
-    const raws = this.raws.map(c => c.eval(context));
+  eval(tree, context) {
+    const raws = this.raws.map(c => c.eval(tree, context));
     return new this.constructor(raws).flatten();
   }
   
@@ -365,8 +367,129 @@ class Stuff {
   }
 }
 
-class Box {
+class Ref {
+  static plugin(key, box) {
+    if (!this.plugins) {
+      this.plugins = {};
+    }
+    
+    this.plugins[key] = box;
+  }
+      
+  constructor(op, props=new Props(), stuff=new Stuff()) {
+    this.op = op;
+    
+    // todo Refには本質的に不要。ナイーブな実装なのでどうにかしたい
+    this.props = props;
+    this.stuff = stuff;
+  }
+    
+  clone(params) {
+    return Object.assign(new this.constructor(), this, params);
+  }
+  
+  get keys() {
+    return Object.getOwnPropertyNames(this.props)
+  }
+  
+  search_parent_of(box, parents) {
+    // todo 効率が悪い実装なので後で修正する
+    const parent = parents[parents.length-1];
+    const ps = parents.slice(); // dupulication
+    ps.push(this);
+    
+    function search(b) {
+      if (b == box) {
+        return parent;
+      } else {
+        return b.search_parent_of(box, ps);
+      }
+    }
+    
+    for (let key of this.keys) {
+      const prop = this.props[key];
+      const p = search(prop);
+      if (p) {
+        return p;
+      }
+    }
+
+    for (let raw of this.stuff.raws) {
+      const p = search(raw);
+      if (p) {
+        return p;
+      }
+    }
+    
+    return undefined;
+  }
+  
+  parent(tree) {
+    return tree.search_parent_of(this, [tree]);
+  }
+
+  ref(op, tree, context=[]) {
+    // todo contextは一度参照すれば良いので別の場所に実装したい
+    for (let b of context.reverse()) {
+      const reference = b.ref(op, tree);
+      if (reference) {
+        return reference;
+      }
+    }
+    
+    if (this.props[op]) {
+      const prop = this.props[op];
+      if (typeof(prop) == "function") {
+        return prop(this);
+      } else {
+        return prop;
+      }
+    }
+    
+    const parent = this.parent(tree);
+    if (parent) {
+      return parent.ref(op, tree);
+    }
+    
+    const plugin = this.constructor.plugins[op];
+    if (plugin) {
+      return plugin;
+    }
+    
+    try {
+      const parsed = JSON.parse(op);
+      const type = typeof(parsed)
+      if (type === "number") {
+        return Literal.create(parsed);
+      } else if (type === "string") {
+        return Literal.create(parsed);
+      } else if (type === "boolean") {
+        return Literal.create(parsed);
+      }
+    } catch(e) {
+      if (e.constructor !== SyntaxError) {
+        throw e;
+      }
+    }
+        
+    return undefined
+  }
+        
+  eval(tree=this, context=[]) {
+    return this.ref(this.op, tree, context);
+  }
+}
+
+class Box extends Ref {
   static parse(src, ...inheritedOptions) {
+    {
+      const length = Object.getOwnPropertyNames(src).length;
+      const opOnly = src._op != undefined && length == 1;
+      if (opOnly) {
+        return new Ref(src._op);
+      }
+    }
+        
     const op = src._op ? src._op : "Box";
         
     const props = Object.getOwnPropertyNames(src)
@@ -383,17 +506,9 @@ class Box {
       new Stuff(stuff),
       ...inheritedOptions);
   }
-  
-  static plugin(key, box) {
-    if (!this.plugins) {
-      this.plugins = {};
-    }
-    
-    this.plugins[key] = box;
-  }
-      
+        
   constructor(op="Box", props=new Props(), stuff=new Stuff(), evaluated=false) {
-    this.op = op;
+    super(op, props, stuff);
     this.props = props;
     this.stuff = stuff;
     this.evaluated = evaluated;
@@ -402,95 +517,24 @@ class Box {
   clone(params) {
     return Object.assign(new this.constructor(), this, params);
   }
-
-  get keys() {
-    return Object.getOwnPropertyNames(this.props)
-  }
-  
-  isExtention() {
-    return this.keys.length > 0 || this.stuff.raws.length > 0;
-  }
-      
-  ref(op, context) {    
-    if (this.props[op]) {
-      const prop = this.props[op];
-      if (typeof(prop) == "function") {
-        return [prop(this), context];
-      } else {
-        return [prop, context];
-      }
-    }
     
-    context = context.slice(); // duplication
-    const parent = context.pop(); // with side-effects for context
-    if (parent) {
-      return parent.ref(op, context);
-    }
-    
-    const plugin = this.constructor.plugins[op];
-    if (plugin) {
-      return [plugin, []];
-    }
-    
-    try {
-      const parsed = JSON.parse(op);
-      const type = typeof(parsed)
-      if (type === "number") {
-        return [Literal.create(parsed), context];
-      } else if (type === "string") {
-        return [Literal.create(parsed), context];
-      } else if (type === "boolean") {
-        return [Literal.create(parsed), context];
-      }
-    } catch(e) {
-      if (e.constructor !== SyntaxError) {
-        throw e;
-      }
-    }
-        
-    return undefined
-  }
-    
-  operator(context) {
-    context = context.slice(); // duplication
-    const parent = context.pop(); // with side-effects for context
-
-    let operator;
-    if (parent) {
-      operator = parent.ref(this.op, context);
-    } else {
-      operator = [this.constructor.plugins[this.op], []];
-    }
-    
-    if (!operator) {
-      throw "Operator not found"
-    }
-    
-    return operator;
-  }
-      
-  eval(context=[]) {
+  eval(tree=this, context=[]) {
     if (this.evaluated) {
       return this;
     }
     
-    const [operator, foundContext] = this.operator(context);
-    const result = operator.apply(this, context);
-    return result.eval(foundContext);
+    const operator = this.ref(this.op, tree, context);
+    if (!operator) {
+      throw "Operator not found";
+    }    
+    
+    const result = operator.apply(this, tree, context);
+    return result.eval(tree, context);
   }
   
-  apply(operand, context) {
-    // Not a Extention is a Reference
-    if (!operand.isExtention()) {
-      return this;
-    }
-        
-    // Extention application
-    context = context.slice() // duplication
-    context.push(operand);
-
-    const props = operand.props.eval(context);
-    const stuff = operand.stuff.eval(context);
+  apply(operand, tree, context) {
+    const props = operand.props.eval(tree, context);
+    const stuff = operand.stuff.eval(tree, context);
 
     return operand.clone({
       props,
@@ -499,7 +543,7 @@ class Box {
     });
   }  
 }
-Box.plugin("Box", new Box(undefined, undefined, undefined, true));
+Ref.plugin("Box", new Box(undefined, undefined, undefined, true));
 
 class Map extends Box {
   static create(owner) {
@@ -511,15 +555,15 @@ class Map extends Box {
     this.owner = owner;
   }
   
-  apply(operand, context) {
+  apply(operand, tree, context) {
     const block = operand.stuff.one;
     const argkey = block.keys[0]; // todo key値の型と一致するか確認
     return this.owner.stuff.map(item => {
       // todo stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそもstuffがMapボックスになる状況のセマンティクスとは何か?
-      const arg = item.eval();
+      const arg = item.eval(tree, context);
       const props = block.props.clone({[argkey]: arg});
       const b = block.clone({props});
-      return b.eval(context);
+      return b.eval(tree, context);
     });
   }
 }
@@ -534,40 +578,36 @@ class Literal extends Box {
     this.value = value;
   }
 
-  apply(operand, context) {
+  apply(operand, tree) {
     return this;
   }  
 }
 
 class Chain extends Box {
-  apply(operand, context) {
-    const receiver = operand.stuff.one;
+  apply(operand, tree, context) {
     const raws = operand.stuff.raws;
     const chain = raws.slice(-(raws.length-1));
+    const receiver = operand.stuff.one.eval(tree, context);
     return chain.reduce((result, chained) => {
-      return chained.eval([result]);
+      const r = chained.eval(tree, context.concat([result]));
+      return r;
     },
-    receiver.eval(context));
+    receiver);
   }
 }
-Box.plugin("Chain", new Chain());
+Ref.plugin("Chain", new Chain());
 
 class Lambda extends Box {
-  apply(operand, context) {
-    // operand内のブロック引数を参照できるようにするために
-    // operandをコンテキストに追加し
-    // itemのみをevalした結果を返し簡約する
-    context = context.slice() // duplication
-    context.push(operand);
+  apply(operand, tree, context) {
     const item = operand.stuff.one;
-    return item.eval(context);
+    return item.eval(tree, context.concat([operand]));
   }
 }
-Box.plugin("Lambda", new Lambda());
+Ref.plugin("Lambda", new Lambda());
 
 class Entity extends Box {
 }
-Box.plugin("Entity", new Entity());
+Ref.plugin("Entity", new Entity());
 
 class DOM extends Box {
   constructor(tag, props, stuff) {
@@ -579,6 +619,8 @@ class DOM extends Box {
   render() {
     const attrs = this.keys.reduce((r, n) => Object.assign(r, {[n]: this.props[n].value}), {});
     const children = flatten(this.stuff.raws.map(b => {
+      const self = this;
+      
       if (b.value != undefined) {
         return b.value.toString();
       }
