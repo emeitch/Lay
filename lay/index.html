@@ -367,21 +367,27 @@ class Stuff {
   }
 }
 
+const plugins = {};
+class Plugin {
+  static get(key) {
+    return plugins[key];
+  }
+
+  static set(key, box) {
+    plugins[key] = box;
+  }
+}
+
 class Environment {
   constructor() {
     this.root = undefined;
-    this.plugins = {};
     this.context = [];
   }
   
   setRoot(root) {
     this.root = root;
   }
-  
-  plugin(sym, box) {
-    this.plugins[sym] = box;
-  }
-  
+    
   push(box) {
     this.context.push(box);
   }
@@ -448,7 +454,7 @@ class Environment {
       return this.ref(parent, sym, []);
     }
 
-    const plugin = this.plugins[sym];
+    const plugin = Plugin.get(sym);
     if (plugin) {
       return plugin;
     }
@@ -559,7 +565,7 @@ class Box extends Ref {
     });
   }  
 }
-ENV.plugin("Box", new Box(undefined, undefined, undefined, true));
+Plugin.set("Box", new Box(undefined, undefined, undefined, true));
 
 class Map extends Box {
   static create(owner) {
@@ -613,7 +619,7 @@ class Chain extends Box {
     receiver);
   }
 }
-ENV.plugin("Chain", new Chain());
+Plugin.set("Chain", new Chain());
 
 class Lambda extends Box {
   apply(operand, env) {
@@ -622,11 +628,11 @@ class Lambda extends Box {
     return item.eval(env);
   }
 }
-ENV.plugin("Lambda", new Lambda());
+Plugin.set("Lambda", new Lambda());
 
 class Entity extends Box {
 }
-ENV.plugin("Entity", new Entity());
+Plugin.set("Entity", new Entity());
 
 class DOM extends Box {
   constructor(tag, props, stuff) {
