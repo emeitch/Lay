@@ -402,7 +402,7 @@ class Environment {
     }
   }
   
-  push(box, block) {
+  stack(box, block) {
     this.stack.push(box);
     const result = block();
     this.stack.pop();
@@ -589,7 +589,7 @@ class Chain extends Box {
     const chain = raws.slice(-(raws.length-1));
     const receiver = operand.stuff.one.eval(env);
     return chain.reduce((result, chained) => {
-      const r = env.push(result, () => chained.eval(env));
+      const r = env.stack(result, () => chained.eval(env));
       if (!r) {
         throw "chain evaluated value is not set."
       }
@@ -603,7 +603,7 @@ Plugin.set("Chain", new Chain());
 class Lambda extends Box {
   apply(operand, env) {
     const item = operand.stuff.one;
-    return env.push(operand, () => item.eval(env));
+    return env.stack(operand, () => item.eval(env));
   }
 }
 Plugin.set("Lambda", new Lambda());
