@@ -325,7 +325,7 @@ class PropsBase {
 }
 class Props extends PropsBase {
   map(owner) {
-    return Map.create(owner);
+    return PropMap.create(owner);
   }
   
   count(owner) {
@@ -380,46 +380,42 @@ class Plugin {
 
 class Environment {
   constructor(root) {
-    this.root = root;
+    this.parentsMap = new Map();
+    this.setupParents(root, []);
+    
     this.stack = [];
   }
-      
+        
+  setupParents(box, path) {
+    this.parentsMap.set(box, path);
+
+    const pth = path.slice(); // dupulication
+    pth.push(box);
+    
+    for (let key of box.keys) {
+      const prop = box.props[key];
+      this.setupParents(prop, pth);
+    }
+    
+    for (let raw of box.stuff.raws) {
+      this.setupParents(raw, pth);
+    }
+  }
+  
   push(box, block) {
     this.stack.push(box);
     const result = block();
     this.stack.pop();
     return result;
   }
-    
-  parents(box, target, parents) {
-    // todo 効率が悪い実装なので後で改善する
-    const ps = parents.slice(); // dupulication
-    ps.push(target);
-    
-    if (box == target) {
-      return ps;
-    }
-
-    for (let key of target.keys) {
-      const prop = target.props[key];
-      const p = this.parents(box, prop, ps);
-      if (p.length > 0) {
-        return p;
-      }
-    }
-
-    for (let raw of target.stuff.raws) {
-      const p = this.parents(box, raw, ps)
-      if (p.length > 0) {
-        return p;
-      }
-    }
-    
-    return [];
+  
+  parents(box) {
+    const parents = this.parentsMap.get(box);
+    return parents ? parents : [];
   }
-
+  
   context(current) {
-    const parents = this.parents(current, this.root, []);
+    const parents = this.parents(current);
     const context = parents.concat(this.stack);
     context.reverse();
     return context;
@@ -549,9 +545,9 @@ class Box extends Ref {
 }
 Plugin.set("Box", new Box(undefined, undefined, undefined, true));
 
-class Map extends Box {
+class PropMap extends Box {
   static create(owner) {
-    return new this("Map", undefined, undefined, owner)
+    return new this("map", undefined, undefined, owner)
   }
   
   constructor(op, props, stuff, owner) {
