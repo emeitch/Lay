@@ -380,16 +380,19 @@ class Stuff {
   }
 }
 
-const plugins = {};
-const pluginRules = [];
-class Plugin {
-  static get(symbol) {
-    let plugin = plugins[symbol];
+class Plugins {
+  constructor() {
+    this.all = {};
+    this.rules = [];
+  }
+  
+  get(symbol) {
+    let plugin = this.all[symbol];
     if (plugin) {
       return plugin;
     }
     
-    for (let rule of pluginRules) {
+    for (let rule of this.rules) {
       plugin = rule(symbol);
       if (plugin) {
         return plugin;
@@ -399,14 +402,15 @@ class Plugin {
     return undefined;
   }
 
-  static set(key, box) {
-    plugins[key] = box;
+  set(symbol, box) {
+    this.all[symbol] = box;
   }
   
-  static rule(rule) {
-    pluginRules.push(rule);
+  rule(rule) {
+    this.rules.push(rule);
   }
 }
+const PLUGINS = new Plugins();
 
 class Environment {
   constructor(root) {
@@ -463,7 +467,7 @@ class Environment {
       }
     }
     
-    const plugin = Plugin.get(symbol);
+    const plugin = PLUGINS.get(symbol);
     if (plugin) {
       return plugin;
     }
@@ -561,7 +565,7 @@ class Box extends Ref {
     });
   }  
 }
-Plugin.set("Box", new Box(undefined, undefined, undefined, true));
+PLUGINS.set("Box", new Box(undefined, undefined, undefined, true));
 
 class Literal extends Box {
   static create(value) {
@@ -577,7 +581,7 @@ class Literal extends Box {
     return this;
   }  
 }
-Plugin.rule(symbol => {
+PLUGINS.rule(symbol => {
   try {
     const parsed = JSON.parse(symbol);
     const type = typeof(parsed)
@@ -612,7 +616,7 @@ class Chain extends Box {
     receiver);
   }
 }
-Plugin.set("Chain", new Chain());
+PLUGINS.set("Chain", new Chain());
 
 class Lambda extends Box {
   apply(operand, env) {
@@ -620,11 +624,11 @@ class Lambda extends Box {
     return env.stack(operand, () => item.eval(env));
   }
 }
-Plugin.set("Lambda", new Lambda());
+PLUGINS.set("Lambda", new Lambda());
 
 class Entity extends Box {
 }
-Plugin.set("Entity", new Entity());
+PLUGINS.set("Entity", new Entity());
 
 class DOM extends Box {
   constructor(tag, props, stuff) {
