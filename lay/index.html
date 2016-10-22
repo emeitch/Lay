@@ -381,75 +381,63 @@ class Plugin {
 class Environment {
   constructor(root) {
     this.root = root;
-    this.context = [];
+    this.stack = [];
   }
       
   push(box) {
-    this.context.push(box);
+    this.stack.push(box);
   }
   
-  pop(box) {
-    return this.context.pop();
+  pop() {
+    return this.stack.pop();
   }
   
-  search_parent_of(box, target=this.root, parents=[this.root]) {
-    // todo 効率が悪い実装なので後で修正する
-    const parent = parents[parents.length-1];
+  parents(box, target, parents) {
+    // todo 効率が悪い実装なので後で改善する
     const ps = parents.slice(); // dupulication
     ps.push(target);
     
-    const search = b => {
-      if (b == box) {
-        return parent;
-      } else {
-        return this.search_parent_of(box, b, ps);
-      }
+    if (box == target) {
+      return ps;
     }
-    
+
     for (let key of target.keys) {
       const prop = target.props[key];
-      const p = search(prop);
-      if (p) {
+      const p = this.parents(box, prop, ps);
+      if (p.length > 0) {
         return p;
       }
     }
 
     for (let raw of target.stuff.raws) {
-      const p = search(raw);
-      if (p) {
+      const p = this.parents(box, raw, ps)
+      if (p.length > 0) {
         return p;
       }
     }
     
-    return undefined;
+    return [];
   }
 
-  parent(box) {
-    return this.search_parent_of(box);
+  context(current) {
+    const parents = this.parents(current, this.root, []);
+    const context = parents.concat(this.stack);
+    context.reverse();
+    return context;
   }
   
-  ref(current, sym, context=this.context) {
-    for (let box of context.reverse()) {
-      const reference = this.ref(box, sym, []);
-      if (reference) {
-        return reference;
+  ref(current, sym) {
+    for (let box of this.context(current)) {
+      const prop = box.props[sym];
+      if (prop) {
+        if (typeof(prop) == "function") {
+          return prop(box);
+        } else {
+          return prop;
+        }
       }
     }
     
-    if (current.props[sym]) {
-      const prop = current.props[sym];
-      if (typeof(prop) == "function") {
-        return prop(current);
-      } else {
-        return prop;
-      }
-    }
-
-    const parent = this.parent(current);
-    if (parent) {
-      return this.ref(parent, sym, []);
-    }
-
     const plugin = Plugin.get(sym);
     if (plugin) {
       return plugin;
@@ -609,6 +597,9 @@ class Chain extends Box {
       env.push(result);
       const r = chained.eval(env);
       env.pop();
+      if (!r) {
+        throw "chain evaluated value is not set."
+      }
       return r;
     },
     receiver);
@@ -620,7 +611,9 @@ class Lambda extends Box {
   apply(operand, env) {
     const item = operand.stuff.one;
     env.push(operand);
-    return item.eval(env);
+    const r = item.eval(env);
+    env.pop();
+    return r;
   }
 }
 Plugin.set("Lambda", new Lambda());
