@@ -324,8 +324,21 @@ class PropsBase {
   }
 }
 class Props extends PropsBase {
-  map(owner) {
-    return PropMap.create(owner);
+  get map() {
+    class PropMap extends Box {
+      apply(operand, env) {
+        const block = operand.stuff.one;
+        const argkey = block.keys[0]; // todo key値の型と一致するか検証
+        return env.upper(this).stuff.map(item => {
+          const arg = item.eval(env);
+          const props = block.props.clone({[argkey]: arg});
+          const b = block.clone({props});
+          return b.eval(env);
+        });
+      }
+    };
+    
+    return new PropMap();
   }
   
   count(owner) {
@@ -457,6 +470,10 @@ class Environment {
 
     return undefined;
   }
+  
+  upper(current) {
+    return this.context(current)[0];
+  }
 }
 
 class Ref {
@@ -475,7 +492,7 @@ class Ref {
   get keys() {
     return Object.getOwnPropertyNames(this.props)
   }
-          
+
   eval(env) {
     return env.ref(this, this.symbol);
   }
@@ -545,28 +562,6 @@ class Box extends Ref {
   }  
 }
 Plugin.set("Box", new Box(undefined, undefined, undefined, true));
-
-class PropMap extends Box {
-  static create(owner) {
-    return new this("map", undefined, undefined, owner)
-  }
-  
-  constructor(symbol, props, stuff, owner) {
-    super(symbol, props, stuff)
-    this.owner = owner;
-  }
-  
-  apply(operand, env) {
-    const block = operand.stuff.one;
-    const argkey = block.keys[0]; // todo key値の型と一致するか検証
-    return this.owner.stuff.map(item => {
-      const arg = item.eval(env);
-      const props = block.props.clone({[argkey]: arg});
-      const b = block.clone({props});
-      return b.eval(env);
-    });
-  }
-}
 
 class Literal extends Box {
   static create(value) {
