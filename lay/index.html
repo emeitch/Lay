@@ -315,10 +315,10 @@ class PropsBase {
     return Object.assign(new this.constructor(), this, params);
   }
   
-  eval(tree, context) {
+  eval(env) {
     const keys = Object.getOwnPropertyNames(this);
     const raws = keys.reduce((p, k) => 
-      Object.assign(p, {[k]: this[k].eval(tree, context)}),
+      Object.assign(p, {[k]: this[k].eval(env)}),
       {});
     return new this.constructor(raws);
   }
@@ -346,8 +346,8 @@ class Stuff {
     return this.raws[0];
   }
   
-  eval(tree, context) {
-    const raws = this.raws.map(c => c.eval(tree, context));
+  eval(env) {
+    const raws = this.raws.map(c => c.eval(env));
     return new this.constructor(raws).flatten();
   }
   
@@ -379,15 +379,11 @@ class Plugin {
 }
 
 class Environment {
-  constructor() {
-    this.root = undefined;
+  constructor(root) {
+    this.root = root;
     this.context = [];
   }
-  
-  setRoot(root) {
-    this.root = root;
-  }
-    
+      
   push(box) {
     this.context.push(box);
   }
@@ -478,7 +474,6 @@ class Environment {
     return undefined;
   }
 }
-const ENV = new Environment();
 
 class Ref {
   constructor(op, props=new Props(), stuff=new Stuff()) {
@@ -665,8 +660,8 @@ class DOM extends Box {
 }
 
 function vdom(src) { 
-  ENV.setRoot(src);
-  const app = src.eval(ENV);
+  const env = new Environment(src);
+  const app = src.eval(env);
   console.log(app);
   return app.props.presentation.props.body.render()[0];
 }
