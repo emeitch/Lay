@@ -367,15 +367,114 @@ class Stuff {
   }
 }
 
-class Ref {
-  static plugin(key, box) {
-    if (!this.plugins) {
-      this.plugins = {};
+class Environment {
+  constructor() {
+    this.root = undefined;
+    this.plugins = {};
+    this.context = [];
+  }
+  
+  setRoot(root) {
+    this.root = root;
+  }
+  
+  plugin(sym, box) {
+    this.plugins[sym] = box;
+  }
+  
+  push(box) {
+    this.context.push(box);
+  }
+  
+  pop(box) {
+    return this.context.pop();
+  }
+  
+  search_parent_of(box, target=this.root, parents=[this.root]) {
+    // todo 効率が悪い実装なので後で修正する
+    const parent = parents[parents.length-1];
+    const ps = parents.slice(); // dupulication
+    ps.push(target);
+    
+    const search = b => {
+      if (b == box) {
+        return parent;
+      } else {
+        return this.search_parent_of(box, b, ps);
+      }
     }
     
-    this.plugins[key] = box;
+    for (let key of target.keys) {
+      const prop = target.props[key];
+      const p = search(prop);
+      if (p) {
+        return p;
+      }
+    }
+
+    for (let raw of target.stuff.raws) {
+      const p = search(raw);
+      if (p) {
+        return p;
+      }
+    }
+    
+    return undefined;
   }
-      
+
+  parent(box) {
+    return this.search_parent_of(box);
+  }
+  
+  ref(current, sym, context=this.context) {
+    for (let box of context.reverse()) {
+      const reference = this.ref(box, sym, []);
+      if (reference) {
+        return reference;
+      }
+    }
+    
+    if (current.props[sym]) {
+      const prop = current.props[sym];
+      if (typeof(prop) == "function") {
+        return prop(current);
+      } else {
+        return prop;
+      }
+    }
+
+    const parent = this.parent(current);
+    if (parent) {
+      return this.ref(parent, sym, []);
+    }
+
+    const plugin = this.plugins[sym];
+    if (plugin) {
+      return plugin;
+    }
+
+    try {
+      const parsed = JSON.parse(sym);
+      const type = typeof(parsed)
+      if (type === "number") {
+        return Literal.create(parsed);
+      } else if (type === "string") {
+        return Literal.create(parsed);
+      } else if (type === "boolean") {
+        return Literal.create(parsed);
+      }
+    } catch(e) {
+      if (e.constructor !== SyntaxError) {
+        throw e;
+      }
+    }
+
+    return undefined;
+  }
+}
+const ENV = new Environment();
+
+class Ref {
   constructor(op, props=new Props(), stuff=new Stuff()) {
     this.op = op;
     
@@ -391,92 +490,9 @@ class Ref {
   get keys() {
     return Object.getOwnPropertyNames(this.props)
   }
-  
-  search_parent_of(box, parents) {
-    // todo 効率が悪い実装なので後で修正する
-    const parent = parents[parents.length-1];
-    const ps = parents.slice(); // dupulication
-    ps.push(this);
-    
-    function search(b) {
-      if (b == box) {
-        return parent;
-      } else {
-        return b.search_parent_of(box, ps);
-      }
-    }
-    
-    for (let key of this.keys) {
-      const prop = this.props[key];
-      const p = search(prop);
-      if (p) {
-        return p;
-      }
-    }
-
-    for (let raw of this.stuff.raws) {
-      const p = search(raw);
-      if (p) {
-        return p;
-      }
-    }
-    
-    return undefined;
-  }
-  
-  parent(tree) {
-    return tree.search_parent_of(this, [tree]);
-  }
-
-  ref(op, tree, context=[]) {
-    // todo contextは一度参照すれば良いので別の場所に実装したい
-    for (let b of context.reverse()) {
-      const reference = b.ref(op, tree);
-      if (reference) {
-        return reference;
-      }
-    }
-    
-    if (this.props[op]) {
-      const prop = this.props[op];
-      if (typeof(prop) == "function") {
-        return prop(this);
-      } else {
-        return prop;
-      }
-    }
-    
-    const parent = this.parent(tree);
-    if (parent) {
-      return parent.ref(op, tree);
-    }
-    
-    const plugin = this.constructor.plugins[op];
-    if (plugin) {
-      return plugin;
-    }
-    
-    try {
-      const parsed = JSON.parse(op);
-      const type = typeof(parsed)
-      if (type === "number") {
-        return Literal.create(parsed);
-      } else if (type === "string") {
-        return Literal.create(parsed);
-      } else if (type === "boolean") {
-        return Literal.create(parsed);
-      }
-    } catch(e) {
-      if (e.constructor !== SyntaxError) {
-        throw e;
-      }
-    }
-        
-    return undefined
-  }
-        
-  eval(tree=this, context=[]) {
-    return this.ref(this.op, tree, context);
+          
+  eval(env) {
+    return env.ref(this, this.op);
   }
 }
 
@@ -518,23 +534,23 @@ class Box extends Ref {
     return Object.assign(new this.constructor(), this, params);
   }
     
-  eval(tree=this, context=[]) {
+  eval(env) {
     if (this.evaluated) {
       return this;
     }
     
-    const operator = this.ref(this.op, tree, context);
+    const operator = env.ref(this, this.op);
     if (!operator) {
       throw "Operator not found";
     }    
     
-    const result = operator.apply(this, tree, context);
-    return result.eval(tree, context);
+    const result = operator.apply(this, env);
+    return result.eval(env);
   }
   
-  apply(operand, tree, context) {
-    const props = operand.props.eval(tree, context);
-    const stuff = operand.stuff.eval(tree, context);
+  apply(operand, env) {
+    const props = operand.props.eval(env);
+    const stuff = operand.stuff.eval(env);
 
     return operand.clone({
       props,
@@ -543,7 +559,7 @@ class Box extends Ref {
     });
   }  
 }
-Ref.plugin("Box", new Box(undefined, undefined, undefined, true));
+ENV.plugin("Box", new Box(undefined, undefined, undefined, true));
 
 class Map extends Box {
   static create(owner) {
@@ -555,15 +571,15 @@ class Map extends Box {
     this.owner = owner;
   }
   
-  apply(operand, tree, context) {
+  apply(operand, env) {
     const block = operand.stuff.one;
     const argkey = block.keys[0]; // todo key値の型と一致するか確認
     return this.owner.stuff.map(item => {
       // todo stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそもstuffがMapボックスになる状況のセマンティクスとは何か?
-      const arg = item.eval(tree, context);
+      const arg = item.eval(env);
       const props = block.props.clone({[argkey]: arg});
       const b = block.clone({props});
-      return b.eval(tree, context);
+      return b.eval(env);
     });
   }
 }
@@ -578,36 +594,39 @@ class Literal extends Box {
     this.value = value;
   }
 
-  apply(operand, tree) {
+  apply(operand, env) {
     return this;
   }  
 }
 
 class Chain extends Box {
-  apply(operand, tree, context) {
+  apply(operand, env) {
     const raws = operand.stuff.raws;
     const chain = raws.slice(-(raws.length-1));
-    const receiver = operand.stuff.one.eval(tree, context);
+    const receiver = operand.stuff.one.eval(env);
     return chain.reduce((result, chained) => {
-      const r = chained.eval(tree, context.concat([result]));
+      env.push(result);
+      const r = chained.eval(env);
+      env.pop();
       return r;
     },
     receiver);
   }
 }
-Ref.plugin("Chain", new Chain());
+ENV.plugin("Chain", new Chain());
 
 class Lambda extends Box {
-  apply(operand, tree, context) {
+  apply(operand, env) {
     const item = operand.stuff.one;
-    return item.eval(tree, context.concat([operand]));
+    env.push(operand);
+    return item.eval(env);
   }
 }
-Ref.plugin("Lambda", new Lambda());
+ENV.plugin("Lambda", new Lambda());
 
 class Entity extends Box {
 }
-Ref.plugin("Entity", new Entity());
+ENV.plugin("Entity", new Entity());
 
 class DOM extends Box {
   constructor(tag, props, stuff) {
@@ -640,7 +659,8 @@ class DOM extends Box {
 }
 
 function vdom(src) { 
-  const app = src.eval();
+  ENV.setRoot(src);
+  const app = src.eval(ENV);
   console.log(app);
   return app.props.presentation.props.body.render()[0];
 }
