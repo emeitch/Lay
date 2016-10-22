@@ -384,14 +384,13 @@ class Environment {
     this.stack = [];
   }
       
-  push(box) {
+  push(box, block) {
     this.stack.push(box);
+    const result = block();
+    this.stack.pop();
+    return result;
   }
-  
-  pop() {
-    return this.stack.pop();
-  }
-  
+    
   parents(box, target, parents) {
     // todo 効率が悪い実装なので後で改善する
     const ps = parents.slice(); // dupulication
@@ -594,9 +593,7 @@ class Chain extends Box {
     const chain = raws.slice(-(raws.length-1));
     const receiver = operand.stuff.one.eval(env);
     return chain.reduce((result, chained) => {
-      env.push(result);
-      const r = chained.eval(env);
-      env.pop();
+      const r = env.push(result, () => chained.eval(env));
       if (!r) {
         throw "chain evaluated value is not set."
       }
@@ -610,10 +607,7 @@ Plugin.set("Chain", new Chain());
 class Lambda extends Box {
   apply(operand, env) {
     const item = operand.stuff.one;
-    env.push(operand);
-    const r = item.eval(env);
-    env.pop();
-    return r;
+    return env.push(operand, () => item.eval(env));
   }
 }
 Plugin.set("Lambda", new Lambda());
