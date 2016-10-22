@@ -11,24 +11,24 @@ var jsonObject = {
   TodoMVC: {
     domain: {
       Task: {
-        _op: "Entity",
+        _symbol: "Entity",
         title: "string",
         completed: "bool"
       },
       tasks: {
         _stuff: [
           {
-            _op: "Task",
+            _symbol: "Task",
             title: "buy a milk",
             completed: false,
           },
           {
-            _op: "Task",
+            _symbol: "Task",
             title: "buy a coffee",
             completed: false,
           },
           {
-            _op: "Task",
+            _symbol: "Task",
             title: "buy a tea",
             completed: true,
           }
@@ -37,92 +37,92 @@ var jsonObject = {
     },
     presentation: {
       body: {
-        _op: "Body",
+        _symbol: "Body",
         _stuff: [
           {
-            _op: "Section",
+            _symbol: "Section",
             class: "todoapp",
             _stuff: [
               {
-                _op: "Div",
+                _symbol: "Div",
                 _stuff: [
                   {
-                    _op: "Header",
+                    _symbol: "Header",
                     class: "header",
                     _stuff: [
                       {
-                        _op: "H1",
+                        _symbol: "H1",
                         _stuff: [
                           "todos"
                         ]
                       },
                       {
-                        _op: "Input",
+                        _symbol: "Input",
                         class: "new-todo",
                         placeholder: "What needs to be done?"
                       }
                     ]
                   },
                   {
-                    _op: "Section",
+                    _symbol: "Section",
                     class: "main",
                     _stuff: [
                       {
-                        _op: "Input",
+                        _symbol: "Input",
                         class: "toggle-all",
                         type: "checkbox"
                       },
                       {
-                        _op: "Ul",
+                        _symbol: "Ul",
                         class: "todo-list",
                         _stuff: {
-                          _op: "Chain",
+                          _symbol: "Chain",
                           _stuff: [
-                            { _op: "domain" },
-                            { _op: "tasks" },
+                            { _symbol: "domain" },
+                            { _symbol: "tasks" },
                             { 
-                              _op: "map",
+                              _symbol: "map",
                               _stuff: [
                                 {
-                                  _op: "Lambda",
+                                  _symbol: "Lambda",
                                   task: "Task",
                                   _stuff: [
                                     {
-                                      _op: "Li",
+                                      _symbol: "Li",
                                       _stuff: [
                                         {
-                                          _op: "Div",
+                                          _symbol: "Div",
                                           class: "view",
                                           _stuff: [
                                             {
-                                              _op: "Input",
+                                              _symbol: "Input",
                                               class: "toggle",
                                               type: "checkbox",
                                             },
                                             {
-                                              _op: "Label",
+                                              _symbol: "Label",
                                               _stuff: {
-                                                _op: "Chain",
+                                                _symbol: "Chain",
                                                 _stuff: [
-                                                  { _op: "task" },
-                                                  { _op: "title" }
+                                                  { _symbol: "task" },
+                                                  { _symbol: "title" }
                                                 ]
                                               }
                                             },
                                             {
-                                              _op: "Button",
+                                              _symbol: "Button",
                                               class: "destroy",
                                             }
                                           ]
                                         },
                                         {
-                                          _op: "Input",
+                                          _symbol: "Input",
                                           class: "edit",
                                           value: {
-                                            _op: "Chain",
+                                            _symbol: "Chain",
                                             _stuff: [
-                                              { _op: "task" },
-                                              { _op: "title" }
+                                              { _symbol: "task" },
+                                              { _symbol: "title" }
                                             ]
                                           }
                                         }
@@ -138,47 +138,47 @@ var jsonObject = {
                     ]
                   },
                   {
-                    _op: "Footer",
+                    _symbol: "Footer",
                     class: "footer",
                     _stuff: [
                       {
-                        _op: "Span",
+                        _symbol: "Span",
                         class: "todo-count",
                         _stuff: [
                           {
-                            _op: "Strong",
+                            _symbol: "Strong",
                             _stuff: {
-                              _op: "Chain",
+                              _symbol: "Chain",
                               _stuff: [
-                                { _op: "domain" },
-                                { _op: "tasks" },
-                                { _op: "count" }
+                                { _symbol: "domain" },
+                                { _symbol: "tasks" },
+                                { _symbol: "count" }
                               ]
                             }
                           },
                           {
-                            _op: "Span",
+                            _symbol: "Span",
                             _stuff: " "
                           },
                           {
-                            _op: "Span",
+                            _symbol: "Span",
                             _stuff: "item"
                           },
                           {
-                            _op: "Span",
+                            _symbol: "Span",
                             _stuff: " left"
                           }
                         ]
                       },
                       {
-                        _op: "Ul",
+                        _symbol: "Ul",
                         class: "filters",
                         _stuff: [
                           {
-                            _op: "Li",
+                            _symbol: "Li",
                             _stuff: [
                               {
-                                _op: "A",
+                                _symbol: "A",
                                 href: "#/",
                                 class: "selected",
                                 _stuff: "All"
@@ -186,28 +186,28 @@ var jsonObject = {
                             ]
                           },
                           {
-                            _op: "Span",
+                            _symbol: "Span",
                             class: "span"
                           },
                           {
-                            _op: "Li",
+                            _symbol: "Li",
                             _stuff: [
                               {
-                                _op: "A",
+                                _symbol: "A",
                                 href: "#/active",
                                 _stuff: "Active"
                               }
                             ]
                           },
                           {
-                            _op: "Span",
+                            _symbol: "Span",
                             class: "span"
                           },
                           {
-                            _op: "Li",
+                            _symbol: "Li",
                             _stuff: [
                               {
-                                _op: "A",
+                                _symbol: "A",
                                 href: "#/completed",
                                 _stuff: "Completed"
                               }
@@ -216,7 +216,7 @@ var jsonObject = {
                         ]
                       },
                       {
-                        _op: "Button",
+                        _symbol: "Button",
                         class: "clear-completed",
                         _stuff: "Clear Completed"
                       }
@@ -227,30 +227,30 @@ var jsonObject = {
             ]
           },
           {
-            _op: "Footer",
+            _symbol: "Footer",
             class: "info",
             _stuff: [
               {
-                _op: "P",
+                _symbol: "P",
                 _stuff: "Double-click to edit a todo"
               },
               {
-                _op: "P",
+                _symbol: "P",
                 _stuff: [
                   "Created by ",
                   {
-                    _op: "A",
+                    _symbol: "A",
                     href: "http://github.com/emeitch/",
                     _stuff: "Hideyuki MORITA (emeitch)"
                   }
                 ]
               },
               {
-                _op: "P",
+                _symbol: "P",
                 _stuff: [
                   "Part of ",
                   {
-                    _op: "A",
+                    _symbol: "A",
                     href: "http://todomvc.com",
                     _stuff: "TodoMVC"
                   }
@@ -298,7 +298,7 @@ function box(src={}) {
     return new Box(JSON.stringify(src));
   }
     
-  if (HTML_TAGS.includes(src._op)) {
+  if (HTML_TAGS.includes(src._symbol)) {
     return DOM.parse(src);
   }
     
@@ -383,7 +383,7 @@ class Environment {
     this.parentsMap = new Map();
     this.setupParents(root, []);
     
-    this.stack = [];
+    this.stacks = [];
   }
         
   setupParents(box, path) {
@@ -403,9 +403,9 @@ class Environment {
   }
   
   stack(box, block) {
-    this.stack.push(box);
+    this.stacks.push(box);
     const result = block();
-    this.stack.pop();
+    this.stacks.pop();
     return result;
   }
   
@@ -416,14 +416,14 @@ class Environment {
   
   context(current) {
     const parents = this.parents(current);
-    const context = parents.concat(this.stack);
+    const context = parents.concat(this.stacks);
     context.reverse();
     return context;
   }
   
-  ref(current, sym) {
+  ref(current, symbol) {
     for (let box of this.context(current)) {
-      const prop = box.props[sym];
+      const prop = box.props[symbol];
       if (prop) {
         if (typeof(prop) == "function") {
           return prop(box);
@@ -433,13 +433,13 @@ class Environment {
       }
     }
     
-    const plugin = Plugin.get(sym);
+    const plugin = Plugin.get(symbol);
     if (plugin) {
       return plugin;
     }
 
     try {
-      const parsed = JSON.parse(sym);
+      const parsed = JSON.parse(symbol);
       const type = typeof(parsed)
       if (type === "number") {
         return Literal.create(parsed);
@@ -459,8 +459,8 @@ class Environment {
 }
 
 class Ref {
-  constructor(op, props=new Props(), stuff=new Stuff()) {
-    this.op = op;
+  constructor(symbol, props=new Props(), stuff=new Stuff()) {
+    this.symbol = symbol;
     
     // todo Refには本質的に不要。ナイーブな実装なのでどうにかしたい
     this.props = props;
@@ -476,7 +476,7 @@ class Ref {
   }
           
   eval(env) {
-    return env.ref(this, this.op);
+    return env.ref(this, this.symbol);
   }
 }
 
@@ -484,13 +484,13 @@ class Box extends Ref {
   static parse(src, ...inheritedOptions) {
     {
       const length = Object.getOwnPropertyNames(src).length;
-      const opOnly = src._op != undefined && length == 1;
-      if (opOnly) {
-        return new Ref(src._op);
+      const symbolOnly = src._symbol != undefined && length == 1;
+      if (symbolOnly) {
+        return new Ref(src._symbol);
       }
     }
         
-    const op = src._op ? src._op : "Box";
+    const symbol = src._symbol ? src._symbol : "Box";
         
     const props = Object.getOwnPropertyNames(src)
       .filter(k => k[0] !== '_')
@@ -501,14 +501,14 @@ class Box extends Ref {
     const stuff = stf.map(i => box(i));
         
     return new this(
-      op, 
+      symbol, 
       new Props(props),
       new Stuff(stuff),
       ...inheritedOptions);
   }
         
-  constructor(op="Box", props=new Props(), stuff=new Stuff(), evaluated=false) {
-    super(op, props, stuff);
+  constructor(symbol="Box", props=new Props(), stuff=new Stuff(), evaluated=false) {
+    super(symbol, props, stuff);
     this.props = props;
     this.stuff = stuff;
     this.evaluated = evaluated;
@@ -523,7 +523,7 @@ class Box extends Ref {
       return this;
     }
     
-    const operator = env.ref(this, this.op);
+    const operator = env.ref(this, this.symbol);
     if (!operator) {
       throw "Operator not found";
     }    
@@ -550,8 +550,8 @@ class PropMap extends Box {
     return new this("map", undefined, undefined, owner)
   }
   
-  constructor(op, props, stuff, owner) {
-    super(op, props, stuff)
+  constructor(symbol, props, stuff, owner) {
+    super(symbol, props, stuff)
     this.owner = owner;
   }
   
@@ -614,7 +614,7 @@ Plugin.set("Entity", new Entity());
 
 class DOM extends Box {
   constructor(tag, props, stuff) {
-    // todo 適切なopを指定する
+    // todo 適切なsymbolを指定する
     super("Box", props, stuff);
     this.tag = tag;
   }
