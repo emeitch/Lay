@@ -368,13 +368,30 @@ class Stuff {
 }
 
 const plugins = {};
+const pluginRules = [];
 class Plugin {
-  static get(key) {
-    return plugins[key];
+  static get(symbol) {
+    let plugin = plugins[symbol];
+    if (plugin) {
+      return plugin;
+    }
+    
+    for (let rule of pluginRules) {
+      plugin = rule(symbol);
+      if (plugin) {
+        return plugin;
+      }
+    }
+    
+    return undefined;
   }
 
   static set(key, box) {
     plugins[key] = box;
+  }
+  
+  static rule(rule) {
+    pluginRules.push(rule);
   }
 }
 
@@ -436,22 +453,6 @@ class Environment {
     const plugin = Plugin.get(symbol);
     if (plugin) {
       return plugin;
-    }
-
-    try {
-      const parsed = JSON.parse(symbol);
-      const type = typeof(parsed)
-      if (type === "number") {
-        return Literal.create(parsed);
-      } else if (type === "string") {
-        return Literal.create(parsed);
-      } else if (type === "boolean") {
-        return Literal.create(parsed);
-      }
-    } catch(e) {
-      if (e.constructor !== SyntaxError) {
-        throw e;
-      }
     }
 
     return undefined;
@@ -557,9 +558,8 @@ class PropMap extends Box {
   
   apply(operand, env) {
     const block = operand.stuff.one;
-    const argkey = block.keys[0]; // todo key値の型と一致するか確認
+    const argkey = block.keys[0]; // todo key値の型と一致するか検証
     return this.owner.stuff.map(item => {
-      // todo stuffにMapボックスが存在すると無限ループになるのをうまく解決 / そもそもstuffがMapボックスになる状況のセマンティクスとは何か?
       const arg = item.eval(env);
       const props = block.props.clone({[argkey]: arg});
       const b = block.clone({props});
@@ -582,6 +582,25 @@ class Literal extends Box {
     return this;
   }  
 }
+Plugin.rule(symbol => {
+  try {
+    const parsed = JSON.parse(symbol);
+    const type = typeof(parsed)
+    if (type === "number") {
+      return Literal.create(parsed);
+    } else if (type === "string") {
+      return Literal.create(parsed);
+    } else if (type === "boolean") {
+      return Literal.create(parsed);
+    }
+  } catch(e) {
+    if (e.constructor !== SyntaxError) {
+      throw e;
+    }
+  }
+  return undefined;
+});
+
 
 class Chain extends Box {
   apply(operand, env) {
