@@ -274,24 +274,6 @@ const LITERAL_TYPES = [
   "boolean"
 ];
 
-const HTML_TAGS = [
-  "Body",
-  "Section",
-  "Footer",
-  "Header",
-  "P",
-  "Ul",
-  "Li",
-  "Input",
-  "Button",
-  "Div",
-  "Span",
-  "H1",
-  "Label",
-  "Strong",
-  "A",
-];
-
 function box(src={}) {
   const type = typeof(src);
   if (LITERAL_TYPES.includes(type)) {
@@ -659,6 +641,23 @@ class DOM extends Box {
     )];
   }
 }
+const HTML_TAGS = [
+  "Body",
+  "Section",
+  "Footer",
+  "Header",
+  "P",
+  "Ul",
+  "Li",
+  "Input",
+  "Button",
+  "Div",
+  "Span",
+  "H1",
+  "Label",
+  "Strong",
+  "A",
+];
 for (let tag of HTML_TAGS) {
   const cls = class extends DOM {
     get tag() {
