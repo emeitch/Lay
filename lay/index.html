@@ -297,11 +297,7 @@ function box(src={}) {
   if (LITERAL_TYPES.includes(type)) {
     return new Box(JSON.stringify(src));
   }
-    
-  if (HTML_TAGS.includes(src._symbol)) {
-    return DOM.parse(src);
-  }
-    
+      
   return Box.parse(src);
 }
 
@@ -638,8 +634,7 @@ PLUGINS.set("Entity", Entity);
 class DOM extends Box {
   constructor(tag, props, stuff) {
     // todo 適切なsymbolを指定する
-    super("Box", props, stuff);
-    this.tag = tag;
+    super(tag, props, stuff);
   }
   
   render() {
@@ -663,6 +658,14 @@ class DOM extends Box {
       children
     )];
   }
+}
+for (let tag of HTML_TAGS) {
+  const cls = class extends DOM {
+    get tag() {
+      return tag;
+    }
+  }
+  PLUGINS.set(tag, cls);
 }
 
 function vdom(src) { 
