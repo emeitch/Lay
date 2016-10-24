@@ -512,8 +512,6 @@ class Box extends Ref {
       }
     }
         
-    const symbol = src._symbol ? src._symbol : "Box";
-        
     const props = Object.getOwnPropertyNames(src)
       .filter(k => k[0] !== '_')
       .reduce((p, k) => Object.assign(p, {[k]: box(src[k])}), {});
@@ -523,7 +521,7 @@ class Box extends Ref {
     const stuff = stf.map(i => box(i));
         
     return new this(
-      symbol, 
+      src._symbol, 
       new Props(props),
       new Stuff(stuff),
       ...inheritedOptions);
