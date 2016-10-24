@@ -320,7 +320,7 @@ class Props extends PropsBase {
   }
   
   count(owner) {
-    return Literal.create(owner.stuff.raws.length)
+    return new Literal(owner.stuff.raws.length)
   }
 }
 
@@ -551,10 +551,6 @@ class Box extends Ref {
 PLUGINS.set("Box", Box);
 
 class Literal extends Box {
-  static create(value) {
-    return new this(value);
-  }
-  
   constructor(value) {
     super("Literal", undefined, undefined, true);
     this.value = value;
@@ -569,11 +565,11 @@ PLUGINS.rule(symbol => {
     const parsed = JSON.parse(symbol);
     const type = typeof(parsed)
     if (type === "number") {
-      return Literal.create(parsed);
+      return new Literal(parsed);
     } else if (type === "string") {
-      return Literal.create(parsed);
+      return new Literal(parsed);
     } else if (type === "boolean") {
-      return Literal.create(parsed);
+      return new Literal(parsed);
     }
   } catch(e) {
     if (e.constructor !== SyntaxError) {
@@ -614,11 +610,6 @@ class Entity extends Box {
 PLUGINS.set("Entity", Entity);
 
 class DOM extends Box {
-  constructor(tag, props, stuff) {
-    // todo 適切なsymbolを指定する
-    super(tag, props, stuff);
-  }
-  
   render() {
     const attrs = this.keys.reduce((r, n) => Object.assign(r, {[n]: this.props[n].value}), {});
     const children = flatten(this.stuff.raws.map(b => {
