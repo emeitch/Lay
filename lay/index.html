@@ -519,12 +519,26 @@ class Box extends Ref {
     const s = src._stuff;
     const stf = s ? (Array.isArray(s) ? s : [s]) : [];
     const stuff = stf.map(i => box(i));
+    
+    const plugin = PLUGINS.get(src._symbol);
+    const cls = plugin ? plugin : this;
         
-    return new this(
+    return new cls(
       src._symbol, 
       new Props(props),
       new Stuff(stuff),
       ...inheritedOptions);
+  }
+  
+  static apply(operand, env) {
+    const props = operand.props.eval(env);
+    const stuff = operand.stuff.eval(env);
+
+    return operand.clone({
+      props,
+      stuff,
+      evaluated: true
+    });
   }
         
   constructor(symbol="Box", props=new Props(), stuff=new Stuff(), evaluated=false) {
@@ -552,18 +566,11 @@ class Box extends Ref {
     return result.eval(env);
   }
   
-  apply(operand, env) {
-    const props = operand.props.eval(env);
-    const stuff = operand.stuff.eval(env);
-
-    return operand.clone({
-      props,
-      stuff,
-      evaluated: true
-    });
-  }  
+  apply(...args) {
+    return this.constructor.apply(...args);
+  }
 }
-PLUGINS.set("Box", new Box(undefined, undefined, undefined, true));
+PLUGINS.set("Box", Box);
 
 class Literal extends Box {
   static create(value) {
@@ -600,7 +607,7 @@ PLUGINS.rule(symbol => {
 
 
 class Chain extends Box {
-  apply(operand, env) {
+  static apply(operand, env) {
     const raws = operand.stuff.raws;
     const chain = raws.slice(-(raws.length-1));
     const receiver = operand.stuff.one.eval(env);
@@ -614,19 +621,19 @@ class Chain extends Box {
     receiver);
   }
 }
-PLUGINS.set("Chain", new Chain());
+PLUGINS.set("Chain", Chain);
 
 class Lambda extends Box {
-  apply(operand, env) {
+  static apply(operand, env) {
     const item = operand.stuff.one;
     return env.stack(operand, () => item.eval(env));
   }
 }
-PLUGINS.set("Lambda", new Lambda());
+PLUGINS.set("Lambda", Lambda);
 
 class Entity extends Box {
 }
-PLUGINS.set("Entity", new Entity());
+PLUGINS.set("Entity", Entity);
 
 class DOM extends Box {
   constructor(tag, props, stuff) {
