@@ -444,14 +444,6 @@ class Environment {
 class Box {
   static parse(src, ...inheritedOptions) {
     {
-      const length = Object.getOwnPropertyNames(src).length;
-      const symbolOnly = src._symbol != undefined && length == 1;
-      if (symbolOnly) {
-        return new Ref(src._symbol);
-      }
-    }
-    
-    {
       const type = typeof(src);
       if (Literal.types.includes(type)) {
         src = { _symbol: JSON.stringify(src) }
@@ -501,19 +493,28 @@ class Box {
   get keys() {
     return Object.getOwnPropertyNames(this.props)
   }
+  
+  isReference() {
+    return this.keys.length == 0 && this.stuff.raws.length == 0;
+  }
     
   eval(env) {
     if (this.evaluated) {
       return this;
     }
     
-    const operator = env.ref(this, this.symbol);
-    if (!operator) {
-      throw "Operator not found";
-    }    
+    const ref = env.ref(this, this.symbol);
+    if (!ref) {
+      throw "reference not found";
+    }
     
-    const result = operator.apply(this, env);
-    return result.eval(env);
+    if (this.isReference()) {
+      return ref;
+    } else {
+      const operator = ref;
+      const result = operator.apply(this, env);
+      return result.eval(env);
+    }
   }
   
   apply(...args) {
@@ -531,13 +532,17 @@ class Literal extends Box {
       "boolean"
     ];
   }
-    
-  get value() {
-    return JSON.parse(this.symbol);
+  
+  eval(env) {
+    return this;
   }
-
+  
   apply(operand, env) {
     return this;
+  }
+  
+  get value() {
+    return JSON.parse(this.symbol);
   }
 }
 PLUGINS.rule(symbol => {
@@ -557,11 +562,6 @@ PLUGINS.rule(symbol => {
   return undefined;
 });
 
-class Ref extends Box {
-  eval(env) {
-    return env.ref(this, this.symbol);
-  }
-}
 
 class Chain extends Box {
   static apply(operand, env) {
@@ -580,6 +580,7 @@ class Chain extends Box {
 }
 PLUGINS.set("Chain", Chain);
 
+
 class Lambda extends Box {
   static apply(operand, env) {
     const item = operand.stuff.one;
@@ -588,9 +589,11 @@ class Lambda extends Box {
 }
 PLUGINS.set("Lambda", Lambda);
 
+
 class Entity extends Box {
 }
 PLUGINS.set("Entity", Entity);
+
 
 class DOM extends Box {
   render() {
