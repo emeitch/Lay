@@ -268,21 +268,6 @@ function flatten(array) {
   return Array.prototype.concat.apply([], array);
 }
 
-const LITERAL_TYPES = [
-  "number",
-  "string",
-  "boolean"
-];
-
-function box(src={}) {
-  const type = typeof(src);
-  if (LITERAL_TYPES.includes(type)) {
-    return new Box(JSON.stringify(src));
-  }
-      
-  return Box.parse(src);
-}
-
 // Props base class for getOwnPropertyNames
 class PropsBase {
   constructor(raws={}) {
@@ -483,6 +468,13 @@ class Ref {
 class Box extends Ref {
   static parse(src, ...inheritedOptions) {
     {
+      const type = typeof(src);
+      if (Literal.types.includes(type)) {
+        return new Literal(src);
+      }
+    }
+    
+    {
       const length = Object.getOwnPropertyNames(src).length;
       const symbolOnly = src._symbol != undefined && length == 1;
       if (symbolOnly) {
@@ -492,11 +484,11 @@ class Box extends Ref {
         
     const props = Object.getOwnPropertyNames(src)
       .filter(k => k[0] !== '_')
-      .reduce((p, k) => Object.assign(p, {[k]: box(src[k])}), {});
+      .reduce((p, k) => Object.assign(p, {[k]: Box.parse(src[k])}), {});
 
     const s = src._stuff;
     const stf = s ? (Array.isArray(s) ? s : [s]) : [];
-    const stuff = stf.map(i => box(i));
+    const stuff = stf.map(i => Box.parse(i));
     
     const plugin = PLUGINS.get(src._symbol);
     const cls = plugin ? plugin : this;
@@ -550,34 +542,24 @@ class Box extends Ref {
 }
 PLUGINS.set("Box", Box);
 
+
 class Literal extends Box {
+  static get types() {
+    return [
+      "number",
+      "string",
+      "boolean"
+    ];
+  }
+  
   constructor(value) {
-    super("Literal", undefined, undefined, true);
-    this.value = value;
+    super(value, undefined, undefined, true);
   }
 
   apply(operand, env) {
     return this;
-  }  
-}
-PLUGINS.rule(symbol => {
-  try {
-    const parsed = JSON.parse(symbol);
-    const type = typeof(parsed)
-    if (type === "number") {
-      return new Literal(parsed);
-    } else if (type === "string") {
-      return new Literal(parsed);
-    } else if (type === "boolean") {
-      return new Literal(parsed);
-    }
-  } catch(e) {
-    if (e.constructor !== SyntaxError) {
-      throw e;
-    }
   }
-  return undefined;
-});
+}
 
 
 class Chain extends Box {
@@ -611,12 +593,10 @@ PLUGINS.set("Entity", Entity);
 
 class DOM extends Box {
   render() {
-    const attrs = this.keys.reduce((r, n) => Object.assign(r, {[n]: this.props[n].value}), {});
+    const attrs = this.keys.reduce((r, n) => Object.assign(r, {[n]: this.props[n].symbol}), {});
     const children = flatten(this.stuff.raws.map(b => {
-      const self = this;
-      
-      if (b.value != undefined) {
-        return b.value.toString();
+      if (b instanceof Literal) {
+        return b.symbol.toString();
       }
       
       if (b.render) {
@@ -665,7 +645,7 @@ function vdom(src) {
   return app.props.presentation.props.body.render()[0];
 }
 
-const src = box(jsonObject).props.TodoMVC;
+const src = Box.parse(jsonObject).props.TodoMVC;
 
 // Initializes the projector 
 var projector = maquette.createProjector();
