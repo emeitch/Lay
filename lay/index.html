@@ -443,29 +443,7 @@ class Environment {
   }
 }
 
-class Ref {
-  constructor(symbol, props=new Props(), stuff=new Stuff()) {
-    this.symbol = symbol;
-    
-    // todo Refには本質的に不要。ナイーブな実装なのでどうにかしたい
-    this.props = props;
-    this.stuff = stuff;
-  }
-    
-  clone(params) {
-    return Object.assign(new this.constructor(), this, params);
-  }
-  
-  get keys() {
-    return Object.getOwnPropertyNames(this.props)
-  }
-
-  eval(env) {
-    return env.ref(this, this.symbol);
-  }
-}
-
-class Box extends Ref {
+class Box {
   static parse(src, ...inheritedOptions) {
     {
       const type = typeof(src);
@@ -512,7 +490,7 @@ class Box extends Ref {
   }
         
   constructor(symbol="Box", props=new Props(), stuff=new Stuff(), evaluated=false) {
-    super(symbol, props, stuff);
+    this.symbol = symbol;
     this.props = props;
     this.stuff = stuff;
     this.evaluated = evaluated;
@@ -520,6 +498,10 @@ class Box extends Ref {
     
   clone(params) {
     return Object.assign(new this.constructor(), this, params);
+  }
+  
+  get keys() {
+    return Object.getOwnPropertyNames(this.props)
   }
     
   eval(env) {
@@ -561,6 +543,11 @@ class Literal extends Box {
   }
 }
 
+class Ref extends Box {
+  eval(env) {
+    return env.ref(this, this.symbol);
+  }
+}
 
 class Chain extends Box {
   static apply(operand, env) {
