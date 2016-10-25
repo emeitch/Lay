@@ -187,7 +187,6 @@ var jsonObject = {
                           },
                           {
                             _symbol: "Span",
-                            class: "span"
                           },
                           {
                             _symbol: "Li",
@@ -201,7 +200,6 @@ var jsonObject = {
                           },
                           {
                             _symbol: "Span",
-                            class: "span"
                           },
                           {
                             _symbol: "Li",
@@ -345,8 +343,8 @@ class Stuff {
 
 class Plugins {
   constructor() {
-    this.all = {};
     this.rules = [];
+    this.all = {};
   }
   
   get(symbol) {
@@ -361,16 +359,16 @@ class Plugins {
         return plugin;
       }
     }
-    
+
     return undefined;
   }
 
-  set(symbol, box) {
-    this.all[symbol] = box;
-  }
-  
   rule(rule) {
     this.rules.push(rule);
+  }
+  
+  set(symbol, box) {
+    this.all[symbol] = box;
   }
 }
 const PLUGINS = new Plugins();
@@ -446,20 +444,20 @@ class Environment {
 class Box {
   static parse(src, ...inheritedOptions) {
     {
-      const type = typeof(src);
-      if (Literal.types.includes(type)) {
-        return new Literal(src);
-      }
-    }
-    
-    {
       const length = Object.getOwnPropertyNames(src).length;
       const symbolOnly = src._symbol != undefined && length == 1;
       if (symbolOnly) {
         return new Ref(src._symbol);
       }
     }
-        
+    
+    {
+      const type = typeof(src);
+      if (Literal.types.includes(type)) {
+        src = { _symbol: JSON.stringify(src) }
+      }
+    }
+    
     const props = Object.getOwnPropertyNames(src)
       .filter(k => k[0] !== '_')
       .reduce((p, k) => Object.assign(p, {[k]: Box.parse(src[k])}), {});
@@ -533,15 +531,31 @@ class Literal extends Box {
       "boolean"
     ];
   }
-  
-  constructor(value) {
-    super(value, undefined, undefined, true);
+    
+  get value() {
+    return JSON.parse(this.symbol);
   }
 
   apply(operand, env) {
     return this;
   }
 }
+PLUGINS.rule(symbol => {
+  try {
+    const value = JSON.parse(symbol);
+    const type = typeof(value);
+    if (Literal.types.includes(type)) {
+      return Literal;
+    }
+  } catch(e) {
+    if (e instanceof SyntaxError) {
+    } else {
+      throw e;
+    }
+  }
+  
+  return undefined;
+});
 
 class Ref extends Box {
   eval(env) {
@@ -580,10 +594,10 @@ PLUGINS.set("Entity", Entity);
 
 class DOM extends Box {
   render() {
-    const attrs = this.keys.reduce((r, n) => Object.assign(r, {[n]: this.props[n].symbol}), {});
+    const attrs = this.keys.reduce((r, n) => Object.assign(r, {[n]: this.props[n].value}), {});
     const children = flatten(this.stuff.raws.map(b => {
       if (b instanceof Literal) {
-        return b.symbol.toString();
+        return b.value.toString();
       }
       
       if (b.render) {
