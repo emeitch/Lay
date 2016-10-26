@@ -162,7 +162,23 @@ var jsonObject = {
                           },
                           {
                             _symbol: "Span",
-                            _stuff: "item"
+                            _stuff: {
+                              _symbol: "if",
+                              cond: {
+                                _symbol: "Chain",
+                                _stuff: [
+                                  { _symbol: "domain" },
+                                  { _symbol: "tasks" },
+                                  { _symbol: "count" },
+                                  { 
+                                    _symbol: "equals",
+                                    _stuff: 1
+                                  }
+                                ]
+                              },
+                              then: "item",
+                              else: "items"
+                            }
                           },
                           {
                             _symbol: "Span",
@@ -285,6 +301,18 @@ class PropsBase {
   }
 }
 class Props extends PropsBase {
+  get equals() {
+    class PropEquals extends Box {
+      apply(operand, env) {
+        const left = JSON.stringify(env.upper(this).eval(env));
+        const right = JSON.stringify(operand.stuff.one.eval(env));
+        return new Literal(left == right);
+      }
+    }
+    
+    return new PropEquals();
+  }
+  
   get map() {
     class PropMap extends Box {
       apply(operand, env) {
@@ -310,7 +338,7 @@ class Props extends PropsBase {
       
       apply(operand, env) {
         const count = env.upper(this).stuff.raws.length;
-        return new Literal(count);
+        return new Literal(JSON.stringify(count));
       }
     }
     
@@ -581,6 +609,19 @@ class Chain extends Box {
   }
 }
 PLUGINS.set("Chain", Chain);
+
+
+class If extends Box {
+  static apply(operand, env) {
+    const cond = operand.props.cond.eval(env).value;
+    if (cond) {
+      return operand.props.then.eval(env);
+    } else {
+      return operand.props.else.eval(env);
+    }
+  }
+}
+PLUGINS.set("if", If);
 
 
 class Lambda extends Box {
