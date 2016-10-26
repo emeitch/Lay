@@ -302,8 +302,19 @@ class Props extends PropsBase {
     return new PropMap();
   }
   
-  count(owner) {
-    return new Literal(owner.stuff.raws.length)
+  get count() {
+    class PropCount extends Box {
+      isReference() {
+        return false;
+      }
+      
+      apply(operand, env) {
+        const count = env.upper(this).stuff.raws.length;
+        return new Literal(count);
+      }
+    }
+    
+    return new PropCount();
   }
 }
 
@@ -420,11 +431,7 @@ class Environment {
     for (let box of this.context(current)) {
       const prop = box.props[symbol];
       if (prop) {
-        if (typeof(prop) == "function") {
-          return prop(box);
-        } else {
-          return prop;
-        }
+        return prop;
       }
     }
     
@@ -468,7 +475,7 @@ class Box {
       ...inheritedOptions);
   }
   
-  static apply(operand, env) {
+  static apply(operand, env) {    
     const props = operand.props.eval(env);
     const stuff = operand.stuff.eval(env);
 
@@ -503,22 +510,21 @@ class Box {
       return this;
     }
     
-    const ref = env.ref(this, this.symbol);
-    if (!ref) {
+    const operator = env.ref(this, this.symbol);
+    if (!operator) {
       throw "reference not found";
     }
     
-    if (this.isReference()) {
-      return ref;
-    } else {
-      const operator = ref;
-      const result = operator.apply(this, env);
-      return result.eval(env);
-    }
+    const result = operator.apply(this, env);
+    return result.eval(env);
   }
   
-  apply(...args) {
-    return this.constructor.apply(...args);
+  apply(operand, env) {
+    if (operand.isReference()) {
+      return this; // reference
+    }
+
+    return this.constructor.apply(operand, env);
   }
 }
 PLUGINS.set("Box", Box);
