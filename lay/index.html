@@ -476,7 +476,7 @@ class Environment {
   ref(current, symbol) {
     for (let box of this.context(current)) {
       const prop = box.props[symbol];
-      if (prop) {
+      if (prop && prop != current) {
         return prop;
       }
     }
@@ -506,7 +506,18 @@ class Box {
     const props = Object.getOwnPropertyNames(src)
       .filter(k => k[0] !== '_')
       .reduce((p, k) => Object.assign(p, {[k]: Box.parse(src[k])}), {});
-
+      
+    const on = src._on;
+    if (on) {
+      Object.getOwnPropertyNames(on).forEach(k => {
+        const event = on[k];
+        if (!event._synbol) {
+          event._symbol = "Event";
+        }
+        props[k] = Box.parse(event);
+      });
+    }
+      
     const s = src._stuff;
     const stf = s ? (Array.isArray(s) ? s : [s]) : [];
     const stuff = stf.map(i => Box.parse(i));
@@ -609,6 +620,20 @@ PLUGINS.rule(symbol => {
   
   return undefined;
 });
+
+class Event extends Box {
+}
+PLUGINS.set("Event", Event);
+
+
+class Self extends Box {
+}
+PLUGINS.set("self", Self);
+
+
+class ArrayAppend extends Box {
+}
+PLUGINS.set("append", ArrayAppend)
 
 
 class Chain extends Box {
