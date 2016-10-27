@@ -622,6 +622,10 @@ PLUGINS.rule(symbol => {
 });
 
 class Event extends Box {
+  static apply(operand, env) {
+    // 評価済みとしてそのままを返す
+    return operand.clone({ evaluated: true });
+  }
 }
 PLUGINS.set("Event", Event);
 
