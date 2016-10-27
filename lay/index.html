@@ -16,6 +16,24 @@ var jsonObject = {
         completed: "bool"
       },
       tasks: {
+        _on: {
+          create: {
+            title: "string",
+            _stuff: {
+              _symbol: "Chain",
+              _stuff: [
+                { _symbol: "self" },
+                { _symbol: "append",
+                  _stuff: {
+                    _symbol: "Task",
+                    title: { _symbol: "title" },
+                    completed: false
+                  }
+                }
+              ]
+            }
+          }
+        },
         _stuff: [
           {
             _symbol: "Task",
