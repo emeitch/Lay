@@ -77,7 +77,12 @@ var jsonObject = {
                       {
                         _symbol: "Input",
                         class: "new-todo",
-                        placeholder: "What needs to be done?"
+                        placeholder: "What needs to be done?",
+                        _on: {
+                          keyup: {
+                            data: "new-todo-input"
+                          }
+                        }
                       }
                     ]
                   },
