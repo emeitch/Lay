@@ -691,8 +691,23 @@ PLUGINS.set("Entity", Entity);
 
 
 class DOM extends Box {
+  constructor(...args) {
+    super(...args);
+    this.handler = (event) => {
+      console.log(this.props.keyup.props.data.value);
+    }
+  }
+  
   render() {
-    const attrs = this.keys.reduce((r, n) => Object.assign(r, {[n]: this.props[n].value}), {});
+    const attrs = this.keys.reduce((r, k) => {
+      const prop = this.props[k];
+      if (prop instanceof Event) {
+        return Object.assign(r, {["on"+k]: this.handler})
+      } else {
+        return Object.assign(r, {[k]: prop.value})  
+      }
+    }
+    ,{});
     const children = flatten(this.stuff.raws.map(b => {
       if (b instanceof Literal) {
         return b.value.toString();
