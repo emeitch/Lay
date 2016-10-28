@@ -693,8 +693,10 @@ PLUGINS.set("Entity", Entity);
 class DOM extends Box {
   constructor(...args) {
     super(...args);
+    
     this.handler = (event) => {
-      console.log(this.props.keyup.props.data.value);
+      const e = this.props[event.type];
+      console.log(e.props.data.value);
     }
   }
   
