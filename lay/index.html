@@ -78,9 +78,20 @@ var jsonObject = {
                         _symbol: "Input",
                         class: "new-todo",
                         placeholder: "What needs to be done?",
-                        _on: {
+                        _relay: {
                           keyup: {
-                            data: "new-todo-input"
+                            _stuff: {
+                              _symbol: "Chain",
+                              _stuff: [
+                                { _symbol: "domain" },
+                                { _symbol: "tasks" },
+                                { _symbol: "create",
+                                  title: {
+                                    _symbol: "value"
+                                  }
+                                }
+                              ]
+                            }
                           }
                         }
                       }
@@ -317,8 +328,10 @@ class PropsBase {
   
   eval(env) {
     const keys = Object.getOwnPropertyNames(this);
-    const raws = keys.reduce((p, k) => 
-      Object.assign(p, {[k]: this[k].eval(env)}),
+    const raws = keys.reduce((p, k) => {
+        const prop = this[k];
+        return Object.assign(p, {[k]: prop.eval(env)});
+      },
       {});
     return new this.constructor(raws);
   }
@@ -522,6 +535,17 @@ class Box {
         props[k] = Box.parse(event);
       });
     }
+    
+    const relay = src._relay;
+    if (relay) {
+      Object.getOwnPropertyNames(relay).forEach(k => {
+        const event = relay[k];
+        if (!event._synbol) {
+          event._symbol = "Event";
+        }
+        props[k] = Box.parse(event);
+      });
+    }
       
     const s = src._stuff;
     const stf = s ? (Array.isArray(s) ? s : [s]) : [];
@@ -696,8 +720,15 @@ class DOM extends Box {
     
     this.handler = (event) => {
       const e = this.props[event.type];
-      console.log(e.props.data.value);
+      // Event.applyはcloneしかしないので、Box.applyで評価する
+      const adapt = Box.apply(e, this.constructor.env); 
+      console.log(adapt);
     }
+    
+    // this.props.value = () => {
+    //   const value = this.dom ? this.dom.value : undefined;
+    //   return new Literal(value);
+    // }
   }
   
   render() {
@@ -721,11 +752,13 @@ class DOM extends Box {
       
       return [];
     }));
-    return [maquette.h(
+    const dom = maquette.h(
       this.tag,
       attrs,
       children
-    )];
+    );
+    this.dom = dom;
+    return [dom];
   }
 }
 const HTML_TAGS = [
@@ -754,19 +787,21 @@ for (let tag of HTML_TAGS) {
   PLUGINS.set(tag, cls);
 }
 
-function vdom(src) { 
-  const env = new Environment(src);
-  const app = src.eval(env);
-  console.log(app);
+const src = Box.parse(jsonObject).props.TodoMVC;
+const app = src.eval(new Environment(src));
+console.log(app);
+
+const env = new Environment(app);
+DOM.env = env;
+
+function vdom(app) { 
   return app.props.presentation.props.body.render()[0];
 }
-
-const src = Box.parse(jsonObject).props.TodoMVC;
 
 // Initializes the projector 
 var projector = maquette.createProjector();
 window.document.addEventListener('DOMContentLoaded', function () {
-   projector.replace(window.document.body, () => vdom(src));
+   projector.replace(window.document.body, () => vdom(app));
 });
 
 </script>
