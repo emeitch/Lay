@@ -342,7 +342,7 @@ class Props extends PropsBase {
       apply(operand, env) {
         const left = JSON.stringify(env.upper(this).eval(env));
         const right = JSON.stringify(operand.stuff.one.eval(env));
-        return new Literal(left == right);
+        return Literal.create(left == right);
       }
     }
     
@@ -374,7 +374,7 @@ class Props extends PropsBase {
       
       apply(operand, env) {
         const count = env.upper(this).stuff.raws.length;
-        return new Literal(JSON.stringify(count));
+        return Literal.create(count);
       }
     }
     
@@ -617,6 +617,10 @@ PLUGINS.set("Box", Box);
 
 
 class Literal extends Box {
+  static create(value) {
+    return new this(JSON.stringify(value));
+  }
+  
   static get types() {
     return [
       "number",
@@ -637,7 +641,7 @@ PLUGINS.rule(symbol => {
   try {
     const value = JSON.parse(symbol);
     const type = typeof(value);
-    if (Literal.types.includes(type)) {
+    if (Literal.types.includes(type) || value == null) {
       return Literal;
     }
   } catch(e) {
@@ -651,10 +655,6 @@ PLUGINS.rule(symbol => {
 });
 
 class Event extends Box {
-  static apply(operand, env) {
-    // 評価済みとしてそのままを返す
-    return operand.clone({ evaluated: true });
-  }
 }
 PLUGINS.set("Event", Event);
 
@@ -718,17 +718,17 @@ class DOM extends Box {
   constructor(...args) {
     super(...args);
     
+    this.props.value = Literal.create("");
     this.handler = (event) => {
+      // todo このthisはコールバック時にsrcのthisになっているおり本来期待されるものではない。原因はclone時にはhandlerそのものが上書きコピーされ再生成されたものになっていないため
+      // todo またpropsに強制副作用なのをやめたい
+      this.props.value = Literal.create(event.target.value);
+      
       const e = this.props[event.type];
-      // Event.applyはcloneしかしないので、Box.applyで評価する
-      const adapt = Box.apply(e, this.constructor.env); 
-      console.log(adapt);
+      const adapt = Box.apply(e, this.constructor.env);
+      
+      console.log(adapt.stuff.raws[0]);
     }
-    
-    // this.props.value = () => {
-    //   const value = this.dom ? this.dom.value : undefined;
-    //   return new Literal(value);
-    // }
   }
   
   render() {
@@ -752,13 +752,12 @@ class DOM extends Box {
       
       return [];
     }));
-    const dom = maquette.h(
+    const vdom = maquette.h(
       this.tag,
       attrs,
       children
     );
-    this.dom = dom;
-    return [dom];
+    return [vdom];
   }
 }
 const HTML_TAGS = [
@@ -788,20 +787,19 @@ for (let tag of HTML_TAGS) {
 }
 
 const src = Box.parse(jsonObject).props.TodoMVC;
-const app = src.eval(new Environment(src));
-console.log(app);
-
-const env = new Environment(app);
+const env = new Environment(src);
 DOM.env = env;
-
-function vdom(app) { 
+  
+function vdom() {
+  const app = src.eval(env);
+  console.log(app);
   return app.props.presentation.props.body.render()[0];
 }
 
 // Initializes the projector 
 var projector = maquette.createProjector();
 window.document.addEventListener('DOMContentLoaded', function () {
-   projector.replace(window.document.body, () => vdom(app));
+   projector.replace(window.document.body, () => vdom());
 });
 
 </script>
