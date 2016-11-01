@@ -450,26 +450,35 @@ const PLUGINS = new Plugins();
 
 class Environment {
   constructor(root) {
-    this.parentsMap = new Map();
-    this.setupParents(root, []);
+    this.roots = [];
+    this.parentsMaps = new Map();
     
     this.stacks = [];
+    
+    this.append(root);
+  }
+  
+  append(root) {
+    this.roots.push(root);
+    this.parentsMaps.set(root, this.setupParents(root, [], new Map()));
   }
         
-  setupParents(box, path) {
-    this.parentsMap.set(box, path);
+  setupParents(box, path, map) {
+    map.set(box, path);
 
     const pth = path.slice(); // dupulication
     pth.push(box);
     
     for (let key of box.keys) {
       const prop = box.props[key];
-      this.setupParents(prop, pth);
+      this.setupParents(prop, pth, map);
     }
     
     for (let raw of box.stuff.raws) {
-      this.setupParents(raw, pth);
+      this.setupParents(raw, pth, map);
     }
+    
+    return map;
   }
   
   stack(box, block) {
@@ -479,9 +488,24 @@ class Environment {
     return result;
   }
   
+  get root() {
+    return this.roots[this.roots.length-1];
+  }
+  
   parents(box) {
-    const parents = this.parentsMap.get(box);
+    const parentsMap = this.parentsMaps.get(this.root);
+    const parents = parentsMap.get(box);
     return parents ? parents : [];
+  }
+  
+  parent(box) {
+    const parents = this.parents(box);
+    const parent = parents[parents.length-1];
+    return parent ? parent : this;
+  }
+  
+  replace(old, root) {
+    this.append(root);
   }
   
   context(current) {
@@ -612,6 +636,60 @@ class Box {
 
     return this.constructor.apply(operand, env);
   }
+
+  keyOf(child) {
+    const key = this.keys.find(key => this.props[key] == child);
+    const index = this.stuff.raws.findIndex(s => s == child);
+    return key || index;
+  }
+
+  replace(old, child, env) {
+    const key = this.keyOf(old);
+    this.set(this.keyOf(old), child, env);
+  }
+  
+  set(key, child, env) {
+    if (typeof(key) === "string") {
+      const props = this.props.clone({[key]: child});
+      const clone = this.clone({props});
+      const parent = env.parent(this);
+      parent.replace(this, clone, env);
+    } else if (typeof(key) === "number") {
+      const stuff = this.stuff.clone();
+      stuff.raws[key] = child;
+      const clone = this.clone({stuff});
+      const parent = env.parent(this);
+      parent.replace(this, clone, env);
+    }
+  }
+  
+  find(pred) {
+    // todo 探索遅いので最適化する
+    for (let key of this.keys) {
+      const box = this.props[key];
+      if (pred(box)) {
+        return box;
+      }
+      
+      const result = box.find(pred);
+      if (result) {
+        return result;
+      }      
+    }
+    
+    for (let box of this.stuff.raws) {
+      if (pred(box)) {
+        return box;
+      }
+      
+      const result = box.find(pred);
+      if (result) {
+        return result;
+      }
+    }
+    
+    return undefined;
+  }
 }
 PLUGINS.set("Box", Box);
 
@@ -713,21 +791,30 @@ class Entity extends Box {
 }
 PLUGINS.set("Entity", Entity);
 
-
+let boxDomId = 0;
 class DOM extends Box {
   constructor(...args) {
     super(...args);
     
-    this.props.value = Literal.create("");
+    this.boxDomId = boxDomId++;
+    
+    // todo valueを参照するのでデフォルト値を設定している。後でうまく捌きたい
+    this.props.value = Literal.create(null);
+    
     this.handler = (event) => {
-      // todo このthisはコールバック時にsrcのthisになっているおり本来期待されるものではない。原因はclone時にはhandlerそのものが上書きコピーされ再生成されたものになっていないため
-      // todo またpropsに強制副作用なのをやめたい
-      this.props.value = Literal.create(event.target.value);
+      const env = this.constructor.env;
       
-      const e = this.props[event.type];
-      const adapt = Box.apply(e, this.constructor.env);
+      {
+        const boxDom = env.root.find(b => b.boxDomId == event.target.boxDomId);
+        boxDom.set("value", Literal.create(event.target.value), env);
+      }
       
-      console.log(adapt.stuff.raws[0]);
+      {
+        const boxDom = env.root.find(b => b.boxDomId == event.target.boxDomId);
+        const e = this.props[event.type];
+        const adapt = e.eval(env);
+        console.log(adapt.stuff.raws[0]);
+      }
     }
   }
   
@@ -741,6 +828,9 @@ class DOM extends Box {
       }
     }
     ,{});
+    
+    attrs.boxDomId = this.boxDomId;
+    
     const children = flatten(this.stuff.raws.map(b => {
       if (b instanceof Literal) {
         return b.value.toString();
@@ -791,7 +881,7 @@ const env = new Environment(src);
 DOM.env = env;
   
 function vdom() {
-  const app = src.eval(env);
+  const app = env.root.eval(env);
   console.log(app);
   return app.props.presentation.props.body.render()[0];
 }
