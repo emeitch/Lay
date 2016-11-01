@@ -517,7 +517,7 @@ class Environment {
   
   ref(current, symbol) {
     for (let box of this.context(current)) {
-      const prop = box.props[symbol];
+      const prop = box.get(symbol);
       if (prop && prop != current) {
         return prop;
       }
@@ -610,7 +610,7 @@ class Box {
   get keys() {
     return Object.getOwnPropertyNames(this.props)
   }
-  
+    
   isReference() {
     return this.keys.length == 0 && this.stuff.raws.length == 0;
   }
@@ -638,7 +638,7 @@ class Box {
   }
 
   keyOf(child) {
-    const key = this.keys.find(key => this.props[key] == child);
+    const key = this.keys.find(key => this.get(key) == child);
     const index = this.stuff.raws.findIndex(s => s == child);
     return key || index;
   }
@@ -646,6 +646,11 @@ class Box {
   replace(old, child, env) {
     const key = this.keyOf(old);
     this.set(this.keyOf(old), child, env);
+  }
+  
+  get(key) {
+    const prop = this.props[key];
+    return prop;
   }
   
   set(key, child, env) {
@@ -666,7 +671,7 @@ class Box {
   find(pred) {
     // todo 探索遅いので最適化する
     for (let key of this.keys) {
-      const box = this.props[key];
+      const box = this.get(key);
       if (pred(box)) {
         return box;
       }
@@ -767,11 +772,11 @@ PLUGINS.set("Chain", Chain);
 
 class If extends Box {
   static apply(operand, env) {
-    const cond = operand.props.cond.eval(env).value;
+    const cond = operand.get("cond").eval(env).value;
     if (cond) {
-      return operand.props.then.eval(env);
+      return operand.get("then").eval(env);
     } else {
-      return operand.props.else.eval(env);
+      return operand.get("else").eval(env);
     }
   }
 }
@@ -811,7 +816,7 @@ class DOM extends Box {
       
       {
         const boxDom = env.root.find(b => b.boxDomId == event.target.boxDomId);
-        const e = this.props[event.type];
+        const e = this.get(event.type);
         const adapt = e.eval(env);
         console.log(adapt.stuff.raws[0]);
       }
@@ -820,7 +825,7 @@ class DOM extends Box {
   
   render() {
     const attrs = this.keys.reduce((r, k) => {
-      const prop = this.props[k];
+      const prop = this.get(k);
       if (prop instanceof Event) {
         return Object.assign(r, {["on"+k]: this.handler})
       } else {
@@ -876,14 +881,14 @@ for (let tag of HTML_TAGS) {
   PLUGINS.set(tag, cls);
 }
 
-const src = Box.parse(jsonObject).props.TodoMVC;
+const src = Box.parse(jsonObject).get("TodoMVC");
 const env = new Environment(src);
 DOM.env = env;
   
 function vdom() {
   const app = env.root.eval(env);
   console.log(app);
-  return app.props.presentation.props.body.render()[0];
+  return app.get("presentation").get("body").render()[0];
 }
 
 // Initializes the projector 
