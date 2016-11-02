@@ -519,6 +519,14 @@ class Environment {
   upper(current) {
     return this.context(current)[0];
   }
+  
+  get(...keys) {
+    let val = this.root;
+    for (let key of keys) {
+      val = this.stack(val, () => val.get(key).eval(this));
+    }
+    return val;
+  }
 }
 
 class Box {
@@ -579,6 +587,10 @@ class Box {
       stuff,
       proto: operator
     });
+  }
+  
+  static get(key) {
+    return undefined;
   }
         
   constructor(symbol="Box", props=new Props(), stuff=new Stuff(), proto=undefined) {
@@ -641,8 +653,8 @@ class Box {
     const prop = this.props[key];
     if (prop) {
       return prop;
-    } else if (this.proto && this.proto.props) {
-      const prop = this.proto.props[key];
+    } else if (this.proto) {
+      const prop = this.proto.get(key);
       if (prop) {
         return prop;
       }
@@ -917,11 +929,7 @@ const env = new Environment(Box.parse(instance));
 DOM.env = env;
   
 function vdom() {
-  // todo TodoMVC.domain.tasksをprotoとして参照できるようにあらかじめevalしている。これをなくしたい
-  // todo instanceをsatckしておかないと、instance内部を参照できない状況をどうにかしたい
-  const instance = env.root.get("instance").eval(env);
-  const body = env.stack(instance, () => instance.get("presentation").get("body").eval(env));
-  return body.render()[0];
+  return env.get("instance", "presentation", "body").render()[0];
 }
 
 // Initializes the projector 
