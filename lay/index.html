@@ -35,21 +35,6 @@ var jsonObject = {
           }
         },
         _stuff: [
-          {
-            _symbol: "Task",
-            title: "buy a milk",
-            completed: false,
-          },
-          {
-            _symbol: "Task",
-            title: "buy a coffee",
-            completed: false,
-          },
-          {
-            _symbol: "Task",
-            title: "buy a tea",
-            completed: true,
-          }
         ]
       }
     },
@@ -585,22 +570,22 @@ class Box {
       ...inheritedOptions);
   }
   
-  static apply(operand, env) {    
+  static apply(operand, env, operator=this) {    
     const props = operand.props.eval(env);
     const stuff = operand.stuff.eval(env);
 
     return operand.clone({
       props,
       stuff,
-      evaluated: true
+      proto: operator
     });
   }
         
-  constructor(symbol="Box", props=new Props(), stuff=new Stuff(), evaluated=false) {
+  constructor(symbol="Box", props=new Props(), stuff=new Stuff(), proto=undefined) {
     this.symbol = symbol;
     this.props = props;
     this.stuff = stuff;
-    this.evaluated = evaluated;
+    this.proto = proto;
   }
     
   clone(params) {
@@ -614,9 +599,13 @@ class Box {
   isReference() {
     return this.keys.length == 0 && this.stuff.raws.length == 0;
   }
+  
+  isEvaluated() {
+    return this.proto != undefined;
+  }
     
   eval(env) {
-    if (this.evaluated) {
+    if (this.isEvaluated()) {
       return this;
     }
     
@@ -625,16 +614,16 @@ class Box {
       throw "reference not found";
     }
     
-    const result = operator.apply(this, env);
+    const result = operator.apply(this, env, operator);
     return result.eval(env);
   }
   
-  apply(operand, env) {
+  apply(operand, env, operator) {
     if (operand.isReference()) {
       return this; // reference
     }
 
-    return this.constructor.apply(operand, env);
+    return this.constructor.apply(operand, env, operator);
   }
 
   keyOf(child) {
@@ -650,7 +639,16 @@ class Box {
   
   get(key) {
     const prop = this.props[key];
-    return prop;
+    if (prop) {
+      return prop;
+    } else if (this.proto && this.proto.props) {
+      const prop = this.proto.props[key];
+      if (prop) {
+        return prop;
+      }
+    }
+    
+    return undefined;
   }
   
   set(key, child, env) {
@@ -881,14 +879,49 @@ for (let tag of HTML_TAGS) {
   PLUGINS.set(tag, cls);
 }
 
-const src = Box.parse(jsonObject).get("TodoMVC");
-const env = new Environment(src);
+const instance = Object.assign({}, jsonObject, {
+  instance: {
+    _symbol: "TodoMVC",
+    domain: {
+      tasks: {
+        _symbol: "Chain",
+        _stuff: [
+          { _symbol: "TodoMVC" },
+          { _symbol: "domain" },
+          { _symbol: "tasks",
+            _stuff: [
+              {
+                _symbol: "Task",
+                title: "buy a milk",
+                completed: false,
+              },
+              {
+                _symbol: "Task",
+                title: "buy a coffee",
+                completed: false,
+              },
+              {
+                _symbol: "Task",
+                title: "buy a tea",
+                completed: true,
+              }
+            ]
+          }          
+        ]
+      }
+    }
+  }
+});
+
+const env = new Environment(Box.parse(instance));
 DOM.env = env;
   
 function vdom() {
-  const app = env.root.eval(env);
-  console.log(app);
-  return app.get("presentation").get("body").render()[0];
+  // todo TodoMVC.domain.tasksをprotoとして参照できるようにあらかじめevalしている。これをなくしたい
+  // todo instanceをsatckしておかないと、instance内部を参照できない状況をどうにかしたい
+  const instance = env.root.get("instance").eval(env);
+  const body = env.stack(instance, () => instance.get("presentation").get("body").eval(env));
+  return body.render()[0];
 }
 
 // Initializes the projector 
