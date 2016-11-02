@@ -808,36 +808,38 @@ PLUGINS.set("Entity", Entity);
 
 let boxDomId = 0;
 class DOM extends Box {
+  static createHandlers(env) {
+    return {
+      keyup: (event) => {
+        {
+          const boxDom = env.root.find(b => b.boxDomId == event.target.boxDomId);
+          boxDom.set("value", Literal.create(event.target.value), env);
+        }
+        
+        {
+          const boxDom = env.root.find(b => b.boxDomId == event.target.boxDomId);
+          const e = boxDom.get(event.type);
+          const adapt = e.eval(env);
+          console.log(adapt.stuff.raws[0]);
+        }
+      }
+    }
+  }
+  
   constructor(...args) {
     super(...args);
     
     this.boxDomId = boxDomId++;
     
-    // todo valueを参照するのでデフォルト値を設定している。後でうまく捌きたい
+    // todo valueを参照されることがあるのでデフォルト値を設定している。後でうまく捌きたい
     this.props.value = Literal.create(null);
-    
-    this.handler = (event) => {
-      const env = this.constructor.env;
-      
-      {
-        const boxDom = env.root.find(b => b.boxDomId == event.target.boxDomId);
-        boxDom.set("value", Literal.create(event.target.value), env);
-      }
-      
-      {
-        const boxDom = env.root.find(b => b.boxDomId == event.target.boxDomId);
-        const e = this.get(event.type);
-        const adapt = e.eval(env);
-        console.log(adapt.stuff.raws[0]);
-      }
-    }
   }
   
-  render() {
+  render(handlers) {
     const attrs = this.keys.reduce((r, k) => {
       const prop = this.get(k);
       if (prop instanceof Event) {
-        return Object.assign(r, {["on"+k]: this.handler})
+        return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
         return Object.assign(r, {[k]: prop.value})  
       }
@@ -852,7 +854,7 @@ class DOM extends Box {
       }
       
       if (b.render) {
-        return b.render();
+        return b.render(handlers);
       }
       
       return [];
@@ -926,10 +928,10 @@ const instance = Object.assign({}, jsonObject, {
 });
 
 const env = new Environment(Box.parse(instance));
-DOM.env = env;
+const handlers = DOM.createHandlers(env);
   
 function vdom() {
-  return env.get("instance", "presentation", "body").render()[0];
+  return env.get("instance", "presentation", "body").render(handlers)[0];
 }
 
 // Initializes the projector 
