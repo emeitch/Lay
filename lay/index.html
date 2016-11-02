@@ -928,16 +928,16 @@ const instance = Object.assign({}, jsonObject, {
 });
 
 const env = new Environment(Box.parse(instance));
+
 const handlers = DOM.createHandlers(env);
-  
-function vdom() {
+function render() {
   return env.get("instance", "presentation", "body").render(handlers)[0];
 }
 
 // Initializes the projector 
 var projector = maquette.createProjector();
 window.document.addEventListener('DOMContentLoaded', function () {
-   projector.replace(window.document.body, () => vdom());
+   projector.replace(window.document.body, render);
 });
 
 </script>
