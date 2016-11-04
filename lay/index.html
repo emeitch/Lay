@@ -934,7 +934,6 @@ function render() {
   return env.get("instance", "presentation", "body").render(handlers)[0];
 }
 
-// Initializes the projector 
 var projector = maquette.createProjector();
 window.document.addEventListener('DOMContentLoaded', function () {
    projector.replace(window.document.body, render);
