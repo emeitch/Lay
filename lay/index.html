@@ -536,6 +536,19 @@ class Environment {
 
 
 class Box {
+  static uuid() {
+    var uuid = "", i, random;
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+      
+      if (i == 8 || i == 12 || i == 16 || i == 20) {
+        uuid += "-"
+      }
+      uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+    }
+    return uuid;
+  }
+  
   static parse(src, ...inheritedOptions) {
     {
       const type = typeof(src);
@@ -600,6 +613,7 @@ class Box {
   }
         
   constructor(symbol="Box", props=new Props(), stuff=new Stuff(), proto=undefined) {
+    this.id = this.constructor.uuid();
     this.symbol = symbol;
     this.props = props;
     this.stuff = stuff;
@@ -813,18 +827,17 @@ class Entity extends Box {
 PLUGINS.set("Entity", Entity);
 
 
-let boxDomId = 0;
 class DOM extends Box {
   static createHandlers(env) {
     return {
       keyup: (event) => {
         {
-          const boxDom = env.root.find(b => b.boxDomId == event.target.boxDomId);
+          const boxDom = env.root.find(b => b.id == event.target.getAttribute("boxid"));
           boxDom.set("value", Literal.create(event.target.value), env);
         }
         
         {
-          const boxDom = env.root.find(b => b.boxDomId == event.target.boxDomId);
+          const boxDom = env.root.find(b => b.id == event.target.getAttribute("boxid"));
           const e = boxDom.get(event.type);
           const adapt = e.eval(env);
           console.log(adapt.stuff.raws[0]);
@@ -835,8 +848,6 @@ class DOM extends Box {
   
   constructor(...args) {
     super(...args);
-    this.boxDomId = boxDomId++;
-    
     // todo valueを参照されることがあるのでデフォルト値を設定している。後でうまく捌きたい
     this.props.value = Literal.create(null);
   }
@@ -852,7 +863,7 @@ class DOM extends Box {
     }
     ,{});
     
-    attrs.boxDomId = this.boxDomId;
+    attrs["boxid"] = this.id;
     
     const children = flatten(this.stuff.raws.map(b => {
       if (b instanceof Literal) {
