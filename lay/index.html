@@ -438,13 +438,10 @@ class Plugins {
 const PLUGINS = new Plugins();
 
 
-class Environment {
+class Store {
   constructor(root) {
     this.roots = [];
     this.parentsMaps = new Map();
-    
-    this.stacks = [];
-    
     this.append(root);
   }
   
@@ -452,7 +449,7 @@ class Environment {
     this.roots.push(root);
     this.parentsMaps.set(root, this.setupParents(root, [], new Map()));
   }
-        
+
   setupParents(box, path, map) {
     map.set(box, path);
 
@@ -470,18 +467,11 @@ class Environment {
     
     return map;
   }
-  
-  stack(box, block) {
-    this.stacks.push(box);
-    const result = block();
-    this.stacks.pop();
-    return result;
-  }
-  
+
   get root() {
     return this.roots[this.roots.length-1];
   }
-  
+
   parents(box) {
     const parentsMap = this.parentsMaps.get(this.root);
     const parents = parentsMap.get(box);
@@ -493,13 +483,32 @@ class Environment {
     const parent = parents[parents.length-1];
     return parent ? parent : this;
   }
-  
+    
   replace(old, root) {
     this.append(root);
   }
+}
+
+
+class Environment {
+  constructor(root) {
+    this.store = new Store(root);
+    this.stacks = [];
+  }
+  
+  stack(box, block) {
+    this.stacks.push(box);
+    const result = block();
+    this.stacks.pop();
+    return result;
+  }
+  
+  parent(box) {
+    return this.store.parent(box);
+  }
   
   context(current) {
-    const parents = this.parents(current);
+    const parents = this.store.parents(current);
     const context = parents.concat(this.stacks);
     context.reverse();
     return context;
@@ -526,11 +535,15 @@ class Environment {
   }
   
   get(...keys) {
-    let val = this.root;
+    let val = this.store.root;
     for (let key of keys) {
       val = this.stack(val, () => val.get(key).eval(this));
     }
     return val;
+  }
+  
+  find(pred) {
+    return this.store.root.find(pred);
   }
 }
 
@@ -832,12 +845,12 @@ class DOM extends Box {
     return {
       keyup: (event) => {
         {
-          const boxDom = env.root.find(b => b.id == event.target.getAttribute("boxid"));
+          const boxDom = env.find(b => b.id == event.target.getAttribute("boxid"));
           boxDom.set("value", Literal.create(event.target.value), env);
         }
         
         {
-          const boxDom = env.root.find(b => b.id == event.target.getAttribute("boxid"));
+          const boxDom = env.find(b => b.id == event.target.getAttribute("boxid"));
           const e = boxDom.get(event.type);
           const adapt = e.eval(env);
           console.log(adapt.stuff.raws[0]);
