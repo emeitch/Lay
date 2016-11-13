@@ -487,12 +487,25 @@ class Store {
   replace(old, root) {
     this.append(root);
   }
+  
+  get(...keys) {
+    let val = this.root;
+    for (let key of keys) {
+      const env = new Environment(this);
+      val = env.stack(val, () => val.get(key).eval(env));
+    }
+    return val;
+  }
+  
+  find(pred) {
+    return this.root.find(pred);
+  }
 }
 
 
 class Environment {
-  constructor(root) {
-    this.store = new Store(root);
+  constructor(store) {
+    this.store = store;
     this.stacks = [];
   }
   
@@ -502,11 +515,7 @@ class Environment {
     this.stacks.pop();
     return result;
   }
-  
-  parent(box) {
-    return this.store.parent(box);
-  }
-  
+    
   context(current) {
     const parents = this.store.parents(current);
     const context = parents.concat(this.stacks);
@@ -532,19 +541,7 @@ class Environment {
   
   upper(current) {
     return this.context(current)[0];
-  }
-  
-  get(...keys) {
-    let val = this.store.root;
-    for (let key of keys) {
-      val = this.stack(val, () => val.get(key).eval(this));
-    }
-    return val;
-  }
-  
-  find(pred) {
-    return this.store.root.find(pred);
-  }
+  }  
 }
 
 
@@ -677,9 +674,9 @@ class Box {
     return key || index;
   }
 
-  replace(old, child, env) {
+  replace(old, child, store) {
     const key = this.keyOf(old);
-    this.set(this.keyOf(old), child, env);
+    this.set(this.keyOf(old), child, store);
   }
   
   get(key) {
@@ -696,18 +693,18 @@ class Box {
     return undefined;
   }
   
-  set(key, child, env) {
+  set(key, child, store) {
     if (typeof(key) === "string") {
       const props = this.props.clone({[key]: child});
       const clone = this.clone({props});
-      const parent = env.parent(this);
-      parent.replace(this, clone, env);
+      const parent = store.parent(this);
+      parent.replace(this, clone, store);
     } else if (typeof(key) === "number") {
       const stuff = this.stuff.clone();
       stuff.raws[key] = child;
       const clone = this.clone({stuff});
-      const parent = env.parent(this);
-      parent.replace(this, clone, env);
+      const parent = store.parent(this);
+      parent.replace(this, clone, store);
     }
   }
   
@@ -841,17 +838,19 @@ PLUGINS.set("Entity", Entity);
 
 
 class DOM extends Box {
-  static createHandlers(env) {
+  static createHandlers(store) {
     return {
       keyup: (event) => {
         {
-          const boxDom = env.find(b => b.id == event.target.getAttribute("boxid"));
-          boxDom.set("value", Literal.create(event.target.value), env);
+          const box = store.find(b => b.id == event.target.getAttribute("boxid"));
+          box.set("value", Literal.create(event.target.value), store);
         }
         
         {
-          const boxDom = env.find(b => b.id == event.target.getAttribute("boxid"));
-          const e = boxDom.get(event.type);
+          const box = store.find(b => b.id == event.target.getAttribute("boxid"));
+          const e = box.get(event.type);
+          
+          const env = new Environment(store);
           const adapt = e.eval(env);
           console.log(adapt.stuff.raws[0]);
         }
@@ -958,11 +957,11 @@ const instance = Object.assign({}, jsonObject, {
   }
 });
 
-const env = new Environment(Box.parse(instance));
+const store = new Store(Box.parse(instance));
 
-const handlers = DOM.createHandlers(env);
+const handlers = DOM.createHandlers(store);
 function render() {
-  return env.get("instance", "presentation", "body").render(handlers)[0];
+  return store.get("instance", "presentation", "body").render(handlers)[0];
 }
 
 var projector = maquette.createProjector();
