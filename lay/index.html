@@ -961,7 +961,8 @@ const store = new Store(Box.parse(instance));
 
 const handlers = DOM.createHandlers(store);
 function render() {
-  return store.get("instance", "presentation", "body").render(handlers)[0];
+  const body = store.get("instance", "presentation", "body");
+  return body.render(handlers)[0];
 }
 
 var projector = maquette.createProjector();
