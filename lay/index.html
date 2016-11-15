@@ -622,7 +622,7 @@ class Box {
     return undefined;
   }
         
-  constructor(symbol="Box", props=new Props(), stuff=new Stuff(), proto=undefined) {
+  constructor(symbol=undefined, props=new Props(), stuff=new Stuff(), proto=undefined) {
     this.id = this.constructor.uuid();
     this.symbol = symbol;
     this.props = props;
@@ -651,9 +651,13 @@ class Box {
       return this;
     }
     
-    const operator = env.ref(this, this.symbol);
+    let operator = env.ref(this, this.symbol);
     if (!operator) {
-      throw "reference not found";
+      if (this.symbol === undefined) {
+        operator = Box
+      } else {
+        throw "reference not found";
+      }
     }
     
     const result = operator.apply(this, env, operator);
