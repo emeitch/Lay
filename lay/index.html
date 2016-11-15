@@ -326,7 +326,7 @@ class PropsBase {
 class Props extends PropsBase {
   get equals() {
     class PropEquals extends Box {
-      apply(operand, env) {
+      apply(operand, env, proto) {
         const left = JSON.stringify(env.upper(this).eval(env));
         const right = JSON.stringify(operand.stuff.one.eval(env));
         return Literal.create(left == right);
@@ -338,7 +338,7 @@ class Props extends PropsBase {
   
   get map() {
     class PropMap extends Box {
-      apply(operand, env) {
+      apply(operand, env, proto) {
         const block = operand.stuff.one;
         const argkey = block.keys[0]; // todo key値の型と一致するか検証
         return env.upper(this).stuff.map(item => {
@@ -359,7 +359,7 @@ class Props extends PropsBase {
         return false;
       }
       
-      apply(operand, env) {
+      apply(operand, env, proto) {
         const count = env.upper(this).stuff.raws.length;
         return Literal.create(count);
       }
@@ -488,13 +488,13 @@ class Store {
     this.append(root);
   }
   
-  get(...keys) {
-    let val = this.root;
-    for (let key of keys) {
-      const env = new Environment(this);
-      val = env.stack(val, () => val.get(key).eval(env));
-    }
-    return val;
+  get(key) {
+    const env = new Environment(this);
+    
+    const overwraped = this.root.overwraped(env);
+    this.append(overwraped);
+    
+    return overwraped.get(key).eval(env);
   }
   
   find(pred) {
@@ -575,7 +575,7 @@ class Box {
     if (on) {
       Object.getOwnPropertyNames(on).forEach(k => {
         const event = on[k];
-        if (!event._synbol) {
+        if (!event._symbol) {
           event._symbol = "Event";
         }
         props[k] = Box.parse(event);
@@ -586,7 +586,7 @@ class Box {
     if (relay) {
       Object.getOwnPropertyNames(relay).forEach(k => {
         const event = relay[k];
-        if (!event._synbol) {
+        if (!event._symbol) {
           event._symbol = "Event";
         }
         props[k] = Box.parse(event);
@@ -607,14 +607,37 @@ class Box {
       ...inheritedOptions);
   }
   
-  static apply(operand, env, operator=this) {    
+  static get evaluated() {
+    return true;
+  }
+  
+  static eval(env) {
+    return this;
+  }
+  
+  static apply(operand, env, proto=this) {    
     const props = operand.props.eval(env);
     const stuff = operand.stuff.eval(env);
-
+    
     return operand.clone({
       props,
       stuff,
-      proto: operator
+      proto,
+      evaluated: true
+    });
+  }
+  
+  static skeleton() {
+    return new this();
+  }
+  
+  static overwrap(skeleton, box) {
+    const props = Object.assign(skeleton.props, box.props);
+    const stuff = box.stuff.raws.length > 0 ? box.stuff.raws : skeleton.stuff.raws;
+    
+    return box.clone({
+      props: new Props(props),
+      stuff: new Stuff(stuff)
     });
   }
   
@@ -622,54 +645,94 @@ class Box {
     return undefined;
   }
         
-  constructor(symbol=undefined, props=new Props(), stuff=new Stuff(), proto=undefined) {
+  constructor(symbol=undefined, props=new Props(), stuff=new Stuff(), proto=undefined, evaluated=false) {
     this.id = this.constructor.uuid();
     this.symbol = symbol;
     this.props = props;
     this.stuff = stuff;
     this.proto = proto;
+    this.evaluated = evaluated;
   }
     
   clone(params) {
     return Object.assign(new this.constructor(), this, params);
   }
-  
+    
   get keys() {
     return Object.getOwnPropertyNames(this.props)
   }
-    
+  
   isReference() {
     return this.keys.length == 0 && this.stuff.raws.length == 0;
   }
   
-  isEvaluated() {
-    return this.proto != undefined;
+  overwraped(env) {
+    if (this.isReference()) {
+      return this; // reference
+    }
+    
+    let proto = env.ref(this, this.symbol);
+    if (!proto) {
+      proto = Box;
+    }
+    
+    const skeleton = proto.skeleton();
+    const overwraped = proto.overwrap(skeleton, this);
+    
+    return overwraped.clone({
+      props: new Props(overwraped.keys.reduce((p, k) => Object.assign(p, {[k]: overwraped.props[k].overwraped(env)}), {})),
+      stuff: new Stuff(overwraped.stuff.raws.map(s => s.overwraped(env))),
+    })
   }
     
   eval(env) {
-    if (this.isEvaluated()) {
+    if (this.evaluated) {
       return this;
     }
     
-    let operator = env.ref(this, this.symbol);
-    if (!operator) {
+    let proto = env.ref(this, this.symbol);
+    // todo 特殊対応すぎるので是正
+    if (!proto && this.proto && !(this.proto instanceof DOM) && !(this.proto instanceof Literal) && !(this.proto instanceof Event)) {
+      proto = env.ref(this, this.proto.symbol);
+    }
+    if (!proto) {
       if (this.symbol === undefined) {
-        operator = Box
+        proto = this.proto || Box;
       } else {
         throw "reference not found";
       }
     }
     
-    const result = operator.apply(this, env, operator);
-    return result.eval(env);
+    const evaluated = proto.apply(this, env, proto);
+    return evaluated.eval(env);
   }
   
-  apply(operand, env, operator) {
+  skeleton() {
+    const props = this.keys.reduce((p, k) => {
+      const prop = this.props[k];
+      return Object.assign(p, {[k]: prop.skeleton()});
+    }, {});
+    
+    const stuff = this.stuff.raws.map(s => s.skeleton());
+    
+    return new Box(
+      undefined,
+      new Props(props),
+      new Stuff(stuff),
+      this
+    );
+  }
+  
+  overwrap(skeleton, box) {
+    return this.constructor.overwrap(skeleton, box);
+  }
+
+  apply(operand, env, proto) {
     if (operand.isReference()) {
       return this; // reference
     }
 
-    return this.constructor.apply(operand, env, operator);
+    return this.constructor.apply(operand, env, proto);
   }
 
   keyOf(child) {
@@ -687,6 +750,9 @@ class Box {
     const prop = this.props[key];
     if (prop) {
       return prop;
+    } else if (this[key]) {
+      // todo かなり特別対応なので他の方法を要検討!!
+      return this[key];
     } else if (this.proto) {
       const prop = this.proto.get(key);
       if (prop) {
@@ -756,7 +822,7 @@ class Literal extends Box {
     ];
   }
   
-  apply(operand, env) {
+  apply(operand, env, proto) {
     return this;
   }
   
@@ -797,7 +863,7 @@ PLUGINS.set("append", ArrayAppend)
 
 
 class Chain extends Box {
-  static apply(operand, env) {
+  static apply(operand, env, proto) {
     const raws = operand.stuff.raws;
     const chain = raws.slice(-(raws.length-1));
     const receiver = operand.stuff.one.eval(env);
@@ -815,7 +881,7 @@ PLUGINS.set("Chain", Chain);
 
 
 class If extends Box {
-  static apply(operand, env) {
+  static apply(operand, env, proto) {
     const cond = operand.get("cond").eval(env).value;
     if (cond) {
       return operand.get("then").eval(env);
@@ -828,7 +894,7 @@ PLUGINS.set("if", If);
 
 
 class Lambda extends Box {
-  static apply(operand, env) {
+  static apply(operand, env, proto) {
     const item = operand.stuff.one;
     return env.stack(operand, () => item.eval(env));
   }
@@ -871,10 +937,10 @@ class DOM extends Box {
   render(handlers) {
     const attrs = this.keys.reduce((r, k) => {
       const prop = this.get(k);
-      if (prop instanceof Event) {
+      if (prop instanceof Event || prop.proto instanceof Event) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
-        return Object.assign(r, {[k]: prop.value})  
+        return Object.assign(r, {[k]: prop.get("value")})  
       }
     }
     ,{});
@@ -882,18 +948,22 @@ class DOM extends Box {
     attrs["boxid"] = this.id;
     
     const children = flatten(this.stuff.raws.map(b => {
-      if (b instanceof Literal) {
-        return b.value.toString();
+      const value = b.get("value");
+      const type = typeof(value);
+      if (type == "string" || type == "number") {
+        return value;
       }
       
-      if (b.render) {
-        return b.render(handlers);
+      const render = b.get("render");
+      if (typeof(render) == "function") {
+        return render.call(b, handlers);
       }
       
       return [];
     }));
+    
     const vdom = maquette.h(
-      this.tag,
+      this.get("tag"),
       attrs,
       children
     );
@@ -962,11 +1032,13 @@ const instance = Object.assign({}, jsonObject, {
 });
 
 const store = new Store(Box.parse(instance));
+console.log(store.get("instance"));
 
 const handlers = DOM.createHandlers(store);
 function render() {
-  const body = store.get("instance", "presentation", "body");
-  return body.render(handlers)[0];
+  const instance = store.get("instance");
+  const body = instance.get("presentation").get("body");
+  return body.get("render").call(body, handlers)[0];
 }
 
 var projector = maquette.createProjector();
