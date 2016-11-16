@@ -104,7 +104,7 @@ var jsonObject = {
                               _stuff: [
                                 {
                                   _symbol: "Lambda",
-                                  task: "Task",
+                                  task: { _symbol: "Argument", type: "Task" },
                                   _stuff: [
                                     {
                                       _symbol: "Li",
@@ -684,26 +684,31 @@ class Box {
       stuff: new Stuff(overwraped.stuff.raws.map(s => s.overwraped(env))),
     })
   }
+  
+  merged() {
+    if (!this.proto) {
+      return this.clone();
+    }
     
+    const mergedProto = this.proto.merged();
+    return mergedProto.clone({
+      props: new Props(Object.assign({}, this.props)),
+      stuff: new Stuff(Object.assign([], this.stuff.raws))
+    })
+  }
+  
   eval(env) {
     if (this.evaluated) {
       return this;
     }
     
-    let proto = env.ref(this, this.symbol);
-    // todo 特殊対応すぎるので是正
-    if (!proto && this.proto && !(this.proto instanceof DOM) && !(this.proto instanceof Literal) && !(this.proto instanceof Event)) {
-      proto = env.ref(this, this.proto.symbol);
-    }
+    const merged = this.merged();
+    const proto = merged.symbol ? env.ref(this, merged.symbol) : Box;
     if (!proto) {
-      if (this.symbol === undefined) {
-        proto = this.proto || Box;
-      } else {
-        throw "reference not found";
-      }
+      throw "reference not found";
     }
     
-    const evaluated = proto.apply(this, env, proto);
+    const evaluated = proto.apply(merged, env, proto);
     return evaluated.eval(env);
   }
   
@@ -892,6 +897,9 @@ class If extends Box {
 }
 PLUGINS.set("if", If);
 
+class Argument extends Box {
+}
+PLUGINS.set("Argument", Argument);
 
 class Lambda extends Box {
   static apply(operand, env, proto) {
