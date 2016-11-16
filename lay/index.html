@@ -686,12 +686,13 @@ class Box {
   }
   
   merged() {
-    if (!this.proto) {
+    if (!this.proto || !this.proto.merged) {
       return this.clone();
     }
     
     const mergedProto = this.proto.merged();
     return mergedProto.clone({
+      id: this.id,
       props: new Props(Object.assign({}, this.props)),
       stuff: new Stuff(Object.assign([], this.stuff.raws))
     })
@@ -755,9 +756,6 @@ class Box {
     const prop = this.props[key];
     if (prop) {
       return prop;
-    } else if (this[key]) {
-      // todo かなり特別対応なので他の方法を要検討!!
-      return this[key];
     } else if (this.proto) {
       const prop = this.proto.get(key);
       if (prop) {
@@ -943,35 +941,37 @@ class DOM extends Box {
   }
   
   render(handlers) {
-    const attrs = this.keys.reduce((r, k) => {
-      const prop = this.get(k);
-      if (prop instanceof Event || prop.proto instanceof Event) {
+    const merged = this.merged();
+    
+    const attrs = merged.keys.reduce((r, k) => {
+      const prop = merged.props[k];
+      const mergedProp = prop.merged();
+      if (mergedProp instanceof Event) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
-        return Object.assign(r, {[k]: prop.get("value")})  
+        return Object.assign(r, {[k]: mergedProp.value})  
       }
     }
     ,{});
     
-    attrs["boxid"] = this.id;
+    attrs["boxid"] = merged.id;
     
-    const children = flatten(this.stuff.raws.map(b => {
-      const value = b.get("value");
-      const type = typeof(value);
-      if (type == "string" || type == "number") {
-        return value;
+    const children = flatten(merged.stuff.raws.map(b => {
+      const mergedStuff = b.merged();
+      
+      if (mergedStuff instanceof Literal) {
+        return mergedStuff.value || "";
       }
       
-      const render = b.get("render");
-      if (typeof(render) == "function") {
-        return render.call(b, handlers);
+      if (mergedStuff instanceof DOM) {
+        return mergedStuff.render(handlers);
       }
       
       return [];
     }));
     
     const vdom = maquette.h(
-      this.get("tag"),
+      merged.tag,
       attrs,
       children
     );
@@ -1046,7 +1046,7 @@ const handlers = DOM.createHandlers(store);
 function render() {
   const instance = store.get("instance");
   const body = instance.get("presentation").get("body");
-  return body.get("render").call(body, handlers)[0];
+  return body.merged().render(handlers)[0];
 }
 
 var projector = maquette.createProjector();
