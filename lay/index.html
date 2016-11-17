@@ -492,8 +492,8 @@ class Store {
     const src = new Tree(root);
     this.srcs.push(src);
     
-    const overlay = new Tree(src.root.overlay(new Environment(src)));
-    const dst = new Tree(overlay.root.eval(new Environment(overlay)))
+    const overlay = new Tree(src.root.overlay(new Context(src)));
+    const dst = new Tree(overlay.root.eval(new Context(overlay)))
     this.dsts.push(dst);
   }
 
@@ -519,7 +519,7 @@ class Store {
   }
 }
 
-class Environment {
+class Context {
   constructor(tree) {
     this.tree = tree;
     this.stacks = [];
@@ -532,7 +532,7 @@ class Environment {
     return result;
   }
     
-  context(current) {
+  scope(current) {
     const parents = this.tree.parents(current);
     const context = parents.concat(this.stacks);
     context.reverse();
@@ -540,7 +540,7 @@ class Environment {
   }
   
   ref(current, symbol) {
-    for (let box of this.context(current)) {
+    for (let box of this.scope(current)) {
       const prop = box.get(symbol);
       if (prop && prop != current) {
         return prop;
@@ -556,7 +556,7 @@ class Environment {
   }
   
   upper(current) {
-    return this.context(current)[0];
+    return this.scope(current)[0];
   }  
 }
 
@@ -904,7 +904,7 @@ class DOM extends Box {
           const box = store.find(b => b.id == event.target.getAttribute("boxid"));
           const e = box.get(event.type);
           
-          const env = new Environment(store.head);
+          const env = new Context(store.head);
           const adapt = e.eval(env);
           console.log(adapt.stuff.raws[0]);
         }
