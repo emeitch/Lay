@@ -7,296 +7,6 @@
 <link rel="stylesheet" href="./index.css">
 <script src="maquette.min.js"></script>
 <script>
-var jsonObject = {
-  TodoMVC: {
-    domain: {
-      Task: {
-        _symbol: "Entity",
-        title: "string",
-        completed: "bool"
-      },
-      tasks: {
-        _on: {
-          create: {
-            title: "string",
-            _stuff: {
-              _symbol: "Chain",
-              _stuff: [
-                { _symbol: "self" },
-                { _symbol: "append",
-                  _stuff: {
-                    _symbol: "Task",
-                    title: { _symbol: "title" },
-                    completed: false
-                  }
-                }
-              ]
-            }
-          }
-        },
-        _stuff: [
-        ]
-      }
-    },
-    presentation: {
-      body: {
-        _symbol: "Body",
-        _stuff: [
-          {
-            _symbol: "Section",
-            class: "todoapp",
-            _stuff: [
-              {
-                _symbol: "Div",
-                _stuff: [
-                  {
-                    _symbol: "Header",
-                    class: "header",
-                    _stuff: [
-                      {
-                        _symbol: "H1",
-                        _stuff: [
-                          "todos"
-                        ]
-                      },
-                      {
-                        _symbol: "Input",
-                        class: "new-todo",
-                        placeholder: "What needs to be done?",
-                        _relay: {
-                          keyup: {
-                            _stuff: {
-                              _symbol: "Chain",
-                              _stuff: [
-                                { _symbol: "domain" },
-                                { _symbol: "tasks" },
-                                { _symbol: "create",
-                                  title: {
-                                    _symbol: "value"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    _symbol: "Section",
-                    class: "main",
-                    _stuff: [
-                      {
-                        _symbol: "Input",
-                        class: "toggle-all",
-                        type: "checkbox"
-                      },
-                      {
-                        _symbol: "Ul",
-                        class: "todo-list",
-                        _stuff: {
-                          _symbol: "Chain",
-                          _stuff: [
-                            { _symbol: "domain" },
-                            { _symbol: "tasks" },
-                            { 
-                              _symbol: "map",
-                              _stuff: [
-                                {
-                                  _symbol: "Lambda",
-                                  task: { _symbol: "Argument", type: "Task" },
-                                  _stuff: [
-                                    {
-                                      _symbol: "Li",
-                                      _stuff: [
-                                        {
-                                          _symbol: "Div",
-                                          class: "view",
-                                          _stuff: [
-                                            {
-                                              _symbol: "Input",
-                                              class: "toggle",
-                                              type: "checkbox",
-                                            },
-                                            {
-                                              _symbol: "Label",
-                                              _stuff: {
-                                                _symbol: "Chain",
-                                                _stuff: [
-                                                  { _symbol: "task" },
-                                                  { _symbol: "title" }
-                                                ]
-                                              }
-                                            },
-                                            {
-                                              _symbol: "Button",
-                                              class: "destroy",
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          _symbol: "Input",
-                                          class: "edit",
-                                          value: {
-                                            _symbol: "Chain",
-                                            _stuff: [
-                                              { _symbol: "task" },
-                                              { _symbol: "title" }
-                                            ]
-                                          }
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    _symbol: "Footer",
-                    class: "footer",
-                    _stuff: [
-                      {
-                        _symbol: "Span",
-                        class: "todo-count",
-                        _stuff: [
-                          {
-                            _symbol: "Strong",
-                            _stuff: {
-                              _symbol: "Chain",
-                              _stuff: [
-                                { _symbol: "domain" },
-                                { _symbol: "tasks" },
-                                { _symbol: "count" }
-                              ]
-                            }
-                          },
-                          {
-                            _symbol: "Span",
-                            _stuff: " "
-                          },
-                          {
-                            _symbol: "Span",
-                            _stuff: {
-                              _symbol: "if",
-                              cond: {
-                                _symbol: "Chain",
-                                _stuff: [
-                                  { _symbol: "domain" },
-                                  { _symbol: "tasks" },
-                                  { _symbol: "count" },
-                                  { 
-                                    _symbol: "equals",
-                                    _stuff: 1
-                                  }
-                                ]
-                              },
-                              then: "item",
-                              else: "items"
-                            }
-                          },
-                          {
-                            _symbol: "Span",
-                            _stuff: " left"
-                          }
-                        ]
-                      },
-                      {
-                        _symbol: "Ul",
-                        class: "filters",
-                        _stuff: [
-                          {
-                            _symbol: "Li",
-                            _stuff: [
-                              {
-                                _symbol: "A",
-                                href: "#/",
-                                class: "selected",
-                                _stuff: "All"
-                              }
-                            ]
-                          },
-                          {
-                            _symbol: "Span",
-                          },
-                          {
-                            _symbol: "Li",
-                            _stuff: [
-                              {
-                                _symbol: "A",
-                                href: "#/active",
-                                _stuff: "Active"
-                              }
-                            ]
-                          },
-                          {
-                            _symbol: "Span",
-                          },
-                          {
-                            _symbol: "Li",
-                            _stuff: [
-                              {
-                                _symbol: "A",
-                                href: "#/completed",
-                                _stuff: "Completed"
-                              }
-                            ]
-                          },
-                        ]
-                      },
-                      {
-                        _symbol: "Button",
-                        class: "clear-completed",
-                        _stuff: "Clear Completed"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            _symbol: "Footer",
-            class: "info",
-            _stuff: [
-              {
-                _symbol: "P",
-                _stuff: "Double-click to edit a todo"
-              },
-              {
-                _symbol: "P",
-                _stuff: [
-                  "Created by ",
-                  {
-                    _symbol: "A",
-                    href: "http://github.com/emeitch/",
-                    _stuff: "Hideyuki MORITA (emeitch)"
-                  }
-                ]
-              },
-              {
-                _symbol: "P",
-                _stuff: [
-                  "Part of ",
-                  {
-                    _symbol: "A",
-                    href: "http://todomvc.com",
-                    _stuff: "TodoMVC"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    }
-  }
-}
-
 
 function flatten(array) {
   return Array.prototype.concat.apply([], array);
@@ -987,7 +697,296 @@ for (let tag of HTML_TAGS) {
   ENV.set(tag, cls);
 }
 
-ENV.set("TodoMVC", Box.parse(jsonObject.TodoMVC));
+
+const TodoMVC = {
+  domain: {
+    Task: {
+      _symbol: "Entity",
+      title: "string",
+      completed: "bool"
+    },
+    tasks: {
+      _on: {
+        create: {
+          title: "string",
+          _stuff: {
+            _symbol: "Chain",
+            _stuff: [
+              { _symbol: "self" },
+              { _symbol: "append",
+                _stuff: {
+                  _symbol: "Task",
+                  title: { _symbol: "title" },
+                  completed: false
+                }
+              }
+            ]
+          }
+        }
+      },
+      _stuff: [
+      ]
+    }
+  },
+  presentation: {
+    body: {
+      _symbol: "Body",
+      _stuff: [
+        {
+          _symbol: "Section",
+          class: "todoapp",
+          _stuff: [
+            {
+              _symbol: "Div",
+              _stuff: [
+                {
+                  _symbol: "Header",
+                  class: "header",
+                  _stuff: [
+                    {
+                      _symbol: "H1",
+                      _stuff: [
+                        "todos"
+                      ]
+                    },
+                    {
+                      _symbol: "Input",
+                      class: "new-todo",
+                      placeholder: "What needs to be done?",
+                      _relay: {
+                        keyup: {
+                          _stuff: {
+                            _symbol: "Chain",
+                            _stuff: [
+                              { _symbol: "domain" },
+                              { _symbol: "tasks" },
+                              { _symbol: "create",
+                                title: {
+                                  _symbol: "value"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  _symbol: "Section",
+                  class: "main",
+                  _stuff: [
+                    {
+                      _symbol: "Input",
+                      class: "toggle-all",
+                      type: "checkbox"
+                    },
+                    {
+                      _symbol: "Ul",
+                      class: "todo-list",
+                      _stuff: {
+                        _symbol: "Chain",
+                        _stuff: [
+                          { _symbol: "domain" },
+                          { _symbol: "tasks" },
+                          { 
+                            _symbol: "map",
+                            _stuff: [
+                              {
+                                _symbol: "Lambda",
+                                task: { _symbol: "Argument", type: "Task" },
+                                _stuff: [
+                                  {
+                                    _symbol: "Li",
+                                    _stuff: [
+                                      {
+                                        _symbol: "Div",
+                                        class: "view",
+                                        _stuff: [
+                                          {
+                                            _symbol: "Input",
+                                            class: "toggle",
+                                            type: "checkbox",
+                                          },
+                                          {
+                                            _symbol: "Label",
+                                            _stuff: {
+                                              _symbol: "Chain",
+                                              _stuff: [
+                                                { _symbol: "task" },
+                                                { _symbol: "title" }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            _symbol: "Button",
+                                            class: "destroy",
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        _symbol: "Input",
+                                        class: "edit",
+                                        value: {
+                                          _symbol: "Chain",
+                                          _stuff: [
+                                            { _symbol: "task" },
+                                            { _symbol: "title" }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  _symbol: "Footer",
+                  class: "footer",
+                  _stuff: [
+                    {
+                      _symbol: "Span",
+                      class: "todo-count",
+                      _stuff: [
+                        {
+                          _symbol: "Strong",
+                          _stuff: {
+                            _symbol: "Chain",
+                            _stuff: [
+                              { _symbol: "domain" },
+                              { _symbol: "tasks" },
+                              { _symbol: "count" }
+                            ]
+                          }
+                        },
+                        {
+                          _symbol: "Span",
+                          _stuff: " "
+                        },
+                        {
+                          _symbol: "Span",
+                          _stuff: {
+                            _symbol: "if",
+                            cond: {
+                              _symbol: "Chain",
+                              _stuff: [
+                                { _symbol: "domain" },
+                                { _symbol: "tasks" },
+                                { _symbol: "count" },
+                                { 
+                                  _symbol: "equals",
+                                  _stuff: 1
+                                }
+                              ]
+                            },
+                            then: "item",
+                            else: "items"
+                          }
+                        },
+                        {
+                          _symbol: "Span",
+                          _stuff: " left"
+                        }
+                      ]
+                    },
+                    {
+                      _symbol: "Ul",
+                      class: "filters",
+                      _stuff: [
+                        {
+                          _symbol: "Li",
+                          _stuff: [
+                            {
+                              _symbol: "A",
+                              href: "#/",
+                              class: "selected",
+                              _stuff: "All"
+                            }
+                          ]
+                        },
+                        {
+                          _symbol: "Span",
+                        },
+                        {
+                          _symbol: "Li",
+                          _stuff: [
+                            {
+                              _symbol: "A",
+                              href: "#/active",
+                              _stuff: "Active"
+                            }
+                          ]
+                        },
+                        {
+                          _symbol: "Span",
+                        },
+                        {
+                          _symbol: "Li",
+                          _stuff: [
+                            {
+                              _symbol: "A",
+                              href: "#/completed",
+                              _stuff: "Completed"
+                            }
+                          ]
+                        },
+                      ]
+                    },
+                    {
+                      _symbol: "Button",
+                      class: "clear-completed",
+                      _stuff: "Clear Completed"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          _symbol: "Footer",
+          class: "info",
+          _stuff: [
+            {
+              _symbol: "P",
+              _stuff: "Double-click to edit a todo"
+            },
+            {
+              _symbol: "P",
+              _stuff: [
+                "Created by ",
+                {
+                  _symbol: "A",
+                  href: "http://github.com/emeitch/",
+                  _stuff: "Hideyuki MORITA (emeitch)"
+                }
+              ]
+            },
+            {
+              _symbol: "P",
+              _stuff: [
+                "Part of ",
+                {
+                  _symbol: "A",
+                  href: "http://todomvc.com",
+                  _stuff: "TodoMVC"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+};
+ENV.set("TodoMVC", Box.parse(TodoMVC));
+
 
 const instance = {
   _symbol: "TodoMVC",
