@@ -313,11 +313,11 @@ class PropsBase {
     return Object.assign(new this.constructor(), this, params);
   }
   
-  eval(env) {
+  eval(ctx) {
     const keys = Object.getOwnPropertyNames(this);
     const raws = keys.reduce((p, k) => {
         const prop = this[k];
-        return Object.assign(p, {[k]: prop.eval(env)});
+        return Object.assign(p, {[k]: prop.eval(ctx)});
       },
       {});
     return new this.constructor(raws);
@@ -326,9 +326,9 @@ class PropsBase {
 class Props extends PropsBase {
   get equals() {
     class PropEquals extends Box {
-      apply(operand, env) {
-        const left = JSON.stringify(env.upper(this).eval(env));
-        const right = JSON.stringify(operand.stuff.one.eval(env));
+      apply(operand, ctx) {
+        const left = JSON.stringify(ctx.upper(this).eval(ctx));
+        const right = JSON.stringify(operand.stuff.one.eval(ctx));
         return Literal.create(left == right);
       }
     }
@@ -338,14 +338,14 @@ class Props extends PropsBase {
   
   get map() {
     class PropMap extends Box {
-      apply(operand, env) {
+      apply(operand, ctx) {
         const block = operand.stuff.one;
         const argkey = block.keys[0]; // todo key値の型と一致するか検証
-        return env.upper(this).stuff.map(item => {
-          const arg = item.eval(env);
+        return ctx.upper(this).stuff.map(item => {
+          const arg = item.eval(ctx);
           const props = block.props.clone({[argkey]: arg});
           const b = block.clone({props});
-          return b.eval(env);
+          return b.eval(ctx);
         });
       }
     };
@@ -359,8 +359,8 @@ class Props extends PropsBase {
         return false;
       }
       
-      apply(operand, env) {
-        const count = env.upper(this).stuff.raws.length;
+      apply(operand, ctx) {
+        const count = ctx.upper(this).stuff.raws.length;
         return Literal.create(count);
       }
     }
@@ -383,8 +383,8 @@ class Stuff {
     return this.raws[0];
   }
   
-  eval(env) {
-    const raws = this.raws.map(c => c.eval(env));
+  eval(ctx) {
+    const raws = this.raws.map(c => c.eval(ctx));
     return new this.constructor(raws).flatten();
   }
   
@@ -641,13 +641,13 @@ class Box {
     return new Stuff();
   }
   
-  static eval(env) {
+  static eval(ctx) {
     return this;
   }
   
-  static apply(operand, env) {
-    const props = operand.props.eval(env);
-    const stuff = operand.stuff.eval(env);
+  static apply(operand, ctx) {
+    const props = operand.props.eval(ctx);
+    const stuff = operand.stuff.eval(ctx);
     
     return operand.clone({
       props,
@@ -680,21 +680,21 @@ class Box {
     return this.keys.length == 0 && this.stuff.raws.length == 0;
   }
   
-  overlay(env, inherit=undefined) {
-    const proto = env.ref(this, this.symbol) || inherit;
+  overlay(ctx, inherit=undefined) {
+    const proto = ctx.ref(this, this.symbol) || inherit;
     if (!proto) {
       return this;
     }
     
     const props = this.keys.reduce((ps, k) => {
       const prop = this.props[k];
-      return Object.assign(ps, {[k]: prop.overlay(env, proto.props[k]) } );
+      return Object.assign(ps, {[k]: prop.overlay(ctx, proto.props[k]) } );
     }, proto.props.clone());
     
     const stuff = Object.assign(
       proto.stuff.raws, 
       this.stuff.raws.map((s, i) => {
-        return s.overlay(env, proto.stuff.raws[i]);
+        return s.overlay(ctx, proto.stuff.raws[i]);
       })
     );
     
@@ -711,26 +711,26 @@ class Box {
     }
   }
   
-  eval(env) {
+  eval(ctx) {
     if (this.evaluated) {
       return this;
     }
     
-    let proto = env.ref(this, this.symbol);
+    let proto = ctx.ref(this, this.symbol);
     if (!proto) {
       proto = Box;
     }
     
-    const evaluated = proto.apply(this, env);
-    return evaluated.eval(env);
+    const evaluated = proto.apply(this, ctx);
+    return evaluated.eval(ctx);
   }
   
-  apply(operand, env) {
+  apply(operand, ctx) {
     if (operand.isReference()) {
       return this; // reference
     }
 
-    return this.constructor.apply(operand, env);
+    return this.constructor.apply(operand, ctx);
   }
 
   keyOf(child) {
@@ -813,7 +813,7 @@ class Literal extends Box {
     ];
   }
   
-  apply(operand, env) {
+  apply(operand, ctx) {
     return this;
   }
   
@@ -854,12 +854,12 @@ ENV.set("append", ArrayAppend)
 
 
 class Chain extends Box {
-  static apply(operand, env) {
+  static apply(operand, ctx) {
     const raws = operand.stuff.raws;
     const chain = raws.slice(-(raws.length-1));
-    const receiver = operand.stuff.one.eval(env);
+    const receiver = operand.stuff.one.eval(ctx);
     return chain.reduce((result, chained) => {
-      const r = env.stack(result, () => chained.eval(env));
+      const r = ctx.stack(result, () => chained.eval(ctx));
       if (!r) {
         throw "chain evaluated value is not set."
       }
@@ -872,12 +872,12 @@ ENV.set("Chain", Chain);
 
 
 class If extends Box {
-  static apply(operand, env) {
-    const cond = operand.get("cond").eval(env).value;
+  static apply(operand, ctx) {
+    const cond = operand.get("cond").eval(ctx).value;
     if (cond) {
-      return operand.get("then").eval(env);
+      return operand.get("then").eval(ctx);
     } else {
-      return operand.get("else").eval(env);
+      return operand.get("else").eval(ctx);
     }
   }
 }
@@ -888,9 +888,9 @@ class Argument extends Box {
 ENV.set("Argument", Argument);
 
 class Lambda extends Box {
-  static apply(operand, env) {
+  static apply(operand, ctx) {
     const item = operand.stuff.one;
-    return env.stack(operand, () => item.eval(env));
+    return ctx.stack(operand, () => item.eval(ctx));
   }
 }
 ENV.set("Lambda", Lambda);
@@ -914,8 +914,8 @@ class DOM extends Box {
           const box = store.find(b => b.id == event.target.getAttribute("boxid"));
           const e = box.get(event.type);
           
-          const env = new Context(store.head);
-          const adapt = e.eval(env);
+          const ctx = new Context(store.head);
+          const adapt = e.eval(ctx);
           console.log(adapt.stuff.raws[0]);
         }
       }
