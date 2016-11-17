@@ -326,7 +326,7 @@ class PropsBase {
 class Props extends PropsBase {
   get equals() {
     class PropEquals extends Box {
-      apply(operand, env, proto) {
+      apply(operand, env) {
         const left = JSON.stringify(env.upper(this).eval(env));
         const right = JSON.stringify(operand.stuff.one.eval(env));
         return Literal.create(left == right);
@@ -338,7 +338,7 @@ class Props extends PropsBase {
   
   get map() {
     class PropMap extends Box {
-      apply(operand, env, proto) {
+      apply(operand, env) {
         const block = operand.stuff.one;
         const argkey = block.keys[0]; // todo key値の型と一致するか検証
         return env.upper(this).stuff.map(item => {
@@ -359,7 +359,7 @@ class Props extends PropsBase {
         return false;
       }
       
-      apply(operand, env, proto) {
+      apply(operand, env) {
         const count = env.upper(this).stuff.raws.length;
         return Literal.create(count);
       }
@@ -437,19 +437,12 @@ class Plugins {
 }
 const PLUGINS = new Plugins();
 
-
-class Store {
+class Tree {
   constructor(root) {
-    this.roots = [];
-    this.parentsMaps = new Map();
-    this.append(root);
+    this.root = root;
+    this.parentsMap = this.setupParents(root, [], new Map());
   }
   
-  append(root) {
-    this.roots.push(root);
-    this.parentsMaps.set(root, this.setupParents(root, [], new Map()));
-  }
-
   setupParents(box, path, map) {
     map.set(box, path);
 
@@ -467,45 +460,68 @@ class Store {
     
     return map;
   }
-
-  get root() {
-    return this.roots[this.roots.length-1];
-  }
-
+  
   parents(box) {
-    const parentsMap = this.parentsMaps.get(this.root);
-    const parents = parentsMap.get(box);
+    const parents = this.parentsMap.get(box);
     return parents ? parents : [];
   }
   
   parent(box) {
     const parents = this.parents(box);
-    const parent = parents[parents.length-1];
-    return parent ? parent : this;
-  }
-    
-  replace(old, root) {
-    this.append(root);
+    return parents[parents.length-1];
   }
   
   get(key) {
-    const env = new Environment(this);
-    
-    const overwraped = this.root.overwraped(env);
-    this.append(overwraped);
-    
-    return overwraped.get(key).eval(env);
+    return this.root.get(key);
   }
-  
+
   find(pred) {
     return this.root.find(pred);
   }
 }
 
+class Store {
+  constructor(root) {
+    this.srcs = [];
+    this.dsts = [];
+    
+    this.append(root);
+  }
+  
+  append(root) {
+    const src = new Tree(root);
+    this.srcs.push(src);
+    
+    const overlay = new Tree(src.root.overlay(new Environment(src)));
+    const dst = new Tree(overlay.root.eval(new Environment(overlay)))
+    this.dsts.push(dst);
+  }
+
+  get head() {
+    return this.dsts[this.dsts.length-1];
+  }
+  
+  parent(box) {
+    const parent = this.head.parent(box);
+    return parent ? parent : this;
+  }
+
+  replace(old, root) {
+    this.append(root);
+  }
+  
+  get(key) {
+    return this.head.get(key);
+  }
+  
+  find(pred) {
+    return this.head.find(pred);
+  }
+}
 
 class Environment {
-  constructor(store) {
-    this.store = store;
+  constructor(tree) {
+    this.tree = tree;
     this.stacks = [];
   }
   
@@ -517,7 +533,7 @@ class Environment {
   }
     
   context(current) {
-    const parents = this.store.parents(current);
+    const parents = this.tree.parents(current);
     const context = parents.concat(this.stacks);
     context.reverse();
     return context;
@@ -598,8 +614,8 @@ class Box {
     const stuff = stf.map(i => Box.parse(i));
     
     const plugin = PLUGINS.get(src._symbol);
-    const cls = plugin ? plugin : this;
-        
+    const cls = plugin && typeof(plugin) == "function" ? plugin : this;
+    
     return new cls(
       src._symbol, 
       new Props(props),
@@ -611,33 +627,26 @@ class Box {
     return true;
   }
   
+  static get props() {
+    return new Props();
+  }
+  
+  static get stuff() {
+    return new Stuff();
+  }
+  
   static eval(env) {
     return this;
   }
   
-  static apply(operand, env, proto=this) {    
+  static apply(operand, env) {
     const props = operand.props.eval(env);
     const stuff = operand.stuff.eval(env);
     
     return operand.clone({
       props,
       stuff,
-      proto,
       evaluated: true
-    });
-  }
-  
-  static skeleton() {
-    return new this();
-  }
-  
-  static overwrap(skeleton, box) {
-    const props = Object.assign(skeleton.props, box.props);
-    const stuff = box.stuff.raws.length > 0 ? box.stuff.raws : skeleton.stuff.raws;
-    
-    return box.clone({
-      props: new Props(props),
-      stuff: new Stuff(stuff)
     });
   }
   
@@ -645,12 +654,11 @@ class Box {
     return undefined;
   }
         
-  constructor(symbol=undefined, props=new Props(), stuff=new Stuff(), proto=undefined, evaluated=false) {
+  constructor(symbol=undefined, props=new Props(), stuff=new Stuff(), evaluated=false) {
     this.id = this.constructor.uuid();
     this.symbol = symbol;
     this.props = props;
     this.stuff = stuff;
-    this.proto = proto;
     this.evaluated = evaluated;
   }
     
@@ -666,36 +674,29 @@ class Box {
     return this.keys.length == 0 && this.stuff.raws.length == 0;
   }
   
-  overwraped(env) {
-    if (this.isReference()) {
-      return this; // reference
+  overlay(env, proto=Box) {
+    const props = this.keys.reduce((ps, k) => {
+      const p = this.props[k];
+      const pproto = env.ref(p, p.symbol) || proto.props[k];
+      return Object.assign(ps, {[k]: pproto ? p.overlay(env, pproto) : p } );
+    }, proto.props.clone());
+    
+    const stuff = this.stuff.raws.map((s, i) => {
+      const sproto = env.ref(s, s.symbol) || proto.stuff.raws[i];
+      return sproto ? s.overlay(env, sproto) : s;
+    });
+    
+    if (proto.clone) {
+      return proto.clone({
+        props: new Props(props),
+        stuff: new Stuff(stuff)
+      });
+    } else {
+      return this.clone({
+        props: new Props(props),
+        stuff: new Stuff(stuff)
+      });
     }
-    
-    let proto = env.ref(this, this.symbol);
-    if (!proto) {
-      proto = Box;
-    }
-    
-    const skeleton = proto.skeleton();
-    const overwraped = proto.overwrap(skeleton, this);
-    
-    return overwraped.clone({
-      props: new Props(overwraped.keys.reduce((p, k) => Object.assign(p, {[k]: overwraped.props[k].overwraped(env)}), {})),
-      stuff: new Stuff(overwraped.stuff.raws.map(s => s.overwraped(env))),
-    })
-  }
-  
-  merged() {
-    if (!this.proto || !this.proto.merged) {
-      return this.clone();
-    }
-    
-    const mergedProto = this.proto.merged();
-    return mergedProto.clone({
-      id: this.id,
-      props: new Props(Object.assign({}, this.props)),
-      stuff: new Stuff(Object.assign([], this.stuff.raws))
-    })
   }
   
   eval(env) {
@@ -703,42 +704,21 @@ class Box {
       return this;
     }
     
-    const merged = this.merged();
-    const proto = merged.symbol ? env.ref(this, merged.symbol) : Box;
+    let proto = env.ref(this, this.symbol);
     if (!proto) {
-      throw "reference not found";
+      proto = Box;
     }
     
-    const evaluated = proto.apply(merged, env, proto);
+    const evaluated = proto.apply(this, env);
     return evaluated.eval(env);
   }
   
-  skeleton() {
-    const props = this.keys.reduce((p, k) => {
-      const prop = this.props[k];
-      return Object.assign(p, {[k]: prop.skeleton()});
-    }, {});
-    
-    const stuff = this.stuff.raws.map(s => s.skeleton());
-    
-    return new Box(
-      undefined,
-      new Props(props),
-      new Stuff(stuff),
-      this
-    );
-  }
-  
-  overwrap(skeleton, box) {
-    return this.constructor.overwrap(skeleton, box);
-  }
-
-  apply(operand, env, proto) {
+  apply(operand, env) {
     if (operand.isReference()) {
       return this; // reference
     }
 
-    return this.constructor.apply(operand, env, proto);
+    return this.constructor.apply(operand, env);
   }
 
   keyOf(child) {
@@ -756,13 +736,8 @@ class Box {
     const prop = this.props[key];
     if (prop) {
       return prop;
-    } else if (this.proto) {
-      const prop = this.proto.get(key);
-      if (prop) {
-        return prop;
-      }
     }
-    
+        
     return undefined;
   }
   
@@ -825,7 +800,7 @@ class Literal extends Box {
     ];
   }
   
-  apply(operand, env, proto) {
+  apply(operand, env) {
     return this;
   }
   
@@ -866,7 +841,7 @@ PLUGINS.set("append", ArrayAppend)
 
 
 class Chain extends Box {
-  static apply(operand, env, proto) {
+  static apply(operand, env) {
     const raws = operand.stuff.raws;
     const chain = raws.slice(-(raws.length-1));
     const receiver = operand.stuff.one.eval(env);
@@ -884,7 +859,7 @@ PLUGINS.set("Chain", Chain);
 
 
 class If extends Box {
-  static apply(operand, env, proto) {
+  static apply(operand, env) {
     const cond = operand.get("cond").eval(env).value;
     if (cond) {
       return operand.get("then").eval(env);
@@ -900,7 +875,7 @@ class Argument extends Box {
 PLUGINS.set("Argument", Argument);
 
 class Lambda extends Box {
-  static apply(operand, env, proto) {
+  static apply(operand, env) {
     const item = operand.stuff.one;
     return env.stack(operand, () => item.eval(env));
   }
@@ -926,7 +901,7 @@ class DOM extends Box {
           const box = store.find(b => b.id == event.target.getAttribute("boxid"));
           const e = box.get(event.type);
           
-          const env = new Environment(store);
+          const env = new Environment(store.head);
           const adapt = e.eval(env);
           console.log(adapt.stuff.raws[0]);
         }
@@ -941,37 +916,32 @@ class DOM extends Box {
   }
   
   render(handlers) {
-    const merged = this.merged();
-    
-    const attrs = merged.keys.reduce((r, k) => {
-      const prop = merged.props[k];
-      const mergedProp = prop.merged();
-      if (mergedProp instanceof Event) {
+    const attrs = this.keys.reduce((r, k) => {
+      const prop = this.props[k];
+      if (prop instanceof Event) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
-        return Object.assign(r, {[k]: mergedProp.value})  
+        return Object.assign(r, {[k]: prop.value})  
       }
     }
     ,{});
     
-    attrs["boxid"] = merged.id;
+    attrs["boxid"] = this.id;
     
-    const children = flatten(merged.stuff.raws.map(b => {
-      const mergedStuff = b.merged();
-      
-      if (mergedStuff instanceof Literal) {
-        return mergedStuff.value || "";
+    const children = flatten(this.stuff.raws.map(b => {
+      if (b instanceof Literal) {
+        return b.value || "";
       }
       
-      if (mergedStuff instanceof DOM) {
-        return mergedStuff.render(handlers);
+      if (b instanceof DOM) {
+        return b.render(handlers);
       }
       
       return [];
     }));
     
     const vdom = maquette.h(
-      merged.tag,
+      this.tag,
       attrs,
       children
     );
@@ -1004,49 +974,42 @@ for (let tag of HTML_TAGS) {
   PLUGINS.set(tag, cls);
 }
 
+PLUGINS.set("TodoMVC", Box.parse(jsonObject.TodoMVC));
 
-const instance = Object.assign({}, jsonObject, {
+const instance = {
   instance: {
     _symbol: "TodoMVC",
     domain: {
       tasks: {
-        _symbol: "Chain",
         _stuff: [
-          { _symbol: "TodoMVC" },
-          { _symbol: "domain" },
-          { _symbol: "tasks",
-            _stuff: [
-              {
-                _symbol: "Task",
-                title: "buy a milk",
-                completed: false,
-              },
-              {
-                _symbol: "Task",
-                title: "buy a coffee",
-                completed: false,
-              },
-              {
-                _symbol: "Task",
-                title: "buy a tea",
-                completed: true,
-              }
-            ]
-          }          
+          {
+            _symbol: "Task",
+            title: "buy a milk",
+            completed: false,
+          },
+          {
+            _symbol: "Task",
+            title: "buy a coffee",
+            completed: false,
+          },
+          {
+            _symbol: "Task",
+            title: "buy a tea",
+            completed: true,
+          }
         ]
       }
     }
   }
-});
+};
 
 const store = new Store(Box.parse(instance));
 console.log(store.get("instance"));
 
 const handlers = DOM.createHandlers(store);
 function render() {
-  const instance = store.get("instance");
-  const body = instance.get("presentation").get("body");
-  return body.merged().render(handlers)[0];
+  const body = store.get("instance").get("presentation").get("body");
+  return body.render(handlers)[0];
 }
 
 var projector = maquette.createProjector();
