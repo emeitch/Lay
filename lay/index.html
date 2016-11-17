@@ -405,7 +405,7 @@ class Stuff {
 }
 
 
-class Plugins {
+class Environment {
   constructor() {
     this.rules = [];
     this.all = {};
@@ -435,7 +435,7 @@ class Plugins {
     this.all[symbol] = box;
   }
 }
-const PLUGINS = new Plugins();
+const ENV = new Environment();
 
 class Tree {
   constructor(root) {
@@ -547,9 +547,9 @@ class Context {
       }
     }
     
-    const plugin = PLUGINS.get(symbol);
-    if (plugin) {
-      return plugin;
+    const box = ENV.get(symbol);
+    if (box) {
+      return box;
     }
 
     return undefined;
@@ -613,8 +613,8 @@ class Box {
     const stf = s ? (Array.isArray(s) ? s : [s]) : [];
     const stuff = stf.map(i => Box.parse(i));
     
-    const plugin = PLUGINS.get(src._symbol);
-    const cls = plugin && typeof(plugin) == "function" ? plugin : this;
+    const proto = ENV.get(src._symbol);
+    const cls = proto && typeof(proto) == "function" ? proto : this;
     
     return new cls(
       src._symbol, 
@@ -787,7 +787,7 @@ class Box {
     return undefined;
   }
 }
-PLUGINS.set("Box", Box);
+ENV.set("Box", Box);
 
 
 class Literal extends Box {
@@ -811,7 +811,7 @@ class Literal extends Box {
     return JSON.parse(this.symbol);
   }
 }
-PLUGINS.rule(symbol => {
+ENV.rule(symbol => {
   try {
     const value = JSON.parse(symbol);
     const type = typeof(value);
@@ -830,17 +830,17 @@ PLUGINS.rule(symbol => {
 
 class Event extends Box {
 }
-PLUGINS.set("Event", Event);
+ENV.set("Event", Event);
 
 
 class Self extends Box {
 }
-PLUGINS.set("self", Self);
+ENV.set("self", Self);
 
 
 class ArrayAppend extends Box {
 }
-PLUGINS.set("append", ArrayAppend)
+ENV.set("append", ArrayAppend)
 
 
 class Chain extends Box {
@@ -858,7 +858,7 @@ class Chain extends Box {
     receiver);
   }
 }
-PLUGINS.set("Chain", Chain);
+ENV.set("Chain", Chain);
 
 
 class If extends Box {
@@ -871,11 +871,11 @@ class If extends Box {
     }
   }
 }
-PLUGINS.set("if", If);
+ENV.set("if", If);
 
 class Argument extends Box {
 }
-PLUGINS.set("Argument", Argument);
+ENV.set("Argument", Argument);
 
 class Lambda extends Box {
   static apply(operand, env) {
@@ -883,12 +883,12 @@ class Lambda extends Box {
     return env.stack(operand, () => item.eval(env));
   }
 }
-PLUGINS.set("Lambda", Lambda);
+ENV.set("Lambda", Lambda);
 
 
 class Entity extends Box {
 }
-PLUGINS.set("Entity", Entity);
+ENV.set("Entity", Entity);
 
 
 class DOM extends Box {
@@ -974,10 +974,10 @@ for (let tag of HTML_TAGS) {
       return tag;
     }
   }
-  PLUGINS.set(tag, cls);
+  ENV.set(tag, cls);
 }
 
-PLUGINS.set("TodoMVC", Box.parse(jsonObject.TodoMVC));
+ENV.set("TodoMVC", Box.parse(jsonObject.TodoMVC));
 
 const instance = {
   _symbol: "TodoMVC",
