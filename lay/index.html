@@ -455,7 +455,10 @@ class Tree {
     }
     
     for (let raw of box.stuff.raws) {
-      this.setupParents(raw, pth, map);
+      // 歯抜け配列の場合にrawにundefinedが渡ることがある
+      if (raw) {
+        this.setupParents(raw, pth, map);  
+      }
     }
     
     return map;
@@ -496,7 +499,7 @@ class Store {
     const dst = new Tree(overlay.root.eval(new Context(overlay)))
     this.dsts.push(dst);
   }
-
+  
   get head() {
     return this.dsts[this.dsts.length-1];
   }
@@ -506,8 +509,11 @@ class Store {
     return parent ? parent : this;
   }
 
-  replace(old, root) {
-    this.append(root);
+  replace(old, update) {
+    const updateTree = new Tree(update);
+    const src = this.srcs[this.srcs.length-1];
+    const updated = updateTree.root.overlay(new Context(updateTree), src.root);
+    this.append(updated);
   }
   
   get(key) {
@@ -685,9 +691,12 @@ class Box {
       return Object.assign(ps, {[k]: prop.overlay(env, proto.props[k]) } );
     }, proto.props.clone());
     
-    const stuff = this.stuff.raws.map((s, i) => {
-      return s.overlay(env, proto.stuff.raws[i]);
-    });
+    const stuff = Object.assign(
+      proto.stuff.raws, 
+      this.stuff.raws.map((s, i) => {
+        return s.overlay(env, proto.stuff.raws[i]);
+      })
+    );
     
     if (proto.clone) {
       return proto.clone({
@@ -730,9 +739,9 @@ class Box {
     return key || index;
   }
 
-  replace(old, child, store) {
-    const key = this.keyOf(old);
-    this.set(this.keyOf(old), child, store);
+  replace(child, update, store) {
+    const key = this.keyOf(child);
+    this.set(key, update, store);
   }
   
   get(key) {
@@ -746,16 +755,17 @@ class Box {
   
   set(key, child, store) {
     if (typeof(key) === "string") {
-      const props = this.props.clone({[key]: child});
-      const clone = this.clone({props});
+      const props = new Props({[key]: child});
+      const update = new Box(undefined, props, new Stuff());
       const parent = store.parent(this);
-      parent.replace(this, clone, store);
+      parent.replace(this, update, store);
     } else if (typeof(key) === "number") {
-      const stuff = this.stuff.clone();
-      stuff.raws[key] = child;
-      const clone = this.clone({stuff});
+      const raws = [];
+      raws[key] = child;
+      const stuff = new Stuff(raws);
+      const update = new Box(undefined, new Props(), stuff);
       const parent = store.parent(this);
-      parent.replace(this, clone, store);
+      parent.replace(this, update, store);
     }
   }
   
