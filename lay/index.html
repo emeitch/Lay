@@ -674,16 +674,19 @@ class Box {
     return this.keys.length == 0 && this.stuff.raws.length == 0;
   }
   
-  overlay(env, proto=Box) {
+  overlay(env, inherit=undefined) {
+    const proto = env.ref(this, this.symbol) || inherit;
+    if (!proto) {
+      return this;
+    }
+    
     const props = this.keys.reduce((ps, k) => {
-      const p = this.props[k];
-      const pproto = env.ref(p, p.symbol) || proto.props[k];
-      return Object.assign(ps, {[k]: pproto ? p.overlay(env, pproto) : p } );
+      const prop = this.props[k];
+      return Object.assign(ps, {[k]: prop.overlay(env, proto.props[k]) } );
     }, proto.props.clone());
     
     const stuff = this.stuff.raws.map((s, i) => {
-      const sproto = env.ref(s, s.symbol) || proto.stuff.raws[i];
-      return sproto ? s.overlay(env, sproto) : s;
+      return s.overlay(env, proto.stuff.raws[i]);
     });
     
     if (proto.clone) {
@@ -977,38 +980,36 @@ for (let tag of HTML_TAGS) {
 PLUGINS.set("TodoMVC", Box.parse(jsonObject.TodoMVC));
 
 const instance = {
-  instance: {
-    _symbol: "TodoMVC",
-    domain: {
-      tasks: {
-        _stuff: [
-          {
-            _symbol: "Task",
-            title: "buy a milk",
-            completed: false,
-          },
-          {
-            _symbol: "Task",
-            title: "buy a coffee",
-            completed: false,
-          },
-          {
-            _symbol: "Task",
-            title: "buy a tea",
-            completed: true,
-          }
-        ]
-      }
+  _symbol: "TodoMVC",
+  domain: {
+    tasks: {
+      _stuff: [
+        {
+          _symbol: "Task",
+          title: "buy a milk",
+          completed: false,
+        },
+        {
+          _symbol: "Task",
+          title: "buy a coffee",
+          completed: false,
+        },
+        {
+          _symbol: "Task",
+          title: "buy a tea",
+          completed: true,
+        }
+      ]
     }
   }
 };
 
 const store = new Store(Box.parse(instance));
-console.log(store.get("instance"));
+console.log(store.head.root);
 
 const handlers = DOM.createHandlers(store);
 function render() {
-  const body = store.get("instance").get("presentation").get("body");
+  const body = store.get("presentation").get("body");
   return body.render(handlers)[0];
 }
 
