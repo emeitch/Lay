@@ -122,15 +122,15 @@ class Environment {
   }
   
   get(symbol) {
-    let plugin = this.all[symbol];
-    if (plugin) {
-      return plugin;
+    const store = this.all[symbol];
+    if (store) {
+      return store.overlay.root;
     }
     
     for (let rule of this.rules) {
-      plugin = rule(symbol);
-      if (plugin) {
-        return plugin;
+      const box = rule(symbol);
+      if (box) {
+        return box;
       }
     }
 
@@ -142,7 +142,7 @@ class Environment {
   }
   
   set(symbol, box) {
-    this.all[symbol] = box;
+    this.all[symbol] = new Store(box);
   }
 }
 const ENV = new Environment();
@@ -197,6 +197,7 @@ class Store {
   constructor(root) {
     this.updates = [];
     this.src = undefined;
+    this.overlay = undefined;
     this.head = undefined;
     
     this.append(root);
@@ -211,9 +212,8 @@ class Store {
     } else {
       this.src = new Tree(update.root.overlay(new Context(update), this.src.root));
     }
-    
-    const overlay = new Tree(this.src.root.overlay(new Context(this.src)));
-    this.head = new Tree(overlay.root.eval(new Context(overlay)));
+    this.overlay = new Tree(this.src.root.overlay(new Context(this.src)));
+    this.head = new Tree(this.overlay.root.eval(new Context(this.overlay)));
   }
   
   parent(box) {
@@ -262,12 +262,7 @@ class Context {
       }
     }
     
-    const box = ENV.get(symbol);
-    if (box) {
-      return box;
-    }
-
-    return undefined;
+    return ENV.get(symbol);
   }
   
   upper(current) {
@@ -341,13 +336,21 @@ class Box {
   static get evaluated() {
     return true;
   }
-  
+
   static get props() {
     return new Props();
   }
   
   static get stuff() {
     return new Stuff();
+  }
+  
+  static get keys() {
+    return [];
+  }
+  
+  static overlay(...args) {
+    return this;
   }
   
   static eval(ctx) {
@@ -592,9 +595,11 @@ class If extends Box {
 }
 ENV.set("if", If);
 
+
 class Argument extends Box {
 }
 ENV.set("Argument", Argument);
+
 
 class Lambda extends Box {
   static apply(operand, ctx) {
@@ -985,7 +990,6 @@ const TodoMVC = {
   }
 };
 ENV.set("TodoMVC", Box.parse(TodoMVC));
-
 
 const instance = {
   _symbol: "TodoMVC",
