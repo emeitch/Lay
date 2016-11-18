@@ -195,23 +195,25 @@ class Tree {
 
 class Store {
   constructor(root) {
-    this.srcs = [];
-    this.dsts = [];
+    this.updates = [];
+    this.src = undefined;
+    this.head = undefined;
     
     this.append(root);
   }
   
   append(root) {
-    const src = new Tree(root);
-    this.srcs.push(src);
+    const update = new Tree(root);
+    this.updates.push(update);
     
-    const overlay = new Tree(src.root.overlay(new Context(src)));
-    const dst = new Tree(overlay.root.eval(new Context(overlay)))
-    this.dsts.push(dst);
-  }
-  
-  get head() {
-    return this.dsts[this.dsts.length-1];
+    if (!this.src) {
+      this.src = update;
+    } else {
+      this.src = new Tree(update.root.overlay(new Context(update), this.src.root));
+    }
+    
+    const overlay = new Tree(this.src.root.overlay(new Context(this.src)));
+    this.head = new Tree(overlay.root.eval(new Context(overlay)));
   }
   
   parent(box) {
@@ -220,10 +222,7 @@ class Store {
   }
 
   replace(old, update) {
-    const updateTree = new Tree(update);
-    const src = this.srcs[this.srcs.length-1];
-    const updated = updateTree.root.overlay(new Context(updateTree), src.root);
-    this.append(updated);
+    this.append(update);
   }
   
   get(key) {
