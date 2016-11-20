@@ -34,10 +34,10 @@ class PropsBase {
   }
 }
 class Props extends PropsBase {
-  get equals() {
+  equals(box) {
     class PropEquals extends Box {
       apply(operand, ctx) {
-        const left = JSON.stringify(ctx.upper(this).eval(ctx));
+        const left = JSON.stringify(box.eval(ctx));
         const right = JSON.stringify(operand.stuff.one.eval(ctx));
         return Literal.create(left == right);
       }
@@ -46,12 +46,12 @@ class Props extends PropsBase {
     return new PropEquals();
   }
   
-  get map() {
+  map(box) {
     class PropMap extends Box {
       apply(operand, ctx) {
         const block = operand.stuff.one;
         const argkey = block.keys[0]; // todo key値の型と一致するか検証
-        return ctx.upper(this).stuff.map(item => {
+        return box.stuff.map(item => {
           const arg = item.eval(ctx);
           const props = block.props.clone({[argkey]: arg});
           const b = block.clone({props});
@@ -63,14 +63,10 @@ class Props extends PropsBase {
     return new PropMap();
   }
   
-  get count() {
+  count(box) {
     class PropCount extends Box {
-      isReference() {
-        return false;
-      }
-      
       apply(operand, ctx) {
-        const count = ctx.upper(this).stuff.raws.length;
+        const count = box.stuff.raws.length;
         return Literal.create(count);
       }
     }
@@ -159,6 +155,10 @@ class Tree {
     const pth = path.slice(); // dupulication
     pth.push(box);
     
+    if (box.proto) {
+      this.setupParents(box.proto, pth, map)  
+    }
+        
     for (let key of box.keys) {
       const prop = box.props[key];
       this.setupParents(prop, pth, map);
@@ -241,9 +241,16 @@ class Context {
   }
   
   stack(box, block) {
-    this.stacks.push(box);
+    if (box) {
+      this.stacks.push(box);
+    }
+    
     const result = block();
-    this.stacks.pop();
+    
+    if (box) {
+      this.stacks.pop();  
+    }
+    
     return result;
   }
     
@@ -323,11 +330,10 @@ class Box {
     const stf = s ? (Array.isArray(s) ? s : [s]) : [];
     const stuff = stf.map(i => Box.parse(i));
     
-    const proto = ENV.get(src._proto);
-    const cls = proto && typeof(proto) == "function" ? proto : this;
+    const proto = src._proto ? Ref.create(src._proto) : undefined;
     
-    return new cls(
-      src._proto, 
+    return new this(
+      proto,
       new Props(props),
       new Stuff(stuff),
       ...inheritedOptions);
@@ -372,9 +378,9 @@ class Box {
     return undefined;
   }
         
-  constructor(symbol=undefined, props=new Props(), stuff=new Stuff(), evaluated=false) {
+  constructor(proto=undefined, props=new Props(), stuff=new Stuff(), evaluated=false) {
     this.id = this.constructor.uuid();
-    this.symbol = symbol;
+    this.proto = proto;
     this.props = props;
     this.stuff = stuff;
     this.evaluated = evaluated;
@@ -388,12 +394,8 @@ class Box {
     return Object.getOwnPropertyNames(this.props)
   }
   
-  isReference() {
-    return this.keys.length == 0 && this.stuff.raws.length == 0;
-  }
-  
   overlay(ctx, inherit=undefined) {
-    const proto = ctx.ref(this, this.symbol) || inherit;
+    const proto = this.proto && this.proto.eval(ctx) || inherit;
     if (!proto) {
       return this;
     }
@@ -414,7 +416,8 @@ class Box {
       return proto.clone({
         props: new Props(props),
         stuff: new Stuff(stuff),
-        value: this.value // todo Literal向けの特殊処理なので除去
+        value: this.value, // todo Literal向けの特殊処理なので除去
+        symbol: this.symbol // todo Ref向けの特殊処理なので除去
       });
     } else {
       return this.clone({
@@ -429,20 +432,12 @@ class Box {
       return this;
     }
     
-    let proto = ctx.ref(this, this.symbol);
-    if (!proto) {
-      proto = Box;
-    }
-    
+    const proto = this.proto && this.proto.eval(ctx) || Box;
     const evaluated = proto.apply(this, ctx);
     return evaluated.eval(ctx);
   }
   
   apply(operand, ctx) {
-    if (operand.isReference()) {
-      return this; // reference
-    }
-
     return this.constructor.apply(operand, ctx);
   }
 
@@ -460,7 +455,11 @@ class Box {
   get(key) {
     const prop = this.props[key];
     if (prop) {
-      return prop;
+      if (typeof(prop) == "function") {
+        return prop(this);
+      } else {
+        return prop;  
+      }
     }
         
     return undefined;
@@ -513,6 +512,29 @@ class Box {
 ENV.set("Box", Box);
 
 
+class Ref extends Box {
+  static create(sym) {
+    if (typeof(sym) == "string") {
+      sym = [sym];
+    }
+    return new this(sym);
+  }
+
+  constructor(symbols) {
+    super();
+    this.symbols = symbols;
+  }
+  
+  eval(ctx) {
+    let val;
+    for (const symbol of this.symbols) {
+      val = !val ? ctx.ref(this, symbol) : val.get(symbol); 
+    }
+    return val;
+  }
+}
+
+
 class Literal extends Box {
   static create(value) {
     return new this(value);
@@ -550,24 +572,6 @@ ENV.set("self", Self);
 class ArrayAppend extends Box {
 }
 ENV.set("append", ArrayAppend)
-
-
-class Chain extends Box {
-  static apply(operand, ctx) {
-    const raws = operand.stuff.raws;
-    const chain = raws.slice(-(raws.length-1));
-    const receiver = operand.stuff.one.eval(ctx);
-    return chain.reduce((result, chained) => {
-      const r = ctx.stack(result, () => chained.eval(ctx));
-      if (!r) {
-        throw "chain evaluated value is not set."
-      }
-      return r;
-    },
-    receiver);
-  }
-}
-ENV.set("Chain", Chain);
 
 
 class If extends Box {
@@ -622,44 +626,40 @@ class DOM extends Box {
       }
     }
   }
-  
-  constructor(...args) {
-    super(...args);
-    // todo valueを参照されることがあるのでデフォルト値を設定している。後でうまく捌きたい
-    this.props.value = Literal.create(null);
-  }
-  
-  render(handlers) {
-    const attrs = this.keys.reduce((r, k) => {
-      const prop = this.props[k];
-      if (prop instanceof Event) {
+    
+  static render(box, handlers) {
+    const attrs = box.keys.reduce((r, k) => {
+      const prop = box.props[k];
+      if (prop.proto && prop.proto.symbols[0] == "Event") {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
         return Object.assign(r, {[k]: prop.value})  
       }
     }
     ,{});
+    attrs["boxid"] = box.id;
     
-    attrs["boxid"] = this.id;
-    
-    const children = flatten(this.stuff.raws.map(b => {
+    const children = flatten(box.stuff.raws.map(b => {
       if (b instanceof Literal) {
         return b.value || "";
       }
       
-      if (b instanceof DOM) {
-        return b.render(handlers);
-      }
-      
-      return [];
+      return DOM.render(b, handlers);
     }));
     
+    const tag = box.proto.symbols[0];
     const vdom = maquette.h(
-      this.tag,
+      tag,
       attrs,
       children
     );
     return [vdom];
+  }
+  
+  constructor(...args) {
+     super(...args);
+     // todo valueを参照されることがあるのでデフォルト値を設定している。後でうまく捌きたい
+     this.props.value = Literal.create(null);
   }
 }
 const HTML_TAGS = [
@@ -680,12 +680,7 @@ const HTML_TAGS = [
   "A",
 ];
 for (let tag of HTML_TAGS) {
-  const cls = class extends DOM {
-    get tag() {
-      return tag;
-    }
-  }
-  ENV.set(tag, cls);
+  ENV.set(tag, DOM);
 }
 
 
@@ -701,17 +696,15 @@ const TodoMVC = {
         create: {
           title: "string",
           _stuff: {
-            _proto: "Chain",
-            _stuff: [
-              { _proto: "self" },
-              { _proto: "append",
-                _stuff: {
-                  _proto: "Task",
-                  title: { _proto: "title" },
-                  completed: false
-                }
-              }
-            ]
+            _proto: [
+              "self",
+              "append"
+            ],
+            _stuff: {
+              _proto: "Task",
+              title: { _proto: "title" },
+              completed: false
+            }
           }
         }
       },
@@ -747,16 +740,14 @@ const TodoMVC = {
                       _relay: {
                         keyup: {
                           _stuff: {
-                            _proto: "Chain",
-                            _stuff: [
-                              { _proto: "domain" },
-                              { _proto: "tasks" },
-                              { _proto: "create",
-                                title: {
-                                  _proto: "value"
-                                }
-                              }
-                            ]
+                            _proto: [
+                              "domain",
+                              "tasks",
+                              "create"
+                            ],
+                            title: {
+                              _proto: "value"
+                            }
                           }
                         }
                       }
@@ -775,58 +766,53 @@ const TodoMVC = {
                     {
                       _proto: "Ul",
                       class: "todo-list",
-                      _stuff: {
-                        _proto: "Chain",
+                      _stuff: { 
+                        _proto: [
+                          "domain",
+                          "tasks",
+                          "map"
+                        ],
                         _stuff: [
-                          { _proto: "domain" },
-                          { _proto: "tasks" },
-                          { 
-                            _proto: "map",
+                          {
+                            _proto: "Lambda",
+                            task: { _proto: "Argument", type: "Task" },
                             _stuff: [
                               {
-                                _proto: "Lambda",
-                                task: { _proto: "Argument", type: "Task" },
+                                _proto: "Li",
                                 _stuff: [
                                   {
-                                    _proto: "Li",
+                                    _proto: "Div",
+                                    class: "view",
                                     _stuff: [
                                       {
-                                        _proto: "Div",
-                                        class: "view",
-                                        _stuff: [
-                                          {
-                                            _proto: "Input",
-                                            class: "toggle",
-                                            type: "checkbox",
-                                          },
-                                          {
-                                            _proto: "Label",
-                                            _stuff: {
-                                              _proto: "Chain",
-                                              _stuff: [
-                                                { _proto: "task" },
-                                                { _proto: "title" }
-                                              ]
-                                            }
-                                          },
-                                          {
-                                            _proto: "Button",
-                                            class: "destroy",
-                                          }
-                                        ]
+                                        _proto: "Input",
+                                        class: "toggle",
+                                        type: "checkbox",
                                       },
                                       {
-                                        _proto: "Input",
-                                        class: "edit",
-                                        value: {
-                                          _proto: "Chain",
-                                          _stuff: [
-                                            { _proto: "task" },
-                                            { _proto: "title" }
-                                          ]
+                                        _proto: "Label",
+                                        _stuff: {
+                                          _proto: [
+                                            "task",
+                                            "title"
+                                          ],
                                         }
+                                      },
+                                      {
+                                        _proto: "Button",
+                                        class: "destroy",
                                       }
                                     ]
+                                  },
+                                  {
+                                    _proto: "Input",
+                                    class: "edit",
+                                    value: {
+                                      _proto: [
+                                        "task",
+                                        "title"
+                                      ],
+                                    }
                                   }
                                 ]
                               }
@@ -848,11 +834,10 @@ const TodoMVC = {
                         {
                           _proto: "Strong",
                           _stuff: {
-                            _proto: "Chain",
-                            _stuff: [
-                              { _proto: "domain" },
-                              { _proto: "tasks" },
-                              { _proto: "count" }
+                            _proto: [
+                              "domain",
+                              "tasks",
+                              "count"
                             ]
                           }
                         },
@@ -865,16 +850,13 @@ const TodoMVC = {
                           _stuff: {
                             _proto: "if",
                             cond: {
-                              _proto: "Chain",
-                              _stuff: [
-                                { _proto: "domain" },
-                                { _proto: "tasks" },
-                                { _proto: "count" },
-                                { 
-                                  _proto: "equals",
-                                  _stuff: 1
-                                }
-                              ]
+                              _proto: [
+                                "domain", 
+                                "tasks", 
+                                "count", 
+                                "equals"
+                              ],
+                              _stuff: 1
                             },
                             then: "item",
                             else: "items"
@@ -1009,7 +991,7 @@ console.log(store.head.root);
 const handlers = DOM.createHandlers(store);
 function render() {
   const body = store.get("presentation").get("body");
-  return body.render(handlers)[0];
+  return DOM.render(body, handlers)[0];
 }
 
 var projector = maquette.createProjector();
