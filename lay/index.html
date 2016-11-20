@@ -289,7 +289,7 @@ class Box {
     {
       const type = typeof(src);
       if (Literal.types.includes(type)) {
-        src = { _symbol: JSON.stringify(src) }
+        src = { _proto: JSON.stringify(src) }
       }
     }
     
@@ -301,8 +301,8 @@ class Box {
     if (on) {
       Object.getOwnPropertyNames(on).forEach(k => {
         const event = on[k];
-        if (!event._symbol) {
-          event._symbol = "Event";
+        if (!event._proto) {
+          event._proto = "Event";
         }
         props[k] = Box.parse(event);
       });
@@ -312,8 +312,8 @@ class Box {
     if (relay) {
       Object.getOwnPropertyNames(relay).forEach(k => {
         const event = relay[k];
-        if (!event._symbol) {
-          event._symbol = "Event";
+        if (!event._proto) {
+          event._proto = "Event";
         }
         props[k] = Box.parse(event);
       });
@@ -323,11 +323,11 @@ class Box {
     const stf = s ? (Array.isArray(s) ? s : [s]) : [];
     const stuff = stf.map(i => Box.parse(i));
     
-    const proto = ENV.get(src._symbol);
+    const proto = ENV.get(src._proto);
     const cls = proto && typeof(proto) == "function" ? proto : this;
     
     return new cls(
-      src._symbol, 
+      src._proto, 
       new Props(props),
       new Stuff(stuff),
       ...inheritedOptions);
@@ -705,7 +705,7 @@ for (let tag of HTML_TAGS) {
 const TodoMVC = {
   domain: {
     Task: {
-      _symbol: "Entity",
+      _proto: "Entity",
       title: "string",
       completed: "bool"
     },
@@ -714,13 +714,13 @@ const TodoMVC = {
         create: {
           title: "string",
           _stuff: {
-            _symbol: "Chain",
+            _proto: "Chain",
             _stuff: [
-              { _symbol: "self" },
-              { _symbol: "append",
+              { _proto: "self" },
+              { _proto: "append",
                 _stuff: {
-                  _symbol: "Task",
-                  title: { _symbol: "title" },
+                  _proto: "Task",
+                  title: { _proto: "title" },
                   completed: false
                 }
               }
@@ -734,39 +734,39 @@ const TodoMVC = {
   },
   presentation: {
     body: {
-      _symbol: "Body",
+      _proto: "Body",
       _stuff: [
         {
-          _symbol: "Section",
+          _proto: "Section",
           class: "todoapp",
           _stuff: [
             {
-              _symbol: "Div",
+              _proto: "Div",
               _stuff: [
                 {
-                  _symbol: "Header",
+                  _proto: "Header",
                   class: "header",
                   _stuff: [
                     {
-                      _symbol: "H1",
+                      _proto: "H1",
                       _stuff: [
                         "todos"
                       ]
                     },
                     {
-                      _symbol: "Input",
+                      _proto: "Input",
                       class: "new-todo",
                       placeholder: "What needs to be done?",
                       _relay: {
                         keyup: {
                           _stuff: {
-                            _symbol: "Chain",
+                            _proto: "Chain",
                             _stuff: [
-                              { _symbol: "domain" },
-                              { _symbol: "tasks" },
-                              { _symbol: "create",
+                              { _proto: "domain" },
+                              { _proto: "tasks" },
+                              { _proto: "create",
                                 title: {
-                                  _symbol: "value"
+                                  _proto: "value"
                                 }
                               }
                             ]
@@ -777,65 +777,65 @@ const TodoMVC = {
                   ]
                 },
                 {
-                  _symbol: "Section",
+                  _proto: "Section",
                   class: "main",
                   _stuff: [
                     {
-                      _symbol: "Input",
+                      _proto: "Input",
                       class: "toggle-all",
                       type: "checkbox"
                     },
                     {
-                      _symbol: "Ul",
+                      _proto: "Ul",
                       class: "todo-list",
                       _stuff: {
-                        _symbol: "Chain",
+                        _proto: "Chain",
                         _stuff: [
-                          { _symbol: "domain" },
-                          { _symbol: "tasks" },
+                          { _proto: "domain" },
+                          { _proto: "tasks" },
                           { 
-                            _symbol: "map",
+                            _proto: "map",
                             _stuff: [
                               {
-                                _symbol: "Lambda",
-                                task: { _symbol: "Argument", type: "Task" },
+                                _proto: "Lambda",
+                                task: { _proto: "Argument", type: "Task" },
                                 _stuff: [
                                   {
-                                    _symbol: "Li",
+                                    _proto: "Li",
                                     _stuff: [
                                       {
-                                        _symbol: "Div",
+                                        _proto: "Div",
                                         class: "view",
                                         _stuff: [
                                           {
-                                            _symbol: "Input",
+                                            _proto: "Input",
                                             class: "toggle",
                                             type: "checkbox",
                                           },
                                           {
-                                            _symbol: "Label",
+                                            _proto: "Label",
                                             _stuff: {
-                                              _symbol: "Chain",
+                                              _proto: "Chain",
                                               _stuff: [
-                                                { _symbol: "task" },
-                                                { _symbol: "title" }
+                                                { _proto: "task" },
+                                                { _proto: "title" }
                                               ]
                                             }
                                           },
                                           {
-                                            _symbol: "Button",
+                                            _proto: "Button",
                                             class: "destroy",
                                           }
                                         ]
                                       },
                                       {
-                                        _symbol: "Input",
+                                        _proto: "Input",
                                         class: "edit",
                                         value: {
-                                          _symbol: "Chain",
+                                          _proto: "Chain",
                                           _stuff: [
-                                            { _symbol: "task" },
-                                            { _symbol: "title" }
+                                            { _proto: "task" },
+                                            { _proto: "title" }
                                           ]
                                         }
                                       }
@@ -851,40 +851,40 @@ const TodoMVC = {
                   ]
                 },
                 {
-                  _symbol: "Footer",
+                  _proto: "Footer",
                   class: "footer",
                   _stuff: [
                     {
-                      _symbol: "Span",
+                      _proto: "Span",
                       class: "todo-count",
                       _stuff: [
                         {
-                          _symbol: "Strong",
+                          _proto: "Strong",
                           _stuff: {
-                            _symbol: "Chain",
+                            _proto: "Chain",
                             _stuff: [
-                              { _symbol: "domain" },
-                              { _symbol: "tasks" },
-                              { _symbol: "count" }
+                              { _proto: "domain" },
+                              { _proto: "tasks" },
+                              { _proto: "count" }
                             ]
                           }
                         },
                         {
-                          _symbol: "Span",
+                          _proto: "Span",
                           _stuff: " "
                         },
                         {
-                          _symbol: "Span",
+                          _proto: "Span",
                           _stuff: {
-                            _symbol: "if",
+                            _proto: "if",
                             cond: {
-                              _symbol: "Chain",
+                              _proto: "Chain",
                               _stuff: [
-                                { _symbol: "domain" },
-                                { _symbol: "tasks" },
-                                { _symbol: "count" },
+                                { _proto: "domain" },
+                                { _proto: "tasks" },
+                                { _proto: "count" },
                                 { 
-                                  _symbol: "equals",
+                                  _proto: "equals",
                                   _stuff: 1
                                 }
                               ]
@@ -894,20 +894,20 @@ const TodoMVC = {
                           }
                         },
                         {
-                          _symbol: "Span",
+                          _proto: "Span",
                           _stuff: " left"
                         }
                       ]
                     },
                     {
-                      _symbol: "Ul",
+                      _proto: "Ul",
                       class: "filters",
                       _stuff: [
                         {
-                          _symbol: "Li",
+                          _proto: "Li",
                           _stuff: [
                             {
-                              _symbol: "A",
+                              _proto: "A",
                               href: "#/",
                               class: "selected",
                               _stuff: "All"
@@ -915,26 +915,26 @@ const TodoMVC = {
                           ]
                         },
                         {
-                          _symbol: "Span",
+                          _proto: "Span",
                         },
                         {
-                          _symbol: "Li",
+                          _proto: "Li",
                           _stuff: [
                             {
-                              _symbol: "A",
+                              _proto: "A",
                               href: "#/active",
                               _stuff: "Active"
                             }
                           ]
                         },
                         {
-                          _symbol: "Span",
+                          _proto: "Span",
                         },
                         {
-                          _symbol: "Li",
+                          _proto: "Li",
                           _stuff: [
                             {
-                              _symbol: "A",
+                              _proto: "A",
                               href: "#/completed",
                               _stuff: "Completed"
                             }
@@ -943,7 +943,7 @@ const TodoMVC = {
                       ]
                     },
                     {
-                      _symbol: "Button",
+                      _proto: "Button",
                       class: "clear-completed",
                       _stuff: "Clear Completed"
                     }
@@ -954,30 +954,30 @@ const TodoMVC = {
           ]
         },
         {
-          _symbol: "Footer",
+          _proto: "Footer",
           class: "info",
           _stuff: [
             {
-              _symbol: "P",
+              _proto: "P",
               _stuff: "Double-click to edit a todo"
             },
             {
-              _symbol: "P",
+              _proto: "P",
               _stuff: [
                 "Created by ",
                 {
-                  _symbol: "A",
+                  _proto: "A",
                   href: "http://github.com/emeitch/",
                   _stuff: "Hideyuki MORITA (emeitch)"
                 }
               ]
             },
             {
-              _symbol: "P",
+              _proto: "P",
               _stuff: [
                 "Part of ",
                 {
-                  _symbol: "A",
+                  _proto: "A",
                   href: "http://todomvc.com",
                   _stuff: "TodoMVC"
                 }
@@ -992,22 +992,22 @@ const TodoMVC = {
 ENV.set("TodoMVC", Box.parse(TodoMVC));
 
 const instance = {
-  _symbol: "TodoMVC",
+  _proto: "TodoMVC",
   domain: {
     tasks: {
       _stuff: [
         {
-          _symbol: "Task",
+          _proto: "Task",
           title: "buy a milk",
           completed: false,
         },
         {
-          _symbol: "Task",
+          _proto: "Task",
           title: "buy a coffee",
           completed: false,
         },
         {
-          _symbol: "Task",
+          _proto: "Task",
           title: "buy a tea",
           completed: true,
         }
