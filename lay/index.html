@@ -289,7 +289,7 @@ class Box {
     {
       const type = typeof(src);
       if (Literal.types.includes(type)) {
-        src = { _proto: JSON.stringify(src) }
+        return Literal.create(src);
       }
     }
     
@@ -413,7 +413,8 @@ class Box {
     if (proto.clone) {
       return proto.clone({
         props: new Props(props),
-        stuff: new Stuff(stuff)
+        stuff: new Stuff(stuff),
+        value: this.value // todo Literal向けの特殊処理なので除去
       });
     } else {
       return this.clone({
@@ -514,7 +515,7 @@ ENV.set("Box", Box);
 
 class Literal extends Box {
   static create(value) {
-    return new this(JSON.stringify(value));
+    return new this(value);
   }
   
   static get types() {
@@ -525,30 +526,16 @@ class Literal extends Box {
     ];
   }
   
+  constructor(value) {
+    super();
+    this.value = value;
+  }
+  
   apply(operand, ctx) {
     return this;
   }
-  
-  get value() {
-    return JSON.parse(this.symbol);
-  }
 }
-ENV.rule(symbol => {
-  try {
-    const value = JSON.parse(symbol);
-    const type = typeof(value);
-    if (Literal.types.includes(type) || value == null) {
-      return Literal;
-    }
-  } catch(e) {
-    if (e instanceof SyntaxError) {
-    } else {
-      throw e;
-    }
-  }
-  
-  return undefined;
-});
+
 
 class Event extends Box {
 }
