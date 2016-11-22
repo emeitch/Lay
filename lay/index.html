@@ -339,6 +339,10 @@ class Box {
       ...inheritedOptions);
   }
   
+  static get id() {
+    return undefined;
+  }
+  
   static get evaluated() {
     return true;
   }
@@ -413,12 +417,13 @@ class Box {
       })
     );
     
-    if (proto.clone) {
-      return proto.clone({
+    // todo コンストラクタ型protoがなくなれば下記の分岐は廃止
+    if (proto.id) {
+      return this.clone({
+        id: proto.id,
+        proto: proto.proto,
         props: new Props(props),
         stuff: new Stuff(stuff),
-        value: this.value, // todo Literal向けの特殊処理なので除去
-        symbol: this.symbol // todo Ref向けの特殊処理なので除去
       });
     } else {
       return this.clone({
