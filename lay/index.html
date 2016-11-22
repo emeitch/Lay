@@ -368,6 +368,7 @@ class Box {
     const stuff = operand.stuff.eval(ctx);
     
     return operand.clone({
+      proto: this,
       props,
       stuff,
       evaluated: true
@@ -438,7 +439,7 @@ class Box {
   }
   
   apply(operand, ctx) {
-    return this.constructor.apply(operand, ctx);
+    return this.constructor.apply.call(this, operand, ctx);
   }
 
   keyOf(child) {
@@ -630,7 +631,7 @@ class DOM extends Box {
   static render(box, handlers) {
     const attrs = box.keys.reduce((r, k) => {
       const prop = box.props[k];
-      if (prop.proto && prop.proto.symbols[0] == "Event") {
+      if (prop.proto == Event) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
         return Object.assign(r, {[k]: prop.value})  
@@ -647,7 +648,7 @@ class DOM extends Box {
       return DOM.render(b, handlers);
     }));
     
-    const tag = box.proto.symbols[0];
+    const tag = box.proto.tag;
     const vdom = maquette.h(
       tag,
       attrs,
@@ -680,7 +681,11 @@ const HTML_TAGS = [
   "A",
 ];
 for (let tag of HTML_TAGS) {
-  ENV.set(tag, DOM);
+  ENV.set(tag, class extends DOM {
+    static get tag() {
+      return tag;
+    }
+  });
 }
 
 
