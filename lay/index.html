@@ -567,7 +567,7 @@ class Literal extends Box {
 
 class Event extends Box {
 }
-ENV.set("Event", Event);
+ENV.set("Event", new Event());
 
 
 class Self extends Box {
@@ -636,7 +636,7 @@ class DOM extends Box {
   static render(box, handlers) {
     const attrs = box.keys.reduce((r, k) => {
       const prop = box.props[k];
-      if (prop.proto == Event) {
+      if (prop.proto == ENV.get("Event")) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
         return Object.assign(r, {[k]: prop.value})  
