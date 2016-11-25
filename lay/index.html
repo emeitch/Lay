@@ -114,11 +114,17 @@ class Stuff {
 class Environment {
   constructor() {
     this.rules = [];
-    this.all = {};
+    this.imports = {}
+    this.stores = {};
   }
   
   get(symbol) {
-    const store = this.all[symbol];
+    const imprt = this.imports[symbol];
+    if (imprt) {
+      return imprt;
+    }
+    
+    const store = this.stores[symbol];
     if (store) {
       return store.overlay.root;
     }
@@ -137,11 +143,24 @@ class Environment {
     this.rules.push(rule);
   }
   
-  set(symbol, box) {
-    this.all[symbol] = new Store(box);
+  check(symbol) {
+    if (this.imports[symbol] || this.stores[symbol]) {
+      throw `"${symbol}" box is already exists!`
+    }
+  }
+  
+  import(symbol, box) {
+    this.check(symbol);
+    this.imports[symbol] = box;
+  }
+  
+  store(symbol, box) {
+    this.check(symbol);
+    this.stores[symbol] = new Store(box);
   }
 }
 const ENV = new Environment();
+
 
 class Tree {
   constructor(root) {
@@ -193,6 +212,7 @@ class Tree {
   }
 }
 
+
 class Store {
   constructor(root) {
     this.updates = [];
@@ -233,6 +253,7 @@ class Store {
     return this.head.find(pred);
   }
 }
+
 
 class Context {
   constructor(tree) {
@@ -339,50 +360,6 @@ class Box {
       ...inheritedOptions);
   }
   
-  static get id() {
-    return undefined;
-  }
-  
-  static get evaluated() {
-    return true;
-  }
-
-  static get props() {
-    return new Props();
-  }
-  
-  static get stuff() {
-    return new Stuff();
-  }
-  
-  static get keys() {
-    return [];
-  }
-  
-  static overlay(...args) {
-    return this;
-  }
-  
-  static eval(ctx) {
-    return this;
-  }
-  
-  static apply(operand, ctx) {
-    const props = operand.props.eval(ctx);
-    const stuff = operand.stuff.eval(ctx);
-    
-    return operand.clone({
-      proto: this,
-      props,
-      stuff,
-      evaluated: true
-    });
-  }
-  
-  static get(key) {
-    return undefined;
-  }
-        
   constructor(proto=undefined, props=new Props(), stuff=new Stuff(), evaluated=false) {
     this.id = this.constructor.uuid();
     this.proto = proto;
@@ -417,20 +394,12 @@ class Box {
       })
     );
     
-    // todo コンストラクタ型protoがなくなれば下記の分岐は廃止
-    if (proto.id) {
-      return this.clone({
-        id: proto.id,
-        proto: proto.proto,
-        props: new Props(props),
-        stuff: new Stuff(stuff),
-      });
-    } else {
-      return this.clone({
-        props: new Props(props),
-        stuff: new Stuff(stuff)
-      });
-    }
+    return this.clone({
+      id: proto.id,
+      proto: proto.proto,
+      props: new Props(props),
+      stuff: new Stuff(stuff),
+    });
   }
   
   eval(ctx) {
@@ -438,13 +407,21 @@ class Box {
       return this;
     }
     
-    const proto = this.proto && this.proto.eval(ctx) || Box;
-    const evaluated = proto.apply(this, ctx);
-    return evaluated.eval(ctx);
+    const proto = this.proto && this.proto.eval(ctx) || ENV.get("Box");
+    const applied = proto.apply(this, ctx);
+    return applied.eval(ctx);
   }
   
   apply(operand, ctx) {
-    return this.constructor.apply.call(this, operand, ctx);
+    const props = operand.props.eval(ctx);
+    const stuff = operand.stuff.eval(ctx);
+    
+    return operand.clone({
+      proto: this,
+      props,
+      stuff,
+      evaluated: true
+    });
   }
 
   keyOf(child) {
@@ -515,7 +492,7 @@ class Box {
     return undefined;
   }
 }
-ENV.set("Box", Box);
+ENV.import("Box", new Box());
 
 
 class Ref extends Box {
@@ -567,21 +544,21 @@ class Literal extends Box {
 
 class Event extends Box {
 }
-ENV.set("Event", new Event());
+ENV.import("Event", new Event());
 
 
 class Self extends Box {
 }
-ENV.set("self", Self);
+ENV.import("self", new Self());
 
 
 class ArrayAppend extends Box {
 }
-ENV.set("append", ArrayAppend)
+ENV.import("append", new ArrayAppend())
 
 
 class If extends Box {
-  static apply(operand, ctx) {
+  apply(operand, ctx) {
     const cond = operand.get("cond").eval(ctx).value;
     if (cond) {
       return operand.get("then").eval(ctx);
@@ -590,26 +567,26 @@ class If extends Box {
     }
   }
 }
-ENV.set("if", If);
+ENV.import("if", new If());
 
 
 class Argument extends Box {
 }
-ENV.set("Argument", Argument);
+ENV.import("Argument", new Argument());
 
 
 class Lambda extends Box {
-  static apply(operand, ctx) {
+  apply(operand, ctx) {
     const item = operand.stuff.one;
     return ctx.stack(operand, () => item.eval(ctx));
   }
 }
-ENV.set("Lambda", Lambda);
+ENV.import("Lambda", new Lambda());
 
 
 class Entity extends Box {
 }
-ENV.set("Entity", Entity);
+ENV.import("Entity", new Entity());
 
 
 class DOM extends Box {
@@ -662,10 +639,12 @@ class DOM extends Box {
     return [vdom];
   }
   
-  constructor(...args) {
-     super(...args);
-     // todo valueを参照されることがあるのでデフォルト値を設定している。後でうまく捌きたい
-     this.props.value = Literal.create(null);
+  constructor(tag) {
+    super();
+    this.tag = tag;
+    
+    // todo valueを参照されることがあるのでデフォルト値を設定している。後でうまく捌きたい
+    this.props.value = Literal.create(null);
   }
 }
 const HTML_TAGS = [
@@ -686,11 +665,7 @@ const HTML_TAGS = [
   "A",
 ];
 for (let tag of HTML_TAGS) {
-  ENV.set(tag, class extends DOM {
-    static get tag() {
-      return tag;
-    }
-  });
+  ENV.import(tag, new DOM(tag));
 }
 
 
@@ -968,7 +943,8 @@ const TodoMVC = {
     }
   }
 };
-ENV.set("TodoMVC", Box.parse(TodoMVC));
+ENV.import("TodoMVC", Box.parse(TodoMVC));
+
 
 const instance = {
   _proto: "TodoMVC",
@@ -994,7 +970,6 @@ const instance = {
     }
   }
 };
-
 const store = new Store(Box.parse(instance));
 console.log(store.head.root);
 
