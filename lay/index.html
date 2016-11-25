@@ -114,19 +114,19 @@ class Stuff {
 class Environment {
   constructor() {
     this.rules = [];
-    this.imports = {}
+    this.modules = {}
     this.stores = {};
   }
   
   get(symbol) {
-    const imprt = this.imports[symbol];
+    const imprt = this.modules[symbol];
     if (imprt) {
       return imprt;
     }
     
     const store = this.stores[symbol];
     if (store) {
-      return store.overlay.root;
+      return store.head.root;
     }
     
     for (let rule of this.rules) {
@@ -144,19 +144,37 @@ class Environment {
   }
   
   check(symbol) {
-    if (this.imports[symbol] || this.stores[symbol]) {
+    if (this.modules[symbol] || this.stores[symbol]) {
       throw `"${symbol}" box is already exists!`
     }
   }
   
   import(symbol, box) {
     this.check(symbol);
-    this.imports[symbol] = box;
+    this.modules[symbol] = box;
   }
   
   store(symbol, box) {
+    if (!box) {
+      return this.stores[symbol];
+    }
+    
     this.check(symbol);
     this.stores[symbol] = new Store(box);
+  }
+  
+  run() {
+    const mainstore = this.stores["main"];
+    if (!mainstore) {
+      throw `"main" store is not exists!`;
+    }
+    
+    for (let key of Object.getOwnPropertyNames(this.modules)) {
+      const module = this.modules[key];
+      if (module.initialize) {
+        module.initialize(mainstore);
+      }
+    }
   }
 }
 const ENV = new Environment();
@@ -589,8 +607,34 @@ class Entity extends Box {
 ENV.import("Entity", new Entity());
 
 
-class DOM extends Box {
-  static createHandlers(store) {
+class DOM extends Box {  
+  constructor(tag) {
+    super();
+    this.tag = tag;
+    
+    // todo valueを参照されることがあるのでデフォルト値を設定している。後でうまく捌きたい
+    this.props.value = Literal.create(null);
+  }
+  
+  initialize(mainstore) {
+    // one time only initializing
+    if (this.tag != HTML_TAGS[0]) {
+      return;
+    }
+    
+    console.log(mainstore.head.root);
+
+    const projector = maquette.createProjector();
+    const handlers = this.createHandlers(mainstore);
+    window.document.addEventListener('DOMContentLoaded', () => {
+       projector.replace(window.document.body, () => {
+         const body = mainstore.get("presentation").get("body");
+         return this.render(body, handlers)[0];
+       });
+    });
+  }
+  
+  createHandlers(store) {
     return {
       keyup: (event) => {
         {
@@ -609,8 +653,8 @@ class DOM extends Box {
       }
     }
   }
-    
-  static render(box, handlers) {
+      
+  render(box, handlers) {
     const attrs = box.keys.reduce((r, k) => {
       const prop = box.props[k];
       if (prop.proto == ENV.get("Event")) {
@@ -627,7 +671,7 @@ class DOM extends Box {
         return b.value || "";
       }
       
-      return DOM.render(b, handlers);
+      return this.render(b, handlers);
     }));
     
     const tag = box.proto.tag;
@@ -637,14 +681,6 @@ class DOM extends Box {
       children
     );
     return [vdom];
-  }
-  
-  constructor(tag) {
-    super();
-    this.tag = tag;
-    
-    // todo valueを参照されることがあるのでデフォルト値を設定している。後でうまく捌きたい
-    this.props.value = Literal.create(null);
   }
 }
 const HTML_TAGS = [
@@ -946,7 +982,7 @@ const TodoMVC = {
 ENV.import("TodoMVC", Box.parse(TodoMVC));
 
 
-const instance = {
+const main = {
   _proto: "TodoMVC",
   domain: {
     tasks: {
@@ -970,19 +1006,9 @@ const instance = {
     }
   }
 };
-const store = new Store(Box.parse(instance));
-console.log(store.head.root);
+ENV.store("main", Box.parse(main));
+ENV.run();
 
-const handlers = DOM.createHandlers(store);
-function render() {
-  const body = store.get("presentation").get("body");
-  return DOM.render(body, handlers)[0];
-}
-
-var projector = maquette.createProjector();
-window.document.addEventListener('DOMContentLoaded', function () {
-   projector.replace(window.document.body, render);
-});
 
 </script>
 </head>
