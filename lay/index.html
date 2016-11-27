@@ -636,20 +636,21 @@ class DOM extends Box {
   
   createHandlers(store) {
     return {
-      keyup: (event) => {
-        {
-          const box = store.find(b => b.id == event.target.getAttribute("boxid"));
-          box.set("value", Literal.create(event.target.value), store);
+      input: (ev) => {
+        const box = store.find(b => b.id == ev.target.getAttribute("boxid"));
+        const va = box.get("value");
+        if (!va || va.value != ev.target.value) {
+          box.set("value", Literal.create(ev.target.value), store);
+          console.log(`${box.id} value prop updated: "${ev.target.value}"`);
         }
+      },
+      keyup: (ev) => {
+        const box = store.find(b => b.id == ev.target.getAttribute("boxid"));
+        const e = box.get(event.type);
         
-        {
-          const box = store.find(b => b.id == event.target.getAttribute("boxid"));
-          const e = box.get(event.type);
-          
-          const ctx = new Context(store.head);
-          const adapt = e.eval(ctx);
-          console.log(adapt.stuff.raws[0]);
-        }
+        const ctx = new Context(store.head);
+        const adapt = e.eval(ctx);
+        // console.log(adapt.stuff.raws[0]);
       }
     }
   }
@@ -663,7 +664,9 @@ class DOM extends Box {
         return Object.assign(r, {[k]: prop.value})  
       }
     }
-    ,{});
+    ,{
+      oninput: handlers["input"]
+    });
     attrs["boxid"] = box.id;
     
     const children = flatten(box.stuff.raws.map(b => {
