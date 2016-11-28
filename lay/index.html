@@ -116,6 +116,7 @@ class Environment {
     this.rules = [];
     this.modules = {}
     this.stores = {};
+    this.events = [];
   }
   
   get(symbol) {
@@ -163,6 +164,10 @@ class Environment {
     this.stores[symbol] = new Store(box);
   }
   
+  emit(ev) {
+    this.events.push(ev);
+  }
+  
   run() {
     const mainstore = this.stores["main"];
     if (!mainstore) {
@@ -175,6 +180,28 @@ class Environment {
         module.initialize(mainstore);
       }
     }
+    
+    window.setInterval(() => {
+      const events = this.events;
+      this.events = [];
+      for (const ev of events) {
+        // todo 他のBoxが定義しているイベントをreceiveできるようにする
+        const origEvent = mainstore.overlay.find(b => ev.proto.id == b.id);
+        const updatedBox = origEvent.clone({props: ev.props, proto: new Lambda()}).eval(new Context(mainstore.overlay));
+        
+        const headOrigEvent = mainstore.head.find(b => ev.proto.id == b.id);
+        const box = mainstore.head.parent(headOrigEvent);
+        
+        box.set(3, updatedBox.stuff.one, mainstore);
+        
+        for (let key of Object.getOwnPropertyNames(this.modules)) {
+          const module = this.modules[key];
+          if (module.update) {
+            module.update(mainstore);
+          }
+        }
+      }
+    }, 1000 / 60);
   }
 }
 const ENV = new Environment();
@@ -622,15 +649,25 @@ class DOM extends Box {
       return;
     }
     
+    this.projector = maquette.createProjector();
+    this.handlers = this.createHandlers(mainstore);
+    
     console.log(mainstore.head.root);
-
-    const projector = maquette.createProjector();
-    const handlers = this.createHandlers(mainstore);
+    
     window.document.addEventListener('DOMContentLoaded', () => {
-       projector.replace(window.document.body, () => {
-         const body = mainstore.get("presentation").get("body");
-         return this.render(body, handlers)[0];
-       });
+      this.update(mainstore);
+    });
+  }
+  
+  update(mainstore) {
+    // one time only updating
+    if (this.tag != HTML_TAGS[0]) {
+      return;
+    }
+
+    this.projector.replace(window.document.body, () => {
+      const body = mainstore.get("presentation").get("body");
+      return this.render(body, this.handlers)[0];
     });
   }
   
@@ -645,12 +682,14 @@ class DOM extends Box {
         }
       },
       keyup: (ev) => {
-        const box = store.find(b => b.id == ev.target.getAttribute("boxid"));
-        const e = box.get(event.type);
+        if (ev.keyCode == 13) {
+          const box = store.find(b => b.id == ev.target.getAttribute("boxid"));
+          const e = box.get(event.type);
         
-        const ctx = new Context(store.head);
-        const adapt = e.eval(ctx);
-        // console.log(adapt.stuff.raws[0]);
+          const ctx = new Context(store.head);
+          const adapt = e.stuff.one.eval(ctx); // todo 本当は複数のイベントをrelayすべき
+          ENV.emit(adapt);
+        }
       }
     }
   }
@@ -668,6 +707,7 @@ class DOM extends Box {
       oninput: handlers["input"]
     });
     attrs["boxid"] = box.id;
+    attrs["key"] = box.id;
     
     const children = flatten(box.stuff.raws.map(b => {
       if (b instanceof Literal) {
