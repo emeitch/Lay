@@ -185,14 +185,8 @@ class Environment {
       const events = this.events;
       this.events = [];
       for (const ev of events) {
-        // todo 他のBoxが定義しているイベントをreceiveできるようにする
-        const origEvent = mainstore.overlay.find(b => ev.proto.id == b.id);
-        const updatedBox = origEvent.clone({props: ev.props, proto: new Lambda()}).eval(new Context(mainstore.overlay));
-        
-        const headOrigEvent = mainstore.head.find(b => ev.proto.id == b.id);
-        const box = mainstore.head.parent(headOrigEvent);
-        
-        box.set(3, updatedBox.stuff.one, mainstore);
+        // todo evを参照可能な他のstoreにもemitさせる
+        mainstore.emit(ev);
         
         for (let key of Object.getOwnPropertyNames(this.modules)) {
           const module = this.modules[key];
@@ -260,6 +254,7 @@ class Tree {
 
 class Store {
   constructor(root) {
+    this.events = [];
     this.updates = [];
     this.src = undefined;
     this.overlay = undefined;
@@ -284,6 +279,19 @@ class Store {
   parent(box) {
     const parent = this.head.parent(box);
     return parent ? parent : this;
+  }
+  
+  emit(ev) {
+    this.events.push(ev);
+    
+    // todo 他のBoxが定義しているイベントもreceiveできるようにする
+    const origEvent = this.overlay.find(b => ev.proto.id == b.id);
+    const updatedBox = origEvent.clone({props: ev.props, proto: new Lambda()}).eval(new Context(this.overlay));
+    
+    const headOrigEvent = this.head.find(b => ev.proto.id == b.id);
+    const box = this.head.parent(headOrigEvent);
+    
+    box.set(3, updatedBox.stuff.one, this);
   }
 
   replace(old, update) {
