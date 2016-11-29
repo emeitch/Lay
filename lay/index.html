@@ -37,8 +37,8 @@ class Props extends PropsBase {
   equals(box) {
     class PropEquals extends Box {
       apply(operand, ctx) {
-        const left = JSON.stringify(box.eval(ctx));
-        const right = JSON.stringify(operand.stuff.one.eval(ctx));
+        const left = box.eval(ctx).value;
+        const right = operand.stuff.one.eval(ctx).value;
         return Literal.create(left == right);
       }
     }
@@ -165,6 +165,11 @@ class Environment {
   }
   
   emit(ev) {
+    if (ev instanceof Literal && ev.value == undefined) {
+      // through event as undefined
+      return;
+    }
+    
     this.events.push(ev);
   }
   
@@ -461,8 +466,19 @@ class Box {
     }
     
     const proto = this.proto && this.proto.eval(ctx) || ENV.get("Box");
-    const applied = proto.apply(this, ctx);
-    return applied.eval(ctx);
+    
+    if (proto.canApply(this)) {
+      const applied = proto.apply(this, ctx);
+      return applied.eval(ctx);
+    } else {
+      return this.clone({
+        proto
+      });
+    }
+  }
+  
+  canApply(operand) {
+    return true;
   }
   
   apply(operand, ctx) {
@@ -562,11 +578,17 @@ class Ref extends Box {
   }
   
   eval(ctx) {
-    let val;
-    for (const symbol of this.symbols) {
-      val = !val ? ctx.ref(this, symbol) : val.get(symbol); 
+    let receiver = ctx.ref(this, this.symbols[0]);
+    
+    const rest = this.symbols.slice(); // duplication
+    rest.shift();
+    for (const symbol of rest) {
+      receiver = receiver.get(symbol);
+      if (!receiver) {
+        throw `"${symbol}" not found`
+      }
     }
-    return val;
+    return receiver;
   }
 }
 
@@ -580,7 +602,8 @@ class Literal extends Box {
     return [
       "number",
       "string",
-      "boolean"
+      "boolean",
+      "undefined"
     ];
   }
   
@@ -596,6 +619,18 @@ class Literal extends Box {
 
 
 class Event extends Box {
+  canApply(operand) {
+    for (let key of operand.keys) {
+      const prop = operand.props[key];
+      
+      // todo 判定がダサい。。。
+      if (prop.proto && (prop.proto == ENV.get("Argument") || prop.proto instanceof Ref && prop.proto.symbols[0] == "Argument")) {
+        return false;
+      }
+      
+      return true;
+    }
+  }
 }
 ENV.import("Event", new Event());
 
@@ -686,18 +721,27 @@ class DOM extends Box {
         const va = box.get("value");
         if (!va || va.value != ev.target.value) {
           box.set("value", Literal.create(ev.target.value), store);
-          console.log(`${box.id} value prop updated: "${ev.target.value}"`);
+          // console.log(`${box.id} value prop updated: "${ev.target.value}"`);
         }
       },
       keyup: (ev) => {
-        if (ev.keyCode == 13) {
-          const box = store.find(b => b.id == ev.target.getAttribute("boxid"));
-          const e = box.get(event.type);
+        const box = store.find(b => b.id == ev.target.getAttribute("boxid"));
+        const src = box.get(ev.type);
         
-          const ctx = new Context(store.head);
-          const adapt = e.stuff.one.eval(ctx); // todo 本当は複数のイベントをrelayすべき
-          ENV.emit(adapt);
-        }
+        const ctx = new Context(store.head);
+        const st = new Box(undefined, 
+          new Props({
+            event: new Box(undefined, 
+              new Props({
+                // todo keyCode以外の属性も転送する
+                keyCode: Literal.create(ev.keyCode)
+              })
+            )
+          })
+        );
+        // todo 本当は複数のイベントをrelayすべき
+        const dst = ctx.stack(st, () => src.stuff.one.eval(ctx)); 
+        ENV.emit(dst);
       }
     }
   }
@@ -770,7 +814,8 @@ const TodoMVC = {
           _stuff: {
             _proto: [
               "self",
-              "append"
+              // todo append実装時に戻す
+              // "append"
             ],
             _stuff: {
               _proto: "Task",
@@ -811,15 +856,28 @@ const TodoMVC = {
                       placeholder: "What needs to be done?",
                       _relay: {
                         keyup: {
+                          event: { _proto: "Argument", type: "Event" },
                           _stuff: {
-                            _proto: [
-                              "domain",
-                              "tasks",
-                              "create"
-                            ],
-                            title: {
-                              _proto: "value"
-                            }
+                            _proto: "if",
+                            cond: {
+                              _proto: [
+                                "event",
+                                "keyCode",
+                                "equals"
+                              ],
+                              _stuff: 13
+                            },
+                            then: {
+                              _proto: [
+                                "domain",
+                                "tasks",
+                                "create"
+                              ],
+                              title: {
+                                _proto: "value"
+                              }
+                            },
+                            else: undefined
                           }
                         }
                       }
