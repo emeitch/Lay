@@ -20,7 +20,13 @@ class PropsBase {
   }
   
   clone(params) {
-    return Object.assign(new this.constructor(), this, params);
+    const keys = Object.getOwnPropertyNames(this);
+    const raws = keys.reduce((p, k) => {
+        const prop = this[k];
+        return Object.assign(p, {[k]: prop.clone()});
+      },
+      {});
+    return Object.assign(new this.constructor(raws), params);
   }
   
   eval(ctx) {
@@ -73,6 +79,19 @@ class Props extends PropsBase {
     
     return new PropCount();
   }
+  
+  append(box) {
+    class PropAppend extends Box {
+      apply(operand, ctx) {
+        const stuff = new Stuff();
+        stuff.raws[box.stuff.raws.length] = operand.stuff.one.eval(ctx); // push
+        const updateBox = new Box(undefined, new Props(), stuff);
+        return updateBox;
+      }
+    }
+    
+    return new PropAppend();
+  }
 }
 
 
@@ -81,8 +100,9 @@ class Stuff {
     this.raws = raws;
   }
   
-  clone(params) {
-    return Object.assign(new this.constructor(), this, params);
+  clone() {
+    const raws = this.raws.map(b => b.clone());
+    return new this.constructor(raws);
   }
   
   get one() {
@@ -95,13 +115,25 @@ class Stuff {
   }
   
   flatten() {
-    const raws = this.raws.reduce((a, raw) => {
+    let raws = [];
+    let index = 0;
+    for (var i = 0; i < this.raws.length; i++) {
+      const raw = this.raws[i];
       if (raw instanceof Stuff) {
-        return a.concat(raw.raws);
+        for (var j = 0; j < raw.raws.length; j++) {
+          const rr = raw.raws[j];
+          if (Object.keys(raw.raws).indexOf(String(j)) != -1) {
+            raws[index] = rr;
+          }
+          index++;
+        }
       } else {
-        return a.concat([raw]);
+        if (Object.keys(this.raws).indexOf(String(i)) != -1) {
+          raws[index] = raw;
+        }
+        index++;
       }
-    }, []);
+    }
     return new this.constructor(raws);
   }
   
@@ -213,13 +245,17 @@ class Tree {
   }
   
   setupParents(box, path, map) {
+    if (map.get(box)) {
+      throw "duplicated parents!"
+    }
+    
     map.set(box, path);
 
     const pth = path.slice(); // dupulication
     pth.push(box);
     
     if (box.proto) {
-      this.setupParents(box.proto, pth, map)  
+      this.setupParents(box.proto, pth, map);
     }
         
     for (let key of box.keys) {
@@ -291,12 +327,20 @@ class Store {
     
     // todo 他のBoxが定義しているイベントもreceiveできるようにする
     const origEvent = this.overlay.find(b => ev.proto.id == b.id);
-    const updatedBox = origEvent.clone({props: ev.props, proto: new Lambda()}).eval(new Context(this.overlay));
+    const ctx = new Context(this.overlay);
+    const st = new Box(undefined, ev.props);
+    const updateEvent = ctx.stack(st, () => origEvent.eval(ctx));
+    const updateBox = updateEvent.stuff.one;
     
     const headOrigEvent = this.head.find(b => ev.proto.id == b.id);
     const box = this.head.parent(headOrigEvent);
     
-    box.set(3, updatedBox.stuff.one, this);
+    for (let name of Object.keys(updateBox.stuff.raws)) {
+      const index = parseInt(name);
+      if (!Number.isNaN(index)) {
+        box.set(index, updateBox.stuff.raws[index], this);
+      }
+    }
   }
 
   replace(old, update) {
@@ -341,6 +385,13 @@ class Context {
   }
   
   ref(current, symbol) {
+    if (symbol == "self") {
+      const parents = this.tree.parents(current);
+      // todo もう少しまともにselfのセマンティクスを定義したい
+      const self = parents[parents.length - 3];
+      return self;
+    }
+    
     for (let box of this.scope(current)) {
       const prop = box.get(symbol);
       if (prop && prop != current) {
@@ -427,7 +478,13 @@ class Box {
   }
     
   clone(params) {
-    return Object.assign(new this.constructor(), this, params);
+    const proto = this.proto ? this.proto.clone() : this.proto;
+    const props = this.props.clone();
+    const stuff = this.stuff.clone();
+    return Object.assign(new this.constructor(),
+      this,
+      { proto, props, stuff },
+      params);
   }
     
   get keys() {
@@ -437,7 +494,7 @@ class Box {
   overlay(ctx, inherit=undefined) {
     const proto = this.proto && this.proto.eval(ctx) || inherit;
     if (!proto) {
-      return this;
+      return this.clone();
     }
     
     const props = this.keys.reduce((ps, k) => {
@@ -446,7 +503,7 @@ class Box {
     }, proto.props.clone());
     
     const stuff = Object.assign(
-      proto.stuff.raws, 
+      proto.stuff.clone().raws, 
       this.stuff.raws.map((s, i) => {
         return s.overlay(ctx, proto.stuff.raws[i]);
       })
@@ -454,7 +511,7 @@ class Box {
     
     return this.clone({
       id: proto.id,
-      proto: proto.proto,
+      proto: proto.proto ? proto.proto.clone() : proto.proto,
       props: new Props(props),
       stuff: new Stuff(stuff),
     });
@@ -465,9 +522,9 @@ class Box {
       return this;
     }
     
-    const proto = this.proto && this.proto.eval(ctx) || ENV.get("Box");
+    const proto = this.proto && this.proto.eval(ctx) || new Box();
     
-    if (proto.canApply(this)) {
+    if (proto.canApply(this, ctx)) {
       const applied = proto.apply(this, ctx);
       return applied.eval(ctx);
     } else {
@@ -477,7 +534,7 @@ class Box {
     }
   }
   
-  canApply(operand) {
+  canApply(operand, ctx) {
     return true;
   }
   
@@ -588,7 +645,7 @@ class Ref extends Box {
         throw `"${symbol}" not found`
       }
     }
-    return receiver;
+    return receiver ? receiver.clone({}) : receiver;
   }
 }
 
@@ -619,30 +676,23 @@ class Literal extends Box {
 
 
 class Event extends Box {
-  canApply(operand) {
+  canApply(operand, ctx) {
     for (let key of operand.keys) {
-      const prop = operand.props[key];
-      
+      const box = ctx.ref(operand, key);
+      if (box) {
+        continue;
+      }
+
+      const prop = operand.get(key);
       // todo 判定がダサい。。。
-      if (prop.proto && (prop.proto == ENV.get("Argument") || prop.proto instanceof Ref && prop.proto.symbols[0] == "Argument")) {
+      if (prop.proto && (prop.proto.id == ENV.get("Argument").id || prop.proto instanceof Ref && prop.proto.symbols[0] == "Argument")) {
         return false;
       }
-      
-      return true;
     }
+    return true;
   }
 }
 ENV.import("Event", new Event());
-
-
-class Self extends Box {
-}
-ENV.import("self", new Self());
-
-
-class ArrayAppend extends Box {
-}
-ENV.import("append", new ArrayAppend())
 
 
 class If extends Box {
@@ -740,7 +790,7 @@ class DOM extends Box {
           })
         );
         // todo 本当は複数のイベントをrelayすべき
-        const dst = ctx.stack(st, () => src.stuff.one.eval(ctx)); 
+        const dst = ctx.stack(st, () => src.stuff.one.eval(ctx));
         ENV.emit(dst);
       }
     }
@@ -749,7 +799,7 @@ class DOM extends Box {
   render(box, handlers) {
     const attrs = box.keys.reduce((r, k) => {
       const prop = box.props[k];
-      if (prop.proto == ENV.get("Event")) {
+      if (prop.proto.id == ENV.get("Event").id) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
         return Object.assign(r, {[k]: prop.value})  
@@ -810,12 +860,11 @@ const TodoMVC = {
     tasks: {
       _on: {
         create: {
-          title: "string",
+          title: { _proto: "Argument", type: "string" },
           _stuff: {
             _proto: [
               "self",
-              // todo append実装時に戻す
-              // "append"
+              "append"
             ],
             _stuff: {
               _proto: "Task",
