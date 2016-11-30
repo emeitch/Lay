@@ -762,7 +762,10 @@ class DOM extends Box {
     console.log(mainstore.head.root);
     
     window.document.addEventListener('DOMContentLoaded', () => {
-      this.update(mainstore);
+      this.projector.replace(window.document.body, () => {
+        const body = mainstore.get("presentation").get("body");
+        return this.render(body, this.handlers)[0];
+      });
     });
   }
   
@@ -771,11 +774,8 @@ class DOM extends Box {
     if (this.tag != HTML_TAGS[0]) {
       return;
     }
-
-    this.projector.replace(window.document.body, () => {
-      const body = mainstore.get("presentation").get("body");
-      return this.render(body, this.handlers)[0];
-    });
+    
+    this.projector.renderNow();
   }
   
   createHandlers(store) {
