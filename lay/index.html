@@ -80,6 +80,16 @@ class Props extends PropsBase {
     return new PropCount();
   }
   
+  set(box) {
+    class PropSet extends Box {
+      apply(operand, ctx) {
+        return new Box(undefined, operand.props.clone(), operand.stuff.clone());
+      }
+    }
+    
+    return new PropSet();
+  }
+  
   append(box) {
     class PropAppend extends Box {
       apply(operand, ctx) {
@@ -334,6 +344,10 @@ class Store {
     
     const headOrigEvent = this.head.find(b => ev.proto.id == b.id);
     const box = this.head.parent(headOrigEvent);
+    
+    for (let key of updateBox.keys) {
+      box.set(key, updateBox.props[key], this);
+    }
     
     for (let name of Object.keys(updateBox.stuff.raws)) {
       const index = parseInt(name);
@@ -789,9 +803,11 @@ class DOM extends Box {
             )
           })
         );
-        // todo 本当は複数のイベントをrelayすべき
-        const dst = ctx.stack(st, () => src.stuff.one.eval(ctx));
-        ENV.emit(dst);
+        
+        const events = ctx.stack(st, () => src.stuff.one.eval(ctx));
+        for (let event of events.stuff.raws) {
+          ENV.emit(event);  
+        }
       }
     }
   }
@@ -903,6 +919,17 @@ const TodoMVC = {
                       _proto: "Input",
                       class: "new-todo",
                       placeholder: "What needs to be done?",
+                      _on: {
+                        clear: {
+                          _stuff: {
+                            _proto: [
+                              "self",
+                              "set"
+                            ],
+                            value: "",
+                          }
+                        }
+                      },
                       _relay: {
                         keyup: {
                           event: { _proto: "Argument", type: "Event" },
@@ -917,16 +944,23 @@ const TodoMVC = {
                               _stuff: 13
                             },
                             then: {
-                              _proto: [
-                                "domain",
-                                "tasks",
-                                "create"
-                              ],
-                              title: {
-                                _proto: "value"
-                              }
+                              _stuff: [
+                                {
+                                  _proto: [
+                                    "domain",
+                                    "tasks",
+                                    "create"
+                                  ],
+                                  title: {
+                                    _proto: "value"
+                                  }
+                                },
+                                {
+                                  _proto: "clear"
+                                }
+                              ]
                             },
-                            else: undefined
+                            else: {}
                           }
                         }
                       }
