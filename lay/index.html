@@ -83,7 +83,7 @@ class Props extends PropsBase {
   set(box) {
     class PropSet extends Box {
       apply(operand, ctx) {
-        return new Box(undefined, operand.props.clone(), operand.stuff.clone());
+        return new StoreUpdateEvent(undefined, operand.props.clone(), operand.stuff.clone());
       }
     }
     
@@ -95,7 +95,7 @@ class Props extends PropsBase {
       apply(operand, ctx) {
         const stuff = new Stuff();
         stuff.raws[box.stuff.raws.length] = operand.stuff.one.eval(ctx); // push
-        const updateBox = new Box(undefined, new Props(), stuff);
+        const updateBox = new StoreUpdateEvent(undefined, new Props(), stuff);
         return updateBox;
       }
     }
@@ -206,13 +206,8 @@ class Environment {
     this.stores[symbol] = new Store(box);
   }
   
-  emit(ev) {
-    if (ev instanceof Literal && ev.value == undefined) {
-      // through event as undefined
-      return;
-    }
-    
-    this.events.push(ev);
+  emit(event) {
+    this.events.push(event);
   }
   
   run() {
@@ -229,12 +224,21 @@ class Environment {
     }
     
     window.setInterval(() => {
-      const events = this.events;
-      this.events = [];
-      for (const ev of events) {
-        // todo evを参照可能な他のstoreにもemitさせる
-        mainstore.emit(ev);
+      let updated = false;
+      
+      while(this.events.length > 0) {
+        const events = this.events;
+        this.events = [];
         
+        for (const event of events) {
+          // todo eventを参照可能な他のstoreにもemitさせる
+          mainstore.emit(event);
+          
+          updated = true;
+        }
+      }
+      
+      if (updated) {
         for (let key of Object.getOwnPropertyNames(this.modules)) {
           const module = this.modules[key];
           if (module.update) {
@@ -305,7 +309,6 @@ class Tree {
 
 class Store {
   constructor(root) {
-    this.events = [];
     this.updates = [];
     this.src = undefined;
     this.overlay = undefined;
@@ -332,27 +335,39 @@ class Store {
     return parent ? parent : this;
   }
   
-  emit(ev) {
-    this.events.push(ev);
-    
+  emit(event) {
     // todo 他のBoxが定義しているイベントもreceiveできるようにする
-    const origEvent = this.overlay.find(b => ev.proto.id == b.id);
-    const ctx = new Context(this.overlay);
-    const st = new Box(undefined, ev.props);
-    const updateEvent = ctx.stack(st, () => origEvent.eval(ctx));
-    const updateBox = updateEvent.stuff.one;
+    const targetId = event.get("eventTarget").value;
+    const src = this.head.find(b => b.id == targetId);
+    const ctx = new Context(this.head);
+    const dst = ctx.stack(event, () => src.eval(ctx));
     
-    const headOrigEvent = this.head.find(b => ev.proto.id == b.id);
-    const box = this.head.parent(headOrigEvent);
-    
-    for (let key of updateBox.keys) {
-      box.set(key, updateBox.props[key], this);
-    }
-    
-    for (let name of Object.keys(updateBox.stuff.raws)) {
-      const index = parseInt(name);
-      if (!Number.isNaN(index)) {
-        box.set(index, updateBox.stuff.raws[index], this);
+    for (let target of dst.stuff.raws) {
+      if (target instanceof Literal && event.value == undefined) {
+        // through event as undefined
+        continue;
+      } else if (target instanceof StoreUpdateEvent) {
+        const updateBox = target;
+        const owner = this.head.parent(src);
+        
+        for (let key of updateBox.keys) {
+          owner.set(key, updateBox.props[key], this);
+        }
+        
+        for (let name of Object.keys(updateBox.stuff.raws)) {
+          const index = parseInt(name);
+          if (!Number.isNaN(index)) {
+            owner.set(index, updateBox.stuff.raws[index], this);
+          }
+        }
+      } else {
+        const props = target.props.clone({
+          eventTarget: Literal.create(target.proto.id),
+        });
+        const event = new Box(undefined,
+          props
+        );
+        ENV.emit(event);
       }
     }
   }
@@ -459,17 +474,6 @@ class Box {
       });
     }
     
-    const relay = src._relay;
-    if (relay) {
-      Object.getOwnPropertyNames(relay).forEach(k => {
-        const event = relay[k];
-        if (!event._proto) {
-          event._proto = "Event";
-        }
-        props[k] = Box.parse(event);
-      });
-    }
-      
     const s = src._stuff;
     const stf = s ? (Array.isArray(s) ? s : [s]) : [];
     const stuff = stf.map(i => Box.parse(i));
@@ -664,6 +668,16 @@ class Ref extends Box {
 }
 
 
+// 評価結果を上位のstuffにマージする用途で利用
+// Stuffのeval時にflattenでマージされる
+class StuffBox extends Box {
+  apply(operand, ctx) {
+    return operand.stuff.eval(ctx);
+  }
+}
+ENV.import("Stuff", new StuffBox());
+
+
 class Literal extends Box {
   static create(value) {
     return new this(value);
@@ -707,6 +721,10 @@ class Event extends Box {
   }
 }
 ENV.import("Event", new Event());
+
+
+class StoreUpdateEvent extends Event {
+}
 
 
 class If extends Box {
@@ -790,24 +808,14 @@ class DOM extends Box {
       },
       keyup: (ev) => {
         const box = store.find(b => b.id == ev.target.getAttribute("boxid"));
-        const src = box.get(ev.type);
-        
-        const ctx = new Context(store.head);
-        const st = new Box(undefined, 
+        const prop = box.get(ev.type);
+        const event = new Box(undefined, 
           new Props({
-            event: new Box(undefined, 
-              new Props({
-                // todo keyCode以外の属性も転送する
-                keyCode: Literal.create(ev.keyCode)
-              })
-            )
+            eventTarget: Literal.create(prop.id),
+            keyCode: Literal.create(ev.keyCode), // todo keyCode以外の属性も転送する
           })
         );
-        
-        const events = ctx.stack(st, () => src.stuff.one.eval(ctx));
-        for (let event of events.stuff.raws) {
-          ENV.emit(event);  
-        }
+        ENV.emit(event);
       }
     }
   }
@@ -929,22 +937,20 @@ const TodoMVC = {
                             ],
                             value: "",
                           }
-                        }
-                      },
-                      _relay: {
+                        },
                         keyup: {
-                          event: { _proto: "Argument", type: "Event" },
+                          keyCode: { _proto: "Argument", type: "Literal" },
                           _stuff: {
                             _proto: "if",
                             cond: {
                               _proto: [
-                                "event",
                                 "keyCode",
                                 "equals"
                               ],
                               _stuff: 13
                             },
                             then: {
+                              _proto: "Stuff",
                               _stuff: [
                                 {
                                   _proto: [
@@ -961,7 +967,7 @@ const TodoMVC = {
                                 }
                               ]
                             },
-                            else: {}
+                            else: undefined
                           }
                         }
                       }
