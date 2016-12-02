@@ -580,12 +580,19 @@ class Box {
   }
   
   get(key) {
-    const prop = this.props[key];
-    if (prop) {
-      if (typeof(prop) == "function") {
-        return prop(this);
-      } else {
-        return prop;  
+    if (typeof(key) === "string") {
+      const prop = this.props[key];
+      if (prop) {
+        if (typeof(prop) == "function") {
+          return prop(this);
+        } else {
+          return prop;  
+        }
+      }
+    } else if (typeof(key) === "number") {
+      const stuff = this.stuff.raws[key]
+      if (stuff) {
+        return stuff;
       }
     }
         
@@ -796,18 +803,50 @@ class DOM extends Box {
     this.projector.renderNow();
   }
   
+  elementPath(dom) {
+    const path = [];
+    
+    let t = dom;
+    while (t.parentNode) {
+      const p = t.parentNode;
+      let i = 0;
+      while (i < p.children.length) {
+        if (p.children[i] == t) {
+          break;
+        }
+        i++;
+      }
+      path.unshift(i);
+      t = p;
+    }
+    
+    return path;
+  }
+  
+  findBox(store, dom) {
+    const path = this.elementPath(dom);
+    path.shift(); // shift html index
+    path.shift(); // shift body index
+    
+    let box = store.get("presentation").get("body");
+    for (let i of path) {
+      box = box.get(i);
+    }
+    
+    return box;
+  }
+  
   createHandlers(store) {
     return {
       input: (ev) => {
-        const box = store.find(b => b.id == ev.target.getAttribute("boxid"));
+        const box = this.findBox(store, ev.target);
         const va = box.get("value");
         if (!va || va.value != ev.target.value) {
           box.set("value", Literal.create(ev.target.value), store);
-          // console.log(`${box.id} value prop updated: "${ev.target.value}"`);
         }
       },
       keyup: (ev) => {
-        const box = store.find(b => b.id == ev.target.getAttribute("boxid"));
+        const box = this.findBox(store, ev.target);
         const prop = box.get(ev.type);
         const event = new Box(undefined, 
           new Props({
@@ -832,7 +871,6 @@ class DOM extends Box {
     ,{
       oninput: handlers["input"]
     });
-    attrs["boxid"] = box.id;
     attrs["key"] = box.id;
     
     const children = flatten(box.stuff.raws.map(b => {
