@@ -297,12 +297,30 @@ class Tree {
     return parents[parents.length-1];
   }
   
-  get(key) {
-    return this.root.get(key);
+  get(...path) {
+    let box = this.root;
+    for (let i of path) {
+      box = box.get(i);
+    }
+    
+    return box;
   }
 
   find(pred) {
     return this.root.find(pred);
+  }
+  
+  path(box) {
+    const parents = this.parents(box);
+    const path = [];
+    let child = box;
+    while (parents.length > 0) {
+      const parent = parents.pop();
+      path.unshift(parent.keyOf(child));
+      child = parent;
+    }
+
+    return path;
   }
 }
 
@@ -337,8 +355,7 @@ class Store {
   
   emit(event) {
     // todo 他のBoxが定義しているイベントもreceiveできるようにする
-    const targetId = event.get("eventTarget").value;
-    const src = this.head.find(b => b.id == targetId);
+    const src = this.head.get(...event.stuff.raws);
     const ctx = new Context(this.head);
     const dst = ctx.stack(event, () => src.eval(ctx));
     
@@ -348,7 +365,9 @@ class Store {
         continue;
       } else if (target instanceof StoreUpdateEvent) {
         const updateBox = target;
-        const owner = this.head.parent(src);
+        const ownerPath = event.stuff.raws.slice();
+        ownerPath.pop();
+        const owner = this.head.get(...ownerPath);
         
         for (let key of updateBox.keys) {
           owner.set(key, updateBox.props[key], this);
@@ -361,11 +380,11 @@ class Store {
           }
         }
       } else {
-        const props = target.props.clone({
-          eventTarget: Literal.create(target.proto.id),
-        });
         const event = new Box(undefined,
-          props
+          target.props.clone(),
+          new Stuff(
+            this.head.path(target.proto.original)
+          )
         );
         ENV.emit(event);
       }
@@ -376,8 +395,8 @@ class Store {
     this.append(update);
   }
   
-  get(key) {
-    return this.head.get(key);
+  get(...path) {
+    return this.head.get(...path);
   }
   
   find(pred) {
@@ -670,7 +689,7 @@ class Ref extends Box {
         throw `"${symbol}" not found`
       }
     }
-    return receiver ? receiver.clone({}) : receiver;
+    return receiver ? receiver.clone({original: receiver}) : receiver;
   }
 }
 
@@ -823,36 +842,35 @@ class DOM extends Box {
     return path;
   }
   
-  findBox(store, dom) {
+  path(dom) {
     const path = this.elementPath(dom);
-    path.shift(); // shift html index
-    path.shift(); // shift body index
+
+    path[0] = "presentation";
+    path[1] = "body";
     
-    let box = store.get("presentation").get("body");
-    for (let i of path) {
-      box = box.get(i);
-    }
-    
-    return box;
+    return path;
   }
-  
+    
   createHandlers(store) {
     return {
       input: (ev) => {
-        const box = this.findBox(store, ev.target);
+        const path = this.path(ev.target);
+        const box = store.get(...path);
         const va = box.get("value");
         if (!va || va.value != ev.target.value) {
           box.set("value", Literal.create(ev.target.value), store);
         }
       },
       keyup: (ev) => {
-        const box = this.findBox(store, ev.target);
-        const prop = box.get(ev.type);
+        const path = this.path(ev.target);
         const event = new Box(undefined, 
           new Props({
-            eventTarget: Literal.create(prop.id),
-            keyCode: Literal.create(ev.keyCode), // todo keyCode以外の属性も転送する
-          })
+            // todo keyCode以外の属性も転送する
+            keyCode: Literal.create(ev.keyCode), 
+          }),
+          new Stuff(
+            path.concat([ev.type])
+          )
         );
         ENV.emit(event);
       }
