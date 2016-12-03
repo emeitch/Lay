@@ -460,20 +460,7 @@ class Context {
 }
 
 
-class Box {
-  static uuid() {
-    var uuid = "", i, random;
-    for (i = 0; i < 32; i++) {
-      random = Math.random() * 16 | 0;
-      
-      if (i == 8 || i == 12 || i == 16 || i == 20) {
-        uuid += "-"
-      }
-      uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
-    }
-    return uuid;
-  }
-  
+class Box {  
   static parse(src, ...inheritedOptions) {
     {
       const type = typeof(src);
@@ -731,6 +718,27 @@ class Literal extends Box {
 }
 
 
+class UUID extends Box {
+  uuid() {
+    var uuid = "", i, random;
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+      
+      if (i == 8 || i == 12 || i == 16 || i == 20) {
+        uuid += "-"
+      }
+      uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+    }
+    return uuid;
+  }
+
+  apply(operand, ctx) {
+    return Literal.create(this.uuid());
+  }
+}
+ENV.import("UUID", new UUID());
+
+
 class Event extends Box {
   canApply(operand, ctx) {
     for (let key of operand.keys) {
@@ -900,9 +908,6 @@ class DOM extends Box {
     }));
     
     const tag = box.proto.tag;
-    if (tag == "Li") {
-      attrs.key = Box.uuid(); // todo いったんdummyでUUID突っ込んで対応
-    }
     const vdom = maquette.h(
       tag,
       attrs,
@@ -951,6 +956,7 @@ const TodoMVC = {
             ],
             _stuff: {
               _proto: "Task",
+              id: { _proto: "UUID" },
               title: { _proto: "title" },
               completed: false
             }
@@ -1058,6 +1064,12 @@ const TodoMVC = {
                             _stuff: [
                               {
                                 _proto: "Li",
+                                key: {
+                                  _proto: [
+                                    "task",
+                                    "id"
+                                  ]
+                                },
                                 _stuff: [
                                   {
                                     _proto: "Div",
@@ -1247,16 +1259,19 @@ const main = {
       _stuff: [
         {
           _proto: "Task",
+          id: { _proto: "UUID" },
           title: "buy a milk",
           completed: false,
         },
         {
           _proto: "Task",
+          id: { _proto: "UUID" },
           title: "buy a coffee",
           completed: false,
         },
         {
           _proto: "Task",
+          id: { _proto: "UUID" },
           title: "buy a tea",
           completed: true,
         }
