@@ -402,6 +402,10 @@ class Store {
   find(pred) {
     return this.head.find(pred);
   }
+  
+  path(box) {
+    return this.head.path(box);
+  }
 }
 
 
@@ -507,7 +511,6 @@ class Box {
   }
   
   constructor(proto=undefined, props=new Props(), stuff=new Stuff(), evaluated=false) {
-    this.id = this.constructor.uuid();
     this.proto = proto;
     this.props = props;
     this.stuff = stuff;
@@ -547,7 +550,6 @@ class Box {
     );
     
     return this.clone({
-      id: proto.id,
       proto: proto.proto ? proto.proto.clone() : proto.proto,
       props: new Props(props),
       stuff: new Stuff(stuff),
@@ -737,9 +739,8 @@ class Event extends Box {
         continue;
       }
 
-      const prop = operand.get(key);
-      // todo 判定がダサい。。。
-      if (prop.proto && (prop.proto.id == ENV.get("Argument").id || prop.proto instanceof Ref && prop.proto.symbols[0] == "Argument")) {
+      const prop = operand.get(key).eval(ctx);
+      if (prop.proto instanceof Argument) {
         return false;
       }
     }
@@ -808,7 +809,7 @@ class DOM extends Box {
     window.document.addEventListener('DOMContentLoaded', () => {
       this.projector.replace(window.document.body, () => {
         const body = mainstore.get("presentation").get("body");
-        return this.render(body, this.handlers)[0];
+        return this.render(body, mainstore, this.handlers)[0];
       });
     });
   }
@@ -877,10 +878,10 @@ class DOM extends Box {
     }
   }
       
-  render(box, handlers) {
+  render(box, store, handlers) {
     const attrs = box.keys.reduce((r, k) => {
       const prop = box.props[k];
-      if (prop.proto.id == ENV.get("Event").id) {
+      if (prop.proto instanceof Event) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
         return Object.assign(r, {[k]: prop.value})  
@@ -889,17 +890,19 @@ class DOM extends Box {
     ,{
       oninput: handlers["input"]
     });
-    attrs["key"] = box.id;
     
     const children = flatten(box.stuff.raws.map(b => {
       if (b instanceof Literal) {
         return b.value || "";
       }
       
-      return this.render(b, handlers);
+      return this.render(b, store, handlers);
     }));
     
     const tag = box.proto.tag;
+    if (tag == "Li") {
+      attrs.key = Box.uuid(); // todo いったんdummyでUUID突っ込んで対応
+    }
     const vdom = maquette.h(
       tag,
       attrs,
