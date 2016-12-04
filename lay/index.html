@@ -253,27 +253,22 @@ const ENV = new Environment();
 
 
 class BoxProxy {
-  constructor(path, tree) {
+  constructor(path, box, tree) {
     this.path = path;
+    this.box = box;
     this.tree = tree;
-
-    this.box = this.getByPath(path);
-    if (!this.box) {
-      throw `box not found / path: ${path}`;
-    }
   }
-  
-  getByPath(path) {
-    let box = this.tree.root;
-    for (let i of path) {
-      box = box.get(i);
-    }
     
-    return box;
-  }
-  
   get(key) {
     return this.tree.get(...this.path.concat([key]));
+  }
+  
+  set(...args) {
+    this.box.set(...args);
+  }
+  
+  eval(...args) {
+    return this.box.eval(...args);
   }
   
   get proto() {
@@ -343,8 +338,22 @@ class Tree {
     return parents[parents.length-1];
   }
   
+  getByPath(path) {
+    let box = this.root;
+    for (let i of path) {
+      box = box.get(i);
+    }
+    
+    return box;
+  }
+  
   get(...path) {
-    return new BoxProxy(path, this);
+    const box = this.getByPath(path);
+    if (box) {
+      return new BoxProxy(path, box, this);
+    } else {
+      return undefined;
+    }
   }
 
   find(pred) {
