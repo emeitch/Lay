@@ -252,6 +252,52 @@ class Environment {
 const ENV = new Environment();
 
 
+class BoxProxy {
+  constructor(path, tree) {
+    this.path = path;
+    this.tree = tree;
+
+    this.box = this.getByPath(path);
+    if (!this.box) {
+      throw `box not found / path: ${path}`;
+    }
+  }
+  
+  getByPath(path) {
+    let box = this.tree.root;
+    for (let i of path) {
+      box = box.get(i);
+    }
+    
+    return box;
+  }
+  
+  get(key) {
+    return this.tree.get(...this.path.concat([key]));
+  }
+  
+  get proto() {
+    return this.box.proto;
+  }
+  
+  get keys() {
+    return this.box.keys;
+  }
+  
+  get props() {
+    return this.box.keys.reduce((r, k) => Object.assign(r, {[k]: this.get(k)}), {});
+  }
+  
+  get stuff() {
+    return this.box.stuff.raws.map((v, i) => this.get(i));
+  }
+  
+  get value() {
+    return this.box.value;
+  }
+}
+
+
 class Tree {
   constructor(root) {
     this.root = root;
@@ -298,12 +344,7 @@ class Tree {
   }
   
   get(...path) {
-    let box = this.root;
-    for (let i of path) {
-      box = box.get(i);
-    }
-    
-    return box;
+    return new BoxProxy(path, this);
   }
 
   find(pred) {
@@ -899,12 +940,8 @@ class DOM extends Box {
       oninput: handlers["input"]
     });
     
-    const children = flatten(box.stuff.raws.map(b => {
-      if (b instanceof Literal) {
-        return b.value || "";
-      }
-      
-      return this.render(b, store, handlers);
+    const children = flatten(box.stuff.map(b => {
+      return b.value || this.render(b, store, handlers);
     }));
     
     const tag = box.proto.tag;
