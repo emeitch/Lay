@@ -253,24 +253,46 @@ const ENV = new Environment();
 
 
 class Ref {
-  constructor(tree, path) {
-    this.tree = tree;
+  constructor(store, path) {
+    this.store = store;
     this.path = path;
   }
   
   get box() {
     if (!this._box) {
-      this._box = this.tree.getByPath(this.path);
+      this._box = this.store.getByPath(this.path);
     }
     return this._box;
   }
+  
+  get parent() {
+    const path = this.path.slice();
+    path.pop();
+    
+    if (this.path.length == 0) {
+      return this.store;
+    } else {
+      return this.store.get(...path);
+    }
+  }
     
   get(key) {
-    return this.tree.get(...this.path.concat([key]));
+    return this.store.get(...this.path.concat([key]));
   }
   
-  set(...args) {
-    this.box.set(...args);
+  set(key, child) {
+    const currentKey = this.path[this.path.length-1];
+    if (typeof(key) === "string") {
+      const props = new Props({[key]: child});
+      const updated = new Box(undefined, props, new Stuff());
+      this.parent.set(currentKey, updated);
+    } else if (typeof(key) === "number") {
+      const raws = [];
+      raws[key] = child;
+      const stuff = new Stuff(raws);
+      const updated = new Box(undefined, new Props(), stuff);
+      this.parent.set(currentKey, updated);
+    }
   }
   
   eval(...args) {
@@ -295,7 +317,7 @@ class Ref {
   
   get value() {
     return this.box.value;
-  }
+  }  
 }
 
 
@@ -344,24 +366,6 @@ class Tree {
     return parents[parents.length-1];
   }
   
-  getByPath(path) {
-    let box = this.root;
-    for (let i of path) {
-      box = box.get(i);
-    }
-    
-    return box;
-  }
-  
-  get(...path) {
-    const box = this.getByPath(path);
-    if (box) {
-      return new Ref(this, path);
-    } else {
-      return undefined;
-    }
-  }
-
   find(pred) {
     return this.root.find(pred);
   }
@@ -411,7 +415,7 @@ class Store {
   
   emit(event) {
     // todo 他のBoxが定義しているイベントもreceiveできるようにする
-    const src = this.head.get(...event.stuff.raws);
+    const src = this.getByPath(event.stuff.raws);
     const ctx = new Context(this.head);
     const dst = ctx.stack(event, () => src.eval(ctx));
     
@@ -423,7 +427,7 @@ class Store {
         const updateBox = target;
         const ownerPath = event.stuff.raws.slice();
         ownerPath.pop();
-        const owner = this.head.get(...ownerPath);
+        const owner = this.get(...ownerPath);
         
         for (let key of updateBox.keys) {
           owner.set(key, updateBox.props[key], this);
@@ -447,12 +451,26 @@ class Store {
     }
   }
 
-  replace(old, update) {
-    this.append(update);
+  set(key, updated) {
+    this.append(updated);
+  }
+  
+  getByPath(path) {
+    let box = this.head.root;
+    for (let i of path) {
+      box = box.get(i);
+    }
+    
+    return box;
   }
   
   get(...path) {
-    return this.head.get(...path);
+    const box = this.getByPath(path);
+    if (box) {
+      return new Ref(this, path);
+    } else {
+      return undefined;
+    }
   }
   
   find(pred) {
@@ -638,11 +656,6 @@ class Box {
     return key || index;
   }
 
-  replace(child, update, store) {
-    const key = this.keyOf(child);
-    this.set(key, update, store);
-  }
-  
   get(key) {
     if (typeof(key) === "string") {
       const prop = this.props[key];
@@ -661,22 +674,6 @@ class Box {
     }
         
     return undefined;
-  }
-  
-  set(key, child, store) {
-    if (typeof(key) === "string") {
-      const props = new Props({[key]: child});
-      const update = new Box(undefined, props, new Stuff());
-      const parent = store.parent(this);
-      parent.replace(this, update, store);
-    } else if (typeof(key) === "number") {
-      const raws = [];
-      raws[key] = child;
-      const stuff = new Stuff(raws);
-      const update = new Box(undefined, new Props(), stuff);
-      const parent = store.parent(this);
-      parent.replace(this, update, store);
-    }
   }
   
   find(pred) {
