@@ -252,11 +252,17 @@ class Environment {
 const ENV = new Environment();
 
 
-class BoxProxy {
-  constructor(path, box, tree) {
-    this.path = path;
-    this.box = box;
+class Ref {
+  constructor(tree, path) {
     this.tree = tree;
+    this.path = path;
+  }
+  
+  get box() {
+    if (!this._box) {
+      this._box = this.tree.getByPath(this.path);
+    }
+    return this._box;
   }
     
   get(key) {
@@ -350,7 +356,7 @@ class Tree {
   get(...path) {
     const box = this.getByPath(path);
     if (box) {
-      return new BoxProxy(path, box, this);
+      return new Ref(this, path);
     } else {
       return undefined;
     }
@@ -538,7 +544,7 @@ class Box {
     const stf = s ? (Array.isArray(s) ? s : [s]) : [];
     const stuff = stf.map(i => Box.parse(i));
     
-    const proto = src._proto ? Ref.create(src._proto) : undefined;
+    const proto = src._proto ? Path.create(src._proto) : undefined;
     
     return new this(
       proto,
@@ -704,7 +710,7 @@ class Box {
 ENV.import("Box", new Box());
 
 
-class Ref extends Box {
+class Path extends Box {
   static create(sym) {
     if (typeof(sym) == "string") {
       sym = [sym];
