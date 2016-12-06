@@ -19,32 +19,25 @@ class PropsBase {
     Object.assign(this, raws);
   }
   
+  get keys() {
+    return Object.getOwnPropertyNames(this);
+  }
+  
   clone(params) {
-    const keys = Object.getOwnPropertyNames(this);
-    const raws = keys.reduce((p, k) => {
+    const raws = this.keys.reduce((p, k) => {
         const prop = this[k];
         return Object.assign(p, {[k]: prop.clone()});
       },
       {});
     return Object.assign(new this.constructor(raws), params);
   }
-  
-  eval(ctx) {
-    const keys = Object.getOwnPropertyNames(this);
-    const raws = keys.reduce((p, k) => {
-        const prop = this[k];
-        return Object.assign(p, {[k]: prop.eval(ctx)});
-      },
-      {});
-    return new this.constructor(raws);
-  }
 }
 class Props extends PropsBase {
   equals(box) {
     class PropEquals extends Box {
       apply(operand, ctx) {
-        const left = box.eval(ctx).value;
-        const right = operand.stuff.one.eval(ctx).value;
+        const left = box.box.apply(undefined, ctx).value;
+        const right = operand.ref(0).eval(ctx).value;
         return Literal.create(left == right);
       }
     }
@@ -55,13 +48,14 @@ class Props extends PropsBase {
   map(box) {
     class PropMap extends Box {
       apply(operand, ctx) {
-        const block = operand.stuff.one;
-        const argkey = block.keys[0]; // todo key値の型と一致するか検証
-        return box.stuff.map(item => {
+        const block = operand.ref(0);
+        const argkey = block.box.keys[0]; // todo key値の型と一致するか検証
+        return box.stuff.map((s, i) => {
+          const item = box.ref(i);
           const arg = item.eval(ctx);
           const props = block.props.clone({[argkey]: arg});
-          const b = block.clone({props});
-          return b.eval(ctx);
+          const stack = new Box(undefined, props);
+          return ctx.stack(stack, () => block.eval(ctx));
         });
       }
     };
@@ -94,7 +88,7 @@ class Props extends PropsBase {
     class PropAppend extends Box {
       apply(operand, ctx) {
         const stuff = new Stuff();
-        stuff.raws[box.stuff.raws.length] = operand.stuff.one.eval(ctx); // push
+        stuff.raws[box.stuff.raws.length] = operand.ref(0).eval(ctx); // push
         const updateBox = new StoreUpdateEvent(undefined, new Props(), stuff);
         return updateBox;
       }
@@ -118,12 +112,7 @@ class Stuff {
   get one() {
     return this.raws[0];
   }
-  
-  eval(ctx) {
-    const raws = this.raws.map(c => c.eval(ctx));
-    return new this.constructor(raws).flatten();
-  }
-  
+    
   flatten() {
     let raws = [];
     let index = 0;
@@ -193,7 +182,7 @@ class Environment {
   ref(...path) {
     const box = this.getByPath(path);
     if (box) {
-      return new Ref(path);
+      return new Ref(this, path);
     } else {
       return undefined;
     }
@@ -275,28 +264,167 @@ const ENV = new Environment();
 
 
 class Ref {
-  constructor(path) {
+  constructor(root, path=[]) {
+    this.root = root;
     this.path = path;
   }
-  
-  get box() {
-    return ENV.getByPath(this.path);
-  }
     
+  get box() {
+    if (this.path.length == 0) {
+      return this.root;
+    }
+
+    let box = this.root;
+    const path = [];
+    for (let key of this.path) {
+      box = box.get(key);
+      
+      if (typeof(box) == "function") {
+        const parent = new Ref(this.root, path.slice());
+        box = box(parent);
+      }
+      
+      path.push(key);
+    }
+    
+    return box;
+  }
+  
+  get props() {
+    return this.box.props;
+  }
+  
+  get stuff() {
+    return this.box.stuff;
+  }
+  
   get parent() {
+    if (this.path.length == 0) {
+      return undefined;
+    }
+    
     const path = this.path.slice();
     path.pop();
-    return ENV.ref(...path);
+    return this.root.ref(...path);
   }
       
   ref(...path) {
-    return ENV.ref(...this.path.concat(path));
+    return this.root.ref(...this.path.concat(path));
+  }
+  
+  detect(symbol, ctx) {
+    if (symbol == "self") {
+      const self = this.root.ref(...this.path.slice(0, -2));
+      return self;
+    }
+    
+    const stacks = ctx.stacks.slice();
+    stacks.reverse();
+    for (let stack of stacks) {
+      const box = stack.get(symbol);
+      if (box) {
+        return new Ref(box);
+      }
+    }
+    
+    let parent = this.parent;
+    while(parent) {
+      const box = parent.box.get(symbol);
+      if (box) {
+        return parent.ref(symbol);
+      }
+      
+      parent = parent.parent;  
+    }
+    
+    return ENV.ref(symbol);
+  }
+  
+  resolvePath(path, ctx) {
+    const rest = path.slice();
+    const top = rest.shift();
+    
+    let receiver = this.detect(top, ctx);
+    for (const key of rest) {
+      receiver = receiver.ref(key);
+      if (!receiver) {
+        throw `"${symbol}" not found`
+      }
+    }
+    
+    return receiver;
+  }
+  
+  resolve(proto, ctx) {
+    if (!(proto instanceof Path)) {
+      return new Ref(proto);
+    }
+    
+    return this.resolvePath(proto.symbols, ctx);
+  }
+  
+  overlay(ctx, inherit=undefined) {
+    const proto = this.box.proto && this.resolve(this.box.proto, ctx) || inherit;
+    if (!proto) {
+      return this.box;
+    }
+    
+    const props = this.box.keys.reduce((ps, k) => {
+      const prop = this.ref(k);
+      return Object.assign(ps, {[k]: prop.overlay(ctx, proto.ref(k)) } );
+    }, proto.box.props.clone());
+    
+    const stuff = Object.assign(
+      proto.box.stuff.clone().raws, 
+      this.box.stuff.raws.map((s, i) => {
+        const stf = this.ref(i);
+        return stf.overlay(ctx, proto.ref(i));
+      })
+    );
+    
+    return this.box.clone({
+      proto: proto.box.proto,
+      props: new Props(props),
+      stuff: new Stuff(stuff),
+    });
+  }
+  
+  eval(ctx) {
+    if (this.box.evaluated || this.box instanceof Stuff) {
+      return this.box;
+    }
+    
+    const proto = this.box.proto && this.resolve(this.box.proto, ctx) || ENV.ref("Box");
+    
+    if (proto.canApply(this, ctx)) {
+      const applied = proto.box.apply(this, ctx);
+      return new Ref(applied).eval(ctx);
+    } else {
+      return this.box.clone({
+        proto: proto.box
+      });
+    }
+  }
+  
+  canApply(operand, ctx) {
+    for (let key of operand.box.keys) {
+      const box = operand.detect(key, ctx);
+      if (box) {
+        continue;
+      }
+
+      const child = operand.ref(key).eval(ctx);
+      if (child.proto instanceof Argument) {
+        return false;
+      }
+    }
+    return true;
   }
   
   set(key, child) {
     const currentKey = this.path[this.path.length-1];
     if (currentKey == undefined) {
-      ENV.set(key, child);
+      this.root.set(key, child);
       return;
     }
 
@@ -316,7 +444,7 @@ class Ref {
   
   emit(event) {
     // todo 他のBoxが定義しているイベントもreceiveできるようにする
-    const src = this.ref(...event.stuff.raws).box;
+    const src = this.ref(...event.stuff.raws);
     const ctx = new Context(this.box.head);
     const dst = ctx.stack(event, () => src.eval(ctx));
     
@@ -341,79 +469,15 @@ class Ref {
           }
         }
       } else {
+        const path = src.resolvePath(target.stuff.raws.map(s => s.value), new Context()).path;
+        path.shift(); // remove "main"
         const event = new Box(undefined,
           target.props.clone(),
-          new Stuff(
-            this.box.path(target.proto.original)
-          )
+          new Stuff(path)
         );
-        ENV.emit(event);
+        this.root.emit(event);
       }
     }
-  }
-}
-
-
-class Tree {
-  constructor(root) {
-    this.root = root;
-    this.parentsMap = this.setupParents(root, [], new Map());
-  }
-  
-  setupParents(box, path, map) {
-    if (map.get(box)) {
-      throw "duplicated parents!"
-    }
-    
-    map.set(box, path);
-
-    const pth = path.slice(); // dupulication
-    pth.push(box);
-    
-    if (box.proto) {
-      this.setupParents(box.proto, pth, map);
-    }
-        
-    for (let key of box.keys) {
-      const prop = box.props[key];
-      this.setupParents(prop, pth, map);
-    }
-    
-    for (let raw of box.stuff.raws) {
-      // 歯抜け配列の場合にrawにundefinedが渡ることがある
-      if (raw) {
-        this.setupParents(raw, pth, map);  
-      }
-    }
-    
-    return map;
-  }
-  
-  parents(box) {
-    const parents = this.parentsMap.get(box);
-    return parents ? parents : [];
-  }
-  
-  parent(box) {
-    const parents = this.parents(box);
-    return parents[parents.length-1];
-  }
-  
-  find(pred) {
-    return this.root.find(pred);
-  }
-  
-  path(box) {
-    const parents = this.parents(box);
-    const path = [];
-    let child = box;
-    while (parents.length > 0) {
-      const parent = parents.pop();
-      path.unshift(parent.keyOf(child));
-      child = parent;
-    }
-
-    return path;
   }
 }
 
@@ -429,37 +493,24 @@ class Store {
   }
   
   append(root) {
-    const update = new Tree(root);
+    const update = new Ref(root);
     this.updates.push(update);
     
     if (!this.src) {
       this.src = update;
     } else {
-      this.src = new Tree(update.root.overlay(new Context(update), this.src.root));
+      this.src = new Ref(update.overlay(new Context(update), this.src));
     }
-    this.overlay = new Tree(this.src.root.overlay(new Context(this.src)));
-    this.head = new Tree(this.overlay.root.eval(new Context(this.overlay)));
+    this.overlay = new Ref(this.src.overlay(new Context(this.src)));
+    this.head = new Ref(this.overlay.eval(new Context(this.overlay)));
   }
 
   get(key) {
     return this.head.root.get(key);
   }
-
-  parents(box) {
-    return this.head.parents(box);
-  }
-  
-  parent(box) {
-    const parent = this.head.parent(box);
-    return parent ? parent : this;
-  }
   
   find(pred) {
     return this.head.root.find(pred);
-  }
-  
-  path(box) {
-    return this.head.path(box);
   }
 }
 
@@ -508,10 +559,6 @@ class Context {
     
     return ENV.get(symbol);
   }
-  
-  upper(current) {
-    return this.scope(current)[0];
-  }  
 }
 
 
@@ -597,33 +644,20 @@ class Box {
       stuff: new Stuff(stuff),
     });
   }
-  
-  eval(ctx) {
-    if (this.evaluated) {
-      return this;
-    }
     
-    const proto = this.proto && this.proto.eval(ctx) || new Box();
-    
-    if (proto.canApply(this, ctx)) {
-      const applied = proto.apply(this, ctx);
-      return applied.eval(ctx);
-    } else {
-      return this.clone({
-        proto
-      });
-    }
-  }
-  
-  canApply(operand, ctx) {
-    return true;
-  }
-  
   apply(operand, ctx) {
-    const props = operand.props.eval(ctx);
-    const stuff = operand.stuff.eval(ctx);
+    const props = new Props(operand.props.keys.reduce((p, k) => {
+        const prop = operand.ref(k);
+        return Object.assign(p, {[k]: prop.eval(ctx)});
+      },
+      {}));
+      
+    const stuff = new Stuff(operand.stuff.raws.map((s, i) => {
+      const stf = operand.ref(i);
+      return stf.eval(ctx)
+    })).flatten();
     
-    return operand.clone({
+    return operand.box.clone({
       proto: this,
       props,
       stuff,
@@ -636,16 +670,39 @@ class Box {
     const index = this.stuff.raws.findIndex(s => s == child);
     return key || index;
   }
+  
+  // todo ENVの実装と被っているのでDRYにしたい
+  getByPath(path) {
+    if (path.length == 0) {
+      return this;
+    }
 
+    const rest = path.slice();
+    const symbol = rest.shift();
+
+    let box = this;
+    for (let key of path) {
+      box = box.getWithApplyThis(key);
+    }
+    
+    return box;
+  }
+  
+  // todo ENVの実装と被っているのでDRYにしたい
+  ref(...path) {
+    const box = this.getByPath(path);
+    if (box) {
+      return new Ref(this, path);
+    } else {
+      return undefined;
+    }
+  }
+  
   get(key) {
     if (typeof(key) === "string") {
       const prop = this.props[key];
       if (prop) {
-        if (typeof(prop) == "function") {
-          return prop(this);
-        } else {
-          return prop;  
-        }
+        return prop;
       }
     } else if (typeof(key) === "number") {
       const stuff = this.stuff.raws[key]
@@ -655,6 +712,15 @@ class Box {
     }
         
     return undefined;
+  }
+
+  getWithApplyThis(key) {
+    const child = this.get(key);
+    if (typeof(child) == "function") {
+      return child(this);
+    } else {
+      return child;
+    }
   }
   
   find(pred) {
@@ -700,20 +766,6 @@ class Path extends Box {
     super();
     this.symbols = symbols;
   }
-  
-  eval(ctx) {
-    let receiver = ctx.detect(this, this.symbols[0]);
-    
-    const rest = this.symbols.slice(); // duplication
-    rest.shift();
-    for (const symbol of rest) {
-      receiver = receiver.get(symbol);
-      if (!receiver) {
-        throw `"${symbol}" not found`
-      }
-    }
-    return receiver ? receiver.clone({original: receiver}) : receiver;
-  }
 }
 
 
@@ -721,7 +773,7 @@ class Path extends Box {
 // Stuffのeval時にflattenでマージされる
 class StuffBox extends Box {
   apply(operand, ctx) {
-    return operand.stuff.eval(ctx);
+    return operand.stuff.map((s, i) => operand.ref(i).eval(ctx));
   }
 }
 ENV.import("Stuff", new StuffBox());
@@ -774,20 +826,6 @@ ENV.import("UUID", new UUID());
 
 
 class Event extends Box {
-  canApply(operand, ctx) {
-    for (let key of operand.keys) {
-      const box = ctx.detect(operand, key);
-      if (box) {
-        continue;
-      }
-
-      const prop = operand.get(key).eval(ctx);
-      if (prop.proto instanceof Argument) {
-        return false;
-      }
-    }
-    return true;
-  }
 }
 ENV.import("Event", new Event());
 
@@ -798,11 +836,11 @@ class StoreUpdateEvent extends Event {
 
 class If extends Box {
   apply(operand, ctx) {
-    const cond = operand.get("cond").eval(ctx).value;
+    const cond = operand.ref("cond").eval(ctx).value;
     if (cond) {
-      return operand.get("then").eval(ctx);
+      return operand.ref("then").eval(ctx);
     } else {
-      return operand.get("else").eval(ctx);
+      return operand.ref("else").eval(ctx);
     }
   }
 }
@@ -816,8 +854,8 @@ ENV.import("Argument", new Argument());
 
 class Lambda extends Box {
   apply(operand, ctx) {
-    const item = operand.stuff.one;
-    return ctx.stack(operand, () => item.eval(ctx));
+    const item = operand.ref(0);
+    return item.eval(ctx);
   }
 }
 ENV.import("Lambda", new Lambda());
@@ -1049,17 +1087,17 @@ const TodoMVC = {
                               _proto: "Stuff",
                               _stuff: [
                                 {
-                                  _proto: [
+                                  title: {
+                                    _proto: "value"
+                                  },
+                                  _stuff: [
                                     "domain",
                                     "tasks",
                                     "create"
-                                  ],
-                                  title: {
-                                    _proto: "value"
-                                  }
+                                  ]
                                 },
                                 {
-                                  _proto: "clear"
+                                  _stuff: "clear"
                                 }
                               ]
                             },
