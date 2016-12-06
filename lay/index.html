@@ -155,7 +155,6 @@ class Stuff {
 
 class Environment {
   constructor() {
-    this.rules = [];
     this.modules = {}
     this.stores = {};
     this.events = [];
@@ -169,23 +168,37 @@ class Environment {
     
     const store = this.stores[symbol];
     if (store) {
-      return store.head.root;
+      return store;
     }
     
-    for (let rule of this.rules) {
-      const box = rule(symbol);
-      if (box) {
-        return box;
-      }
-    }
-
     return undefined;
   }
+  
+  getByPath(path) {
+    if (path.length == 0) {
+      return this;
+    }
 
-  rule(rule) {
-    this.rules.push(rule);
+    const rest = path.slice();
+    const symbol = rest.shift();
+
+    let box = this.get(symbol);
+    for (let i of rest) {
+      box = box.get(i);
+    }
+    
+    return box;
   }
   
+  ref(...path) {
+    const box = this.getByPath(path);
+    if (box) {
+      return new Ref(path);
+    } else {
+      return undefined;
+    }
+  }
+
   check(symbol) {
     if (this.modules[symbol] || this.stores[symbol]) {
       throw `"${symbol}" box is already exists!`
@@ -206,20 +219,29 @@ class Environment {
     this.stores[symbol] = new Store(box);
   }
   
+  set(key, box) {
+    const store = this.store(key);
+    if (!store) {
+      throw "set store not found!";
+    }
+    
+    store.append(box);
+  }
+  
   emit(event) {
     this.events.push(event);
   }
   
   run() {
-    const mainstore = this.stores["main"];
-    if (!mainstore) {
+    const mainref = this.ref("main");
+    if (!mainref) {
       throw `"main" store is not exists!`;
     }
     
     for (let key of Object.getOwnPropertyNames(this.modules)) {
       const module = this.modules[key];
       if (module.initialize) {
-        module.initialize(mainstore);
+        module.initialize(mainref);
       }
     }
     
@@ -232,7 +254,7 @@ class Environment {
         
         for (const event of events) {
           // todo eventを参照可能な他のstoreにもemitさせる
-          mainstore.emit(event);
+          mainref.emit(event);
           
           updated = true;
         }
@@ -242,7 +264,7 @@ class Environment {
         for (let key of Object.getOwnPropertyNames(this.modules)) {
           const module = this.modules[key];
           if (module.update) {
-            module.update(mainstore);
+            module.update(mainref);
           }
         }
       }
@@ -253,71 +275,82 @@ const ENV = new Environment();
 
 
 class Ref {
-  constructor(store, path) {
-    this.store = store;
+  constructor(path) {
     this.path = path;
   }
   
   get box() {
-    if (!this._box) {
-      this._box = this.store.getByPath(this.path);
-    }
-    return this._box;
+    return ENV.getByPath(this.path);
   }
-  
+    
   get parent() {
     const path = this.path.slice();
     path.pop();
-    
-    if (this.path.length == 0) {
-      return this.store;
-    } else {
-      return this.store.get(...path);
-    }
+    return ENV.ref(...path);
   }
-    
-  get(key) {
-    return this.store.get(...this.path.concat([key]));
+      
+  ref(...path) {
+    return ENV.ref(...this.path.concat(path));
   }
   
   set(key, child) {
     const currentKey = this.path[this.path.length-1];
+    if (currentKey == undefined) {
+      ENV.set(key, child);
+      return;
+    }
+
+    let props = new Props();
+    let stuff = new Stuff();
     if (typeof(key) === "string") {
-      const props = new Props({[key]: child});
-      const updated = new Box(undefined, props, new Stuff());
-      this.parent.set(currentKey, updated);
+      props = new Props({[key]: child});
     } else if (typeof(key) === "number") {
       const raws = [];
       raws[key] = child;
-      const stuff = new Stuff(raws);
-      const updated = new Box(undefined, new Props(), stuff);
-      this.parent.set(currentKey, updated);
+      stuff = new Stuff(raws);
+    }
+
+    const updated = new Box(undefined, props, stuff);
+    this.parent.set(currentKey, updated);  
+  }
+  
+  emit(event) {
+    // todo 他のBoxが定義しているイベントもreceiveできるようにする
+    const src = this.ref(...event.stuff.raws).box;
+    const ctx = new Context(this.box.head);
+    const dst = ctx.stack(event, () => src.eval(ctx));
+    
+    for (let target of dst.stuff.raws) {
+      if (target instanceof Literal && event.value == undefined) {
+        // through event as undefined
+        continue;
+      } else if (target instanceof StoreUpdateEvent) {
+        const updateBox = target;
+        const ownerPath = event.stuff.raws.slice();
+        ownerPath.pop();
+        const owner = this.ref(...ownerPath);
+        
+        for (let key of updateBox.keys) {
+          owner.set(key, updateBox.props[key], this);
+        }
+        
+        for (let name of Object.keys(updateBox.stuff.raws)) {
+          const index = parseInt(name);
+          if (!Number.isNaN(index)) {
+            owner.set(index, updateBox.stuff.raws[index], this);
+          }
+        }
+      } else {
+        const event = new Box(undefined,
+          target.props.clone(),
+          new Stuff(
+            this.box.path(target.proto.original)
+          )
+        );
+        ENV.emit(event);
+      }
     }
   }
-  
-  eval(...args) {
-    return this.box.eval(...args);
-  }
-  
-  get proto() {
-    return this.box.proto;
-  }
-  
-  get keys() {
-    return this.box.keys;
-  }
-  
-  get props() {
-    return this.box.keys.reduce((r, k) => Object.assign(r, {[k]: this.get(k)}), {});
-  }
-  
-  get stuff() {
-    return this.box.stuff.raws.map((v, i) => this.get(i));
-  }
-  
-  get value() {
-    return this.box.value;
-  }  
 }
 
 
@@ -407,74 +440,22 @@ class Store {
     this.overlay = new Tree(this.src.root.overlay(new Context(this.src)));
     this.head = new Tree(this.overlay.root.eval(new Context(this.overlay)));
   }
+
+  get(key) {
+    return this.head.root.get(key);
+  }
+
+  parents(box) {
+    return this.head.parents(box);
+  }
   
   parent(box) {
     const parent = this.head.parent(box);
     return parent ? parent : this;
   }
   
-  emit(event) {
-    // todo 他のBoxが定義しているイベントもreceiveできるようにする
-    const src = this.getByPath(event.stuff.raws);
-    const ctx = new Context(this.head);
-    const dst = ctx.stack(event, () => src.eval(ctx));
-    
-    for (let target of dst.stuff.raws) {
-      if (target instanceof Literal && event.value == undefined) {
-        // through event as undefined
-        continue;
-      } else if (target instanceof StoreUpdateEvent) {
-        const updateBox = target;
-        const ownerPath = event.stuff.raws.slice();
-        ownerPath.pop();
-        const owner = this.get(...ownerPath);
-        
-        for (let key of updateBox.keys) {
-          owner.set(key, updateBox.props[key], this);
-        }
-        
-        for (let name of Object.keys(updateBox.stuff.raws)) {
-          const index = parseInt(name);
-          if (!Number.isNaN(index)) {
-            owner.set(index, updateBox.stuff.raws[index], this);
-          }
-        }
-      } else {
-        const event = new Box(undefined,
-          target.props.clone(),
-          new Stuff(
-            this.head.path(target.proto.original)
-          )
-        );
-        ENV.emit(event);
-      }
-    }
-  }
-
-  set(key, updated) {
-    this.append(updated);
-  }
-  
-  getByPath(path) {
-    let box = this.head.root;
-    for (let i of path) {
-      box = box.get(i);
-    }
-    
-    return box;
-  }
-  
-  get(...path) {
-    const box = this.getByPath(path);
-    if (box) {
-      return new Ref(this, path);
-    } else {
-      return undefined;
-    }
-  }
-  
   find(pred) {
-    return this.head.find(pred);
+    return this.head.root.find(pred);
   }
   
   path(box) {
@@ -510,7 +491,7 @@ class Context {
     return context;
   }
   
-  ref(current, symbol) {
+  detect(current, symbol) {
     if (symbol == "self") {
       const parents = this.tree.parents(current);
       // todo もう少しまともにselfのセマンティクスを定義したい
@@ -721,7 +702,7 @@ class Path extends Box {
   }
   
   eval(ctx) {
-    let receiver = ctx.ref(this, this.symbols[0]);
+    let receiver = ctx.detect(this, this.symbols[0]);
     
     const rest = this.symbols.slice(); // duplication
     rest.shift();
@@ -795,7 +776,7 @@ ENV.import("UUID", new UUID());
 class Event extends Box {
   canApply(operand, ctx) {
     for (let key of operand.keys) {
-      const box = ctx.ref(operand, key);
+      const box = ctx.detect(operand, key);
       if (box) {
         continue;
       }
@@ -856,26 +837,27 @@ class DOM extends Box {
     this.props.value = Literal.create(null);
   }
   
-  initialize(mainstore) {
+  initialize(mainref) {
     // one time only initializing
     if (this.tag != HTML_TAGS[0]) {
       return;
     }
     
     this.projector = maquette.createProjector();
-    this.handlers = this.createHandlers(mainstore);
+    this.handlers = this.createHandlers(mainref);
     
-    console.log(mainstore.head.root);
+    console.log(mainref.box);
     
     window.document.addEventListener('DOMContentLoaded', () => {
       this.projector.replace(window.document.body, () => {
-        const body = mainstore.get("presentation").get("body");
-        return this.render(body, mainstore, this.handlers)[0];
+        const body = mainref.ref("presentation").ref("body").box;
+        const vdom = this.render(body, mainref, this.handlers)[0];
+        return vdom;
       });
     });
   }
   
-  update(mainstore) {
+  update(mainref) {
     // one time only updating
     if (this.tag != HTML_TAGS[0]) {
       return;
@@ -913,14 +895,14 @@ class DOM extends Box {
     return path;
   }
     
-  createHandlers(store) {
+  createHandlers(mainref) {
     return {
       input: (ev) => {
         const path = this.path(ev.target);
-        const box = store.get(...path);
-        const va = box.get("value");
+        const ref = mainref.ref(...path);
+        const va = ref.box.get("value");
         if (!va || va.value != ev.target.value) {
-          box.set("value", Literal.create(ev.target.value), store);
+          ref.set("value", Literal.create(ev.target.value));
         }
       },
       keyup: (ev) => {
@@ -952,7 +934,7 @@ class DOM extends Box {
       oninput: handlers["input"]
     });
     
-    const children = flatten(box.stuff.map(b => {
+    const children = flatten(box.stuff.raws.map(b => {
       return b.value || this.render(b, store, handlers);
     }));
     
