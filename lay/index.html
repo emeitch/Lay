@@ -165,11 +165,7 @@ class Environment {
     
   get(...path) {
     const box = new Box(this, path);
-    if (box.val) {
-      return box;
-    } else {
-      return undefined;
-    }
+    return box.val ? box : undefined;
   }
 
   check(symbol) {
@@ -253,25 +249,21 @@ class Box {
     this.path = path;
   }
   
-  getVal(root, path) {
-    let val = root;
-    const cp = [];
-    for (let key of path) {
+  get val() {
+    let val = this.root;
+    const path = [];
+    for (let key of this.path) {
       val = val.child(key);
       
       if (typeof(val) == "function") {
-        const parent = new Box(root, cp.slice());
+        const parent = new Box(this.root, path.slice());
         val = val(parent);
       }
       
-      cp.push(key);
+      path.push(key);
     }
     
     return val;
-  }
-    
-  get val() {
-    return this.getVal(this.root, this.path);
   }
   
   get props() {
@@ -293,12 +285,8 @@ class Box {
   }
       
   get(...path) {
-    const p = this.path.concat(path);
-    if (!this.getVal(this.root, p)) {
-      return undefined;
-    }
-    
-    return new Box(this.root, p);
+    const box = new Box(this.root, this.path.concat(path));
+    return box.val ? box : undefined;
   }
   
   detect(symbol, ctx) {
