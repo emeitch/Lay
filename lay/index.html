@@ -254,10 +254,6 @@ class Box {
   }
   
   getVal(root, path) {
-    if (path.length == 0) {
-      return root;
-    }
-
     let val = root;
     const cp = [];
     for (let key of path) {
