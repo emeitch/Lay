@@ -149,7 +149,7 @@ class Environment {
     this.events = [];
   }
   
-  get(symbol) {
+  child(symbol) {
     const imprt = this.modules[symbol];
     if (imprt) {
       return imprt;
@@ -163,7 +163,7 @@ class Environment {
     return undefined;
   }
   
-  getByPath(path) {
+  descendant(path) {
     if (path.length == 0) {
       return this;
     }
@@ -171,16 +171,16 @@ class Environment {
     const rest = path.slice();
     const symbol = rest.shift();
 
-    let val = this.get(symbol);
+    let val = this.child(symbol);
     for (let i of rest) {
-      val = val.get(i);
+      val = val.child(i);
     }
     
     return val;
   }
   
-  box(...path) {
-    const box = this.getByPath(path);
+  get(...path) {
+    const box = this.descendant(path);
     if (box) {
       return new Box(this, path);
     } else {
@@ -222,7 +222,7 @@ class Environment {
   }
   
   run() {
-    const main = this.box("main");
+    const main = this.get("main");
     if (!main) {
       throw `"main" store is not exists!`;
     }
@@ -277,7 +277,7 @@ class Box {
     let val = root;
     const cp = [];
     for (let key of path) {
-      val = val.get(key);
+      val = val.child(key);
       
       if (typeof(val) == "function") {
         const parent = new Box(root, cp.slice());
@@ -330,7 +330,7 @@ class Box {
     const stacks = ctx.stacks.slice();
     stacks.reverse();
     for (let val of stacks) {
-      const child = val.get(symbol);
+      const child = val.child(symbol);
       if (child) {
         return new Box(child);
       }
@@ -346,7 +346,7 @@ class Box {
       parent = parent.parent;  
     }
     
-    return ENV.box(symbol);
+    return ENV.get(symbol);
   }
   
   resolvePath(path, ctx) {
@@ -403,7 +403,7 @@ class Box {
       return this.val;
     }
     
-    const proto = this.val.proto && this.resolve(this.val.proto, ctx) || ENV.box("Val");
+    const proto = this.val.proto && this.resolve(this.val.proto, ctx) || ENV.get("Val");
     
     if (proto.canApply(this, ctx)) {
       const applied = proto.val.apply(this, ctx);
@@ -514,8 +514,8 @@ class Store {
     this.head = new Box(this.overlay.eval(new Context(this.overlay)));
   }
 
-  get(key) {
-    return this.head.root.get(key);
+  child(key) {
+    return this.head.root.child(key);
   }
   
   find(pred) {
@@ -566,7 +566,7 @@ class Context {
       }
     }
     
-    return ENV.box(symbol);
+    return ENV.get(symbol);
   }
 }
 
@@ -680,7 +680,7 @@ class Val {
     return key || index;
   }
     
-  get(key) {
+  child(key) {
     if (typeof(key) === "string") {
       const prop = this.props[key];
       if (prop) {
@@ -694,15 +694,6 @@ class Val {
     }
         
     return undefined;
-  }
-
-  getWithApplyThis(key) {
-    const child = this.get(key);
-    if (typeof(child) == "function") {
-      return child(this);
-    } else {
-      return child;
-    }
   }
   
   find(pred) {
@@ -920,7 +911,7 @@ class DOM extends Val {
       input: (ev) => {
         const path = this.path(ev.target);
         const box = main.get(...path);
-        const va = box.val.get("value");
+        const va = box.val.child("value");
         if (!va || va.value != ev.target.value) {
           box.set("value", Literal.create(ev.target.value));
         }
