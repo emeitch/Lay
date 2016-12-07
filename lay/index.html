@@ -33,10 +33,10 @@ class PropsBase {
   }
 }
 class Props extends PropsBase {
-  equals(box) {
+  equals(owner) {
     class PropEquals extends Box {
       apply(operand, ctx) {
-        const left = box.val.apply(undefined, ctx).value;
+        const left = owner.val.apply(undefined, ctx).value;
         const right = operand.get(0).eval(ctx).value;
         return Literal.create(left == right);
       }
@@ -45,13 +45,13 @@ class Props extends PropsBase {
     return new PropEquals();
   }
   
-  map(box) {
+  map(owner) {
     class PropMap extends Val {
       apply(operand, ctx) {
         const block = operand.get(0);
         const argkey = block.val.keys[0]; // todo key値の型と一致するか検証
-        return box.stuff.map((s, i) => {
-          const item = box.get(i);
+        return owner.stuff.map((s, i) => {
+          const item = owner.get(i);
           const arg = item.eval(ctx);
           const props = block.props.clone({[argkey]: arg});
           const stack = new Val(undefined, props);
@@ -63,10 +63,10 @@ class Props extends PropsBase {
     return new PropMap();
   }
   
-  count(box) {
+  count(owner) {
     class PropCount extends Val {
       apply(operand, ctx) {
-        const count = box.stuff.raws.length;
+        const count = owner.stuff.raws.length;
         return Literal.create(count);
       }
     }
@@ -74,7 +74,7 @@ class Props extends PropsBase {
     return new PropCount();
   }
   
-  set(box) {
+  set(owner) {
     class PropSet extends Val {
       apply(operand, ctx) {
         return new StoreUpdateEvent(undefined, operand.props.clone(), operand.stuff.clone());
@@ -84,11 +84,11 @@ class Props extends PropsBase {
     return new PropSet();
   }
   
-  append(box) {
+  append(owner) {
     class PropAppend extends Val {
       apply(operand, ctx) {
         const stuff = new Stuff();
-        stuff.raws[box.stuff.raws.length] = operand.get(0).eval(ctx); // push
+        stuff.raws[owner.stuff.raws.length] = operand.get(0).eval(ctx); // push
         const updateBox = new StoreUpdateEvent(undefined, new Props(), stuff);
         return updateBox;
       }
@@ -256,8 +256,8 @@ class Box {
       val = val.child(key);
       
       if (typeof(val) == "function") {
-        const parent = new Box(this.root, path.slice());
-        val = val(parent);
+        const owner = new Box(this.root, path.slice());
+        val = val(owner);
       }
       
       path.push(key);
