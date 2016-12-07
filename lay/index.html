@@ -246,6 +246,10 @@ class Box {
   }
   
   resolve(proto, ctx) {
+    if (proto == undefined) {
+      return undefined;
+    }
+    
     if (!(proto instanceof Path)) {
       return new Box(proto);
     }
@@ -254,7 +258,7 @@ class Box {
   }
   
   overlay(inherit=undefined, ctx=new Context()) {
-    const proto = this.val.proto && this.resolve(this.val.proto, ctx) || inherit;
+    const proto = this.resolve(this.val.proto, ctx) || inherit;
     if (!proto) {
       return this.val;
     }
@@ -284,7 +288,7 @@ class Box {
       return this.val;
     }
     
-    const proto = this.val.proto && this.resolve(this.val.proto, ctx) || ENV.get("Val");
+    const proto = this.resolve(this.val.proto, ctx) || ENV.get("Val");
     
     if (proto.canApply(this, ctx)) {
       const applied = proto.val.apply(this, ctx);
