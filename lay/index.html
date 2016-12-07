@@ -107,10 +107,6 @@ class Stuff {
     return new this.constructor(this.raws.slice());
   }
   
-  get one() {
-    return this.raws[0];
-  }
-    
   flatten() {
     let raws = [];
     let index = 0;
@@ -475,10 +471,6 @@ class Store {
   child(key) {
     return this.head.root.child(key);
   }
-  
-  find(pred) {
-    return this.head.root.find(pred);
-  }
 }
 
 
@@ -580,12 +572,6 @@ class Val {
       evaluated: true
     });
   }
-
-  keyOf(child) {
-    const key = this.keys.find(key => this.get(key) == child);
-    const index = this.stuff.raws.findIndex(s => s == child);
-    return key || index;
-  }
     
   child(key) {
     if (typeof(key) === "string") {
@@ -600,34 +586,6 @@ class Val {
       }
     }
         
-    return undefined;
-  }
-  
-  find(pred) {
-    // todo 探索遅いので最適化する
-    for (let key of this.keys) {
-      const box = this.get(key);
-      if (pred(box)) {
-        return box;
-      }
-      
-      const result = box.find(pred);
-      if (result) {
-        return result;
-      }      
-    }
-    
-    for (let box of this.stuff.raws) {
-      if (pred(box)) {
-        return box;
-      }
-      
-      const result = box.find(pred);
-      if (result) {
-        return result;
-      }
-    }
-    
     return undefined;
   }
 }
