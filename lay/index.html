@@ -168,27 +168,27 @@ class Environment {
     }
   }
   
-  import(symbol, box) {
+  import(symbol, val) {
     this.check(symbol);
-    this.modules[symbol] = box;
+    this.modules[symbol] = val;
   }
   
-  store(symbol, box) {
-    if (!box) {
+  store(symbol, val) {
+    if (!val) {
       return this.stores[symbol];
     }
     
     this.check(symbol);
-    this.stores[symbol] = new Store(box);
+    this.stores[symbol] = new Store(val);
   }
   
-  set(key, box) {
+  set(key, val) {
     const store = this.store(key);
     if (!store) {
-      throw "set store not found!";
+      throw "store not found!";
     }
     
-    store.append(box);
+    store.append(val);
   }
   
   emit(event) {
