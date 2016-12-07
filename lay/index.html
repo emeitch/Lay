@@ -811,7 +811,7 @@ class DOM extends Val {
     });
     
     const children = flatten(box.stuff.raws.map(b => {
-      return b.value || this.render(b, store, handlers);
+      return b.value != undefined ? b.value : this.render(b, store, handlers);
     }));
     
     const tag = box.proto.tag;
