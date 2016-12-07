@@ -13,129 +13,6 @@ function flatten(array) {
 }
 
 
-// Props base class for getOwnPropertyNames
-class PropsBase {
-  constructor(raws={}) {
-    Object.assign(this, raws);
-  }
-  
-  get keys() {
-    return Object.getOwnPropertyNames(this);
-  }
-  
-  clone(params) {
-    return new this.constructor(Object.assign({}, this, params));
-  }
-}
-class Props extends PropsBase {
-  equals(owner) {
-    class PropEquals extends Val {
-      apply(operand, ctx) {
-        const left = owner.val.apply(undefined, ctx).value;
-        const right = operand.get(0).eval(ctx).value;
-        return Literal.create(left == right);
-      }
-    }
-    
-    return new PropEquals();
-  }
-  
-  map(owner) {
-    class PropMap extends Val {
-      apply(operand, ctx) {
-        const block = operand.get(0);
-        const argkey = block.val.keys[0]; // todo key値の型と一致するか検証
-        return owner.val.stuff.map((s, i) => {
-          const item = owner.get(i);
-          const arg = item.eval(ctx);
-          const props = block.val.props.clone({[argkey]: arg});
-          const stack = new Val(undefined, props);
-          return ctx.stack(stack, () => block.eval(ctx));
-        });
-      }
-    };
-    
-    return new PropMap();
-  }
-  
-  count(owner) {
-    class PropCount extends Val {
-      apply(operand, ctx) {
-        const count = owner.val.stuff.raws.length;
-        return Literal.create(count);
-      }
-    }
-    
-    return new PropCount();
-  }
-  
-  set(owner) {
-    class PropSet extends Val {
-      apply(operand, ctx) {
-        return new StoreUpdateEvent(
-          undefined, 
-          operand.val.props.clone(), 
-          operand.val.stuff.clone()
-        );
-      }
-    }
-    
-    return new PropSet();
-  }
-  
-  append(owner) {
-    class PropAppend extends Val {
-      apply(operand, ctx) {
-        const stuff = new Stuff();
-        stuff.raws[owner.val.stuff.raws.length] = operand.get(0).eval(ctx); // push
-        const updateBox = new StoreUpdateEvent(undefined, new Props(), stuff);
-        return updateBox;
-      }
-    }
-    
-    return new PropAppend();
-  }
-}
-
-
-class Stuff {
-  constructor(raws=[]) {
-    this.raws = raws;
-  }
-  
-  clone() {
-    return new this.constructor(this.raws.slice());
-  }
-  
-  flatten() {
-    let raws = [];
-    let index = 0;
-    for (var i = 0; i < this.raws.length; i++) {
-      const raw = this.raws[i];
-      if (raw instanceof Stuff) {
-        for (var j = 0; j < raw.raws.length; j++) {
-          const rr = raw.raws[j];
-          if (Object.keys(raw.raws).indexOf(String(j)) != -1) {
-            raws[index] = rr;
-          }
-          index++;
-        }
-      } else {
-        if (Object.keys(this.raws).indexOf(String(i)) != -1) {
-          raws[index] = raw;
-        }
-        index++;
-      }
-    }
-    return new this.constructor(raws);
-  }
-  
-  map(f) {
-    return new Stuff(this.raws.map(f));
-  }
-}
-
-
 class Environment {
   constructor() {
     this.modules = {}
@@ -235,6 +112,56 @@ class Environment {
   }
 }
 const ENV = new Environment();
+
+
+class Store {
+  constructor(root) {
+    this.updates = [];
+    this.src = undefined;
+    this.overlay = undefined;
+    this.head = undefined;
+    
+    this.append(root);
+  }
+  
+  append(root) {
+    const update = new Box(root);
+    this.updates.push(update);
+    
+    if (!this.src) {
+      this.src = update;
+    } else {
+      this.src = new Box(update.overlay(this.src));
+    }
+    this.overlay = new Box(this.src.overlay());
+    this.head = new Box(this.overlay.eval());
+  }
+
+  child(key) {
+    return this.head.root.child(key);
+  }
+}
+
+
+class Context {
+  constructor() {
+    this.stacks = [];
+  }
+  
+  stack(box, block) {
+    if (box) {
+      this.stacks.push(box);
+    }
+    
+    const result = block();
+    
+    if (box) {
+      this.stacks.pop();  
+    }
+    
+    return result;
+  }
+}
 
 
 class Box {
@@ -445,52 +372,125 @@ class Box {
 }
 
 
-class Store {
-  constructor(root) {
-    this.updates = [];
-    this.src = undefined;
-    this.overlay = undefined;
-    this.head = undefined;
-    
-    this.append(root);
+// Props base class for getOwnPropertyNames
+class PropsBase {
+  constructor(raws={}) {
+    Object.assign(this, raws);
   }
   
-  append(root) {
-    const update = new Box(root);
-    this.updates.push(update);
-    
-    if (!this.src) {
-      this.src = update;
-    } else {
-      this.src = new Box(update.overlay(this.src));
-    }
-    this.overlay = new Box(this.src.overlay());
-    this.head = new Box(this.overlay.eval());
+  get keys() {
+    return Object.getOwnPropertyNames(this);
   }
-
-  child(key) {
-    return this.head.root.child(key);
+  
+  clone(params) {
+    return new this.constructor(Object.assign({}, this, params));
+  }
+}
+class Props extends PropsBase {
+  equals(owner) {
+    class PropEquals extends Val {
+      apply(operand, ctx) {
+        const left = owner.val.apply(undefined, ctx).value;
+        const right = operand.get(0).eval(ctx).value;
+        return Literal.create(left == right);
+      }
+    }
+    
+    return new PropEquals();
+  }
+  
+  map(owner) {
+    class PropMap extends Val {
+      apply(operand, ctx) {
+        const block = operand.get(0);
+        const argkey = block.val.keys[0]; // todo key値の型と一致するか検証
+        return owner.val.stuff.map((s, i) => {
+          const item = owner.get(i);
+          const arg = item.eval(ctx);
+          const props = block.val.props.clone({[argkey]: arg});
+          const stack = new Val(undefined, props);
+          return ctx.stack(stack, () => block.eval(ctx));
+        });
+      }
+    };
+    
+    return new PropMap();
+  }
+  
+  count(owner) {
+    class PropCount extends Val {
+      apply(operand, ctx) {
+        const count = owner.val.stuff.raws.length;
+        return Literal.create(count);
+      }
+    }
+    
+    return new PropCount();
+  }
+  
+  set(owner) {
+    class PropSet extends Val {
+      apply(operand, ctx) {
+        return new StoreUpdateEvent(
+          undefined, 
+          operand.val.props.clone(), 
+          operand.val.stuff.clone()
+        );
+      }
+    }
+    
+    return new PropSet();
+  }
+  
+  append(owner) {
+    class PropAppend extends Val {
+      apply(operand, ctx) {
+        const stuff = new Stuff();
+        stuff.raws[owner.val.stuff.raws.length] = operand.get(0).eval(ctx); // push
+        const updateBox = new StoreUpdateEvent(undefined, new Props(), stuff);
+        return updateBox;
+      }
+    }
+    
+    return new PropAppend();
   }
 }
 
 
-class Context {
-  constructor() {
-    this.stacks = [];
+class Stuff {
+  constructor(raws=[]) {
+    this.raws = raws;
   }
   
-  stack(box, block) {
-    if (box) {
-      this.stacks.push(box);
+  clone() {
+    return new this.constructor(this.raws.slice());
+  }
+  
+  flatten() {
+    let raws = [];
+    let index = 0;
+    for (var i = 0; i < this.raws.length; i++) {
+      const raw = this.raws[i];
+      if (raw instanceof Stuff) {
+        for (var j = 0; j < raw.raws.length; j++) {
+          const rr = raw.raws[j];
+          if (Object.keys(raw.raws).indexOf(String(j)) != -1) {
+            raws[index] = rr;
+          }
+          index++;
+        }
+      } else {
+        if (Object.keys(this.raws).indexOf(String(i)) != -1) {
+          raws[index] = raw;
+        }
+        index++;
+      }
     }
-    
-    const result = block();
-    
-    if (box) {
-      this.stacks.pop();  
-    }
-    
-    return result;
+    return new this.constructor(raws);
+  }
+  
+  map(f) {
+    return new Stuff(this.raws.map(f));
   }
 }
 
