@@ -24,12 +24,7 @@ class PropsBase {
   }
   
   clone(params) {
-    const raws = this.keys.reduce((p, k) => {
-        const prop = this[k];
-        return Object.assign(p, {[k]: prop.clone()});
-      },
-      {});
-    return Object.assign(new this.constructor(raws), params);
+    return new this.constructor(Object.assign({}, this, params));
   }
 }
 class Props extends PropsBase {
@@ -105,8 +100,7 @@ class Stuff {
   }
   
   clone() {
-    const raws = this.raws.map(b => b.clone());
-    return new this.constructor(raws);
+    return new this.constructor(this.raws.slice());
   }
   
   get one() {
@@ -558,7 +552,7 @@ class Val {
   }
     
   clone(params) {
-    const proto = this.proto ? this.proto.clone() : this.proto;
+    const proto = this.proto;
     const props = this.props.clone();
     const stuff = this.stuff.clone();
     return Object.assign(new this.constructor(),
