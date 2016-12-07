@@ -340,7 +340,7 @@ class Box {
     return this.resolvePath(proto.symbols, ctx);
   }
   
-  overlay(ctx, inherit=undefined) {
+  overlay(inherit=undefined, ctx=new Context()) {
     const proto = this.val.proto && this.resolve(this.val.proto, ctx) || inherit;
     if (!proto) {
       return this.val;
@@ -348,14 +348,14 @@ class Box {
     
     const props = this.val.keys.reduce((ps, k) => {
       const prop = this.get(k);
-      return Object.assign(ps, {[k]: prop.overlay(ctx, proto.get(k)) } );
+      return Object.assign(ps, {[k]: prop.overlay(proto.get(k), ctx) } );
     }, proto.val.props.clone());
     
     const stuff = Object.assign(
       proto.val.stuff.clone().raws, 
       this.val.stuff.raws.map((s, i) => {
         const stf = this.get(i);
-        return stf.overlay(ctx, proto.get(i));
+        return stf.overlay(proto.get(i), ctx);
       })
     );
     
@@ -366,7 +366,7 @@ class Box {
     });
   }
   
-  eval(ctx) {
+  eval(ctx=new Context()) {
     if (this.val.evaluated || this.val instanceof Stuff) {
       return this.val;
     }
@@ -476,10 +476,10 @@ class Store {
     if (!this.src) {
       this.src = update;
     } else {
-      this.src = new Box(update.overlay(new Context(update), this.src));
+      this.src = new Box(update.overlay(this.src));
     }
-    this.overlay = new Box(this.src.overlay(new Context(this.src)));
-    this.head = new Box(this.overlay.eval(new Context(this.overlay)));
+    this.overlay = new Box(this.src.overlay());
+    this.head = new Box(this.overlay.eval());
   }
 
   child(key) {
@@ -493,8 +493,7 @@ class Store {
 
 
 class Context {
-  constructor(tree) {
-    this.tree = tree;
+  constructor() {
     this.stacks = [];
   }
   
@@ -510,31 +509,6 @@ class Context {
     }
     
     return result;
-  }
-    
-  scope(current) {
-    const parents = this.tree.parents(current);
-    const context = parents.concat(this.stacks);
-    context.reverse();
-    return context;
-  }
-  
-  detect(current, symbol) {
-    if (symbol == "self") {
-      const parents = this.tree.parents(current);
-      // todo もう少しまともにselfのセマンティクスを定義したい
-      const self = parents[parents.length - 3];
-      return self;
-    }
-    
-    for (let box of this.scope(current)) {
-      const prop = box.get(symbol);
-      if (prop && prop != current) {
-        return prop;
-      }
-    }
-    
-    return ENV.get(symbol);
   }
 }
 
@@ -597,31 +571,6 @@ class Val {
     return Object.getOwnPropertyNames(this.props)
   }
   
-  overlay(ctx, inherit=undefined) {
-    const proto = this.proto && this.proto.eval(ctx) || inherit;
-    if (!proto) {
-      return this.clone();
-    }
-    
-    const props = this.keys.reduce((ps, k) => {
-      const prop = this.props[k];
-      return Object.assign(ps, {[k]: prop.overlay(ctx, proto.props[k]) } );
-    }, proto.props.clone());
-    
-    const stuff = Object.assign(
-      proto.stuff.clone().raws, 
-      this.stuff.raws.map((s, i) => {
-        return s.overlay(ctx, proto.stuff.raws[i]);
-      })
-    );
-    
-    return this.clone({
-      proto: proto.proto ? proto.proto.clone() : proto.proto,
-      props: new Props(props),
-      stuff: new Stuff(stuff),
-    });
-  }
-    
   apply(operand, ctx) {
     const props = new Props(operand.props.keys.reduce((p, k) => {
         const prop = operand.get(k);
