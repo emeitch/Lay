@@ -45,10 +45,10 @@ class Props extends PropsBase {
       apply(operand, ctx) {
         const block = operand.get(0);
         const argkey = block.val.keys[0]; // todo key値の型と一致するか検証
-        return owner.stuff.map((s, i) => {
+        return owner.val.stuff.map((s, i) => {
           const item = owner.get(i);
           const arg = item.eval(ctx);
-          const props = block.props.clone({[argkey]: arg});
+          const props = block.val.props.clone({[argkey]: arg});
           const stack = new Val(undefined, props);
           return ctx.stack(stack, () => block.eval(ctx));
         });
@@ -61,7 +61,7 @@ class Props extends PropsBase {
   count(owner) {
     class PropCount extends Val {
       apply(operand, ctx) {
-        const count = owner.stuff.raws.length;
+        const count = owner.val.stuff.raws.length;
         return Literal.create(count);
       }
     }
@@ -72,7 +72,11 @@ class Props extends PropsBase {
   set(owner) {
     class PropSet extends Val {
       apply(operand, ctx) {
-        return new StoreUpdateEvent(undefined, operand.props.clone(), operand.stuff.clone());
+        return new StoreUpdateEvent(
+          undefined, 
+          operand.val.props.clone(), 
+          operand.val.stuff.clone()
+        );
       }
     }
     
@@ -83,7 +87,7 @@ class Props extends PropsBase {
     class PropAppend extends Val {
       apply(operand, ctx) {
         const stuff = new Stuff();
-        stuff.raws[owner.stuff.raws.length] = operand.get(0).eval(ctx); // push
+        stuff.raws[owner.val.stuff.raws.length] = operand.get(0).eval(ctx); // push
         const updateBox = new StoreUpdateEvent(undefined, new Props(), stuff);
         return updateBox;
       }
@@ -259,15 +263,7 @@ class Box {
     
     return val;
   }
-  
-  get props() {
-    return this.val.props;
-  }
-  
-  get stuff() {
-    return this.val.stuff;
-  }
-  
+    
   get parent() {
     if (this.path.length == 0) {
       return undefined;
@@ -566,13 +562,13 @@ class Val {
   }
   
   apply(operand, ctx) {
-    const props = new Props(operand.props.keys.reduce((p, k) => {
+    const props = new Props(operand.val.props.keys.reduce((p, k) => {
         const prop = operand.get(k);
         return Object.assign(p, {[k]: prop.eval(ctx)});
       },
       {}));
       
-    const stuff = new Stuff(operand.stuff.raws.map((s, i) => {
+    const stuff = new Stuff(operand.val.stuff.raws.map((s, i) => {
       const stf = operand.get(i);
       return stf.eval(ctx)
     })).flatten();
@@ -657,7 +653,7 @@ class Path extends Val {
 // Stuffのeval時にflattenでマージされる
 class StuffVal extends Val {
   apply(operand, ctx) {
-    return operand.stuff.map((s, i) => operand.get(i).eval(ctx));
+    return operand.val.stuff.map((s, i) => operand.get(i).eval(ctx));
   }
 }
 ENV.import("Stuff", new StuffVal());
