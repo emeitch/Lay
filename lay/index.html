@@ -162,27 +162,11 @@ class Environment {
     
     return undefined;
   }
-  
-  descendant(path) {
-    if (path.length == 0) {
-      return this;
-    }
-
-    const rest = path.slice();
-    const symbol = rest.shift();
-
-    let val = this.child(symbol);
-    for (let i of rest) {
-      val = val.child(i);
-    }
     
-    return val;
-  }
-  
   get(...path) {
-    const box = this.descendant(path);
-    if (box) {
-      return new Box(this, path);
+    const box = new Box(this, path);
+    if (box.val) {
+      return box;
     } else {
       return undefined;
     }
