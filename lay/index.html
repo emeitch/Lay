@@ -29,7 +29,7 @@ class PropsBase {
 }
 class Props extends PropsBase {
   equals(owner) {
-    class PropEquals extends Box {
+    class PropEquals extends Val {
       apply(operand, ctx) {
         const left = owner.val.apply(undefined, ctx).value;
         const right = operand.get(0).eval(ctx).value;
