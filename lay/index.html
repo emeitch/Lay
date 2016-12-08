@@ -314,7 +314,11 @@ class Literal extends Val {
 }
 
 
-class StoreUpdateEvent extends Val {
+class Event extends Val {
+}
+
+
+class StoreUpdateEvent extends Event {
 }
 
 
@@ -538,13 +542,13 @@ class Box {
       stuff = new Stuff(raws);
     }
 
-    const updated = new Val(undefined, props, stuff);
+    const diff = new Val(undefined, props, stuff);
     
     const currentKey = this.path[this.path.length-1];
     if (currentKey == undefined) {
-      this.root.set(updated);
+      this.root.set(diff);
     } else {
-      this.parent.set(currentKey, updated);
+      this.parent.set(currentKey, diff);
     }
   }
   
@@ -573,7 +577,7 @@ class Box {
         }
       } else {
         const path = target.resolvePath(e.proto.symbols, new Context()).path;
-        const event = new Val(
+        const event = new Event(
           Path.create(path),
           e.props.clone()
         );
@@ -800,7 +804,7 @@ class DOMPresenter extends Box {
       },
       keyup: (ev) => {
         const path = this.boxPath(ev.target);
-        const event = new Val(
+        const event = new Event(
           Path.create(path.concat([ev.type])), 
           new Props({
             // todo keyCode以外の属性も転送する
