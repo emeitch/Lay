@@ -89,8 +89,8 @@ class Environment {
       if (updated) {
         for (let key of Object.getOwnPropertyNames(this.modules)) {
           const mod = this.get(key);
-          if (mod.update) {
-            mod.update(main);
+          if (mod.updated) {
+            mod.updated(main);
           }
         }
       }
@@ -318,7 +318,7 @@ class Event extends Val {
 }
 
 
-class StoreUpdateEvent extends Event {
+class StoreUpdate extends Event {
 }
 
 
@@ -529,6 +529,15 @@ class Box {
     });
   }
   
+  update(diff) {
+    const currentKey = this.path[this.path.length-1];
+    if (currentKey == undefined) {
+      this.root.set(diff);
+    } else {
+      this.parent.set(currentKey, diff);
+    }
+  }
+  
   set(key, child) {
     let props = new Props();
     if (typeof(key) === "string") {
@@ -542,14 +551,8 @@ class Box {
       stuff = new Stuff(raws);
     }
 
-    const diff = new Val(undefined, props, stuff);
-    
-    const currentKey = this.path[this.path.length-1];
-    if (currentKey == undefined) {
-      this.root.set(diff);
-    } else {
-      this.parent.set(currentKey, diff);
-    }
+    const diff = new StoreUpdate(undefined, props, stuff);
+    this.update(diff);
   }
   
   emit(event) {
@@ -560,21 +563,11 @@ class Box {
       if (e instanceof Literal && event.value == undefined) {
         // through event as undefined
         continue;
-      } else if (e instanceof StoreUpdateEvent) {
+      } else if (e instanceof StoreUpdate) {
         const ownerPath = event.proto.symbols.slice();
         ownerPath.pop();
         const owner = this.getByPath(ownerPath);
-        
-        for (let key of e.keys) {
-          owner.set(key, e.props[key]);
-        }
-        
-        for (let name of Object.keys(e.stuff.raws)) {
-          const index = parseInt(name);
-          if (!Number.isNaN(index)) {
-            owner.set(index, e.stuff.raws[index]);
-          }
-        }
+        owner.update(e);
       } else {
         const path = target.resolvePath(e.proto.symbols, new Context()).path;
         const event = new Event(
@@ -674,7 +667,7 @@ ENV.import("count", new PropCount());
 
 class PropSet extends Box {
   apply(operand, ctx) {
-    return new StoreUpdateEvent(
+    return new StoreUpdate(
       operand.val.proto, 
       operand.val.props.clone(),
       new Stuff(),
@@ -691,7 +684,7 @@ class PropAppend extends Box {
     const val = operand.get(0).eval(ctx);
     const index = this.owner.val.stuff.raws.length;
     stuff.raws[index] = val; // push
-    const event = new StoreUpdateEvent(undefined, new Props(), stuff);
+    const event = new StoreUpdate(undefined, new Props(), stuff);
     return event;
   }
 }
@@ -759,7 +752,7 @@ class DOMPresenter extends Box {
     });
   }
   
-  update(main) {
+  updated(main) {
     this.projector.renderNow();
   }
   
