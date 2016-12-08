@@ -17,43 +17,21 @@ class Environment {
   constructor() {
     this.modules = {}
     this.stores = {};
-    this.events = [];
+    this.queue = [];
   }
   
-  child(key) {
-    return new Val(); // dummy;
-  }
-  
-  fetch(key) {
-    const module = this.modules[key];
-    if (module) {
-      return module;
+  get(key) {
+    const mod = this.modules[key];
+    if (mod) {
+      return mod;
     }
     
     const store = this.stores[key];
     if (store) {
       return store;
     }
-    
+
     return undefined;
-  }
-    
-  getByPath(path) {
-    const rest = path.slice();
-    const key = rest.shift();
-    const box = this.get(key);
-    return box.getByPath(rest);
-  }
-  
-  get(key, owner=undefined) {
-    const mod = this.fetch(key);
-    if (mod instanceof Box) {
-      return mod;
-    } else if (mod == undefined) {
-      return mod;
-    } else {
-      return new mod(this, [key], owner);      
-    }
   }
 
   check(key) {
@@ -62,9 +40,9 @@ class Environment {
     }
   }
   
-  import(key, box) {
+  import(key, mod) {
     this.check(key);
-    this.modules[key] = box;
+    this.modules[key] = mod;
   }
   
   store(key, store) {
@@ -77,7 +55,7 @@ class Environment {
   }
     
   emit(event) {
-    this.events.push(event);
+    this.queue.push(event);
   }
   
   run() {
@@ -87,18 +65,18 @@ class Environment {
     }
     
     for (let key of Object.getOwnPropertyNames(this.modules)) {
-      const box = this.get(key);
-      if (box.initialize) {
-        box.initialize(main);
+      const mod = this.get(key);
+      if (mod.initialize) {
+        mod.initialize(main);
       }
     }
     
-    window.setInterval(() => {
+    const update = () => {
       let updated = false;
       
-      while(this.events.length > 0) {
-        const events = this.events;
-        this.events = [];
+      while(this.queue.length > 0) {
+        const events = this.queue;
+        this.queue = [];
         
         for (const event of events) {
           // todo eventを参照可能な他のstoreにもemitさせる
@@ -110,13 +88,14 @@ class Environment {
       
       if (updated) {
         for (let key of Object.getOwnPropertyNames(this.modules)) {
-          const box = this.get(key);
-          if (box.update) {
-            box.update(main);
+          const mod = this.get(key);
+          if (mod.update) {
+            mod.update(main);
           }
         }
       }
-    }, 1000 / 60);
+    }
+    window.setInterval(update, 1000 / 60);
   }
 }
 const ENV = new Environment();
@@ -161,262 +140,14 @@ class Context {
   }
   
   stack(box, block) {
-    if (box) {
-      this.stacks.push(box);
+    if (!box) {
+      throw "stack box not specified"
     }
     
-    const result = block();
-    
-    if (box) {
-      this.stacks.pop();  
-    }
-    
+    this.stacks.push(box);
+    const result = block(this);
+    this.stacks.pop();  
     return result;
-  }
-}
-
-
-class Box {
-  constructor(root, path=[], owner=undefined) {
-    this.root = root;
-    this.path = path;
-    this.owner = owner;
-  }
-  
-  get val() {
-    let val = this.root;
-    for (let key of this.path) {
-      val = val.child(key);
-    }
-    
-    return val;
-  }
-    
-  get parent() {
-    if (this.path.length == 0) {
-      return undefined;
-    }
-    
-    const path = this.path.slice();
-    path.pop();
-    return new Box(this.root, path);
-  }
-          
-  get(key) {
-    const box = new Box(this.root, this.path.concat([key]));
-    if (box.val) {
-      return box;
-    }
-    
-    return ENV.get(key, this);
-  }
-  
-  getByPath(path) {
-    if (path.length == 0) {
-      return this;
-    }
-    
-    const rest = path.slice();
-    const top = rest.shift();
-    const child = this.get(top);
-    return child.getByPath(rest);
-  }
-  
-  detect(key, ctx) {
-    if (key == "self") {
-      const self = this.parent.parent;
-      return self;
-    }
-    
-    const stacks = ctx.stacks.slice();
-    stacks.reverse();
-    for (let val of stacks) {
-      const child = val.child(key);
-      if (child) {
-        return new Box(child);
-      }
-    }
-    
-    let parent = this.parent;
-    while(parent) {
-      const child = parent.get(key);
-      if (child) {
-        return child;
-      }
-      
-      parent = parent.parent;  
-    }
-    
-    return ENV.get(key);
-  }
-  
-  resolvePath(path, ctx) {
-    const rest = path.slice();
-    const top = rest.shift();
-    
-    let receiver = this.detect(top, ctx);
-    for (const key of rest) {
-      const box = receiver.get(key, ctx);
-      if (!box) {
-        throw `"${key}" not found`
-      }
-      receiver = box;
-    }
-    
-    return receiver;
-  }
-  
-  resolve(proto, ctx) {
-    if (proto == undefined) {
-      return undefined;
-    }
-    
-    if (!(proto instanceof Path)) {
-      return new Box(proto);
-    }
-    
-    return this.resolvePath(proto.symbols, ctx);
-  }
-  
-  prototype(ctx=new Context()) {
-    return this.resolve(this.val.proto, ctx);
-  }
-    
-  overlay(inherit=undefined, ctx=new Context()) {
-    const proto = this.prototype(ctx) || inherit;
-    if (!proto) {
-      return this.val;
-    }
-    
-    const props = this.val.keys.reduce((ps, k) => {
-      const prop = this.get(k);
-      return Object.assign(ps, {[k]: prop.overlay(proto.get(k), ctx) } );
-    }, proto.val.props.clone());
-    
-    const stuff = Object.assign(
-      proto.val.stuff.clone().raws, 
-      this.val.stuff.raws.map((s, i) => {
-        const stf = this.get(i);
-        return stf.overlay(proto.get(i), ctx);
-      })
-    );
-    
-    return this.val.clone({
-      proto: proto.val.proto,
-      props: new Props(props),
-      stuff: new Stuff(stuff),
-    });
-  }
-  
-  eval(ctx=new Context()) {
-    if (this.val.evaluated || this.val instanceof Stuff) {
-      return this.val;
-    }
-    
-    const proto = this.prototype(ctx) || this;
-    if (proto.canApply(this, ctx)) {
-      const applied = proto.apply(this, ctx);
-      return new Box(applied).eval(ctx);
-    } else {
-      return this.val;
-    }
-  }
-  
-  canApply(operand, ctx) {
-    for (let key of operand.val.keys) {
-      const box = operand.detect(key, ctx);
-      if (box) {
-        continue;
-      }
-
-      const child = operand.get(key);
-      if (child.prototype(ctx) instanceof Argument) {
-        return false;
-      }
-    }
-    return true;
-  }
-  
-  apply(operand, ctx) {
-    // todo propsやstuffが空の場合もただのパス参照としてthis.valを返す
-    if (this.val instanceof Literal) {
-      return this.val;
-    }
-    
-    const props = new Props(operand.val.props.keys.reduce((p, k) => {
-        const prop = operand.get(k);
-        return Object.assign(p, {[k]: prop.eval(ctx)});
-      },
-      {}));
-      
-    const stuff = new Stuff(operand.val.stuff.raws.map((s, i) => {
-      const stf = operand.get(i);
-      return stf.eval(ctx)
-    })).flatten();
-    
-    return operand.val.clone({
-      props,
-      stuff,
-      evaluated: true
-    });
-  }
-  
-  set(key, child) {
-    let props = new Props();
-    let stuff = new Stuff();
-    if (typeof(key) === "string") {
-      props = new Props({[key]: child});
-    } else if (typeof(key) === "number") {
-      const raws = [];
-      raws[key] = child;
-      stuff = new Stuff(raws);
-    }
-
-    const updated = new Val(undefined, props, stuff);
-    
-    const currentKey = this.path[this.path.length-1];
-    if (currentKey == undefined) {
-      this.root.set(updated);
-    } else {
-      this.parent.set(currentKey, updated);
-    }
-  }
-  
-  emit(event) {
-    // todo 他のBoxが定義しているイベントもreceiveできるようにする
-    const src = this.getByPath(event.stuff.raws);
-    const ctx = new Context();
-    const dst = ctx.stack(event, () => src.eval(ctx));
-    
-    for (let target of dst.stuff.raws) {
-      if (target instanceof Literal && event.value == undefined) {
-        // through event as undefined
-        continue;
-      } else if (target instanceof StoreUpdateEvent) {
-        const updateBox = target;
-        const ownerPath = event.stuff.raws.slice();
-        ownerPath.pop();
-        const owner = this.getByPath(ownerPath);
-        
-        for (let key of updateBox.keys) {
-          owner.set(key, updateBox.props[key]);
-        }
-        
-        for (let name of Object.keys(updateBox.stuff.raws)) {
-          const index = parseInt(name);
-          if (!Number.isNaN(index)) {
-            owner.set(index, updateBox.stuff.raws[index]);
-          }
-        }
-      } else {
-        const path = src.resolvePath(target.stuff.raws.map(s => s.value), new Context()).path;
-        const event = new Val(undefined,
-          target.props.clone(),
-          new Stuff(path)
-        );
-        ENV.emit(event);
-      }
-    }
   }
 }
 
@@ -553,6 +284,10 @@ class Val {
 }
 
 
+class Nil extends Val {
+}
+
+
 class Path extends Val {
   static create(sym) {
     if (typeof(sym) == "string") {
@@ -594,14 +329,282 @@ class StoreUpdateEvent extends Val {
 }
 
 
+class Box {
+  constructor(root=new Nil(), path=[]) {
+    this.root = root;
+    this.path = path;
+    this.owner = undefined;
+  }
+  
+  clone(props) {
+    return Object.assign(new this.constructor(), this, props)
+  }
+  
+  withOwner(owner) {
+    if (!(owner instanceof Box)) {
+      return this;
+    }
+
+    if (this.owner instanceof Box) {
+      throw `owner is exists`;
+    }
+    
+    return this.clone({owner});
+  }
+  
+  get val() {
+    let val = this.root;
+    for (let key of this.path) {
+      val = val.child(key);
+    }
+    
+    return val;
+  }
+    
+  get parent() {
+    if (this.path.length == 0) {
+      return undefined;
+    }
+    
+    const path = this.path.slice();
+    path.pop();
+    return new Box(this.root, path);
+  }
+  
+  prototype(ctx=new Context()) {
+    return this.resolve(this.val.proto, ctx);
+  }
+          
+  get(key) {
+    const box = new Box(this.root, this.path.concat([key]));
+    if (box.val) {
+      return box;
+    }
+
+    const mod = ENV.get(key);
+    if (mod) {
+      return mod.withOwner(this);
+    }
+    
+    return undefined;
+  }
+  
+  getByPath(path) {
+    if (path.length == 0) {
+      return this;
+    }
+    
+    const rest = path.slice();
+    const top = rest.shift();
+    const child = this.get(top);
+    return child.getByPath(rest);
+  }
+  
+  detect(key, ctx) {
+    if (key == "self") {
+      const self = this.parent.parent;
+      return self;
+    }
+    
+    const stacks = ctx.stacks.slice();
+    stacks.reverse();
+    for (let val of stacks) {
+      const child = val.child(key);
+      if (child) {
+        return new Box(child);
+      }
+    }
+    
+    let parent = this.parent;
+    while(parent) {
+      const child = parent.get(key);
+      if (child) {
+        return child;
+      }
+      
+      parent = parent.parent;  
+    }
+    
+    const mod = ENV.get(key);
+    if (mod) {
+      return mod.withOwner(this);
+    }
+
+    return undefined;
+  }
+  
+  resolvePath(path, ctx) {
+    const rest = path.slice();
+    const top = rest.shift();
+    
+    let receiver = this.detect(top, ctx);
+    for (const key of rest) {
+      const box = receiver.get(key);
+      if (!box) {
+        throw `"${key}" not found`
+      }
+      receiver = box;
+    }
+    
+    return receiver;
+  }
+  
+  resolve(proto, ctx) {
+    if (proto == undefined) {
+      return undefined;
+    }
+    
+    return this.resolvePath(proto.symbols, ctx);
+  }
+      
+  overlay(inherit=undefined, ctx=new Context()) {
+    const proto = this.prototype(ctx) || inherit;
+    if (!proto) {
+      return this.val;
+    }
+    
+    const props = this.val.keys.reduce((ps, k) => {
+      const prop = this.get(k);
+      return Object.assign(ps, {[k]: prop.overlay(proto.get(k), ctx) } );
+    }, proto.val.props.clone());
+    
+    const stuff = Object.assign(
+      proto.val.stuff.clone().raws, 
+      this.val.stuff.raws.map((s, i) => {
+        const stf = this.get(i);
+        return stf.overlay(proto.get(i), ctx);
+      })
+    );
+    
+    return this.val.clone({
+      proto: proto.val.proto,
+      props: new Props(props),
+      stuff: new Stuff(stuff),
+    });
+  }
+  
+  eval(ctx=new Context()) {
+    if (this.val.evaluated || this.val instanceof Stuff) {
+      return this.val;
+    }
+    
+    const proto = this.prototype(ctx) || this;
+    if (proto.canApply(this, ctx)) {
+      const applied = proto.apply(this, ctx);
+      return new Box(applied).eval(ctx);
+    } else {
+      return this.val;
+    }
+  }
+  
+  canApply(operand, ctx) {
+    for (let key of operand.val.keys) {
+      const box = operand.detect(key, ctx);
+      if (box) {
+        continue;
+      }
+
+      const child = operand.get(key);
+      if (child.prototype(ctx) instanceof Argument) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  apply(operand, ctx) {
+    // todo propsやstuffが空の場合もただのパス参照としてthis.valを返す
+    if (this.val instanceof Literal) {
+      return this.val;
+    }
+    
+    const props = new Props(operand.val.props.keys.reduce((p, k) => {
+        const prop = operand.get(k);
+        return Object.assign(p, {[k]: prop.eval(ctx)});
+      },
+      {}));
+      
+    const stuff = new Stuff(operand.val.stuff.raws.map((s, i) => {
+      const stf = operand.get(i);
+      return stf.eval(ctx)
+    })).flatten();
+    
+    return operand.val.clone({
+      props,
+      stuff,
+      evaluated: true
+    });
+  }
+  
+  set(key, child) {
+    let props = new Props();
+    if (typeof(key) === "string") {
+      props = new Props({[key]: child});
+    }
+    
+    let stuff = new Stuff();
+    if (typeof(key) === "number") {
+      const raws = [];
+      raws[key] = child;
+      stuff = new Stuff(raws);
+    }
+
+    const updated = new Val(undefined, props, stuff);
+    
+    const currentKey = this.path[this.path.length-1];
+    if (currentKey == undefined) {
+      this.root.set(updated);
+    } else {
+      this.parent.set(currentKey, updated);
+    }
+  }
+  
+  emit(event) {
+    // todo 他のBoxが定義しているイベントもreceiveできるようにする
+    const src = this.getByPath(event.stuff.raws);
+    const dst = new Context().stack(event, ctx => src.eval(ctx));
+    
+    for (let target of dst.stuff.raws) {
+      if (target instanceof Literal && event.value == undefined) {
+        // through event as undefined
+        continue;
+      } else if (target instanceof StoreUpdateEvent) {
+        const updateBox = target;
+        const ownerPath = event.stuff.raws.slice();
+        ownerPath.pop();
+        const owner = this.getByPath(ownerPath);
+        
+        for (let key of updateBox.keys) {
+          owner.set(key, updateBox.props[key]);
+        }
+        
+        for (let name of Object.keys(updateBox.stuff.raws)) {
+          const index = parseInt(name);
+          if (!Number.isNaN(index)) {
+            owner.set(index, updateBox.stuff.raws[index]);
+          }
+        }
+      } else {
+        const path = src.resolvePath(target.stuff.raws.map(s => s.value), new Context()).path;
+        const event = new Val(undefined,
+          target.props.clone(),
+          new Stuff(path)
+        );
+        ENV.emit(event);
+      }
+    }
+  }
+}
+
+
 // 評価結果を上位のstuffにマージする用途で利用
 // Stuffのeval時にflattenでマージされる
-class StuffVal extends Box {
+class StuffBox extends Box {
   apply(operand, ctx) {
     return operand.val.stuff.map((s, i) => operand.get(i).eval(ctx));
   }
 }
-ENV.import("Stuff", StuffVal);
+ENV.import("Stuff", new StuffBox());
 
 
 class UUID extends Box {
@@ -622,12 +625,12 @@ class UUID extends Box {
     return Literal.create(this.uuid());
   }
 }
-ENV.import("UUID", UUID);
+ENV.import("UUID", new UUID());
 
 
 class Event extends Box {
 }
-ENV.import("Event", Event);
+ENV.import("Event", new Event());
 
 
 class If extends Box {
@@ -640,7 +643,7 @@ class If extends Box {
     }
   }
 }
-ENV.import("if", If);
+ENV.import("if", new If());
 
 
 class PropEquals extends Box {
@@ -650,7 +653,7 @@ class PropEquals extends Box {
     return Literal.create(left == right);
   }
 }
-ENV.import("equals", PropEquals);
+ENV.import("equals", new PropEquals());
 
 
 class PropMap extends Box {
@@ -662,11 +665,11 @@ class PropMap extends Box {
       const arg = item.eval(ctx);
       const props = block.val.props.clone({[argkey]: arg});
       const stack = new Val(undefined, props);
-      return ctx.stack(stack, () => block.eval(ctx));
+      return ctx.stack(stack, ctx => block.eval(ctx));
     });
   }
 };
-ENV.import("map", PropMap);
+ENV.import("map", new PropMap());
 
 
 class PropCount extends Box {
@@ -675,7 +678,7 @@ class PropCount extends Box {
     return Literal.create(count);
   }
 }
-ENV.import("count", PropCount);
+ENV.import("count", new PropCount());
 
 
 class PropSet extends Box {
@@ -687,7 +690,7 @@ class PropSet extends Box {
     );
   }
 }
-ENV.import("set", PropSet);
+ENV.import("set", new PropSet());
 
 
 class PropAppend extends Box {
@@ -700,12 +703,12 @@ class PropAppend extends Box {
     return updateBox;
   }
 }
-ENV.import("append", PropAppend);
+ENV.import("append", new PropAppend());
 
 
 class Argument extends Box {
 }
-ENV.import("Argument", Argument);
+ENV.import("Argument", new Argument());
 
 
 class Lambda extends Box {
@@ -714,47 +717,58 @@ class Lambda extends Box {
     return item.eval(ctx);
   }
 }
-ENV.import("Lambda", Lambda);
+ENV.import("Lambda", new Lambda());
 
 
 class Entity extends Box {
 }
-ENV.import("Entity", Entity);
+ENV.import("Entity", new Entity());
 
 
-class DOM extends Box {  
-  get tag() {
-    return this.path[this.path.length-1];
-  }
-  
+class DOM extends Box {
+  constructor(tag) {
+    super();
+    this.tag = tag;
+  }  
+}
+const HTML_TAGS = [
+  "Body",
+  "Section",
+  "Footer",
+  "Header",
+  "P",
+  "Ul",
+  "Li",
+  "Input",
+  "Button",
+  "Div",
+  "Span",
+  "H1",
+  "Label",
+  "Strong",
+  "A",
+];
+for (let tag of HTML_TAGS) {
+  ENV.import(tag, new DOM(tag));
+}
+
+
+class DOMPresenter extends Box {
   initialize(main) {
-    // one time only initializing
-    if (this.tag != HTML_TAGS[0]) {
-      return;
-    }
-    
-    // todo constructorの活用はダサいのでどうにかしたい。。。
-    this.constructor.projector = maquette.createProjector();
-    this.constructor.handlers = this.createHandlers(main);
-    
-    console.log(main.val);
+    this.projector = maquette.createProjector();
+    this.handlers = this.createHandlers(main);
     
     window.document.addEventListener('DOMContentLoaded', () => {
-      this.constructor.projector.replace(window.document.body, () => {
+      this.projector.replace(window.document.body, () => {
         const body = main.get("presentation").get("body");
-        const vdom = this.render(body, this.constructor.handlers)[0];
+        const vdom = this.render(body, this.handlers)[0];
         return vdom;
       });
     });
   }
   
   update(main) {
-    // one time only updating
-    if (this.tag != HTML_TAGS[0]) {
-      return;
-    }
-    
-    this.constructor.projector.renderNow();
+    this.projector.renderNow();
   }
   
   elementPath(dom) {
@@ -838,26 +852,7 @@ class DOM extends Box {
     return [vdom];
   }
 }
-const HTML_TAGS = [
-  "Body",
-  "Section",
-  "Footer",
-  "Header",
-  "P",
-  "Ul",
-  "Li",
-  "Input",
-  "Button",
-  "Div",
-  "Span",
-  "H1",
-  "Label",
-  "Strong",
-  "A",
-];
-for (let tag of HTML_TAGS) {
-  ENV.import(tag, DOM);
-}
+ENV.import("DOMPresenter", new DOMPresenter());
 
 
 const TodoMVC = {
