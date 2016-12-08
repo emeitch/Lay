@@ -318,8 +318,7 @@ class Box {
       const applied = proto.apply(this, ctx);
       return new Box(applied).eval(ctx);
     } else {
-      return this.val.clone({
-      });
+      return this.val;
     }
   }
   
