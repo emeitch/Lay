@@ -220,18 +220,7 @@ class Val {
     const props = Object.getOwnPropertyNames(src)
       .filter(k => k[0] !== '_')
       .reduce((p, k) => Object.assign(p, {[k]: Val.parse(src[k])}), {});
-      
-    const on = src._on;
-    if (on) {
-      Object.getOwnPropertyNames(on).forEach(k => {
-        const event = on[k];
-        if (!event._proto) {
-          event._proto = "Event";
-        }
-        props[k] = Val.parse(event);
-      });
-    }
-    
+          
     const s = src._stuff;
     const stf = s ? (Array.isArray(s) ? s : [s]) : [];
     const stuff = stf.map(i => Val.parse(i));
@@ -628,9 +617,9 @@ class UUID extends Box {
 ENV.import("UUID", new UUID());
 
 
-class Event extends Box {
+class EventListener extends Box {
 }
-ENV.import("Event", new Event());
+ENV.import("EventListener", new EventListener());
 
 
 class If extends Box {
@@ -829,7 +818,7 @@ class DOMPresenter extends Box {
   render(box, handlers) {
     const attrs = box.val.keys.reduce((r, k) => {
       const prop = box.get(k);
-      if (prop.prototype() instanceof Event) {
+      if (prop.prototype() instanceof EventListener) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
         return Object.assign(r, {[k]: prop.val.value})  
@@ -863,20 +852,19 @@ const TodoMVC = {
       completed: "bool"
     },
     tasks: {
-      _on: {
-        create: {
-          title: { _proto: "Argument", type: "string" },
+      create: {
+        _proto: "EventListener",
+        title: { _proto: "Argument", type: "string" },
+        _stuff: {
+          _proto: [
+            "self",
+            "append"
+          ],
           _stuff: {
-            _proto: [
-              "self",
-              "append"
-            ],
-            _stuff: {
-              _proto: "Task",
-              id: { _proto: "UUID" },
-              title: { _proto: "title" },
-              completed: false
-            }
+            _proto: "Task",
+            id: { _proto: "UUID" },
+            title: { _proto: "title" },
+            completed: false
           }
         }
       },
@@ -910,47 +898,47 @@ const TodoMVC = {
                       class: "new-todo",
                       placeholder: "What needs to be done?",
                       autofocus: true,
-                      _on: {
-                        clear: {
-                          _stuff: {
+                      clear: {
+                        _proto: "EventListener",
+                        _stuff: {
+                          _proto: [
+                            "self",
+                            "set"
+                          ],
+                          value: "",
+                        }
+                      },
+                      keyup: {
+                        _proto: "EventListener",
+                        keyCode: { _proto: "Argument", type: "Literal" },
+                        _stuff: {
+                          _proto: "if",
+                          cond: {
                             _proto: [
-                              "self",
-                              "set"
+                              "keyCode",
+                              "equals"
                             ],
-                            value: "",
-                          }
-                        },
-                        keyup: {
-                          keyCode: { _proto: "Argument", type: "Literal" },
-                          _stuff: {
-                            _proto: "if",
-                            cond: {
-                              _proto: [
-                                "keyCode",
-                                "equals"
-                              ],
-                              _stuff: 13
-                            },
-                            then: {
-                              _proto: "Stuff",
-                              _stuff: [
-                                {
-                                  title: {
-                                    _proto: "value"
-                                  },
-                                  _stuff: [
-                                    "domain",
-                                    "tasks",
-                                    "create"
-                                  ]
+                            _stuff: 13
+                          },
+                          then: {
+                            _proto: "Stuff",
+                            _stuff: [
+                              {
+                                title: {
+                                  _proto: "value"
                                 },
-                                {
-                                  _stuff: "clear"
-                                }
-                              ]
-                            },
-                            else: undefined
-                          }
+                                _stuff: [
+                                  "domain",
+                                  "tasks",
+                                  "create"
+                                ]
+                              },
+                              {
+                                _stuff: "clear"
+                              }
+                            ]
+                          },
+                          else: undefined
                         }
                       }
                     }
