@@ -550,34 +550,32 @@ class Box {
   
   emit(event) {
     // todo 他のBoxが定義しているイベントもreceiveできるようにする
-    const src = this.getByPath(event.stuff.raws);
-    const dst = new Context().stack(event, ctx => src.eval(ctx));
-    
-    for (let target of dst.stuff.raws) {
-      if (target instanceof Literal && event.value == undefined) {
+    const target = this.getByPath(event.proto.symbols);
+    const relays = new Context().stack(event, ctx => target.eval(ctx));
+    for (let e of relays.stuff.raws) {
+      if (e instanceof Literal && event.value == undefined) {
         // through event as undefined
         continue;
-      } else if (target instanceof StoreUpdateEvent) {
-        const updateBox = target;
-        const ownerPath = event.stuff.raws.slice();
+      } else if (e instanceof StoreUpdateEvent) {
+        const ownerPath = event.proto.symbols.slice();
         ownerPath.pop();
         const owner = this.getByPath(ownerPath);
         
-        for (let key of updateBox.keys) {
-          owner.set(key, updateBox.props[key]);
+        for (let key of e.keys) {
+          owner.set(key, e.props[key]);
         }
         
-        for (let name of Object.keys(updateBox.stuff.raws)) {
+        for (let name of Object.keys(e.stuff.raws)) {
           const index = parseInt(name);
           if (!Number.isNaN(index)) {
-            owner.set(index, updateBox.stuff.raws[index]);
+            owner.set(index, e.stuff.raws[index]);
           }
         }
       } else {
-        const path = src.resolvePath(target.stuff.raws.map(s => s.value), new Context()).path;
-        const event = new Val(undefined,
-          target.props.clone(),
-          new Stuff(path)
+        const path = target.resolvePath(e.proto.symbols, new Context()).path;
+        const event = new Val(
+          Path.create(path),
+          e.props.clone()
         );
         ENV.emit(event);
       }
@@ -673,9 +671,10 @@ ENV.import("count", new PropCount());
 class PropSet extends Box {
   apply(operand, ctx) {
     return new StoreUpdateEvent(
-      undefined, 
-      operand.val.props.clone(), 
-      operand.val.stuff.clone()
+      operand.val.proto, 
+      operand.val.props.clone(),
+      new Stuff(),
+      true
     );
   }
 }
@@ -801,14 +800,12 @@ class DOMPresenter extends Box {
       },
       keyup: (ev) => {
         const path = this.boxPath(ev.target);
-        const event = new Val(undefined, 
+        const event = new Val(
+          Path.create(path.concat([ev.type])), 
           new Props({
             // todo keyCode以外の属性も転送する
             keyCode: Literal.create(ev.keyCode), 
-          }),
-          new Stuff(
-            path.concat([ev.type])
-          )
+          })
         );
         ENV.emit(event);
       }
@@ -924,17 +921,17 @@ const TodoMVC = {
                             _proto: "Stuff",
                             _stuff: [
                               {
-                                title: {
-                                  _proto: "value"
-                                },
-                                _stuff: [
+                                _proto: [
                                   "domain",
                                   "tasks",
                                   "create"
-                                ]
+                                ],
+                                title: {
+                                  _proto: "value"
+                                }
                               },
                               {
-                                _stuff: "clear"
+                                _proto: "clear"
                               }
                             ]
                           },
