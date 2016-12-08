@@ -691,8 +691,8 @@ class PropAppend extends Box {
     const val = operand.get(0).eval(ctx);
     const index = this.owner.val.stuff.raws.length;
     stuff.raws[index] = val; // push
-    const updateBox = new StoreUpdateEvent(undefined, new Props(), stuff);
-    return updateBox;
+    const event = new StoreUpdateEvent(undefined, new Props(), stuff);
+    return event;
   }
 }
 ENV.import("append", new PropAppend());
