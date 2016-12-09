@@ -205,6 +205,10 @@ class Stuff {
   map(f) {
     return new Stuff(this.raws.map(f));
   }
+  
+  filter(f) {
+    return new Stuff(this.raws.filter(f));
+  }
 }
 
 
@@ -222,7 +226,7 @@ class Val {
       .reduce((p, k) => Object.assign(p, {[k]: Val.parse(src[k])}), {});
           
     const s = src._stuff;
-    const stf = s ? (Array.isArray(s) ? s : [s]) : [];
+    const stf = s != undefined ? (Array.isArray(s) ? s : [s]) : [];
     const stuff = stf.map(i => Val.parse(i));
     
     const proto = src._proto ? Path.create(src._proto) : undefined;
@@ -394,6 +398,10 @@ class Box {
   }
   
   detect(key, ctx) {
+    if (key == "parent") {
+      return this.parent;
+    }
+    
     if (key == "self") {
       const self = this.parent.parent;
       return self;
@@ -530,15 +538,24 @@ class Box {
   }
   
   update(diff) {
+    const updated = new Val(undefined, diff.props, diff.stuff);
     const currentKey = this.path[this.path.length-1];
     if (currentKey == undefined) {
-      this.root.set(diff);
+      this.root.set(updated);
     } else {
-      this.parent.set(currentKey, diff);
+      this.parent.set(currentKey, updated);
     }
   }
   
   set(key, child) {
+    // 階層を飛ばして孫要素を設定したい場合はkeyに配列pathを指定
+    if (Array.isArray(key)) {
+      const path = key;
+      const tail = path.pop();
+      const target = new Box(this.root, this.path.concat(path));
+      target.set(tail, child);
+    }
+    
     let props = new Props();
     if (typeof(key) === "string") {
       props = new Props({[key]: child});
@@ -656,6 +673,23 @@ class PropMap extends Box {
 ENV.import("map", new PropMap());
 
 
+class PropFilter extends Box {
+  apply(operand, ctx) {
+    const block = operand.get(0);
+    const argkey = block.val.keys[0]; // todo key値の型と一致するか検証
+    const stuff = this.owner.val.stuff.filter((s, i) => {
+      const item = this.owner.get(i);
+      const arg = item.eval(ctx);
+      const props = block.val.props.clone({[argkey]: arg});
+      const stack = new Val(undefined, props);
+      return ctx.stack(stack, ctx => block.eval(ctx)).value;
+    });
+    return new Val(undefined, new Props(), stuff);
+  }
+};
+ENV.import("filter", new PropFilter());
+
+
 class PropCount extends Box {
   apply(operand, ctx) {
     const count = this.owner.val.stuff.raws.length;
@@ -668,7 +702,7 @@ ENV.import("count", new PropCount());
 class PropSet extends Box {
   apply(operand, ctx) {
     return new StoreUpdate(
-      operand.val.proto, 
+      undefined, 
       operand.val.props.clone(),
       new Stuff(),
       true
@@ -689,6 +723,15 @@ class PropAppend extends Box {
   }
 }
 ENV.import("append", new PropAppend());
+
+
+class Not extends Box {
+  apply(operand, ctx) {
+    const val = operand.get(0).eval(ctx);
+    return Literal.create(!val.value);
+  }
+}
+ENV.import("not", new Not());
 
 
 class Argument extends Box {
@@ -750,6 +793,12 @@ class DOMPresenter extends Box {
         return vdom;
       });
     });
+    
+    const setLocation = () => {
+      main.get("presentation").set(["location", "hash"], Literal.create(window.location.hash));
+    };
+    setLocation();
+    window.addEventListener('hashchange', setLocation);
   }
   
   updated(main) {
@@ -862,11 +911,122 @@ const TodoMVC = {
           }
         }
       },
+      all: {
+        // todo 本当はただのparent参照にしたいがうまくいかないので無駄にfilterかける
+        _proto: [
+          "parent",
+          "filter"
+        ],
+        _stuff: {
+          _proto: "Lambda",
+          task: { _proto: "argument", type: "Task" },
+          _stuff: true
+        }
+      },
+      active: {
+        _proto: [
+          "parent",
+          "filter"
+        ],
+        _stuff: {
+          _proto: "Lambda",
+          task: { _proto: "Argument", type: "Task" },
+          _stuff: {
+            _proto: "not",
+            _stuff: {
+              _proto: [
+                "task",
+                "completed",
+              ]
+            }
+          }
+        }
+      },
+      completed: {
+        _proto: [
+          "parent",
+          "filter"
+        ],
+        _stuff: {
+          _proto: "Lambda",
+          task: { _proto: "Argument", type: "Task" },
+          _stuff: {
+            _proto: [
+              "task",
+              "completed",
+            ]
+          }
+        }
+      },
       _stuff: [
       ]
     }
   },
   presentation: {
+    location: {
+      hash: "",
+    },
+    // taskList: {
+    //   _proto: "if",
+    //   cond: {
+    //     _proto: [
+    //       "location",
+    //       "hash",
+    //       "equals"
+    //     ],
+    //     _stuff: "#/active"
+    //   },
+    //   then: {
+    //     _proto: [
+    //       "domain",
+    //       "tasks",
+    //       "active",
+    //       "filter"
+    //     ],
+    //     _stuff: {
+    //       _proto: "Lambda",
+    //       task: { _proto: "argument", type: "Task" },
+    //       _stuff: true
+    //     }
+    //   },
+    //   else: {
+    //     _proto: "if",
+    //     cond: {
+    //       _proto: [
+    //         "location",
+    //         "hash",
+    //         "equals"
+    //       ],
+    //       _stuff: "#/completed"
+    //     },
+    //     then: {
+    //       _proto: [
+    //         "domain",
+    //         "tasks",
+    //         "completed",
+    //         "filter"
+    //       ],
+    //       _stuff: {
+    //         _proto: "Lambda",
+    //         task: { _proto: "argument", type: "Task" },
+    //         _stuff: true
+    //       }
+    //     },
+    //     else: {
+    //       _proto: [
+    //         "domain",
+    //         "tasks",
+    //         "all",
+    //         "filter"
+    //       ],
+    //       _stuff: {
+    //         _proto: "Lambda",
+    //         task: { _proto: "argument", type: "Task" },
+    //         _stuff: true
+    //       }
+    //     }
+    //   }
+    // },
     body: {
       _proto: "Body",
       _stuff: [
