@@ -386,6 +386,27 @@ class Box {
     return undefined;
   }
   
+  get src() {
+    let box = new Box(this.root, []);
+    for (let key of this.path) {
+      const parent = box;
+      let b = parent.o(key);
+      if (b.val == undefined) {
+        const resolved = parent.resolve(parent.val.proto, new Context());
+        b = resolved.o(key);
+      }
+      box = b;
+    }
+    
+    return box.val;
+  }
+  
+  o(key) {
+    const path = this.path.concat([key]);
+    const box = new Box(this.root, path);
+    return box;
+  }
+  
   getByPath(path) {
     if (path.length == 0) {
       return this;
@@ -1341,6 +1362,14 @@ const main = {
 ENV.store("main", new Box(new Store(Val.parse(main))));
 ENV.run();
 
+// test
+ENV.store("test", new Box(Val.parse({
+  all: {
+    _proto: "parent"
+  },
+  foo: 3
+})));
+console.log(ENV.get("test").o("all").o("all").o("foo").src)
 
 </script>
 </head>
