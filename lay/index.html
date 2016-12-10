@@ -392,7 +392,7 @@ class Box {
       const parent = box;
       let b = parent.o(key);
       if (b.val == undefined) {
-        const resolved = parent.resolve(parent.val.proto, new Context());
+        const resolved = parent.prototype();
         b = resolved.o(key);
       }
       box = b;
@@ -1369,7 +1369,7 @@ ENV.store("test", new Box(Val.parse({
   },
   foo: 3
 })));
-console.log(ENV.get("test").o("all").o("all").o("foo").src)
+console.log(ENV.get("test").o("all").o("all").o("all").o("all").o("foo").src)
 
 </script>
 </head>
