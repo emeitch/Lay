@@ -389,13 +389,12 @@ class Box {
   get src() {
     let box = new Box(this.root, []);
     for (let key of this.path) {
-      const parent = box;
-      let b = parent.o(key);
-      if (b.val == undefined) {
-        const resolved = parent.prototype();
-        b = resolved.o(key);
+      let child = box.o(key);
+      if (child.val == undefined) {
+        const proto = box.prototype();
+        child = proto.o(key);
       }
-      box = b;
+      box = child;
     }
     
     return box.val;
