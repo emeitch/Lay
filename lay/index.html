@@ -386,15 +386,19 @@ class Box {
     return undefined;
   }
   
+  prt(box, key) {
+    const child = box.o(key);
+    if (child.val == undefined) {
+      return this.prt(box.prototype(), key);  
+    } else {
+      return child;      
+    }
+  }
+  
   get src() {
     let box = new Box(this.root, []);
     for (let key of this.path) {
-      let child = box.o(key);
-      if (child.val == undefined) {
-        const proto = box.prototype();
-        child = proto.o(key);
-      }
-      box = child;
+      box = this.prt(box, key);
     }
     
     return box.val;
@@ -1362,13 +1366,30 @@ ENV.store("main", new Box(new Store(Val.parse(main))));
 ENV.run();
 
 // test
-ENV.store("test", new Box(Val.parse({
+ENV.store("test001", new Box(Val.parse({
   all: {
     _proto: "parent"
   },
   foo: 3
 })));
-console.log(ENV.get("test").o("all").o("all").o("all").o("all").o("foo").src)
+// console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").src)
+
+ENV.store("test002", new Box(Val.parse({
+  foo: 3,
+  a: {
+    _proto: "parent"
+  },
+  b: {
+    _proto: "a"
+  },
+  c: {
+    _proto: "b"
+  },
+  d: {
+    _proto: "c"
+  },
+})));
+console.log(ENV.get("test002").o("d").o("foo").src)
 
 </script>
 </head>
