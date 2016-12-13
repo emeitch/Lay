@@ -353,6 +353,9 @@ class Box {
     let val = this.root;
     for (let key of this.path) {
       val = val.child(key);
+      if (val == undefined) {
+        return undefined;
+      }
     }
     
     return val;
@@ -369,7 +372,12 @@ class Box {
   }
   
   prototype(ctx=new Context()) {
-    return this.resolve(this.val.proto, ctx);
+    const val = this.val;
+    if (val == undefined) {
+      return undefined;
+    }
+    
+    return this.resolve(val.proto, ctx);
   }
           
   get(key) {
@@ -386,10 +394,28 @@ class Box {
     return undefined;
   }
   
+  get basis() {
+    const key = this.path[this.path.length-1];
+    const pproto = this.parent.prototype();
+    if (pproto) {
+      return pproto.o(key);
+    } else {
+      return this.parent.basis.o(key);
+    }
+  }
+  
   prt(box, key) {
     const child = box.o(key);
     if (child.val == undefined) {
-      return this.prt(box.prototype(), key);  
+      const proto = box.prototype();
+      if (proto) {
+        return this.prt(proto, key);
+      } else {
+        const basis = box.basis;
+        if (basis) {
+          return this.prt(basis, key);
+        }
+      }
     } else {
       return child;      
     }
@@ -1370,12 +1396,12 @@ ENV.store("test001", new Box(Val.parse({
   all: {
     _proto: "parent"
   },
-  foo: 3
+  foo: 1
 })));
-// console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").src)
+console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").src)
 
 ENV.store("test002", new Box(Val.parse({
-  foo: 3,
+  foo: 2,
   a: {
     _proto: "parent"
   },
@@ -1390,6 +1416,34 @@ ENV.store("test002", new Box(Val.parse({
   },
 })));
 console.log(ENV.get("test002").o("d").o("foo").src)
+
+
+ENV.store("test003", new Box(Val.parse({
+  a: {
+    foo: {
+      bar: {
+        baz: "3 basis"
+      }
+    }
+  },
+  b: {
+    _proto: "a"
+  },
+  c: {
+    _proto: "b"
+  },
+  d: {
+    _proto: "c",
+    foo: {
+      bar: {
+        hoge: 3
+      }
+    }
+  },
+})));
+console.log(ENV.get("test003").o("d").o("foo").o("bar").o("hoge").src)
+console.log(ENV.get("test003").o("d").o("foo").o("bar").o("baz").src)
+console.log(ENV.get("test003").o("c").o("foo").o("bar").o("baz").src)
 
 </script>
 </head>
