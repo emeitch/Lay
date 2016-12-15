@@ -175,8 +175,8 @@ class Stuff {
     this.raws = raws;
   }
   
-  clone() {
-    return new this.constructor(this.raws.slice());
+  clone(raws=[]) {
+    return new this.constructor(Object.assign([], this.raws, raws));
   }
   
   flatten() {
@@ -258,8 +258,8 @@ class Val {
   get keys() {
     return Object.getOwnPropertyNames(this.props)
   }
-      
-  child(key) {
+  
+  getChild(key) {
     if (typeof(key) === "string") {
       const prop = this.props[key];
       if (prop) {
@@ -274,6 +274,35 @@ class Val {
         
     return undefined;
   }
+  
+  child(key, val) {
+    if (val == undefined) {
+      return this.getChild(key);
+    }
+    
+    if (typeof(key) === "string") {
+      const props = this.props.clone({[key]: val});
+      return this.clone({props});
+    } else if (typeof(key) === "number") {
+      const raws = [];
+      raws[key] = val;
+      const stuff = this.stuff.clone(raws);
+      return this.clone({stuff});
+    }
+    
+    throw "key type can not recognize";
+  }
+  
+  // merge(other) {
+  //   return this.clone({
+  //     props: this.props.clone(other.props),
+  //     stuff: this.stuff.clone(other.stuff.raws)
+  //   });
+  // }
+  // 
+  // set(diff) {
+  //   return this.merge(diff);
+  // }
 }
 
 
@@ -404,12 +433,48 @@ class Box {
     }
   }
   
+  st(key, child) {
+    let props = new Props();
+    if (typeof(key) === "string") {
+      props = new Props({[key]: child});
+    }
+    
+    let stuff = new Stuff();
+    if (typeof(key) === "number") {
+      const raws = [];
+      raws[key] = child;
+      stuff = new Stuff(raws);
+    }
+
+    const diff = new StoreUpdate(undefined, props, stuff);
+    this.update(diff);
+  }
+  
+  upd(val) {
+    const key = this.path[this.path.length-1];
+    if (key == undefined) {
+      return val;
+    } else {
+      const v = this.parent.val.child(key, val);
+      return this.parent.upd(v);
+    }
+  }
+  
   prt(box, key) {
     const child = box.o(key);
     if (child.val == undefined) {
       const proto = box.prototype();
       if (proto) {
-        return this.prt(proto, key);
+        const val = proto.apply(box, new Context());
+        
+        let bval;
+        if (val.proto instanceof Path) {
+          bval = box.resolve(val.proto, new Context());
+        } else {
+          const root = box.upd(val);
+          bval = new Box(root, box.path);
+        }
+        return this.prt(bval, key);
       } else {
         const basis = box.basis;
         if (basis) {
@@ -591,12 +656,12 @@ class Box {
     const updated = new Val(undefined, diff.props, diff.stuff);
     const currentKey = this.path[this.path.length-1];
     if (currentKey == undefined) {
-      this.root.set(updated);
+      return this.root.set(updated);
     } else {
-      this.parent.set(currentKey, updated);
+      return this.parent.set(currentKey, updated);
     }
   }
-  
+    
   set(key, child) {
     // 階層を飛ばして孫要素を設定したい場合はkeyに配列pathを指定
     if (Array.isArray(key)) {
@@ -1392,7 +1457,7 @@ ENV.store("main", new Box(new Store(Val.parse(main))));
 ENV.run();
 
 // test
-ENV.store("test001", new Box(Val.parse({
+ENV.import("test001", new Box(Val.parse({
   all: {
     _proto: "parent"
   },
@@ -1400,7 +1465,7 @@ ENV.store("test001", new Box(Val.parse({
 })));
 console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").src)
 
-ENV.store("test002", new Box(Val.parse({
+ENV.import("test002", new Box(Val.parse({
   foo: 2,
   a: {
     _proto: "parent"
@@ -1418,7 +1483,7 @@ ENV.store("test002", new Box(Val.parse({
 console.log(ENV.get("test002").o("d").o("foo").src)
 
 
-ENV.store("test003", new Box(Val.parse({
+ENV.import("test003", new Box(Val.parse({
   a: {
     foo: {
       bar: {
@@ -1444,6 +1509,57 @@ ENV.store("test003", new Box(Val.parse({
 console.log(ENV.get("test003").o("d").o("foo").o("bar").o("hoge").src)
 console.log(ENV.get("test003").o("d").o("foo").o("bar").o("baz").src)
 console.log(ENV.get("test003").o("c").o("foo").o("bar").o("baz").src)
+
+
+ENV.import("test004", new Box(Val.parse({
+  foo: 3,
+  a: {
+    bar: "4 then bar"
+  },
+  b: {
+    bar: "4 else bar"
+  },
+  c: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      _proto: "a"
+    },
+    else: {
+      _proto: "b"
+    }
+  },
+  d: {
+    _proto: "c",
+  },
+  e: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 2
+    },
+    then: {
+      _proto: "a"
+    },
+    else: {
+      _proto: "b"
+    }
+  },
+  f: {
+    _proto: "e",
+  },
+})));
+console.log(ENV.get("test004").o("d").o("bar").src);
+console.log(ENV.get("test004").o("f").o("bar").src);
 
 </script>
 </head>
