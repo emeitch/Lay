@@ -1461,7 +1461,7 @@ ENV.import("test001", new Box(Val.parse({
   all: {
     _proto: "parent"
   },
-  foo: 1
+  foo: "1 prop"
 })));
 console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").src)
 
