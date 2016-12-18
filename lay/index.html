@@ -293,13 +293,13 @@ class Val {
     throw "key type can not recognize";
   }
   
-  // merge(other) {
-  //   return this.clone({
-  //     props: this.props.clone(other.props),
-  //     stuff: this.stuff.clone(other.stuff.raws)
-  //   });
-  // }
-  // 
+  merge(other) {
+    return this.clone({
+      props: this.props.clone(other.props),
+      stuff: this.stuff.clone(other.stuff.raws)
+    });
+  }
+
   // set(diff) {
   //   return this.merge(diff);
   // }
@@ -450,6 +450,11 @@ class Box {
     this.update(diff);
   }
   
+  mrg(val) {
+    const v = this.val.merge(val);
+    return this.upd(v);
+  }
+  
   upd(val) {
     const key = this.path[this.path.length-1];
     if (key == undefined) {
@@ -469,7 +474,9 @@ class Box {
         
         let bval;
         if (val.proto instanceof Path) {
-          bval = box.resolve(val.proto, new Context());
+          const ref = box.resolve(val.proto, new Context());
+          const root = ref.mrg(val);
+          bval = new Box(root, ref.path);
         } else {
           const root = box.upd(val);
           bval = new Box(root, box.path);
@@ -1456,6 +1463,7 @@ const main = {
 ENV.store("main", new Box(new Store(Val.parse(main))));
 ENV.run();
 
+
 // test
 ENV.import("test001", new Box(Val.parse({
   all: {
@@ -1464,6 +1472,7 @@ ENV.import("test001", new Box(Val.parse({
   foo: "1 prop"
 })));
 console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").src)
+
 
 ENV.import("test002", new Box(Val.parse({
   foo: "2 prop",
@@ -1557,9 +1566,48 @@ ENV.import("test004", new Box(Val.parse({
   f: {
     _proto: "e",
   },
+  g: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      bar: "4 then no proto bar",
+    },
+    else: {
+    }
+  },
+  h: {
+    _proto: "g"
+  },
+  i: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      _proto: "a",
+      bar: "4 then proto overlay bar",
+    },
+    else: {
+    }
+  },
+  j: {
+    _proto: "i"
+  }
 })));
 console.log(ENV.get("test004").o("d").o("bar").src);
 console.log(ENV.get("test004").o("f").o("bar").src);
+console.log(ENV.get("test004").o("h").o("bar").src);
+console.log(ENV.get("test004").o("j").o("bar").src);
 
 </script>
 </head>
