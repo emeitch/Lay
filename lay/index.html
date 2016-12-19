@@ -493,7 +493,7 @@ class Box {
     }
   }
   
-  get src() {
+  evl() {
     let box = new Box(this.root, []);
     for (let key of this.path) {
       box = this.prt(box, key);
@@ -1471,7 +1471,7 @@ ENV.import("test001", new Box(Val.parse({
   },
   foo: "1 prop"
 })));
-console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").src)
+console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").evl());
 
 
 ENV.import("test002", new Box(Val.parse({
@@ -1489,7 +1489,7 @@ ENV.import("test002", new Box(Val.parse({
     _proto: "c"
   },
 })));
-console.log(ENV.get("test002").o("d").o("foo").src)
+console.log(ENV.get("test002").o("d").o("foo").evl());
 
 
 ENV.import("test003", new Box(Val.parse({
@@ -1515,9 +1515,9 @@ ENV.import("test003", new Box(Val.parse({
     }
   },
 })));
-console.log(ENV.get("test003").o("d").o("foo").o("bar").o("hoge").src)
-console.log(ENV.get("test003").o("d").o("foo").o("bar").o("baz").src)
-console.log(ENV.get("test003").o("c").o("foo").o("bar").o("baz").src)
+console.log(ENV.get("test003").o("d").o("foo").o("bar").o("hoge").evl())
+console.log(ENV.get("test003").o("d").o("foo").o("bar").o("baz").evl())
+console.log(ENV.get("test003").o("c").o("foo").o("bar").o("baz").evl())
 
 
 ENV.import("test004", new Box(Val.parse({
@@ -1604,10 +1604,10 @@ ENV.import("test004", new Box(Val.parse({
     _proto: "i"
   }
 })));
-console.log(ENV.get("test004").o("d").o("bar").src);
-console.log(ENV.get("test004").o("f").o("bar").src);
-console.log(ENV.get("test004").o("h").o("bar").src);
-console.log(ENV.get("test004").o("j").o("bar").src);
+console.log(ENV.get("test004").o("d").o("bar").evl());
+console.log(ENV.get("test004").o("f").o("bar").evl());
+console.log(ENV.get("test004").o("h").o("bar").evl());
+console.log(ENV.get("test004").o("j").o("bar").evl());
 
 </script>
 </head>
