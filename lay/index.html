@@ -465,27 +465,27 @@ class Box {
     }
   }
   
-  prt(box, key) {
-    const child = box.o(key);
+  evl(key) {
+    const child = this.o(key);
     if (child.val == undefined) {
-      const proto = box.prototype();
+      const proto = this.prototype();
       if (proto) {
-        const val = proto.apply(box, new Context());
+        const val = proto.apply(this, new Context());
         
         let bval;
         if (val.proto instanceof Path) {
-          const ref = box.resolve(val.proto, new Context());
+          const ref = this.resolve(val.proto, new Context());
           const root = ref.mrg(val);
           bval = new Box(root, ref.path);
         } else {
-          const root = box.upd(val);
-          bval = new Box(root, box.path);
+          const root = this.upd(val);
+          bval = new Box(root, this.path);
         }
-        return this.prt(bval, key);
+        return bval.evl(key);
       } else {
-        const basis = box.basis;
+        const basis = this.basis;
         if (basis) {
-          return this.prt(basis, key);
+          return basis.evl(key);
         }
       }
     } else {
@@ -493,10 +493,10 @@ class Box {
     }
   }
   
-  evl() {
+  v() {
     let box = new Box(this.root, []);
     for (let key of this.path) {
-      box = this.prt(box, key);
+      box = box.evl(key);
     }
     
     return box.val;
@@ -1471,7 +1471,7 @@ ENV.import("test001", new Box(Val.parse({
   },
   foo: "1 prop"
 })));
-console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").evl());
+console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").v());
 
 
 ENV.import("test002", new Box(Val.parse({
@@ -1489,7 +1489,7 @@ ENV.import("test002", new Box(Val.parse({
     _proto: "c"
   },
 })));
-console.log(ENV.get("test002").o("d").o("foo").evl());
+console.log(ENV.get("test002").o("d").o("foo").v());
 
 
 ENV.import("test003", new Box(Val.parse({
@@ -1515,9 +1515,9 @@ ENV.import("test003", new Box(Val.parse({
     }
   },
 })));
-console.log(ENV.get("test003").o("d").o("foo").o("bar").o("hoge").evl())
-console.log(ENV.get("test003").o("d").o("foo").o("bar").o("baz").evl())
-console.log(ENV.get("test003").o("c").o("foo").o("bar").o("baz").evl())
+console.log(ENV.get("test003").o("d").o("foo").o("bar").o("hoge").v())
+console.log(ENV.get("test003").o("d").o("foo").o("bar").o("baz").v())
+console.log(ENV.get("test003").o("c").o("foo").o("bar").o("baz").v())
 
 
 ENV.import("test004", new Box(Val.parse({
@@ -1604,10 +1604,10 @@ ENV.import("test004", new Box(Val.parse({
     _proto: "i"
   }
 })));
-console.log(ENV.get("test004").o("d").o("bar").evl());
-console.log(ENV.get("test004").o("f").o("bar").evl());
-console.log(ENV.get("test004").o("h").o("bar").evl());
-console.log(ENV.get("test004").o("j").o("bar").evl());
+console.log(ENV.get("test004").o("d").o("bar").v());
+console.log(ENV.get("test004").o("f").o("bar").v());
+console.log(ENV.get("test004").o("h").o("bar").v());
+console.log(ENV.get("test004").o("j").o("bar").v());
 
 </script>
 </head>
