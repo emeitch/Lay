@@ -128,7 +128,7 @@ class Store {
     return this.head.root.child(key);
   }
   
-  set(val) {
+  update(val) {
     this.append(val);
   }
 }
@@ -300,9 +300,9 @@ class Val {
     });
   }
 
-  // set(diff) {
-  //   return this.merge(diff);
-  // }
+  update(diff) {
+     return this.merge(diff);
+  }
 }
 
 
@@ -465,42 +465,59 @@ class Box {
     }
   }
   
-  evl() {
+  eval(ctx=new Context()) {
     if (this.val != undefined) {
-      return this;
+      if (this.val.evaluated || this.val instanceof Stuff) {
+        return this.val;
+      }
+      
+      const proto = this.prototype(ctx) || this;
+      if (proto.canApply(this, ctx)) {
+        const applied = proto.apply(this, ctx);
+        return new Box(applied).eval(ctx);
+      } else {
+        return this.val;
+      }
     }
     
     const key = this.path[this.path.length-1];
     const parent = this.parent;
     const proto = parent.prototype();
     if (proto) {
-      const val = proto.apply(parent, new Context());
+      const val = proto.apply(parent, ctx);
       
       let bval;
       if (val.proto instanceof Path) {
-        const ref = parent.resolve(val.proto, new Context());
+        const ref = parent.resolve(val.proto, ctx);
         const root = ref.mrg(val);
         bval = new Box(root, ref.path).o(key);
       } else {
         const root = parent.upd(val);
         bval = new Box(root, parent.path).o(key);
       }
-      return bval.evl();
+      return bval.eval(ctx);
     } else {
       const basis = parent.basis;
       if (basis) {
-        return basis.o(key).evl();
+        return basis.o(key).eval(ctx);
       }
     }
   }
   
   v() {
-    let box = new Box(this.root, []);
-    for (let key of this.path) {
-      box = box.o(key).evl();
-    }
+    return this.eval();
     
-    return box.val;
+    // const path = [];
+    // let box = new Box(this.root, path);
+    // for (let key of this.path) {
+    //   const ev = box.o(key).eval();
+    //   
+    //   const root = box.set(key, ev);
+    //   path.concat([key]);
+    //   box = new Box(root, path);
+    // }
+    // 
+    // return box.val;
   }
   
   o(key) {
@@ -606,21 +623,7 @@ class Box {
       stuff: new Stuff(stuff),
     });
   }
-  
-  eval(ctx=new Context()) {
-    if (this.val.evaluated || this.val instanceof Stuff) {
-      return this.val;
-    }
     
-    const proto = this.prototype(ctx) || this;
-    if (proto.canApply(this, ctx)) {
-      const applied = proto.apply(this, ctx);
-      return new Box(applied).eval(ctx);
-    } else {
-      return this.val;
-    }
-  }
-  
   canApply(operand, ctx) {
     for (let key of operand.val.keys) {
       const box = operand.detect(key, ctx);
@@ -664,7 +667,7 @@ class Box {
     const updated = new Val(undefined, diff.props, diff.stuff);
     const currentKey = this.path[this.path.length-1];
     if (currentKey == undefined) {
-      return this.root.set(updated);
+      return this.root.update(updated);
     } else {
       return this.parent.set(currentKey, updated);
     }
@@ -692,7 +695,7 @@ class Box {
     }
 
     const diff = new StoreUpdate(undefined, props, stuff);
-    this.update(diff);
+    return this.update(diff);
   }
   
   emit(event) {
