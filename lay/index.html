@@ -101,39 +101,6 @@ class Environment {
 const ENV = new Environment();
 
 
-class Store {
-  constructor(root) {
-    this.updates = [];
-    this.src = undefined;
-    this.overlay = undefined;
-    this.head = undefined;
-    
-    this.append(root);
-  }
-  
-  append(root) {
-    const update = new Box(root);
-    this.updates.push(update);
-    
-    if (!this.src) {
-      this.src = update;
-    } else {
-      this.src = new Box(update.overlay(this.src));
-    }
-    this.overlay = new Box(this.src.overlay());
-    this.head = new Box(this.overlay.eval());
-  }
-
-  child(key) {
-    return this.head.root.child(key);
-  }
-  
-  update(val) {
-    this.append(val);
-  }
-}
-
-
 class Context {
   constructor() {
     this.stacks = [];
@@ -244,6 +211,10 @@ class Val {
     this.stuff = stuff;
     this.evaluated = evaluated;
   }
+  
+  equals(other) {
+    return JSON.stringify(this) == JSON.stringify(other);
+  }
     
   clone(params) {
     const proto = this.proto;
@@ -305,6 +276,66 @@ class Val {
   }
 }
 
+// Val wrapped for side-effects
+class Store {
+  constructor(root) {
+    this.updates = [];
+    this.src = undefined;
+    this.append(root);
+  }
+  
+  append(root) {
+    const update = new Box(root);
+    this.updates.push(update);
+    
+    if (!this.src) {
+      this.src = update;
+    } else {
+      this.src = new Box(update.overlay(this.src));
+    }
+  }
+  
+  get proto() {
+    return this.src.root.proto;
+  }
+  
+  get props() {
+    return this.src.root.props;
+  }
+  
+  get stuff() {
+    return this.src.root.stuff;
+  }
+  
+  get evaluated() {
+    return this.src.root.evaluated;
+  }
+  
+  equals(other) {
+    return this.src.root.equals(other);
+  }
+  
+  clone() {
+    throw "clone!";
+  }
+  
+  get keys() {
+    return this.src.root.keys;
+  }
+
+  child(key, val) {
+    return this.src.root.child(key, val);
+  }
+  
+  merge() {
+    throw "merge!";
+  }
+  
+  update(val) {
+    this.append(val);
+  }
+}
+
 
 class Nil extends Val {
 }
@@ -356,10 +387,14 @@ class StoreUpdate extends Event {
 
 
 class Box {
-  constructor(root=new Nil(), path=[]) {
+  constructor(root=new Val(), path=[]) {
     this.root = root;
     this.path = path;
     this.owner = undefined;
+  }
+  
+  equals(other) {
+    return this.root.equals(other.root) && JSON.stringify(this.path) == JSON.stringify(other.path);
   }
   
   clone(props) {
@@ -408,28 +443,23 @@ class Box {
     
     return this.resolve(val.proto, ctx);
   }
-          
-  get(key) {
-    const box = new Box(this.root, this.path.concat([key]));
-    if (box.val) {
-      return box;
-    }
-
-    const mod = ENV.get(key);
-    if (mod) {
-      return mod.withOwner(this);
-    }
-    
-    return undefined;
-  }
   
   get basis() {
+    if (this.path.length < 1) {
+      return undefined;
+    }
+    
     const key = this.path[this.path.length-1];
     const pproto = this.parent.prototype();
     if (pproto) {
-      return pproto.o(key);
+      return pproto.get(key);
     } else {
-      return this.parent.basis.o(key);
+      const basis = this.parent.basis;
+      if (basis) {
+        return basis.get(key);
+      } else {
+        return undefined;
+      }
     }
   }
   
@@ -465,62 +495,74 @@ class Box {
     }
   }
   
-  eval(ctx=new Context()) {
+  appliedbox(ctx=new Context()) {
     if (this.val != undefined) {
-      if (this.val.evaluated || this.val instanceof Stuff) {
-        return this.val;
+      if (this.val instanceof Stuff) {
+        return this;
       }
-      
+
       const proto = this.prototype(ctx) || this;
       if (proto.canApply(this, ctx)) {
-        const applied = proto.apply(this, ctx);
-        return new Box(applied).eval(ctx);
+        const val = proto.apply(this, ctx);
+        
+        let bval;
+        if (val.proto instanceof Path) {
+          const ref = this.resolve(val.proto, ctx);
+          const root = ref.mrg(val);
+          const box = ref.clone({root});
+          if (this.equals(box)) {
+            return this;
+          } else {
+            return box.appliedbox(ctx);
+          }
+        } else {
+          const root = this.upd(val);
+          const box = this.clone({root});
+          if (this.equals(box)) {
+            return this;
+          } else {
+            return box.appliedbox(ctx);
+          }
+        }
       } else {
-        return this.val;
+        return this;
       }
-    }
-    
-    const key = this.path[this.path.length-1];
-    const parent = this.parent;
-    const proto = parent.prototype();
-    if (proto) {
-      const val = proto.apply(parent, ctx);
-      
-      let bval;
-      if (val.proto instanceof Path) {
-        const ref = parent.resolve(val.proto, ctx);
-        const root = ref.mrg(val);
-        bval = new Box(root, ref.path).o(key);
-      } else {
-        const root = parent.upd(val);
-        bval = new Box(root, parent.path).o(key);
-      }
-      return bval.eval(ctx);
     } else {
-      const basis = parent.basis;
-      if (basis) {
-        return basis.o(key).eval(ctx);
+      const key = this.path[this.path.length-1];
+      const parent = this.parent;
+      const proto = parent.prototype(ctx);
+      if (proto) {
+        const val = proto.apply(parent, ctx);
+        
+        let bval;
+        if (val.proto instanceof Path) {
+          const ref = parent.resolve(val.proto, ctx);
+          const root = ref.mrg(val);
+          const box = ref.clone({root}).get(key);
+          return box.appliedbox(ctx);
+        } else {
+          const root = parent.upd(val);
+          const box = parent.clone({root}).get(key);
+          return box.appliedbox(ctx);
+        }
+      } else {
+        const basis = parent.basis;
+        if (basis) {
+          const box = basis.get(key);
+          return box.appliedbox(ctx);
+        }
       }
     }
-  }
-  
-  v() {
-    return this.eval();
     
-    // const path = [];
-    // let box = new Box(this.root, path);
-    // for (let key of this.path) {
-    //   const ev = box.o(key).eval();
-    //   
-    //   const root = box.set(key, ev);
-    //   path.concat([key]);
-    //   box = new Box(root, path);
-    // }
-    // 
-    // return box.val;
+    throw "box not found error";
   }
   
-  o(key) {
+  eval(ctx=new Context()) {    
+    const ab = this.appliedbox(ctx);
+    return ab.val;
+  }
+    
+  get(key) {
     const path = this.path.concat([key]);
     const box = new Box(this.root, path);
     return box;
@@ -559,7 +601,7 @@ class Box {
     let parent = this.parent;
     while(parent) {
       const child = parent.get(key);
-      if (child) {
+      if (child.val) {
         return child;
       }
       
@@ -581,8 +623,13 @@ class Box {
     let receiver = this.detect(top, ctx);
     for (const key of rest) {
       const box = receiver.get(key);
-      if (!box) {
-        throw `"${key}" not found`
+      if (box.val == undefined) {
+        const mod = ENV.get(key);
+        if (mod) {
+          return mod.withOwner(receiver);
+        }
+
+        throw 'can not resolve path!';
       }
       receiver = box;
     }
@@ -600,7 +647,7 @@ class Box {
       
   overlay(inherit=undefined, ctx=new Context()) {
     const proto = this.prototype(ctx) || inherit;
-    if (!proto) {
+    if (proto == undefined || proto.val == undefined) {
       return this.val;
     }
     
@@ -965,7 +1012,7 @@ class DOMPresenter extends Box {
       input: (ev) => {
         const path = this.boxPath(ev.target);
         const box = main.getByPath(path);
-        const va = box.val.child("value");
+        const va = box.eval().child("value");
         if (!va || va.value != ev.target.value) {
           box.set("value", Literal.create(ev.target.value));
         }
@@ -985,23 +1032,24 @@ class DOMPresenter extends Box {
   }
       
   render(box, handlers) {
-    const attrs = box.val.keys.reduce((r, k) => {
+    const val = box.eval();
+    const attrs = val.keys.reduce((r, k) => {
       const prop = box.get(k);
       if (prop.prototype() instanceof EventListener) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
-        return Object.assign(r, {[k]: prop.val.value})  
+        return Object.assign(r, {[k]: prop.eval().value})  
       }
     }
     ,{
       oninput: handlers["input"]
     });
     
-    const children = flatten(box.val.stuff.raws.map((v, i) => {
+    const children = flatten(val.stuff.raws.map((v, i) => {
       return v.value != undefined ? v.value : this.render(box.get(i), handlers);
     }));
     
-    const tag = box.prototype().tag;
+    const tag = box.appliedbox().tag;
     const vdom = maquette.h(
       tag,
       attrs,
@@ -1475,7 +1523,7 @@ ENV.import("test001", new Box(Val.parse({
   },
   foo: "1 prop"
 })));
-console.log(ENV.get("test001").o("all").o("all").o("all").o("foo").v());
+//console.log(ENV.get("test001").get("all").get("all").get("all").get("foo").eval());
 
 
 ENV.import("test002", new Box(Val.parse({
@@ -1493,7 +1541,7 @@ ENV.import("test002", new Box(Val.parse({
     _proto: "c"
   },
 })));
-console.log(ENV.get("test002").o("d").o("foo").v());
+// console.log(ENV.get("test002").get("d").get("foo").eval());
 
 
 ENV.import("test003", new Box(Val.parse({
@@ -1519,9 +1567,9 @@ ENV.import("test003", new Box(Val.parse({
     }
   },
 })));
-console.log(ENV.get("test003").o("d").o("foo").o("bar").o("hoge").v())
-console.log(ENV.get("test003").o("d").o("foo").o("bar").o("baz").v())
-console.log(ENV.get("test003").o("c").o("foo").o("bar").o("baz").v())
+// console.log(ENV.get("test003").get("d").get("foo").get("bar").get("hoge").eval())
+// console.log(ENV.get("test003").get("d").get("foo").get("bar").get("baz").eval())
+// console.log(ENV.get("test003").get("c").get("foo").get("bar").get("baz").eval())
 
 
 ENV.import("test004", new Box(Val.parse({
@@ -1608,10 +1656,10 @@ ENV.import("test004", new Box(Val.parse({
     _proto: "i"
   }
 })));
-console.log(ENV.get("test004").o("d").o("bar").v());
-console.log(ENV.get("test004").o("f").o("bar").v());
-console.log(ENV.get("test004").o("h").o("bar").v());
-console.log(ENV.get("test004").o("j").o("bar").v());
+console.log(ENV.get("test004").get("d").get("bar").eval());
+console.log(ENV.get("test004").get("f").get("bar").eval());
+console.log(ENV.get("test004").get("h").get("bar").eval());
+console.log(ENV.get("test004").get("j").get("bar").eval());
 
 </script>
 </head>
