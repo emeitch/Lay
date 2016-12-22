@@ -501,31 +501,42 @@ class Box {
         return this;
       }
 
-      const proto = this.prototype(ctx) || this;
-      if (proto.canApply(this, ctx)) {
-        const val = proto.apply(this, ctx);
-        
-        let bval;
-        if (val.proto instanceof Path) {
-          const ref = this.resolve(val.proto, ctx);
-          const root = ref.mrg(val);
-          const box = ref.clone({root});
-          if (this.equals(box)) {
-            return this;
+      const proto = this.prototype(ctx);
+      if (proto) {
+        if (proto.canApply(this, ctx)) {
+          const val = proto.apply(this, ctx);
+          
+          let bval;
+          if (val.proto instanceof Path) {
+            const ref = this.resolve(val.proto, ctx);
+            const root = ref.mrg(val);
+            const box = ref.clone({root});
+            if (this.equals(box)) {
+              return this;
+            } else {
+              return box.appliedbox(ctx);
+            }
           } else {
-            return box.appliedbox(ctx);
+            const root = this.upd(val);
+            const box = this.clone({root});
+            if (this.equals(box)) {
+              return this;
+            } else {
+              return box.appliedbox(ctx);
+            }
           }
         } else {
-          const root = this.upd(val);
-          const box = this.clone({root});
-          if (this.equals(box)) {
-            return this;
-          } else {
-            return box.appliedbox(ctx);
-          }
+          return this;
         }
       } else {
-        return this;
+        const basis = this.basis;
+        if (basis) {
+          const root = basis.val ? basis.mrg(this.val) : basis.upd(this.val);
+          const box = basis.clone({root});
+          return box.appliedbox(ctx);
+        } else {
+          return this;
+        }
       }
     } else {
       const key = this.path[this.path.length-1];
@@ -1654,12 +1665,30 @@ ENV.import("test004", new Box(Val.parse({
   },
   j: {
     _proto: "i"
+  },
+  k: {
+    ka: {
+      kaa: {
+        kaaa: "4 proto prop with overlay other prop",
+      }
+    }
+  },
+  m: {
+    _proto: "k",
+    ka: {
+      kaa: {
+        kaab: "other prop",
+      }
+    }
   }
 })));
-console.log(ENV.get("test004").get("d").get("bar").eval());
-console.log(ENV.get("test004").get("f").get("bar").eval());
-console.log(ENV.get("test004").get("h").get("bar").eval());
-console.log(ENV.get("test004").get("j").get("bar").eval());
+// console.log(ENV.get("test004").get("d").get("bar").eval());
+// console.log(ENV.get("test004").get("f").get("bar").eval());
+// console.log(ENV.get("test004").get("h").get("bar").eval());
+// console.log(ENV.get("test004").get("j").get("bar").eval());
+// console.log(ENV.get("test004").get("j").get("bar").eval());
+// console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").eval()); // 2重参照
+console.log(ENV.get("test004").get("m").get("ka").get("kaa").eval().child("kaaa")); // 2重参照
 
 </script>
 </head>
