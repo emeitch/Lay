@@ -383,6 +383,10 @@ class Event extends Val {
 
 
 class StoreUpdate extends Event {
+  constructor(path, props=new Props(), stuff=new Stuff()) {
+    super(undefined, props, stuff);
+    this.path = path;
+  }
 }
 
 
@@ -490,7 +494,22 @@ class Box {
     if (key == undefined) {
       return val;
     } else {
-      const v = this.parent.val.child(key, val);
+      let v;
+      if (this.parent.val) {
+        v = this.parent.val.child(key, val);
+      } else {
+        const props = new Props();
+        if (typeof(key) == "string") {
+          props.clone({[key]: val});
+        };
+        
+        const stuff = new Stuff();
+        if (typeof(key) == "number") {
+          stuff.raws[key] = val;
+        };
+        
+        v = new Val(undefined, props, stuff);
+      }
       return this.parent.upd(v);
     }
   }
@@ -503,30 +522,33 @@ class Box {
 
       const proto = this.prototype(ctx);
       if (proto) {
+        let val = this.val;
         if (proto.canApply(this, ctx)) {
-          const val = proto.apply(this, ctx);
+          val = proto.apply(this, ctx);
+        }
           
-          let bval;
-          if (val.proto instanceof Path) {
-            const ref = this.resolve(val.proto, ctx);
-            const root = ref.mrg(val);
-            const box = ref.clone({root});
-            if (this.equals(box)) {
-              return this;
-            } else {
-              return box.appliedbox(ctx);
-            }
+        let bval;
+        if (val instanceof Stuff) {
+          const root = this.upd(val);
+          const box = this.clone({root});
+          return box; // todo 本当は再帰的にappliedboxをかけるべきでは?
+        } else if (val.proto instanceof Path) {
+          const ref = this.resolve(val.proto, ctx);
+          const root = ref.mrg(val);
+          const box = ref.clone({root});
+          if (this.equals(box)) {
+            return this;
           } else {
-            const root = this.upd(val);
-            const box = this.clone({root});
-            if (this.equals(box)) {
-              return this;
-            } else {
-              return box.appliedbox(ctx);
-            }
+            return box.appliedbox(ctx);
           }
         } else {
-          return this;
+          const root = this.upd(val);
+          const box = this.clone({root});
+          if (this.equals(box)) {
+            return this;
+          } else {
+            return box.appliedbox(ctx);
+          }
         }
       } else {
         const basis = this.basis;
@@ -756,28 +778,26 @@ class Box {
     return this.update(diff);
   }
   
-  emit(event) {
-    // todo 他のBoxが定義しているイベントもreceiveできるようにする
-    const target = this.getByPath(event.proto.symbols);
-    const relays = new Context().stack(event, ctx => target.eval(ctx));
-    for (let e of relays.stuff.raws) {
-      if (e instanceof Literal && event.value == undefined) {
+  relay(events) {
+    for (let e of events.stuff.raws) {
+      if (e instanceof Literal && e.value == undefined) {
         // through event as undefined
         continue;
       } else if (e instanceof StoreUpdate) {
-        const ownerPath = event.proto.symbols.slice();
-        ownerPath.pop();
-        const owner = this.getByPath(ownerPath);
+        const owner = this.getByPath(e.path);
         owner.update(e);
       } else {
-        const path = target.resolvePath(e.proto.symbols, new Context()).path;
-        const event = new Event(
-          Path.create(path),
-          e.props.clone()
-        );
-        ENV.emit(event);
+        const relayEvents = e;
+        this.relay(relayEvents);
       }
     }
+  }
+  
+  emit(event) {
+    // todo 他のBoxが定義しているイベントもreceiveできるようにする
+    const target = this.getByPath(event.proto.symbols);
+    const relayEvents = new Context().stack(event, ctx => target.eval(ctx));
+    this.relay(relayEvents);
   }
 }
 
@@ -886,7 +906,7 @@ ENV.import("count", new PropCount());
 class PropSet extends Box {
   apply(operand, ctx) {
     return new StoreUpdate(
-      undefined, 
+      this.owner.path, 
       operand.val.props.clone(),
       new Stuff(),
       true
@@ -902,7 +922,7 @@ class PropAppend extends Box {
     const val = operand.get(0).eval(ctx);
     const index = this.owner.val.stuff.raws.length;
     stuff.raws[index] = val; // push
-    const event = new StoreUpdate(undefined, new Props(), stuff);
+    const event = new StoreUpdate(this.owner.path, new Props(), stuff);
     return event;
   }
 }
@@ -1046,7 +1066,7 @@ class DOMPresenter extends Box {
     const val = box.eval();
     const attrs = val.keys.reduce((r, k) => {
       const prop = box.get(k);
-      if (prop.prototype() instanceof EventListener) {
+      if (prop.appliedbox() instanceof EventListener) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
         return Object.assign(r, {[k]: prop.eval().value})  
