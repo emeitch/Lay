@@ -498,17 +498,20 @@ class Box {
       if (this.parent.val) {
         v = this.parent.val.child(key, val);
       } else {
-        const props = new Props();
+        let props = {};
         if (typeof(key) == "string") {
-          props.clone({[key]: val});
+          props[key] = val;
         };
         
-        const stuff = new Stuff();
+        let stuff = [];
         if (typeof(key) == "number") {
-          stuff.raws[key] = val;
+          stuff[key] = val;
         };
         
-        v = new Val(undefined, props, stuff);
+        v = new Val(
+          undefined, 
+          new Props(props),
+          new Stuff(stuff));
       }
       return this.parent.upd(v);
     }
@@ -1554,7 +1557,7 @@ ENV.import("test001", new Box(Val.parse({
   },
   foo: "1 prop"
 })));
-//console.log(ENV.get("test001").get("all").get("all").get("all").get("foo").eval());
+console.log(ENV.get("test001").get("all").get("all").get("all").get("foo").eval());
 
 
 ENV.import("test002", new Box(Val.parse({
@@ -1572,7 +1575,7 @@ ENV.import("test002", new Box(Val.parse({
     _proto: "c"
   },
 })));
-// console.log(ENV.get("test002").get("d").get("foo").eval());
+console.log(ENV.get("test002").get("d").get("foo").eval());
 
 
 ENV.import("test003", new Box(Val.parse({
@@ -1598,9 +1601,9 @@ ENV.import("test003", new Box(Val.parse({
     }
   },
 })));
-// console.log(ENV.get("test003").get("d").get("foo").get("bar").get("hoge").eval())
-// console.log(ENV.get("test003").get("d").get("foo").get("bar").get("baz").eval())
-// console.log(ENV.get("test003").get("c").get("foo").get("bar").get("baz").eval())
+console.log(ENV.get("test003").get("d").get("foo").get("bar").get("hoge").eval())
+console.log(ENV.get("test003").get("d").get("foo").get("bar").get("baz").eval())
+console.log(ENV.get("test003").get("c").get("foo").get("bar").get("baz").eval())
 
 
 ENV.import("test004", new Box(Val.parse({
@@ -1702,12 +1705,12 @@ ENV.import("test004", new Box(Val.parse({
     }
   }
 })));
-// console.log(ENV.get("test004").get("d").get("bar").eval());
-// console.log(ENV.get("test004").get("f").get("bar").eval());
-// console.log(ENV.get("test004").get("h").get("bar").eval());
-// console.log(ENV.get("test004").get("j").get("bar").eval());
-// console.log(ENV.get("test004").get("j").get("bar").eval());
-// console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").eval());
+console.log(ENV.get("test004").get("d").get("bar").eval());
+console.log(ENV.get("test004").get("f").get("bar").eval());
+console.log(ENV.get("test004").get("h").get("bar").eval());
+console.log(ENV.get("test004").get("j").get("bar").eval());
+console.log(ENV.get("test004").get("j").get("bar").eval());
+console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").eval());
 console.log(ENV.get("test004").get("m").get("ka").get("kaa").eval().child("kaaa"));
 
 </script>
