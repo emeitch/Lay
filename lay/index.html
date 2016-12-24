@@ -1687,8 +1687,8 @@ ENV.import("test004", new Box(Val.parse({
 // console.log(ENV.get("test004").get("h").get("bar").eval());
 // console.log(ENV.get("test004").get("j").get("bar").eval());
 // console.log(ENV.get("test004").get("j").get("bar").eval());
-// console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").eval()); // 2重参照
-console.log(ENV.get("test004").get("m").get("ka").get("kaa").eval().child("kaaa")); // 2重参照
+// console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").eval());
+console.log(ENV.get("test004").get("m").get("ka").get("kaa").eval().child("kaaa"));
 
 </script>
 </head>
