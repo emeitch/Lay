@@ -494,9 +494,9 @@ class Box {
     if (key == undefined) {
       return val;
     } else {
-      let v;
       if (this.parent.val) {
-        v = this.parent.val.child(key, val);
+        const v = this.parent.val.child(key, val);
+        return this.parent.upd(v);
       } else {
         let props = {};
         if (typeof(key) == "string") {
@@ -508,12 +508,12 @@ class Box {
           stuff[key] = val;
         };
         
-        v = new Val(
+        const v = new Val(
           undefined, 
           new Props(props),
           new Stuff(stuff));
+        return this.parent.upd(v);
       }
-      return this.parent.upd(v);
     }
   }
   
@@ -556,9 +556,16 @@ class Box {
       } else {
         const basis = this.basis;
         if (basis) {
-          const root = basis.val ? basis.mrg(this.val) : basis.upd(this.val);
-          const box = basis.clone({root});
-          return box.appliedbox(ctx);
+          const r = basis.val ? basis.mrg(this.val) : basis.upd(this.val);
+          const b = basis.clone({root: r});
+          const val = b.val;
+          const root = this.upd(val);
+          const box = this.clone({root});
+          if (this.equals(box)) {
+            return this;
+          } else {
+            return box.appliedbox(ctx);
+          }
         } else {
           return this;
         }
@@ -586,14 +593,14 @@ class Box {
         if (basis) {
           const box = basis.get(key);
           return box.appliedbox(ctx);
+        } else {
+          return this;
         }
       }
     }
-    
-    throw "box not found error";
   }
   
-  eval(ctx=new Context()) {    
+  eval(ctx=new Context()) {
     const ab = this.appliedbox(ctx);
     return ab.val;
   }
@@ -1712,6 +1719,38 @@ console.log(ENV.get("test004").get("j").get("bar").eval());
 console.log(ENV.get("test004").get("j").get("bar").eval());
 console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").eval());
 console.log(ENV.get("test004").get("m").get("ka").get("kaa").eval().child("kaaa"));
+
+
+// // (ifのような)評価結果が奥まっているケースのテスト
+// ENV.import("test005", new Box(Val.parse({
+//   foo: 3,
+//   a: {
+//     _proto: "if",
+//     cond: {
+//       _proto: [
+//         "foo",
+//         "equals"
+//       ],
+//       _stuff: 3
+//     },
+//     then: {
+//       bar: {
+//         baz: {
+//           fiz: "5 true props"
+//         }
+//       }
+//     },
+//     else: {
+//       bar: {
+//         baz: {
+//           fiz: "5 false props"
+//         }
+//       }
+//     }
+//   }
+// })));
+// console.log(ENV.get("test005").get("a").get("bar").get("baz").get("fiz").eval());
+
 
 </script>
 </head>
