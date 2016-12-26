@@ -601,7 +601,7 @@ class Box {
   }
   
   eval(ctx=new Context()) {
-    const ab = this.appliedbox(ctx);
+    const ab = this.appliedbox();
     return ab.val;
   }
     
@@ -1722,34 +1722,37 @@ console.log(ENV.get("test004").get("m").get("ka").get("kaa").eval().child("kaaa"
 
 
 // // (ifのような)評価結果が奥まっているケースのテスト
-// ENV.import("test005", new Box(Val.parse({
-//   foo: 3,
-//   a: {
-//     _proto: "if",
-//     cond: {
-//       _proto: [
-//         "foo",
-//         "equals"
-//       ],
-//       _stuff: 3
-//     },
-//     then: {
-//       bar: {
-//         baz: {
-//           fiz: "5 true props"
-//         }
-//       }
-//     },
-//     else: {
-//       bar: {
-//         baz: {
-//           fiz: "5 false props"
-//         }
-//       }
-//     }
-//   }
-// })));
-// console.log(ENV.get("test005").get("a").get("bar").get("baz").get("fiz").eval());
+ENV.import("test005", new Box(Val.parse({
+  foo: 3,
+  a: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      bar: {
+        baz: {
+          fiz: "5 true props"
+        }
+      }
+    },
+    else: {
+      bar: {
+        baz: {
+          fiz: "5 false props"
+        }
+      }
+    }
+  }
+})));
+console.log(ENV.get("test005").get("a").eval().child("bar").child("baz").child("fiz"));
+console.log(ENV.get("test005").get("a").appliedbox().get("bar").get("baz").get("fiz").eval());
+// 下記のような評価はしない前提
+//  console.log(ENV.get("test005").get("a").get("bar").get("baz").get("fiz").eval());
 
 
 </script>
