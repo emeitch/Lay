@@ -517,54 +517,62 @@ class Box {
     }
   }
   
-  appliedbox(ctx=new Context()) {
+  eval(ctx=new Context()) {
     if (this.val != undefined) {
-      if (this.val instanceof Stuff) {
-        return this;
-      }
-
       const proto = this.prototype(ctx);
       if (proto) {
-        let val = this.val;
+        let box = this;
         if (proto.canApply(this, ctx)) {
-          val = proto.apply(this, ctx);
+          box = proto.apply(this, ctx);
+        }
+        
+        if (box.equals(this)) {
+          return box;
+        } else {
+          return box.eval(ctx);
         }
           
-        let bval;
-        if (val instanceof Stuff) {
-          const root = this.upd(val);
-          const box = this.clone({root});
-          return box; // todo 本当は再帰的にappliedboxをかけるべきでは?
-        } else if (val.proto instanceof Path) {
-          const ref = this.resolve(val.proto, ctx);
-          const root = ref.mrg(val);
-          const box = ref.clone({root});
-          if (this.equals(box)) {
-            return this;
-          } else {
-            return box.appliedbox(ctx);
-          }
-        } else {
-          const root = this.upd(val);
-          const box = this.clone({root});
-          if (this.equals(box)) {
-            return this;
-          } else {
-            return box.appliedbox(ctx);
-          }
-        }
+        // let bval;
+        // if (val instanceof Stuff) {
+        //   const root = this.upd(val);
+        //   const box = this.clone({root});
+        //   return box;
+        // } else 
+        // if (val.proto instanceof Path) {
+        //   const p = this.resolve(val.proto, ctx);
+        //   const v = p.val.merge(b.val);
+        //   const root = this.upd(v);
+        //   const box = b.clone({root, path: this.path});
+        //   if (box.constructor != Box) {
+        //     return box;
+        //   } else if (this.equals(box)) {
+        //     return this;
+        //   } else {
+        //     return box.eval(ctx);
+        //   }
+        // } else {
+        //   const root = this.upd(val);
+        //   const box = this.clone({root});
+        //   if (this.equals(box)) {
+        //     return this;
+        //   } else {
+        //     return box.eval(ctx);
+        //   }
+        // }
       } else {
         const basis = this.basis;
         if (basis) {
-          const r = basis.val ? basis.mrg(this.val) : basis.upd(this.val);
-          const b = basis.clone({root: r});
-          const val = b.val;
-          const root = this.upd(val);
-          const box = this.clone({root});
-          if (this.equals(box)) {
-            return this;
+          // const r = basis.val ? basis.mrg(this.val) : basis.upd(this.val);
+          // const b = basis.clone({root: r});
+          // const val = b.val;
+          // const root = this.upd(val);
+          // const box = this.clone({root});
+          
+          const box = basis.apply(this);
+          if (box.equals(this)) {
+            return box;
           } else {
-            return box.appliedbox(ctx);
+            return box.eval(ctx);
           }
         } else {
           return this;
@@ -575,24 +583,54 @@ class Box {
       const parent = this.parent;
       const proto = parent.prototype(ctx);
       if (proto) {
-        const val = proto.apply(parent, ctx);
-        
-        let bval;
-        if (val.proto instanceof Path) {
-          const ref = parent.resolve(val.proto, ctx);
-          const root = ref.mrg(val);
-          const box = ref.clone({root}).get(key);
-          return box.appliedbox(ctx);
-        } else {
-          const root = parent.upd(val);
-          const box = parent.clone({root}).get(key);
-          return box.appliedbox(ctx);
+        let pbox = parent;
+        if (proto.canApply(parent, ctx)) {
+          pbox = proto.apply(parent, ctx);
         }
+        
+        const box = pbox.get(key);
+        if (box.equals(this)) {
+          return box;
+        } else {
+          return box.eval(ctx);
+        }
+
+        // const val = proto.apply(parent, ctx);
+        // 
+        // let bval;
+        // if (val.proto instanceof Path) {
+        //   const ref = parent.resolve(val.proto, ctx);
+        //   const root = ref.mrg(val);
+        //   const box = ref.clone({root}).get(key);
+        //   return box.eval(ctx);
+        // } else {
+        //   const root = parent.upd(val);
+        //   const box = parent.clone({root}).get(key);
+        //   return box.eval(ctx);
+        // }
       } else {
-        const basis = parent.basis;
+        const basis = this.basis;
         if (basis) {
-          const box = basis.get(key);
-          return box.appliedbox(ctx);
+          const box = basis.apply(this);
+          if (box.equals(this)) {
+            return box;
+          } else {
+            return box.eval(ctx);
+          }
+          
+          // 
+          // const val = basis.val;
+          // if (val == undefined) {
+          //   return this;
+          // }
+          // 
+          // const root = this.upd(val);
+          // const box = this.clone({root});
+          // if (this.equals(box)) {
+          //   return this;
+          // } else {
+          //   return box.eval(ctx);
+          // }
         } else {
           return this;
         }
@@ -600,15 +638,14 @@ class Box {
     }
   }
   
-  eval(ctx=new Context()) {
-    const ab = this.appliedbox();
-    return ab.val;
-  }
-    
-  get(key) {
+  getChild(key) {
     const path = this.path.concat([key]);
     const box = new Box(this.root, path);
     return box;
+  }
+  
+  get(key) {
+    return this.getChild(key).eval();
   }
   
   getByPath(path) {
@@ -642,8 +679,8 @@ class Box {
     }
     
     let parent = this.parent;
-    while(parent) {
-      const child = parent.get(key);
+    while (parent) {
+      const child = parent.getChild(key);
       if (child.val) {
         return child;
       }
@@ -669,6 +706,9 @@ class Box {
       if (box.val == undefined) {
         const mod = ENV.get(key);
         if (mod) {
+          if (receiver.path[0] == "domain" && receiver.path[1] == "tasks") {
+            //debugger;
+          }
           return mod.withOwner(receiver);
         }
 
@@ -721,7 +761,7 @@ class Box {
         continue;
       }
 
-      const child = operand.get(key);
+      const child = operand.getChild(key);
       if (child.prototype(ctx) instanceof Argument) {
         return false;
       }
@@ -732,25 +772,12 @@ class Box {
   apply(operand, ctx) {
     // todo propsやstuffが空の場合もただのパス参照としてthis.valを返す
     if (this.val instanceof Literal) {
-      return this.val;
+      return this;
     }
     
-    const props = new Props(operand.val.props.keys.reduce((p, k) => {
-        const prop = operand.get(k);
-        return Object.assign(p, {[k]: prop.eval(ctx)});
-      },
-      {}));
-      
-    const stuff = new Stuff(operand.val.stuff.raws.map((s, i) => {
-      const stf = operand.get(i);
-      return stf.eval(ctx)
-    })).flatten();
-    
-    return operand.val.clone({
-      props,
-      stuff,
-      evaluated: true
-    });
+    const val = operand.overlay(this.val);
+    const root = this.upd(val);
+    return this.clone({root});
   }
   
   update(diff) {
@@ -879,8 +906,9 @@ class PropMap extends Box {
       const item = this.owner.get(i);
       const arg = item.eval(ctx);
       const props = block.val.props.clone({[argkey]: arg});
-      const stack = new Val(undefined, props);
-      return ctx.stack(stack, ctx => block.eval(ctx));
+      return block.val.clone({props});
+      // const stack = new Val(undefined, props);
+      // return ctx.stack(stack, ctx => block.eval(ctx));
     });
   }
 };
@@ -1073,10 +1101,13 @@ class DOMPresenter extends Box {
   }
       
   render(box, handlers) {
-    const val = box.eval();
-    const attrs = val.keys.reduce((r, k) => {
-      const prop = box.get(k);
-      if (prop.appliedbox() instanceof EventListener) {
+    const ab = box.eval();
+    
+    let b = ab;
+    
+    const attrs = b.val.keys.reduce((r, k) => {
+      const prop = b.get(k);
+      if (prop.eval() instanceof EventListener) {
         return Object.assign(r, {["on"+k]: handlers[k]})
       } else {
         return Object.assign(r, {[k]: prop.eval().value})  
@@ -1086,11 +1117,11 @@ class DOMPresenter extends Box {
       oninput: handlers["input"]
     });
     
-    const children = flatten(val.stuff.raws.map((v, i) => {
-      return v.value != undefined ? v.value : this.render(box.get(i), handlers);
+    const children = flatten(b.val.stuff.raws.map((v, i) => {
+      return v.value != undefined ? v.value : this.render(b.get(i), handlers);
     }));
     
-    const tag = box.appliedbox().tag;
+    const tag = b.tag;
     const vdom = maquette.h(
       tag,
       attrs,
@@ -1554,203 +1585,252 @@ const main = {
   }
 };
 ENV.store("main", new Box(new Store(Val.parse(main))));
-ENV.run();
+// ENV.run();
 
 
-// test
-ENV.import("test001", new Box(Val.parse({
-  all: {
-    _proto: "parent"
-  },
-  foo: "1 prop"
-})));
-console.log(ENV.get("test001").get("all").get("all").get("all").get("foo").eval());
-
-
-ENV.import("test002", new Box(Val.parse({
-  foo: "2 prop",
+// basic feature test
+ENV.import("test000", new Box(Val.parse({
   a: {
-    _proto: "parent"
+    foo: "0 foo prop"
   },
   b: {
-    _proto: "a"
+    foo: {
+      bar: "0 bar prop"
+    }
   },
   c: {
-    _proto: "b"
-  },
-  d: {
-    _proto: "c"
-  },
-})));
-console.log(ENV.get("test002").get("d").get("foo").eval());
-
-
-ENV.import("test003", new Box(Val.parse({
-  a: {
     foo: {
       bar: {
-        baz: "3 basis"
+        baz: "0 baz prop"
       }
     }
   },
-  b: {
+  d: {
     _proto: "a"
-  },
-  c: {
-    _proto: "b"
-  },
-  d: {
-    _proto: "c",
-    foo: {
-      bar: {
-        hoge: "3 overlay"
-      }
-    }
-  },
-})));
-console.log(ENV.get("test003").get("d").get("foo").get("bar").get("hoge").eval())
-console.log(ENV.get("test003").get("d").get("foo").get("bar").get("baz").eval())
-console.log(ENV.get("test003").get("c").get("foo").get("bar").get("baz").eval())
-
-
-ENV.import("test004", new Box(Val.parse({
-  foo: 3,
-  a: {
-    bar: "4 then bar"
-  },
-  b: {
-    bar: "4 else bar"
-  },
-  c: {
-    _proto: "if",
-    cond: {
-      _proto: [
-        "foo",
-        "equals"
-      ],
-      _stuff: 3
-    },
-    then: {
-      _proto: "a"
-    },
-    else: {
-      _proto: "b"
-    }
-  },
-  d: {
-    _proto: "c",
   },
   e: {
-    _proto: "if",
-    cond: {
-      _proto: [
-        "foo",
-        "equals"
-      ],
-      _stuff: 2
-    },
-    then: {
-      _proto: "a"
-    },
-    else: {
-      _proto: "b"
-    }
+    _proto: "b"
   },
   f: {
-    _proto: "e",
+    _proto: "c"
   },
   g: {
-    _proto: "if",
-    cond: {
-      _proto: [
-        "foo",
-        "equals"
-      ],
-      _stuff: 3
-    },
-    then: {
-      bar: "4 then no proto bar",
-    },
-    else: {
-    }
+    _proto: "f"
   },
   h: {
-    _proto: "g"
-  },
-  i: {
-    _proto: "if",
-    cond: {
-      _proto: [
-        "foo",
-        "equals"
-      ],
-      _stuff: 3
-    },
-    then: {
-      _proto: "a",
-      bar: "4 then proto overlay bar",
-    },
-    else: {
-    }
-  },
-  j: {
-    _proto: "i"
-  },
-  k: {
-    ka: {
-      kaa: {
-        kaaa: "4 proto prop with overlay other prop",
-      }
-    }
-  },
-  m: {
-    _proto: "k",
-    ka: {
-      kaa: {
-        kaab: "other prop",
+    _proto: "f",
+    foo: {
+      bar: {
+        fiz: "0 fiz prop overlay"
       }
     }
   }
 })));
-console.log(ENV.get("test004").get("d").get("bar").eval());
-console.log(ENV.get("test004").get("f").get("bar").eval());
-console.log(ENV.get("test004").get("h").get("bar").eval());
-console.log(ENV.get("test004").get("j").get("bar").eval());
-console.log(ENV.get("test004").get("j").get("bar").eval());
-console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").eval());
-console.log(ENV.get("test004").get("m").get("ka").get("kaa").eval().child("kaaa"));
+console.log(ENV.get("test000").get("a").get("foo").val);
+console.log(ENV.get("test000").get("b").get("foo").get("bar").val);
+console.log(ENV.get("test000").get("c").get("foo").get("bar").get("baz").val);
+console.log(ENV.get("test000").get("d").get("foo").val);
+console.log(ENV.get("test000").get("e").get("foo").get("bar").val);
+console.log(ENV.get("test000").get("f").get("foo").get("bar").get("baz").val);
+console.log(ENV.get("test000").get("g").get("foo").get("bar").get("baz").val);
+console.log(ENV.get("test000").get("h").get("foo").get("bar").get("baz").val);
+console.log(ENV.get("test000").get("h").get("foo").get("bar").get("fiz").val);
 
 
-// // (ifのような)評価結果が奥まっているケースのテスト
-ENV.import("test005", new Box(Val.parse({
-  foo: 3,
-  a: {
-    _proto: "if",
-    cond: {
-      _proto: [
-        "foo",
-        "equals"
-      ],
-      _stuff: 3
-    },
-    then: {
-      bar: {
-        baz: {
-          fiz: "5 true props"
-        }
-      }
-    },
-    else: {
-      bar: {
-        baz: {
-          fiz: "5 false props"
-        }
-      }
-    }
-  }
-})));
-console.log(ENV.get("test005").get("a").eval().child("bar").child("baz").child("fiz"));
-console.log(ENV.get("test005").get("a").appliedbox().get("bar").get("baz").get("fiz").eval());
+// // test
+// ENV.import("test001", new Box(Val.parse({
+//   all: {
+//     _proto: "parent"
+//   },
+//   foo: "1 prop"
+// })));
+// console.log(ENV.get("test001").get("all").eval().get("foo").eval().val);
+// 
+// 
+// ENV.import("test002", new Box(Val.parse({
+//   foo: "2 prop",
+//   a: {
+//     _proto: "parent"
+//   },
+//   b: {
+//     _proto: "a"
+//   },
+//   c: {
+//     _proto: "b"
+//   },
+//   d: {
+//     _proto: "c"
+//   },
+// })));
+// console.log(ENV.get("test002").get("d").get("foo").eval());
+// 
+// 
+// ENV.import("test003", new Box(Val.parse({
+//   a: {
+//     foo: {
+//       bar: {
+//         baz: "3 basis"
+//       }
+//     }
+//   },
+//   b: {
+//     _proto: "a"
+//   },
+//   c: {
+//     _proto: "b"
+//   },
+//   d: {
+//     _proto: "c",
+//     foo: {
+//       bar: {
+//         hoge: "3 overlay"
+//       }
+//     }
+//   },
+// })));
+// console.log(ENV.get("test003").get("d").get("foo").get("bar").get("hoge").eval())
+// console.log(ENV.get("test003").get("d").get("foo").get("bar").get("baz").eval())
+// console.log(ENV.get("test003").get("c").get("foo").get("bar").get("baz").eval())
+// 
+// 
+// ENV.import("test004", new Box(Val.parse({
+//   foo: 3,
+//   a: {
+//     bar: "4 then bar"
+//   },
+//   b: {
+//     bar: "4 else bar"
+//   },
+//   c: {
+//     _proto: "if",
+//     cond: {
+//       _proto: [
+//         "foo",
+//         "equals"
+//       ],
+//       _stuff: 3
+//     },
+//     then: {
+//       _proto: "a"
+//     },
+//     else: {
+//       _proto: "b"
+//     }
+//   },
+//   d: {
+//     _proto: "c",
+//   },
+//   e: {
+//     _proto: "if",
+//     cond: {
+//       _proto: [
+//         "foo",
+//         "equals"
+//       ],
+//       _stuff: 2
+//     },
+//     then: {
+//       _proto: "a"
+//     },
+//     else: {
+//       _proto: "b"
+//     }
+//   },
+//   f: {
+//     _proto: "e",
+//   },
+//   g: {
+//     _proto: "if",
+//     cond: {
+//       _proto: [
+//         "foo",
+//         "equals"
+//       ],
+//       _stuff: 3
+//     },
+//     then: {
+//       bar: "4 then no proto bar",
+//     },
+//     else: {
+//     }
+//   },
+//   h: {
+//     _proto: "g"
+//   },
+//   i: {
+//     _proto: "if",
+//     cond: {
+//       _proto: [
+//         "foo",
+//         "equals"
+//       ],
+//       _stuff: 3
+//     },
+//     then: {
+//       _proto: "a",
+//       bar: "4 then proto overlay bar",
+//     },
+//     else: {
+//     }
+//   },
+//   j: {
+//     _proto: "i"
+//   },
+//   k: {
+//     ka: {
+//       kaa: {
+//         kaaa: "4 proto prop with overlay other prop",
+//       }
+//     }
+//   },
+//   m: {
+//     _proto: "k",
+//     ka: {
+//       kaa: {
+//         kaab: "other prop",
+//       }
+//     }
+//   }
+// })));
+// console.log(ENV.get("test004").get("d").get("bar").eval());
+// console.log(ENV.get("test004").get("f").get("bar").eval());
+// console.log(ENV.get("test004").get("h").get("bar").eval());
+// console.log(ENV.get("test004").get("j").get("bar").eval());
+// console.log(ENV.get("test004").get("j").get("bar").eval());
+// console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").eval());
+// console.log(ENV.get("test004").get("m").get("ka").get("kaa").eval().child("kaaa"));
+// 
+// 
+// // // (ifのような)評価結果が奥まっているケースのテスト
+// ENV.import("test005", new Box(Val.parse({
+//   foo: 3,
+//   a: {
+//     _proto: "if",
+//     cond: {
+//       _proto: [
+//         "foo",
+//         "equals"
+//       ],
+//       _stuff: 3
+//     },
+//     then: {
+//       bar: {
+//         baz: {
+//           fiz: "5 true props"
+//         }
+//       }
+//     },
+//     else: {
+//       bar: {
+//         baz: {
+//           fiz: "5 false props"
+//         }
+//       }
+//     }
+//   }
+// })));
+// console.log(ENV.get("test005").get("a").eval().child("bar").child("baz").child("fiz").val);
+// console.log(ENV.get("test005").get("a").eval().get("bar").get("baz").get("fiz").val);
 // 下記のような評価はしない前提
 //  console.log(ENV.get("test005").get("a").get("bar").get("baz").get("fiz").eval());
 
