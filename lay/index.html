@@ -1588,8 +1588,9 @@ ENV.store("main", new Box(new Store(Val.parse(main))));
 // ENV.run();
 
 
-// basic feature test
+// basics
 ENV.import("test000", new Box(Val.parse({
+  // props
   a: {
     foo: "0 foo prop"
   },
@@ -1605,6 +1606,7 @@ ENV.import("test000", new Box(Val.parse({
       }
     }
   },
+  // proto chain
   d: {
     _proto: "a"
   },
@@ -1617,6 +1619,7 @@ ENV.import("test000", new Box(Val.parse({
   g: {
     _proto: "f"
   },
+  // overlay
   h: {
     _proto: "f",
     foo: {
@@ -1637,62 +1640,65 @@ console.log(ENV.get("test000").get("h").get("foo").get("bar").get("baz").val);
 console.log(ENV.get("test000").get("h").get("foo").get("bar").get("fiz").val);
 
 
-// // test
-// ENV.import("test001", new Box(Val.parse({
-//   all: {
-//     _proto: "parent"
-//   },
-//   foo: "1 prop"
-// })));
-// console.log(ENV.get("test001").get("all").eval().get("foo").eval().val);
-// 
-// 
-// ENV.import("test002", new Box(Val.parse({
-//   foo: "2 prop",
-//   a: {
-//     _proto: "parent"
-//   },
-//   b: {
-//     _proto: "a"
-//   },
-//   c: {
-//     _proto: "b"
-//   },
-//   d: {
-//     _proto: "c"
-//   },
-// })));
-// console.log(ENV.get("test002").get("d").get("foo").eval());
-// 
-// 
-// ENV.import("test003", new Box(Val.parse({
-//   a: {
-//     foo: {
-//       bar: {
-//         baz: "3 basis"
-//       }
-//     }
-//   },
-//   b: {
-//     _proto: "a"
-//   },
-//   c: {
-//     _proto: "b"
-//   },
-//   d: {
-//     _proto: "c",
-//     foo: {
-//       bar: {
-//         hoge: "3 overlay"
-//       }
-//     }
-//   },
-// })));
-// console.log(ENV.get("test003").get("d").get("foo").get("bar").get("hoge").eval())
-// console.log(ENV.get("test003").get("d").get("foo").get("bar").get("baz").eval())
-// console.log(ENV.get("test003").get("c").get("foo").get("bar").get("baz").eval())
-// 
-// 
+// parent test
+ENV.import("test001", new Box(Val.parse({
+  all: {
+    _proto: "parent"
+  },
+  foo: "1 prop"
+})));
+console.log(ENV.get("test001").get("all").get("foo").val);
+
+
+// proto chain with parent
+ENV.import("test002", new Box(Val.parse({
+  foo: "2 prop",
+  a: {
+    _proto: "parent"
+  },
+  b: {
+    _proto: "a"
+  },
+  c: {
+    _proto: "b"
+  },
+  d: {
+    _proto: "c"
+  },
+})));
+console.log(ENV.get("test002").get("d").get("foo").val);
+
+
+// complex overlay
+ENV.import("test003", new Box(Val.parse({
+  a: {
+    foo: {
+      bar: {
+        baz: "3 basis"
+      }
+    }
+  },
+  b: {
+    _proto: "a"
+  },
+  c: {
+    _proto: "b"
+  },
+  d: {
+    _proto: "c",
+    foo: {
+      bar: {
+        hoge: "3 overlay"
+      }
+    }
+  },
+})));
+console.log(ENV.get("test003").get("d").get("foo").get("bar").get("hoge").val)
+console.log(ENV.get("test003").get("d").get("foo").get("bar").get("baz").val)
+console.log(ENV.get("test003").get("c").get("foo").get("bar").get("baz").val)
+
+
+// specially application
 // ENV.import("test004", new Box(Val.parse({
 //   foo: 3,
 //   a: {
