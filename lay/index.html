@@ -291,7 +291,7 @@ class Store {
     if (!this.src) {
       this.src = update;
     } else {
-      this.src = new Box(update.overlay(this.src));
+      this.src = new Box(update.merge(this.src));
     }
   }
   
@@ -727,6 +727,32 @@ class Box {
     
     return this.resolvePath(proto.symbols, ctx);
   }
+  
+  // todo: 本当はthisとotherの意味を逆転させたい
+  merge(other) {
+    if (other == undefined || other.val == undefined) {
+      return this.val;
+    }
+    
+    const props = this.val.keys.reduce((ps, k) => {
+      const prop = this.get(k);
+      return Object.assign(ps, {[k]: prop.merge(other.get(k)) } );
+    }, other.val.props.clone());
+    
+    const stuff = Object.assign(
+      other.val.stuff.clone().raws, 
+      this.val.stuff.raws.map((s, i) => {
+        const stf = this.get(i);
+        return stf.merge(other.get(i));
+      })
+    );
+    
+    return this.val.clone({
+      proto: other.val.proto,
+      props: new Props(props),
+      stuff: new Stuff(stuff),
+    });
+  }
       
   overlay(inherit=undefined, ctx=new Context()) {
     const proto = this.prototype(ctx) || inherit;
@@ -775,7 +801,7 @@ class Box {
       return this;
     }
     
-    const val = operand.overlay(this.val);
+    const val = operand.merge(this);
     const root = this.upd(val);
     return this.clone({root});
   }
@@ -877,11 +903,11 @@ ENV.import("EventListener", new EventListener());
 
 class If extends Box {
   apply(operand, ctx) {
-    const cond = operand.get("cond").eval(ctx).value;
+    const cond = operand.get("cond").val.value;
     if (cond) {
-      return operand.get("then").eval(ctx);
+      return operand.get("then");
     } else {
-      return operand.get("else").eval(ctx);
+      return operand.get("else");
     }
   }
 }
@@ -890,9 +916,11 @@ ENV.import("if", new If());
 
 class PropEquals extends Box {
   apply(operand, ctx) {
-    const left = this.owner.eval(ctx).value;
-    const right = operand.get(0).eval(ctx).value;
-    return Literal.create(left == right);
+    const left = this.owner.eval(ctx).val.value;
+    const right = operand.get(0).val.value;
+    const val = Literal.create(left == right);
+    const root = this.upd(val);
+    return this.clone({root});
   }
 }
 ENV.import("equals", new PropEquals());
@@ -1699,114 +1727,112 @@ console.log(ENV.get("test003").get("c").get("foo").get("bar").get("baz").val)
 
 
 // specially application
-// ENV.import("test004", new Box(Val.parse({
-//   foo: 3,
-//   a: {
-//     bar: "4 then bar"
-//   },
-//   b: {
-//     bar: "4 else bar"
-//   },
-//   c: {
-//     _proto: "if",
-//     cond: {
-//       _proto: [
-//         "foo",
-//         "equals"
-//       ],
-//       _stuff: 3
-//     },
-//     then: {
-//       _proto: "a"
-//     },
-//     else: {
-//       _proto: "b"
-//     }
-//   },
-//   d: {
-//     _proto: "c",
-//   },
-//   e: {
-//     _proto: "if",
-//     cond: {
-//       _proto: [
-//         "foo",
-//         "equals"
-//       ],
-//       _stuff: 2
-//     },
-//     then: {
-//       _proto: "a"
-//     },
-//     else: {
-//       _proto: "b"
-//     }
-//   },
-//   f: {
-//     _proto: "e",
-//   },
-//   g: {
-//     _proto: "if",
-//     cond: {
-//       _proto: [
-//         "foo",
-//         "equals"
-//       ],
-//       _stuff: 3
-//     },
-//     then: {
-//       bar: "4 then no proto bar",
-//     },
-//     else: {
-//     }
-//   },
-//   h: {
-//     _proto: "g"
-//   },
-//   i: {
-//     _proto: "if",
-//     cond: {
-//       _proto: [
-//         "foo",
-//         "equals"
-//       ],
-//       _stuff: 3
-//     },
-//     then: {
-//       _proto: "a",
-//       bar: "4 then proto overlay bar",
-//     },
-//     else: {
-//     }
-//   },
-//   j: {
-//     _proto: "i"
-//   },
-//   k: {
-//     ka: {
-//       kaa: {
-//         kaaa: "4 proto prop with overlay other prop",
-//       }
-//     }
-//   },
-//   m: {
-//     _proto: "k",
-//     ka: {
-//       kaa: {
-//         kaab: "other prop",
-//       }
-//     }
-//   }
-// })));
-// console.log(ENV.get("test004").get("d").get("bar").eval());
-// console.log(ENV.get("test004").get("f").get("bar").eval());
-// console.log(ENV.get("test004").get("h").get("bar").eval());
-// console.log(ENV.get("test004").get("j").get("bar").eval());
-// console.log(ENV.get("test004").get("j").get("bar").eval());
-// console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").eval());
-// console.log(ENV.get("test004").get("m").get("ka").get("kaa").eval().child("kaaa"));
-// 
-// 
+ENV.import("test004", new Box(Val.parse({
+  foo: 3,
+  a: {
+    bar: "4 then bar"
+  },
+  b: {
+    bar: "4 else bar"
+  },
+  c: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      _proto: "a"
+    },
+    else: {
+      _proto: "b"
+    }
+  },
+  d: {
+    _proto: "c",
+  },
+  e: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 2
+    },
+    then: {
+      _proto: "a"
+    },
+    else: {
+      _proto: "b"
+    }
+  },
+  f: {
+    _proto: "e",
+  },
+  g: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      bar: "4 then no proto bar",
+    },
+    else: {
+    }
+  },
+  h: {
+    _proto: "g"
+  },
+  i: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      _proto: "a",
+      bar: "4 then proto overlay bar",
+    },
+    else: {
+    }
+  },
+  j: {
+    _proto: "i"
+  },
+  k: {
+    ka: {
+      kaa: {
+        kaaa: "4 proto prop with overlay other prop",
+      }
+    }
+  },
+  m: {
+    _proto: "k",
+    ka: {
+      kaa: {
+        kaab: "other prop",
+      }
+    }
+  }
+})));
+console.log(ENV.get("test004").get("d").get("bar").val);
+console.log(ENV.get("test004").get("f").get("bar").val);
+console.log(ENV.get("test004").get("h").get("bar").val);
+// console.log(ENV.get("test004").get("j").get("bar").val);
+console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").val);
+
+
 // // // (ifのような)評価結果が奥まっているケースのテスト
 // ENV.import("test005", new Box(Val.parse({
 //   foo: 3,
