@@ -735,15 +735,15 @@ class Box {
     }
     
     const props = this.val.keys.reduce((ps, k) => {
-      const prop = this.get(k);
-      return Object.assign(ps, {[k]: prop.merge(other.get(k)) } );
+      const prop = this.getChild(k);
+      return Object.assign(ps, {[k]: prop.merge(other.getChild(k)) } );
     }, other.val.props.clone());
     
     const stuff = Object.assign(
       other.val.stuff.clone().raws, 
       this.val.stuff.raws.map((s, i) => {
-        const stf = this.get(i);
-        return stf.merge(other.get(i));
+        const stf = this.getChild(i);
+        return stf.merge(other.getChild(i));
       })
     );
     
@@ -1829,7 +1829,7 @@ ENV.import("test004", new Box(Val.parse({
 console.log(ENV.get("test004").get("d").get("bar").val);
 console.log(ENV.get("test004").get("f").get("bar").val);
 console.log(ENV.get("test004").get("h").get("bar").val);
-// console.log(ENV.get("test004").get("j").get("bar").val);
+console.log(ENV.get("test004").get("j").get("bar").val);
 console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").val);
 
 
