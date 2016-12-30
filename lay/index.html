@@ -1833,7 +1833,7 @@ console.log(ENV.get("test004").get("j").get("bar").val);
 console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").val);
 
 
-// // (ifのような)評価結果が奥まっているケースのテスト
+// nested if evaluation
 ENV.import("test005", new Box(Val.parse({
   foo: 3,
   a: {
