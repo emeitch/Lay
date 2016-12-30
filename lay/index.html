@@ -1833,38 +1833,60 @@ console.log(ENV.get("test004").get("j").get("bar").val);
 console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").val);
 
 
-// // // (ifのような)評価結果が奥まっているケースのテスト
-// ENV.import("test005", new Box(Val.parse({
-//   foo: 3,
-//   a: {
-//     _proto: "if",
-//     cond: {
-//       _proto: [
-//         "foo",
-//         "equals"
-//       ],
-//       _stuff: 3
-//     },
-//     then: {
-//       bar: {
-//         baz: {
-//           fiz: "5 true props"
-//         }
-//       }
-//     },
-//     else: {
-//       bar: {
-//         baz: {
-//           fiz: "5 false props"
-//         }
-//       }
-//     }
-//   }
-// })));
-// console.log(ENV.get("test005").get("a").eval().child("bar").child("baz").child("fiz").val);
-// console.log(ENV.get("test005").get("a").eval().get("bar").get("baz").get("fiz").val);
-// 下記のような評価はしない前提
-//  console.log(ENV.get("test005").get("a").get("bar").get("baz").get("fiz").eval());
+// // (ifのような)評価結果が奥まっているケースのテスト
+ENV.import("test005", new Box(Val.parse({
+  foo: 3,
+  a: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      bar: {
+        baz: {
+          fiz: "5 true props"
+        }
+      }
+    },
+    else: {
+      bar: {
+        baz: {
+          fiz: "5 false props"
+        }
+      }
+    }
+  },
+  b: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 2
+    },
+    then: {
+      bar: {
+        baz: {
+          fiz: "5 true props"
+        }
+      }
+    },
+    else: {
+      bar: {
+        baz: {
+          fiz: "5 false props"
+        }
+      }
+    }
+  }
+})));
+console.log(ENV.get("test005").get("a").get("bar").get("baz").get("fiz").val);
+console.log(ENV.get("test005").get("b").get("bar").get("baz").get("fiz").val);
 
 
 </script>
