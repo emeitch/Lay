@@ -531,43 +531,9 @@ class Box {
         } else {
           return box.eval(ctx);
         }
-          
-        // let bval;
-        // if (val instanceof Stuff) {
-        //   const root = this.upd(val);
-        //   const box = this.clone({root});
-        //   return box;
-        // } else 
-        // if (val.proto instanceof Path) {
-        //   const p = this.resolve(val.proto, ctx);
-        //   const v = p.val.merge(b.val);
-        //   const root = this.upd(v);
-        //   const box = b.clone({root, path: this.path});
-        //   if (box.constructor != Box) {
-        //     return box;
-        //   } else if (this.equals(box)) {
-        //     return this;
-        //   } else {
-        //     return box.eval(ctx);
-        //   }
-        // } else {
-        //   const root = this.upd(val);
-        //   const box = this.clone({root});
-        //   if (this.equals(box)) {
-        //     return this;
-        //   } else {
-        //     return box.eval(ctx);
-        //   }
-        // }
       } else {
         const basis = this.basis;
         if (basis) {
-          // const r = basis.val ? basis.mrg(this.val) : basis.upd(this.val);
-          // const b = basis.clone({root: r});
-          // const val = b.val;
-          // const root = this.upd(val);
-          // const box = this.clone({root});
-          
           const box = basis.apply(this);
           if (box.equals(this)) {
             return box;
@@ -594,20 +560,6 @@ class Box {
         } else {
           return box.eval(ctx);
         }
-
-        // const val = proto.apply(parent, ctx);
-        // 
-        // let bval;
-        // if (val.proto instanceof Path) {
-        //   const ref = parent.resolve(val.proto, ctx);
-        //   const root = ref.mrg(val);
-        //   const box = ref.clone({root}).get(key);
-        //   return box.eval(ctx);
-        // } else {
-        //   const root = parent.upd(val);
-        //   const box = parent.clone({root}).get(key);
-        //   return box.eval(ctx);
-        // }
       } else {
         const basis = this.basis;
         if (basis) {
@@ -617,20 +569,6 @@ class Box {
           } else {
             return box.eval(ctx);
           }
-          
-          // 
-          // const val = basis.val;
-          // if (val == undefined) {
-          //   return this;
-          // }
-          // 
-          // const root = this.upd(val);
-          // const box = this.clone({root});
-          // if (this.equals(box)) {
-          //   return this;
-          // } else {
-          //   return box.eval(ctx);
-          // }
         } else {
           return this;
         }
