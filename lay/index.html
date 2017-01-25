@@ -1612,7 +1612,7 @@ console.log(ENV.get("test000").get("h").get("foo").get("bar").get("baz").val);
 console.log(ENV.get("test000").get("h").get("foo").get("bar").get("fiz").val);
 
 
-// parent tests
+// parent access tests
 ENV.import("test001", new Box(Val.parse({
   all: {
     _proto: "parent"
