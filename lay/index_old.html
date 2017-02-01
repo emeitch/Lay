@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>lay prototype</title>
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./index.css">
+<script src="maquette.min.js"></script>
+<script>
+
+
+function flatten(array) {
+  return Array.prototype.concat.apply([], array);
+}
+
+
+class Environment {
+  constructor() {
+    this.modules = {}
+    this.stores = {};
+    this.queue = [];
+  }
+  
+  get(key) {
+    const mod = this.modules[key];
+    if (mod) {
+      return mod;
+    }
+    
+    const store = this.stores[key];
+    if (store) {
+      return store;
+    }
+
+    return undefined;
+  }
+
+  check(key) {
+    if (this.modules[key] || this.stores[key]) {
+      throw `"${key}" box is already exists!`
+    }
+  }
+  
+  import(key, mod) {
+    this.check(key);
+    this.modules[key] = mod;
+  }
+  
+  store(key, store) {
+    if (!store) {
+      return this.stores[key];
+    }
+    
+    this.check(key);
+    this.stores[key] = store;
+  }
+    
+  emit(event) {
+    this.queue.push(event);
+  }
+  
+  run() {
+    const main = this.get("main");
+    if (!main) {
+      throw `"main" store is not exists!`;
+    }
+    
+    for (let key of Object.getOwnPropertyNames(this.modules)) {
+      const mod = this.get(key);
+      if (mod.initialize) {
+        mod.initialize(main);
+      }
+    }
+    
+    const update = () => {
+      let updated = false;
+      
+      while(this.queue.length > 0) {
+        const events = this.queue;
+        this.queue = [];
+        
+        for (const event of events) {
+          // todo eventを参照可能な他のstoreにもemitさせる
+          main.emit(event);
+          
+          updated = true;
+        }
+      }
+      
+      if (updated) {
+        for (let key of Object.getOwnPropertyNames(this.modules)) {
+          const mod = this.get(key);
+          if (mod.updated) {
+            mod.updated(main);
+          }
+        }
+      }
+    }
+    window.setInterval(update, 1000 / 60);
+  }
+}
+const ENV = new Environment();
+
+
+class Context {
+  constructor() {
+    this.stacks = [];
+  }
+  
+  stack(box, block) {
+    if (!box) {
+      throw "stack box not specified"
+    }
+    
+    this.stacks.push(box);
+    const result = block(this);
+    this.stacks.pop();  
+    return result;
+  }
+}
+
+
+// Props base class for getOwnPropertyNames
+class PropsBase {
+  constructor(raws={}) {
+    Object.assign(this, raws);
+  }
+  
+  get keys() {
+    return Object.getOwnPropertyNames(this);
+  }
+  
+  clone(params) {
+    return new this.constructor(Object.assign({}, this, params));
+  }
+}
+class Props extends PropsBase {
+}
+
+
+class Stuff {
+  constructor(raws=[]) {
+    this.raws = raws;
+  }
+  
+  clone(raws=[]) {
+    return new this.constructor(Object.assign([], this.raws, raws));
+  }
+  
+  flatten() {
+    let raws = [];
+    let index = 0;
+    for (var i = 0; i < this.raws.length; i++) {
+      const raw = this.raws[i];
+      if (raw instanceof Stuff) {
+        for (var j = 0; j < raw.raws.length; j++) {
+          const rr = raw.raws[j];
+          if (Object.keys(raw.raws).indexOf(String(j)) != -1) {
+            raws[index] = rr;
+          }
+          index++;
+        }
+      } else {
+        if (Object.keys(this.raws).indexOf(String(i)) != -1) {
+          raws[index] = raw;
+        }
+        index++;
+      }
+    }
+    return new this.constructor(raws);
+  }
+  
+  map(f) {
+    return new Stuff(this.raws.map(f));
+  }
+  
+  filter(f) {
+    return new Stuff(this.raws.filter(f));
+  }
+}
+
+
+class Val {  
+  static parse(src, ...inheritedOptions) {
+    {
+      const type = typeof(src);
+      if (Literal.types.includes(type)) {
+        return Literal.create(src);
+      }
+    }
+    
+    const props = Object.getOwnPropertyNames(src)
+      .filter(k => k[0] !== '_')
+      .reduce((p, k) => Object.assign(p, {[k]: Val.parse(src[k])}), {});
+          
+    const s = src._stuff;
+    const stf = s != undefined ? (Array.isArray(s) ? s : [s]) : [];
+    const stuff = stf.map(i => Val.parse(i));
+    
+    const proto = src._proto ? Path.create(src._proto) : undefined;
+    
+    return new this(
+      proto,
+      new Props(props),
+      new Stuff(stuff),
+      ...inheritedOptions);
+  }
+  
+  constructor(proto=undefined, props=new Props(), stuff=new Stuff(), evaluated=false) {
+    this.proto = proto;
+    this.props = props;
+    this.stuff = stuff;
+    this.evaluated = evaluated;
+  }
+  
+  equals(other) {
+    return JSON.stringify(this) == JSON.stringify(other);
+  }
+    
+  clone(params) {
+    const proto = this.proto;
+    const props = this.props.clone();
+    const stuff = this.stuff.clone();
+    return Object.assign(new this.constructor(),
+      this,
+      { proto, props, stuff },
+      params);
+  }
+    
+  get keys() {
+    return Object.getOwnPropertyNames(this.props)
+  }
+  
+  getChild(key) {
+    if (typeof(key) === "string") {
+      const prop = this.props[key];
+      if (prop) {
+        return prop;
+      }
+    } else if (typeof(key) === "number") {
+      const stuff = this.stuff.raws[key]
+      if (stuff) {
+        return stuff;
+      }
+    }
+        
+    return undefined;
+  }
+  
+  child(key, val) {
+    if (val == undefined) {
+      return this.getChild(key);
+    }
+    
+    if (typeof(key) === "string") {
+      const props = this.props.clone({[key]: val});
+      return this.clone({props});
+    } else if (typeof(key) === "number") {
+      const raws = [];
+      raws[key] = val;
+      const stuff = this.stuff.clone(raws);
+      return this.clone({stuff});
+    }
+    
+    throw "key type can not recognize";
+  }
+  
+  merge(other) {
+    return this.clone({
+      props: this.props.clone(other.props),
+      stuff: this.stuff.clone(other.stuff.raws)
+    });
+  }
+
+  update(diff) {
+     return this.merge(diff);
+  }
+}
+
+
+// Val wrapping object for side-effects
+class Store {
+  constructor(root) {
+    this.updates = [];
+    this.src = undefined;
+    this.append(root);
+  }
+  
+  append(root) {
+    const update = new Box(root);
+    this.updates.push(update);
+    
+    if (!this.src) {
+      this.src = update;
+    } else {
+      this.src = new Box(update.merge(this.src));
+    }
+  }
+  
+  get proto() {
+    return this.src.root.proto;
+  }
+  
+  get props() {
+    return this.src.root.props;
+  }
+  
+  get stuff() {
+    return this.src.root.stuff;
+  }
+  
+  get evaluated() {
+    return this.src.root.evaluated;
+  }
+  
+  equals(other) {
+    return this.src.root.equals(other);
+  }
+  
+  clone() {
+    throw "clone!";
+  }
+  
+  get keys() {
+    return this.src.root.keys;
+  }
+
+  child(key, val) {
+    return this.src.root.child(key, val);
+  }
+  
+  merge() {
+    throw "merge!";
+  }
+  
+  update(val) {
+    this.append(val);
+  }
+}
+
+
+class Nil extends Val {
+}
+
+
+class Path extends Val {
+  static create(sym) {
+    if (typeof(sym) == "string") {
+      sym = [sym];
+    }
+    return new this(sym);
+  }
+
+  constructor(symbols) {
+    super();
+    this.symbols = symbols;
+  }
+}
+
+
+class Literal extends Val {
+  static create(value) {
+    return new this(value);
+  }
+  
+  static get types() {
+    return [
+      "number",
+      "string",
+      "boolean",
+      "undefined"
+    ];
+  }
+  
+  constructor(value) {
+    super();
+    this.value = value;
+    this.evaluated = true;
+  }
+}
+
+
+class Event extends Val {
+}
+
+
+class StoreUpdate extends Event {
+  constructor(path, props=new Props(), stuff=new Stuff()) {
+    super(undefined, props, stuff);
+    this.path = path;
+  }
+}
+
+
+class Box {
+  constructor(root=new Val(), path=[]) {
+    this.root = root;
+    this.path = path;
+    this.owner = undefined;
+  }
+  
+  equals(other) {
+    return this.root.equals(other.root) && JSON.stringify(this.path) == JSON.stringify(other.path);
+  }
+  
+  clone(props) {
+    return Object.assign(new this.constructor(), this, props)
+  }
+  
+  withOwner(owner) {
+    if (!(owner instanceof Box)) {
+      return this;
+    }
+
+    if (this.owner instanceof Box) {
+      throw `owner is exists`;
+    }
+    
+    return this.clone({owner});
+  }
+  
+  get val() {
+    let val = this.root;
+    for (let key of this.path) {
+      val = val.child(key);
+      if (val == undefined) {
+        return undefined;
+      }
+    }
+    
+    return val;
+  }
+    
+  get parent() {
+    if (this.path.length == 0) {
+      return undefined;
+    }
+    
+    const path = this.path.slice();
+    path.pop();
+    return new Box(this.root, path);
+  }
+  
+  prototype(ctx=new Context()) {
+    const val = this.val;
+    if (val == undefined) {
+      return undefined;
+    }
+    
+    return this.resolve(val.proto, ctx);
+  }
+  
+  get basis() {
+    if (this.path.length < 1) {
+      return undefined;
+    }
+    
+    const key = this.path[this.path.length-1];
+    const pproto = this.parent.prototype();
+    if (pproto) {
+      return pproto.get(key);
+    } else {
+      const basis = this.parent.basis;
+      if (basis) {
+        return basis.get(key);
+      } else {
+        return undefined;
+      }
+    }
+  }
+  
+  st(key, child) {
+    let props = new Props();
+    if (typeof(key) === "string") {
+      props = new Props({[key]: child});
+    }
+    
+    let stuff = new Stuff();
+    if (typeof(key) === "number") {
+      const raws = [];
+      raws[key] = child;
+      stuff = new Stuff(raws);
+    }
+
+    const diff = new StoreUpdate(undefined, props, stuff);
+    this.update(diff);
+  }
+  
+  mrg(val) {
+    const v = this.val.merge(val);
+    return this.upd(v);
+  }
+  
+  upd(val) {
+    const key = this.path[this.path.length-1];
+    if (key == undefined) {
+      return val;
+    } else {
+      if (this.parent.val) {
+        const v = this.parent.val.child(key, val);
+        return this.parent.upd(v);
+      } else {
+        let props = {};
+        if (typeof(key) == "string") {
+          props[key] = val;
+        };
+        
+        let stuff = [];
+        if (typeof(key) == "number") {
+          stuff[key] = val;
+        };
+        
+        const v = new Val(
+          undefined, 
+          new Props(props),
+          new Stuff(stuff));
+        return this.parent.upd(v);
+      }
+    }
+  }
+  
+  eval(ctx=new Context()) {
+    if (this.val != undefined) {
+      const proto = this.prototype(ctx);
+      if (proto) {
+        let box = this;
+        if (proto.canApply(this, ctx)) {
+          box = proto.apply(this, ctx);
+        }
+        
+        if (box.equals(this)) {
+          return box;
+        } else {
+          return box.eval(ctx);
+        }
+      } else {
+        const basis = this.basis;
+        if (basis) {
+          const box = basis.apply(this);
+          if (box.equals(this)) {
+            return box;
+          } else {
+            return box.eval(ctx);
+          }
+        } else {
+          return this;
+        }
+      }
+    } else {
+      const key = this.path[this.path.length-1];
+      const parent = this.parent;
+      const proto = parent.prototype(ctx);
+      if (proto) {
+        let pbox = parent;
+        if (proto.canApply(parent, ctx)) {
+          pbox = proto.apply(parent, ctx);
+        }
+        
+        const box = pbox.get(key);
+        if (box.equals(this)) {
+          return box;
+        } else {
+          return box.eval(ctx);
+        }
+      } else {
+        const basis = this.basis;
+        if (basis) {
+          const box = basis.apply(this);
+          if (box.equals(this)) {
+            return box;
+          } else {
+            return box.eval(ctx);
+          }
+        } else {
+          return this;
+        }
+      }
+    }
+  }
+  
+  getChild(key) {
+    const path = this.path.concat([key]);
+    const box = new Box(this.root, path);
+    return box;
+  }
+  
+  get(key) {
+    return this.getChild(key).eval();
+  }
+  
+  getByPath(path) {
+    if (path.length == 0) {
+      return this;
+    }
+    
+    const rest = path.slice();
+    const top = rest.shift();
+    const child = this.get(top);
+    return child.getByPath(rest);
+  }
+  
+  detect(key, ctx) {
+    if (key == "parent") {
+      return this.parent;
+    }
+    
+    if (key == "self") {
+      const self = this.parent.parent;
+      return self;
+    }
+    
+    const stacks = ctx.stacks.slice();
+    stacks.reverse();
+    for (let val of stacks) {
+      const child = val.child(key);
+      if (child) {
+        return new Box(child);
+      }
+    }
+    
+    let parent = this.parent;
+    while (parent) {
+      const child = parent.getChild(key);
+      if (child.val) {
+        return child;
+      }
+      
+      parent = parent.parent;  
+    }
+    
+    const mod = ENV.get(key);
+    if (mod) {
+      return mod.withOwner(this);
+    }
+
+    return undefined;
+  }
+  
+  resolvePath(path, ctx) {
+    const rest = path.slice();
+    const top = rest.shift();
+    
+    let receiver = this.detect(top, ctx);
+    for (const key of rest) {
+      const box = receiver.get(key);
+      if (box.val == undefined) {
+        const mod = ENV.get(key);
+        if (mod) {
+          if (receiver.path[0] == "domain" && receiver.path[1] == "tasks") {
+            //debugger;
+          }
+          return mod.withOwner(receiver);
+        }
+
+        throw 'can not resolve path!';
+      }
+      receiver = box;
+    }
+    
+    return receiver;
+  }
+  
+  resolve(proto, ctx) {
+    if (proto == undefined) {
+      return undefined;
+    }
+    
+    return this.resolvePath(proto.symbols, ctx);
+  }
+  
+  // todo: 本当はthisとotherの意味を逆転させたい
+  merge(other) {
+    if (other == undefined || other.val == undefined) {
+      return this.val;
+    }
+    
+    const props = this.val.keys.reduce((ps, k) => {
+      const prop = this.getChild(k);
+      return Object.assign(ps, {[k]: prop.merge(other.getChild(k)) } );
+    }, other.val.props.clone());
+    
+    const stuff = Object.assign(
+      other.val.stuff.clone().raws, 
+      this.val.stuff.raws.map((s, i) => {
+        const stf = this.getChild(i);
+        return stf.merge(other.getChild(i));
+      })
+    );
+    
+    return this.val.clone({
+      proto: other.val.proto,
+      props: new Props(props),
+      stuff: new Stuff(stuff),
+    });
+  }
+      
+  overlay(inherit=undefined, ctx=new Context()) {
+    const proto = this.prototype(ctx) || inherit;
+    if (proto == undefined || proto.val == undefined) {
+      return this.val;
+    }
+    
+    const props = this.val.keys.reduce((ps, k) => {
+      const prop = this.get(k);
+      return Object.assign(ps, {[k]: prop.overlay(proto.get(k), ctx) } );
+    }, proto.val.props.clone());
+    
+    const stuff = Object.assign(
+      proto.val.stuff.clone().raws, 
+      this.val.stuff.raws.map((s, i) => {
+        const stf = this.get(i);
+        return stf.overlay(proto.get(i), ctx);
+      })
+    );
+    
+    return this.val.clone({
+      proto: proto.val.proto,
+      props: new Props(props),
+      stuff: new Stuff(stuff),
+    });
+  }
+    
+  canApply(operand, ctx) {
+    for (let key of operand.val.keys) {
+      const box = operand.detect(key, ctx);
+      if (box) {
+        continue;
+      }
+
+      const child = operand.getChild(key);
+      if (child.prototype(ctx) instanceof Argument) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  apply(operand, ctx) {
+    // todo propsやstuffが空の場合もただのパス参照としてthis.valを返す
+    if (this.val instanceof Literal) {
+      return this;
+    }
+    
+    const val = operand.merge(this);
+    const root = this.upd(val);
+    return this.clone({root});
+  }
+  
+  update(diff) {
+    const updated = new Val(undefined, diff.props, diff.stuff);
+    const currentKey = this.path[this.path.length-1];
+    if (currentKey == undefined) {
+      return this.root.update(updated);
+    } else {
+      return this.parent.set(currentKey, updated);
+    }
+  }
+    
+  set(key, child) {
+    // 階層を飛ばして孫要素を設定したい場合はkeyに配列pathを指定
+    if (Array.isArray(key)) {
+      const path = key;
+      const tail = path.pop();
+      const target = new Box(this.root, this.path.concat(path));
+      target.set(tail, child);
+    }
+    
+    let props = new Props();
+    if (typeof(key) === "string") {
+      props = new Props({[key]: child});
+    }
+    
+    let stuff = new Stuff();
+    if (typeof(key) === "number") {
+      const raws = [];
+      raws[key] = child;
+      stuff = new Stuff(raws);
+    }
+
+    const diff = new StoreUpdate(undefined, props, stuff);
+    return this.update(diff);
+  }
+  
+  relay(events) {
+    for (let e of events.stuff.raws) {
+      if (e instanceof Literal && e.value == undefined) {
+        // through event as undefined
+        continue;
+      } else if (e instanceof StoreUpdate) {
+        const owner = this.getByPath(e.path);
+        owner.update(e);
+      } else {
+        const relayEvents = e;
+        this.relay(relayEvents);
+      }
+    }
+  }
+  
+  emit(event) {
+    // todo 他のBoxが定義しているイベントもreceiveできるようにする
+    const target = this.getByPath(event.proto.symbols);
+    const relayEvents = new Context().stack(event, ctx => target.eval(ctx));
+    this.relay(relayEvents);
+  }
+}
+
+
+// 評価結果を上位のstuffにマージする用途で利用
+// Stuffのeval時にflattenでマージされる
+class StuffBox extends Box {
+  apply(operand, ctx) {
+    return operand.val.stuff.map((s, i) => operand.get(i).eval(ctx));
+  }
+}
+ENV.import("Stuff", new StuffBox());
+
+
+class UUID extends Box {
+  uuid() {
+    var uuid = "", i, random;
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+      
+      if (i == 8 || i == 12 || i == 16 || i == 20) {
+        uuid += "-"
+      }
+      uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+    }
+    return uuid;
+  }
+
+  apply(operand, ctx) {
+    return Literal.create(this.uuid());
+  }
+}
+ENV.import("UUID", new UUID());
+
+
+class EventListener extends Box {
+}
+ENV.import("EventListener", new EventListener());
+
+
+class If extends Box {
+  apply(operand, ctx) {
+    const cond = operand.get("cond").val.value;
+    if (cond) {
+      return operand.get("then");
+    } else {
+      return operand.get("else");
+    }
+  }
+}
+ENV.import("if", new If());
+
+
+class PropEquals extends Box {
+  apply(operand, ctx) {
+    const left = this.owner.eval(ctx).val.value;
+    const right = operand.get(0).val.value;
+    const val = Literal.create(left == right);
+    const root = this.upd(val);
+    return this.clone({root});
+  }
+}
+ENV.import("equals", new PropEquals());
+
+
+class PropMap extends Box {
+  apply(operand, ctx) {
+    const block = operand.get(0);
+    const argkey = block.val.keys[0]; // todo key値の型と一致するか検証
+    return this.owner.val.stuff.map((s, i) => {
+      const item = this.owner.get(i);
+      const arg = item.eval(ctx);
+      const props = block.val.props.clone({[argkey]: arg});
+      return block.val.clone({props});
+      // const stack = new Val(undefined, props);
+      // return ctx.stack(stack, ctx => block.eval(ctx));
+    });
+  }
+};
+ENV.import("map", new PropMap());
+
+
+class PropFilter extends Box {
+  apply(operand, ctx) {
+    const block = operand.get(0);
+    const argkey = block.val.keys[0]; // todo key値の型と一致するか検証
+    const stuff = this.owner.val.stuff.filter((s, i) => {
+      const item = this.owner.get(i);
+      const arg = item.eval(ctx);
+      const props = block.val.props.clone({[argkey]: arg});
+      const stack = new Val(undefined, props);
+      return ctx.stack(stack, ctx => block.eval(ctx)).value;
+    });
+    return new Val(undefined, new Props(), stuff);
+  }
+};
+ENV.import("filter", new PropFilter());
+
+
+class PropCount extends Box {
+  apply(operand, ctx) {
+    const count = this.owner.val.stuff.raws.length;
+    return Literal.create(count);
+  }
+}
+ENV.import("count", new PropCount());
+
+
+class PropSet extends Box {
+  apply(operand, ctx) {
+    return new StoreUpdate(
+      this.owner.path, 
+      operand.val.props.clone(),
+      new Stuff(),
+      true
+    );
+  }
+}
+ENV.import("set", new PropSet());
+
+
+class PropAppend extends Box {
+  apply(operand, ctx) {
+    const stuff = new Stuff();
+    const val = operand.get(0).eval(ctx);
+    const index = this.owner.val.stuff.raws.length;
+    stuff.raws[index] = val; // push
+    const event = new StoreUpdate(this.owner.path, new Props(), stuff);
+    return event;
+  }
+}
+ENV.import("append", new PropAppend());
+
+
+class Not extends Box {
+  apply(operand, ctx) {
+    const val = operand.get(0).eval(ctx);
+    return Literal.create(!val.value);
+  }
+}
+ENV.import("not", new Not());
+
+
+class Argument extends Box {
+}
+ENV.import("Argument", new Argument());
+
+
+class Lambda extends Box {
+  apply(operand, ctx) {
+    const item = operand.get(0);
+    return item.eval(ctx);
+  }
+}
+ENV.import("Lambda", new Lambda());
+
+
+class Entity extends Box {
+}
+ENV.import("Entity", new Entity());
+
+
+class DOM extends Box {
+  constructor(tag) {
+    super();
+    this.tag = tag;
+  }  
+}
+const HTML_TAGS = [
+  "Body",
+  "Section",
+  "Footer",
+  "Header",
+  "P",
+  "Ul",
+  "Li",
+  "Input",
+  "Button",
+  "Div",
+  "Span",
+  "H1",
+  "Label",
+  "Strong",
+  "A",
+];
+for (let tag of HTML_TAGS) {
+  ENV.import(tag, new DOM(tag));
+}
+
+
+class DOMPresenter extends Box {
+  initialize(main) {
+    this.projector = maquette.createProjector();
+    this.handlers = this.createHandlers(main);
+    
+    window.document.addEventListener('DOMContentLoaded', () => {
+      this.projector.replace(window.document.body, () => {
+        const body = main.get("presentation").get("body");
+        const vdom = this.render(body, this.handlers)[0];
+        return vdom;
+      });
+    });
+    
+    const setLocation = () => {
+      main.get("presentation").set(["location", "hash"], Literal.create(window.location.hash));
+    };
+    setLocation();
+    window.addEventListener('hashchange', setLocation);
+  }
+  
+  updated(main) {
+    this.projector.renderNow();
+  }
+  
+  elementPath(dom) {
+    const path = [];
+    
+    let t = dom;
+    while (t.parentNode) {
+      const p = t.parentNode;
+      let i = 0;
+      while (i < p.children.length) {
+        if (p.children[i] == t) {
+          break;
+        }
+        i++;
+      }
+      path.unshift(i);
+      t = p;
+    }
+    
+    return path;
+  }
+  
+  boxPath(dom) {
+    const path = this.elementPath(dom);
+
+    path[0] = "presentation";
+    path[1] = "body";
+    
+    return path;
+  }
+    
+  createHandlers(main) {
+    return {
+      input: (ev) => {
+        const path = this.boxPath(ev.target);
+        const box = main.getByPath(path);
+        const va = box.eval().child("value");
+        if (!va || va.value != ev.target.value) {
+          box.set("value", Literal.create(ev.target.value));
+        }
+      },
+      keyup: (ev) => {
+        const path = this.boxPath(ev.target);
+        const event = new Event(
+          Path.create(path.concat([ev.type])), 
+          new Props({
+            // todo keyCode以外の属性も転送する
+            keyCode: Literal.create(ev.keyCode), 
+          })
+        );
+        ENV.emit(event);
+      }
+    }
+  }
+      
+  render(box, handlers) {
+    const ab = box.eval();
+    
+    let b = ab;
+    
+    const attrs = b.val.keys.reduce((r, k) => {
+      const prop = b.get(k);
+      if (prop.eval() instanceof EventListener) {
+        return Object.assign(r, {["on"+k]: handlers[k]})
+      } else {
+        return Object.assign(r, {[k]: prop.eval().value})  
+      }
+    }
+    ,{
+      oninput: handlers["input"]
+    });
+    
+    const children = flatten(b.val.stuff.raws.map((v, i) => {
+      return v.value != undefined ? v.value : this.render(b.get(i), handlers);
+    }));
+    
+    const tag = b.tag;
+    const vdom = maquette.h(
+      tag,
+      attrs,
+      children
+    );
+    return [vdom];
+  }
+}
+ENV.import("DOMPresenter", new DOMPresenter());
+
+
+// base module
+const TodoMVC = {
+  domain: {
+    Task: {
+      _proto: "Entity",
+      title: "string",
+      completed: "bool"
+    },
+    tasks: {
+      create: {
+        _proto: "EventListener",
+        title: { _proto: "Argument", type: "string" },
+        _stuff: {
+          _proto: [
+            "self",
+            "append"
+          ],
+          _stuff: {
+            _proto: "Task",
+            id: { _proto: "UUID" },
+            title: { _proto: "title" },
+            completed: false
+          }
+        }
+      },
+      all: {
+        // todo 本当はただのparent参照にしたいがうまくいかないので無駄にfilterかける
+        _proto: [
+          "parent",
+          "filter"
+        ],
+        _stuff: {
+          _proto: "Lambda",
+          task: { _proto: "argument", type: "Task" },
+          _stuff: true
+        }
+      },
+      active: {
+        _proto: [
+          "parent",
+          "filter"
+        ],
+        _stuff: {
+          _proto: "Lambda",
+          task: { _proto: "Argument", type: "Task" },
+          _stuff: {
+            _proto: "not",
+            _stuff: {
+              _proto: [
+                "task",
+                "completed",
+              ]
+            }
+          }
+        }
+      },
+      completed: {
+        _proto: [
+          "parent",
+          "filter"
+        ],
+        _stuff: {
+          _proto: "Lambda",
+          task: { _proto: "Argument", type: "Task" },
+          _stuff: {
+            _proto: [
+              "task",
+              "completed",
+            ]
+          }
+        }
+      },
+      _stuff: [
+      ]
+    }
+  },
+  presentation: {
+    location: {
+      hash: "",
+    },
+    // taskList: {
+    //   _proto: "if",
+    //   cond: {
+    //     _proto: [
+    //       "location",
+    //       "hash",
+    //       "equals"
+    //     ],
+    //     _stuff: "#/active"
+    //   },
+    //   then: {
+    //     _proto: [
+    //       "domain",
+    //       "tasks",
+    //       "active",
+    //       "filter"
+    //     ],
+    //     _stuff: {
+    //       _proto: "Lambda",
+    //       task: { _proto: "argument", type: "Task" },
+    //       _stuff: true
+    //     }
+    //   },
+    //   else: {
+    //     _proto: "if",
+    //     cond: {
+    //       _proto: [
+    //         "location",
+    //         "hash",
+    //         "equals"
+    //       ],
+    //       _stuff: "#/completed"
+    //     },
+    //     then: {
+    //       _proto: [
+    //         "domain",
+    //         "tasks",
+    //         "completed",
+    //         "filter"
+    //       ],
+    //       _stuff: {
+    //         _proto: "Lambda",
+    //         task: { _proto: "argument", type: "Task" },
+    //         _stuff: true
+    //       }
+    //     },
+    //     else: {
+    //       _proto: [
+    //         "domain",
+    //         "tasks",
+    //         "all",
+    //         "filter"
+    //       ],
+    //       _stuff: {
+    //         _proto: "Lambda",
+    //         task: { _proto: "argument", type: "Task" },
+    //         _stuff: true
+    //       }
+    //     }
+    //   }
+    // },
+    body: {
+      _proto: "Body",
+      _stuff: [
+        {
+          _proto: "Section",
+          class: "todoapp",
+          _stuff: [
+            {
+              _proto: "Div",
+              _stuff: [
+                {
+                  _proto: "Header",
+                  class: "header",
+                  _stuff: [
+                    {
+                      _proto: "H1",
+                      _stuff: [
+                        "todos"
+                      ]
+                    },
+                    {
+                      _proto: "Input",
+                      class: "new-todo",
+                      placeholder: "What needs to be done?",
+                      autofocus: true,
+                      clear: {
+                        _proto: "EventListener",
+                        _stuff: {
+                          _proto: [
+                            "self",
+                            "set"
+                          ],
+                          value: "",
+                        }
+                      },
+                      keyup: {
+                        _proto: "EventListener",
+                        keyCode: { _proto: "Argument", type: "Literal" },
+                        _stuff: {
+                          _proto: "if",
+                          cond: {
+                            _proto: [
+                              "keyCode",
+                              "equals"
+                            ],
+                            _stuff: 13
+                          },
+                          then: {
+                            _proto: "Stuff",
+                            _stuff: [
+                              {
+                                _proto: [
+                                  "domain",
+                                  "tasks",
+                                  "create"
+                                ],
+                                title: {
+                                  _proto: "value"
+                                }
+                              },
+                              {
+                                _proto: "clear"
+                              }
+                            ]
+                          },
+                          else: undefined
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  _proto: "Section",
+                  class: "main",
+                  _stuff: [
+                    {
+                      _proto: "Input",
+                      class: "toggle-all",
+                      type: "checkbox"
+                    },
+                    {
+                      _proto: "Ul",
+                      class: "todo-list",
+                      _stuff: { 
+                        _proto: [
+                          "domain",
+                          "tasks",
+                          "map"
+                        ],
+                        _stuff: [
+                          {
+                            _proto: "Lambda",
+                            task: { _proto: "Argument", type: "Task" },
+                            _stuff: [
+                              {
+                                _proto: "Li",
+                                key: {
+                                  _proto: [
+                                    "task",
+                                    "id"
+                                  ]
+                                },
+                                _stuff: [
+                                  {
+                                    _proto: "Div",
+                                    class: "view",
+                                    _stuff: [
+                                      {
+                                        _proto: "Input",
+                                        class: "toggle",
+                                        type: "checkbox",
+                                      },
+                                      {
+                                        _proto: "Label",
+                                        _stuff: {
+                                          _proto: [
+                                            "task",
+                                            "title"
+                                          ],
+                                        }
+                                      },
+                                      {
+                                        _proto: "Button",
+                                        class: "destroy",
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    _proto: "Input",
+                                    class: "edit",
+                                    value: {
+                                      _proto: [
+                                        "task",
+                                        "title"
+                                      ],
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  _proto: "Footer",
+                  class: "footer",
+                  _stuff: [
+                    {
+                      _proto: "Span",
+                      class: "todo-count",
+                      _stuff: [
+                        {
+                          _proto: "Strong",
+                          _stuff: {
+                            _proto: [
+                              "domain",
+                              "tasks",
+                              "count"
+                            ]
+                          }
+                        },
+                        {
+                          _proto: "Span",
+                          _stuff: " "
+                        },
+                        {
+                          _proto: "Span",
+                          _stuff: {
+                            _proto: "if",
+                            cond: {
+                              _proto: [
+                                "domain", 
+                                "tasks", 
+                                "count", 
+                                "equals"
+                              ],
+                              _stuff: 1
+                            },
+                            then: "item",
+                            else: "items"
+                          }
+                        },
+                        {
+                          _proto: "Span",
+                          _stuff: " left"
+                        }
+                      ]
+                    },
+                    {
+                      _proto: "Ul",
+                      class: "filters",
+                      _stuff: [
+                        {
+                          _proto: "Li",
+                          _stuff: [
+                            {
+                              _proto: "A",
+                              href: "#/",
+                              class: "selected",
+                              _stuff: "All"
+                            }
+                          ]
+                        },
+                        {
+                          _proto: "Span",
+                        },
+                        {
+                          _proto: "Li",
+                          _stuff: [
+                            {
+                              _proto: "A",
+                              href: "#/active",
+                              _stuff: "Active"
+                            }
+                          ]
+                        },
+                        {
+                          _proto: "Span",
+                        },
+                        {
+                          _proto: "Li",
+                          _stuff: [
+                            {
+                              _proto: "A",
+                              href: "#/completed",
+                              _stuff: "Completed"
+                            }
+                          ]
+                        },
+                      ]
+                    },
+                    {
+                      _proto: "Button",
+                      class: "clear-completed",
+                      _stuff: "Clear Completed"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          _proto: "Footer",
+          class: "info",
+          _stuff: [
+            {
+              _proto: "P",
+              _stuff: "Double-click to edit a todo"
+            },
+            {
+              _proto: "P",
+              _stuff: [
+                "Created by ",
+                {
+                  _proto: "A",
+                  href: "http://github.com/emeitch/",
+                  _stuff: "Hideyuki MORITA (emeitch)"
+                }
+              ]
+            },
+            {
+              _proto: "P",
+              _stuff: [
+                "Part of ",
+                {
+                  _proto: "A",
+                  href: "http://todomvc.com",
+                  _stuff: "TodoMVC"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+};
+ENV.import("TodoMVC", new Box(Val.parse(TodoMVC)));
+
+
+// main box
+const main = {
+  _proto: "TodoMVC",
+  domain: {
+    tasks: {
+      _stuff: [
+        {
+          _proto: "Task",
+          id: { _proto: "UUID" },
+          title: "buy a milk",
+          completed: false,
+        },
+        {
+          _proto: "Task",
+          id: { _proto: "UUID" },
+          title: "buy a coffee",
+          completed: false,
+        },
+        {
+          _proto: "Task",
+          id: { _proto: "UUID" },
+          title: "buy a tea",
+          completed: true,
+        }
+      ]
+    }
+  }
+};
+ENV.store("main", new Box(new Store(Val.parse(main))));
+// ENV.run();
+
+
+//
+// unit test suite
+//
+
+// basic feature tests
+ENV.import("test000", new Box(Val.parse({
+  // props
+  a: {
+    foo: "0 foo prop"
+  },
+  b: {
+    foo: {
+      bar: "0 bar prop"
+    }
+  },
+  c: {
+    foo: {
+      bar: {
+        baz: "0 baz prop"
+      }
+    }
+  },
+  // proto chain
+  d: {
+    _proto: "a"
+  },
+  e: {
+    _proto: "b"
+  },
+  f: {
+    _proto: "c"
+  },
+  g: {
+    _proto: "f"
+  },
+  // overlay
+  h: {
+    _proto: "f",
+    foo: {
+      bar: {
+        fiz: "0 fiz prop overlay"
+      }
+    }
+  }
+})));
+console.log(ENV.get("test000").get("a").get("foo").val);
+console.log(ENV.get("test000").get("b").get("foo").get("bar").val);
+console.log(ENV.get("test000").get("c").get("foo").get("bar").get("baz").val);
+console.log(ENV.get("test000").get("d").get("foo").val);
+console.log(ENV.get("test000").get("e").get("foo").get("bar").val);
+console.log(ENV.get("test000").get("f").get("foo").get("bar").get("baz").val);
+console.log(ENV.get("test000").get("g").get("foo").get("bar").get("baz").val);
+console.log(ENV.get("test000").get("h").get("foo").get("bar").get("baz").val);
+console.log(ENV.get("test000").get("h").get("foo").get("bar").get("fiz").val);
+
+
+// parent access tests
+ENV.import("test001", new Box(Val.parse({
+  all: {
+    _proto: "parent"
+  },
+  foo: "1 prop"
+})));
+console.log(ENV.get("test001").get("all").get("foo").val);
+
+
+// proto chain with parent access tests
+ENV.import("test002", new Box(Val.parse({
+  foo: "2 prop",
+  a: {
+    _proto: "parent"
+  },
+  b: {
+    _proto: "a"
+  },
+  c: {
+    _proto: "b"
+  },
+  d: {
+    _proto: "c"
+  },
+})));
+console.log(ENV.get("test002").get("d").get("foo").val);
+
+
+// complex overlay tests
+ENV.import("test003", new Box(Val.parse({
+  a: {
+    foo: {
+      bar: {
+        baz: "3 basis"
+      }
+    }
+  },
+  b: {
+    _proto: "a"
+  },
+  c: {
+    _proto: "b"
+  },
+  d: {
+    _proto: "c",
+    foo: {
+      bar: {
+        hoge: "3 overlay"
+      }
+    }
+  },
+})));
+console.log(ENV.get("test003").get("d").get("foo").get("bar").get("hoge").val)
+console.log(ENV.get("test003").get("d").get("foo").get("bar").get("baz").val)
+console.log(ENV.get("test003").get("c").get("foo").get("bar").get("baz").val)
+
+
+// specially application tests
+ENV.import("test004", new Box(Val.parse({
+  foo: 3,
+  a: {
+    bar: "4 then bar"
+  },
+  b: {
+    bar: "4 else bar"
+  },
+  c: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      _proto: "a"
+    },
+    else: {
+      _proto: "b"
+    }
+  },
+  d: {
+    _proto: "c",
+  },
+  e: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 2
+    },
+    then: {
+      _proto: "a"
+    },
+    else: {
+      _proto: "b"
+    }
+  },
+  f: {
+    _proto: "e",
+  },
+  g: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      bar: "4 then no proto bar",
+    },
+    else: {
+    }
+  },
+  h: {
+    _proto: "g"
+  },
+  i: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      _proto: "a",
+      bar: "4 then proto overlay bar",
+    },
+    else: {
+    }
+  },
+  j: {
+    _proto: "i"
+  },
+  k: {
+    ka: {
+      kaa: {
+        kaaa: "4 proto prop with overlay other prop",
+      }
+    }
+  },
+  m: {
+    _proto: "k",
+    ka: {
+      kaa: {
+        kaab: "other prop",
+      }
+    }
+  }
+})));
+console.log(ENV.get("test004").get("d").get("bar").val);
+console.log(ENV.get("test004").get("f").get("bar").val);
+console.log(ENV.get("test004").get("h").get("bar").val);
+console.log(ENV.get("test004").get("j").get("bar").val);
+console.log(ENV.get("test004").get("m").get("ka").get("kaa").get("kaaa").val);
+
+
+// nested if evaluation tests
+ENV.import("test005", new Box(Val.parse({
+  foo: 3,
+  a: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 3
+    },
+    then: {
+      bar: {
+        baz: {
+          fiz: "5 true props"
+        }
+      }
+    },
+    else: {
+      bar: {
+        baz: {
+          fiz: "5 false props"
+        }
+      }
+    }
+  },
+  b: {
+    _proto: "if",
+    cond: {
+      _proto: [
+        "foo",
+        "equals"
+      ],
+      _stuff: 2
+    },
+    then: {
+      bar: {
+        baz: {
+          fiz: "5 true props"
+        }
+      }
+    },
+    else: {
+      bar: {
+        baz: {
+          fiz: "5 false props"
+        }
+      }
+    }
+  }
+})));
+console.log(ENV.get("test005").get("a").get("bar").get("baz").get("fiz").val);
+console.log(ENV.get("test005").get("b").get("bar").get("baz").get("fiz").val);
+
+
+</script>
+</head>
+<body>
+</body>
+</html>
