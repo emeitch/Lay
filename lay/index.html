@@ -457,10 +457,15 @@ class UUID {
 }
 
 class Triple {
-  constructor(sbj, pred, obj) {
+  constructor(sbj, pred, obj, holder) {
     this.sbj = s;
     this.pred = p;
     this.obj = o;
+    
+    if (holder == undefined) {
+      holder = s;
+    }
+    this.holder = holder;
   }
 }
 
