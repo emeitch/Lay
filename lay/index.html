@@ -434,7 +434,7 @@ const TodoMVC = {
     }
   }
 };
-console.log(TodoMVC);
+// console.log(TodoMVC);
 
 class UUID {
   uuid() {
@@ -452,29 +452,23 @@ class UUID {
   }
   
   constructor() {
-    this.value = this.uuid();
+    this.str = this.uuid();
   }
 }
 
-class Triple {
-  constructor(sbj, pred, obj, holder) {
-    this.sbj = s;
-    this.pred = p;
-    this.obj = o;
-    
-    if (holder == undefined) {
-      holder = s;
-    }
-    this.holder = holder;
+class Box {
+  constructor(value={}) {
+    this["@id"] = new UUID();
+    Object.assign(this, value);
   }
 }
 
 // test
-const s = new UUID();
-const p = new UUID();
-const o = new UUID();
-const t = new Triple(s, p, o);
-console.log(t);
+const box = new Box({
+  foo: 3,
+  bar: 4
+});
+console.log(box);
 
 </script>
 </head>
