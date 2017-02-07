@@ -456,18 +456,29 @@ class UUID {
   }
 }
 
+class Struct {
+  constructor(init={}) {
+    Object.assign(this, init);
+  }
+}
+
 class Box {
-  constructor(value={}) {
+  constructor(value) {
     this["@id"] = new UUID();
+    this.set(value);
+  }
+  
+  set(value) {
+    this["@value"] = value;
     Object.assign(this, value);
   }
 }
 
 // test
-const box = new Box({
+const box = new Box(new Struct({
   foo: 3,
   bar: 4
-});
+}));
 console.log(box);
 
 </script>
