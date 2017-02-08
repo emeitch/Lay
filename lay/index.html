@@ -437,7 +437,7 @@ const TodoMVC = {
 // console.log(TodoMVC);
 
 class UUID {
-  uuid() {
+  static create() {
     // UUID ver 4 / RFC 4122
     var uuid = "", i, random;
     for (i = 0; i < 32; i++) {
@@ -450,10 +450,6 @@ class UUID {
     }
     return uuid;
   }
-  
-  constructor() {
-    this.str = this.uuid();
-  }
 }
 
 class Struct {
@@ -463,8 +459,10 @@ class Struct {
 }
 
 class Box {
-  constructor(value) {
-    this["@id"] = new UUID();
+  constructor(store, id) {
+    this["@__store__"] = store
+    this["@id"] = id;
+    const value = store[id];
     this.set(value);
   }
   
@@ -474,11 +472,30 @@ class Box {
   }
 }
 
+class Store {
+  append(value) {
+    const id = UUID.create();
+    this[id] = value;
+  }
+  
+  ids() {
+    return Object.getOwnPropertyNames(this);
+  }
+  
+  get(id) {
+    const value = this[id];
+    return new Box(this, id);
+  }
+}
+
 // test
-const box = new Box(new Struct({
+const store = new Store();
+store.append({
   foo: 3,
   bar: 4
-}));
+});
+const id = store.ids()[0];
+const box = store.get(id);
 console.log(box);
 
 </script>
