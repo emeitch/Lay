@@ -437,7 +437,7 @@ const TodoMVC = {
 // console.log(TodoMVC);
 
 class UUID {
-  static create() {
+  static uuid() {
     // UUID ver 4 / RFC 4122
     var uuid = "", i, random;
     for (i = 0; i < 32; i++) {
@@ -450,6 +450,14 @@ class UUID {
     }
     return uuid;
   }
+  
+  constructor() {
+    this.str = this.constructor.uuid();
+  }
+  
+  get urn() {
+    return "urn:uuid:" + this.str;
+  }
 }
 
 class Struct {
@@ -458,24 +466,11 @@ class Struct {
   }
 }
 
-class Box {
-  constructor(store, id) {
-    this["@__store__"] = store
-    this["@id"] = id;
-    const value = store[id];
-    this.set(value);
-  }
-  
-  set(value) {
-    this["@value"] = value;
-    Object.assign(this, value);
-  }
-}
-
 class Store {
   append(value) {
-    const id = UUID.create();
-    this[id] = value;
+    const id = new UUID();
+    this[id.str] = value;
+    return id;
   }
   
   ids() {
@@ -483,18 +478,37 @@ class Store {
   }
   
   get(id) {
-    const value = this[id];
     return new Box(this, id);
   }
 }
 
+class Box {
+  constructor(store, id) {
+    this.__store__ = store;
+    this["@id"] = id;
+    this.sync();
+  }
+  
+  sync() {
+    const id = this["@id"];
+    const value = this.__store__[id.str];
+    this.refresh(value);
+  }
+  
+  refresh(value) {
+    this["@value"] = value;
+    Object.assign(this, value);
+  }
+}
+
+
+
 // test
 const store = new Store();
-store.append({
+const id = store.append({
   foo: 3,
   bar: 4
 });
-const id = store.ids()[0];
 const box = store.get(id);
 console.log(box);
 
