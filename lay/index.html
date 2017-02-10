@@ -436,7 +436,17 @@ const TodoMVC = {
 };
 // console.log(TodoMVC);
 
-class UUID {
+class Value {
+}
+
+class Struct extends Value {
+  constructor(init={}) {
+    super();
+    Object.assign(this, init);
+  }
+}
+
+class UUID extends Value {
   static uuid() {
     // UUID ver 4 / RFC 4122
     var uuid = "", i, random;
@@ -452,6 +462,7 @@ class UUID {
   }
   
   constructor() {
+    super();
     this.str = this.constructor.uuid();
   }
   
@@ -460,24 +471,12 @@ class UUID {
   }
 }
 
-class Struct {
-  constructor(init={}) {
-    Object.assign(this, init);
-  }
-}
-
 class Store {
-  append(value) {
-    const id = new UUID();
+  set(id, value) {
     this[id.str] = value;
-    return id;
   }
-  
-  ids() {
-    return Object.getOwnPropertyNames(this);
-  }
-  
-  get(id) {
+
+  box(id) {
     return new Box(this, id);
   }
 }
@@ -502,14 +501,16 @@ class Box {
 }
 
 
-
 // test
 const store = new Store();
-const id = store.append({
+const id = new UUID();
+const value = new Struct({
   foo: 3,
   bar: 4
 });
-const box = store.get(id);
+
+store.set(id, value);
+const box = store.box(id);
 console.log(box);
 
 </script>
