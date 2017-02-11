@@ -472,6 +472,12 @@ class UUID extends Value {
 }
 
 class Store {
+  append(value) {
+    const id = new UUID();
+    this.set(id, value);
+    return id;
+  }
+  
   set(id, value) {
     this[id.str] = value;
   }
@@ -503,13 +509,12 @@ class Box {
 
 // test
 const store = new Store();
-const id = new UUID();
 const value = new Struct({
   foo: 3,
   bar: 4
 });
 
-store.set(id, value);
+const id = store.append(value);
 const box = store.box(id);
 console.log(box);
 
