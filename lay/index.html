@@ -509,14 +509,27 @@ class Box {
 
 // test
 const store = new Store();
+
 const value = new Struct({
   foo: 3,
   bar: 4
 });
-
 const id = store.append(value);
 const box = store.box(id);
 console.log(box);
+
+const bazid = id;
+{
+  const v = new Struct({
+    foo: 3,
+    bar: 4,
+    baz: bazid,
+  });
+  const id = store.append(v);
+  const box = store.box(id);
+  console.log(box);
+}
+
 
 </script>
 </head>
