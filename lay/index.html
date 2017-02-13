@@ -502,7 +502,16 @@ class Box {
   
   refresh(value) {
     this["@value"] = value;
-    Object.assign(this, value);
+    for (var key in value) {
+      if (value.hasOwnProperty(key)) {
+        const v = value[key];
+        if (v instanceof UUID) {
+          Object.assign(this, {[key+"_id"]: v});
+        } else {
+          Object.assign(this, {[key]: v});
+        }
+      }
+    }
   }
 }
 
@@ -528,6 +537,7 @@ const bazid = id;
   const id = store.append(v);
   const box = store.box(id);
   console.log(box);
+  console.log(box.baz_id);
 }
 
 
