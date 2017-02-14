@@ -507,6 +507,11 @@ class Box {
         const v = value[key];
         if (v instanceof UUID) {
           Object.assign(this, {[key+"_id"]: v});
+          Object.defineProperty(this, key, {
+            get : () => store.box(v),
+            enumerable : true,
+            configurable : true
+          });
         } else {
           Object.assign(this, {[key]: v});
         }
@@ -530,14 +535,15 @@ console.log(box);
 const bazid = id;
 {
   const v = new Struct({
-    foo: 3,
-    bar: 4,
+    foo: 5,
+    bar: 6,
     baz: bazid,
   });
   const id = store.append(v);
   const box = store.box(id);
   console.log(box);
   console.log(box.baz_id);
+  console.log(box.baz);
 }
 
 
