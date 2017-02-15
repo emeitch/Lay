@@ -475,7 +475,7 @@ class Store {
   append(value) {
     const id = new UUID();
     this.set(id, value);
-    return id;
+    return this.box(id);
   }
   
   set(id, value) {
@@ -528,22 +528,19 @@ const value = new Struct({
   foo: 3,
   bar: 4
 });
-const id = store.append(value);
-const box = store.box(id);
-console.log(box);
+const b1 = store.append(value);
+console.log(b1);
 
-const bazid = id;
 {
   const v = new Struct({
     foo: 5,
     bar: 6,
-    baz: bazid,
+    baz: b1["@id"],
   });
-  const id = store.append(v);
-  const box = store.box(id);
-  console.log(box);
-  console.log(box.baz_id);
-  console.log(box.baz);
+  const b2 = store.append(v);
+  console.log(b2);
+  console.log(b2.baz_id);
+  console.log(b2.baz);
 }
 
 
