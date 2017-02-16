@@ -524,24 +524,21 @@ class Box {
 // test
 const store = new Store();
 
-const value = new Struct({
+const b1 = store.append(new Struct({
   foo: 3,
   bar: 4
-});
-const b1 = store.append(value);
+}));
 console.log(b1);
 
-{
-  const v = new Struct({
-    foo: 5,
-    bar: 6,
-    baz: b1["@id"],
-  });
-  const b2 = store.append(v);
-  console.log(b2);
-  console.log(b2.baz_id);
-  console.log(b2.baz);
-}
+const b2 = store.append(new Struct({
+  foo: 5,
+  bar: 6,
+  baz: b1["@id"],
+}));
+console.log(b2);
+
+console.log(b2.baz_id);
+console.log(b2.baz);
 
 
 </script>
