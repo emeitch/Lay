@@ -506,7 +506,6 @@ class Box {
       if (value.hasOwnProperty(key)) {
         const v = value[key];
         if (v instanceof UUID) {
-          Object.assign(this, {[key+"_id"]: v});
           Object.defineProperty(this, key, {
             get : () => store.box(v),
             enumerable : true,
@@ -537,8 +536,8 @@ const b2 = store.append(new Struct({
 }));
 console.log(b2);
 
-console.log(b2.baz_id);
 console.log(b2.baz);
+console.log(b2.baz["@id"]);
 
 
 </script>
