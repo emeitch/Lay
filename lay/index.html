@@ -523,16 +523,18 @@ class Box {
 // test
 const store = new Store();
 
-let b1 = store.append(new Struct());
-const b2 = store.append(new Struct({
-  foo: 5,
-  bar: 6,
-  baz: b1["@id"],
-}));
-b1 = store.set(b1["@id"], new Struct({
+const b1Id = new UUID();
+const b2Id = new UUID();
+
+const b1 = store.set(b1Id, new Struct({
   foo: 3, 
   bar: 4,
-  baz: b2["@id"],
+  baz: b2Id
+}));
+const b2 = store.set(b2Id, new Struct({
+  foo: 5,
+  bar: 6,
+  baz: b1Id
 }));
 
 console.log(b1);
