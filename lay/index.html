@@ -466,6 +466,10 @@ class UUID extends Value {
     this.str = this.constructor.uuid();
   }
   
+  toString() {
+    return this.str;
+  }
+  
   get urn() {
     return "urn:uuid:" + this.str;
   }
@@ -478,8 +482,12 @@ class Store {
   }
   
   set(id, value) {
-    this[id.str] = value;
+    this[id.toString()] = value;
     return this.box(id);
+  }
+  
+  get(id) {
+    return this[id.toString()];
   }
 
   box(id) {
@@ -496,7 +504,7 @@ class Box {
   
   sync() {
     const id = this["@id"];
-    const value = this.__store__[id.str];
+    const value = this.__store__.get(id);
     this.refresh(value);
   }
   
