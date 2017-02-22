@@ -518,7 +518,7 @@ class Box {
     for (var key in value) {
       if (value.hasOwnProperty(key)) {
         const v = value[key];
-        if (v instanceof UUID) {
+        if (v instanceof Key) {
           Object.defineProperty(this, key, {
             get : () => store.box(v),
             enumerable : true,
@@ -536,15 +536,22 @@ class Box {
 // test
 const store = new Store();
 
+const pId = new Key("prt");
 const b1Id = new UUID();
 const b2Id = new UUID();
 
+const p = store.set(pId, new Struct({
+  foo: 1,
+  bar: 2,
+}));
 const b1 = store.set(b1Id, new Struct({
+  _proto: pId,
   foo: 3, 
   bar: 4,
   baz: b2Id
 }));
 const b2 = store.set(b2Id, new Struct({
+  _proto: pId,
   foo: 5,
   bar: 6,
   baz: b1Id
@@ -556,6 +563,8 @@ console.log(b2);
 console.log(b2.baz);
 console.log(b2.baz.baz);
 console.log(b2.baz.baz.baz);
+
+console.log(b2._proto);
 
 </script>
 </head>
