@@ -506,6 +506,13 @@ class Box {
     this.id = id;
   }
   
+  get proto() {
+    const protoId = this.value["_proto"];
+    if (protoId != undefined) {
+      return store.box(protoId);
+    }
+  }
+  
   get value() {
     return this.store.get(this.id);
   }
@@ -514,6 +521,8 @@ class Box {
     const v = this.value[key];
     if (v instanceof Key) {
       return store.box(v);
+    } else if (v == undefined && this.proto != undefined) {
+      return this.proto.get(key);
     } else {
       return v;
     }
@@ -531,6 +540,7 @@ const b2Id = new UUID();
 const p = store.set(pId, new Struct({
   foo: 1,
   bar: 2,
+  fiz: 9
 }));
 const b1 = store.set(b1Id, new Struct({
   _proto: pId,
@@ -545,20 +555,26 @@ const b2 = store.set(b2Id, new Struct({
   baz: b1Id
 }));
 
+// box generation
 console.log(b1.id);
 console.log(b2.id);
 
+// box property access
 console.log(b1.get("foo"));
 console.log(b1.get("bar"));
-
 console.log(b2.get("foo"));
 console.log(b2.get("bar"));
 
+// circular referencing
 console.log(b2.get("baz").id);
 console.log(b2.get("baz").get("baz").id);
 console.log(b2.get("baz").get("baz").get("baz").id);
 
-console.log(b2.get("_proto").id);
+// prototype definition
+console.log(b2.proto.id);
+
+// prototype chain
+console.log(b2.get("fiz"));
 
 </script>
 </head>
