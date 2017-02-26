@@ -533,23 +533,27 @@ class Box {
 // test
 const store = new Store();
 
-const pId = new Key("prt");
+const peId = new UUID();
+const prId = new Key("prt");
 const b1Id = new UUID();
 const b2Id = new UUID();
 
-const p = store.set(pId, new Struct({
+const pe = store.set(peId, new Struct({
   foo: 1,
   bar: 2,
   fiz: 9
 }));
+const pr = store.set(prId, new Struct({
+  _proto: peId
+}));
 const b1 = store.set(b1Id, new Struct({
-  _proto: pId,
+  _proto: prId,
   foo: 3, 
   bar: 4,
   baz: b2Id
 }));
 const b2 = store.set(b2Id, new Struct({
-  _proto: pId,
+  _proto: prId,
   foo: 5,
   bar: 6,
   baz: b1Id
