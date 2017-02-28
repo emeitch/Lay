@@ -437,6 +437,9 @@ const TodoMVC = {
 // console.log(TodoMVC);
 
 class Value {
+  equals(other) {
+    return JSON.stringify(this) == JSON.stringify(other);
+  }
 }
 
 class Struct extends Value {
@@ -558,6 +561,12 @@ const b2 = store.set(b2Id, new Struct({
   bar: 6,
   baz: b1Id
 }));
+const b3 = store.set(b2Id, new Struct({
+  _proto: prId,
+  foo: 5,
+  bar: 6,
+  baz: b1Id
+}));
 
 // box generation
 console.log(b1.id);
@@ -579,6 +588,10 @@ console.log(b2.proto.id);
 
 // prototype chain
 console.log(b2.get("fiz"));
+
+// equivalency
+console.log(b2.value.equals(b3.value));
+console.log(b2.value.equals(b1.value));
 
 </script>
 </head>
