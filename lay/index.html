@@ -540,6 +540,7 @@ const peId = new UUID();
 const prId = new Key("proto1");
 const b1Id = new UUID();
 const b2Id = new UUID();
+const b3Id = new UUID();
 
 const pe = store.set(peId, new Struct({
   foo: 1,
@@ -561,7 +562,7 @@ const b2 = store.set(b2Id, new Struct({
   bar: 6,
   baz: b1Id
 }));
-const b3 = store.set(b2Id, new Struct({
+const b3 = store.set(b3Id, new Struct({
   _proto: prId,
   foo: 5,
   bar: 6,
