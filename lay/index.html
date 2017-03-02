@@ -483,15 +483,15 @@ class UUID extends Key {
   }
 }
 
-class Schema extends Struct {
+class PropertySchema extends Struct {
 }
 
-class Strong extends Schema {
+class Strong extends PropertySchema {
 }
 
 class Store {
   constructor() {
-    this.set(new Key("Strong"), new Strong());
+    this.set(new Key("strong"), new Strong());
   }
   
   append(value) {
