@@ -483,7 +483,17 @@ class UUID extends Key {
   }
 }
 
+class Schema extends Struct {
+}
+
+class Strong extends Schema {
+}
+
 class Store {
+  constructor() {
+    this.set(new Key("Strong"), new Strong());
+  }
+  
   append(value) {
     const id = new UUID();
     return this.set(id, value);
@@ -508,12 +518,13 @@ class Box {
     this.store = store;
     this.id = id;
   }
-  
+    
   get proto() {
-    const protoId = this.value["_proto"];
+    const protoId = this.value._proto;
     if (protoId != undefined) {
       return store.box(protoId);
     }
+    return undefined;
   }
   
   get value() {
@@ -526,6 +537,8 @@ class Box {
       return store.box(v);
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
+    } else if (v._proto == "strong" && v.default) { // todo: fix adhoc logic !!
+      return v.default;
     } else {
       return v;
     }
@@ -536,34 +549,34 @@ class Box {
 // test
 const store = new Store();
 
-const peId = new UUID();
-const prId = new Key("proto1");
+const pe1Id = new UUID();
+const pr1Id = new Key("proto1");
 const b1Id = new UUID();
 const b2Id = new UUID();
 const b3Id = new UUID();
 
-const pe = store.set(peId, new Struct({
+const pe1 = store.set(pe1Id, new Struct({
   foo: 1,
   bar: 2,
   fiz: 9
 }));
-const pr = store.set(prId, new Struct({
-  _proto: peId
+const pr1 = store.set(pr1Id, new Struct({
+  _proto: pe1Id
 }));
 const b1 = store.set(b1Id, new Struct({
-  _proto: prId,
+  _proto: pr1Id,
   foo: 3, 
   bar: 4,
   baz: b2Id
 }));
 const b2 = store.set(b2Id, new Struct({
-  _proto: prId,
+  _proto: pr1Id,
   foo: 5,
   bar: 6,
   baz: b1Id
 }));
 const b3 = store.set(b3Id, new Struct({
-  _proto: prId,
+  _proto: pr1Id,
   foo: 5,
   bar: 6,
   baz: b1Id
@@ -593,6 +606,29 @@ console.log(b2.get("fiz"));
 // equivalency
 console.log(b2.value.equals(b3.value));
 console.log(b2.value.equals(b1.value));
+
+
+// schema
+const pe2Id = new UUID();
+const pr2Id = new Key("proto1");
+const b4Id = new UUID();
+
+const pe2 = store.set(pe2Id, new Struct({
+  foo: new Struct({
+    _proto: new Key("strong"),
+    type: new Key("Object"),
+    default: "default_value"
+  }),
+}));
+const pr2 = store.set(pr2Id, new Struct({
+  _proto: pe2Id,
+}));
+const b4 = store.set(b4Id, new Struct({
+  _proto: pr2Id,
+}));
+
+// prototype chain by schema
+console.log(b4.get("foo"));
 
 </script>
 </head>
