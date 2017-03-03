@@ -508,8 +508,8 @@ class Store {
     return this[id.toString()];
   }
 
-  box(id) {
-    return new Box(this, id);
+  box(...path) {
+    return new Box(this, ...path);
   }
 }
 
@@ -532,9 +532,10 @@ class Box {
   }
   
   get value() {
-    let v = this.store;
-    for (const key of this.path) {
-      v = v.get(key);
+    let v = this.store.get(this.id);
+    const rest = this.path.slice(1);
+    for (const key of rest) {
+      v = v[key];
     }
     return v;
   }
@@ -547,6 +548,9 @@ class Box {
       return this.proto.get(key);
     } else if (v._proto == "strong" && v.default) { // todo: fix adhoc logic !!
       return v.default;
+    } else if (v instanceof Struct) {
+      const path = this.path.concat([key]);
+      return store.box(...path);
     } else {
       return v;
     }
@@ -606,6 +610,7 @@ console.log(b2.get("baz").get("baz").id);
 console.log(b2.get("baz").get("baz").get("baz").id);
 
 // prototype definition
+console.log(b2.get("_proto").id);
 console.log(b2.proto.id);
 
 // prototype chain
@@ -637,6 +642,21 @@ const b4 = store.set(b4Id, new Struct({
 
 // prototype chain by schema
 console.log(b4.get("foo"));
+
+
+// nested struct box
+const b5 = store.set(new UUID(), new Struct({
+  hoge: 3,
+  fuga: 4
+}));
+const b6 = store.set(new UUID(), new Struct({
+  foo: new Struct({
+    _proto: b5.id,
+    hoge: 5,
+  })
+}));
+console.log(b6.get("foo").get("hoge"));
+console.log(b6.get("foo").proto.get("hoge"));
 
 </script>
 </head>
