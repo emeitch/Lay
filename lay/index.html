@@ -514,9 +514,9 @@ class Store {
 }
 
 class Box {
-  constructor(store, id) {
+  constructor(store, ...path) {
     this.store = store;
-    this.id = id;
+    this.path = path;
   }
     
   get proto() {
@@ -527,8 +527,16 @@ class Box {
     return undefined;
   }
   
+  get id() {
+    return this.path[0];
+  }
+  
   get value() {
-    return this.store.get(this.id);
+    let v = this.store;
+    for (const key of this.path) {
+      v = v.get(key);
+    }
+    return v;
   }
   
   get(key) {
