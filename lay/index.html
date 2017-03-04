@@ -436,16 +436,17 @@ const TodoMVC = {
 };
 // console.log(TodoMVC);
 
-class Value {
-  equals(other) {
-    return JSON.stringify(this) == JSON.stringify(other);
-  }
+class LayObject {
 }
 
-class Struct extends Value {
+class Value extends LayObject {
   constructor(init={}) {
     super();
     Object.assign(this, init);
+  }
+  
+  equals(other) {
+    return JSON.stringify(this) == JSON.stringify(other);
   }
 }
 
@@ -483,15 +484,8 @@ class UUID extends Key {
   }
 }
 
-class PropertySchema extends Struct {
-}
-
-class Strong extends PropertySchema {
-}
-
 class Store {
   constructor() {
-    this.set(new Key("strong"), new Strong());
   }
   
   append(value) {
@@ -501,20 +495,21 @@ class Store {
   
   set(id, value) {
     this[id.toString()] = value;
-    return this.box(id);
+    return this.entity(id);
   }
   
   get(id) {
     return this[id.toString()];
   }
 
-  box(...path) {
-    return new Box(this, ...path);
+  entity(...path) {
+    return new Entity(this, ...path);
   }
 }
 
-class Box {
+class Entity extends LayObject {
   constructor(store, ...path) {
+    super();
     this.store = store;
     this.path = path;
   }
@@ -522,7 +517,7 @@ class Box {
   get proto() {
     const protoId = this.value._proto;
     if (protoId != undefined) {
-      return store.box(protoId);
+      return store.entity(protoId);
     }
     return undefined;
   }
@@ -543,14 +538,14 @@ class Box {
   get(key) {
     const v = this.value[key];
     if (v instanceof Key) {
-      return store.box(v);
+      return store.entity(v);
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
     } else if (v._proto == "strong" && v.default) { // todo: fix adhoc logic !!
       return v.default;
-    } else if (v instanceof Struct) {
+    } else if (v instanceof Value) {
       const path = this.path.concat([key]);
-      return store.box(...path);
+      return store.entity(...path);
     } else {
       return v;
     }
@@ -567,58 +562,58 @@ const b1Id = new UUID();
 const b2Id = new UUID();
 const b3Id = new UUID();
 
-const pe1 = store.set(pe1Id, new Struct({
+const pe1 = store.set(pe1Id, new Value({
   foo: 1,
   bar: 2,
   fiz: 9
 }));
-const pr1 = store.set(pr1Id, new Struct({
+const pr1 = store.set(pr1Id, new Value({
   _proto: pe1Id
 }));
-const b1 = store.set(b1Id, new Struct({
+const b1 = store.set(b1Id, new Value({
   _proto: pr1Id,
   foo: 3, 
   bar: 4,
   baz: b2Id
 }));
-const b2 = store.set(b2Id, new Struct({
+const b2 = store.set(b2Id, new Value({
   _proto: pr1Id,
   foo: 5,
   bar: 6,
   baz: b1Id
 }));
-const b3 = store.set(b3Id, new Struct({
+const b3 = store.set(b3Id, new Value({
   _proto: pr1Id,
   foo: 5,
   bar: 6,
   baz: b1Id
 }));
 
-// box generation
-console.log(b1.id);
-console.log(b2.id);
+// entity generation
+console.assert(b1.id instanceof UUID);
+console.assert(b2.id instanceof UUID);
 
-// box property access
-console.log(b1.get("foo"));
-console.log(b1.get("bar"));
-console.log(b2.get("foo"));
-console.log(b2.get("bar"));
+// entity property access
+console.assert(b1.get("foo") == 3);
+console.assert(b1.get("bar") == 4);
+console.assert(b2.get("foo") == 5);
+console.assert(b2.get("bar") == 6);
 
 // circular referencing
-console.log(b2.get("baz").id);
-console.log(b2.get("baz").get("baz").id);
-console.log(b2.get("baz").get("baz").get("baz").id);
+console.assert(b2.get("baz").id.equals(b1Id));
+console.assert(b2.get("baz").get("baz").id.equals(b2Id));
+console.assert(b2.get("baz").get("baz").get("baz").id.equals(b1Id));
 
 // prototype definition
-console.log(b2.get("_proto").id);
-console.log(b2.proto.id);
+console.assert(b2.get("_proto").id.equals(pr1Id));
+console.assert(b2.proto.id.equals(pr1Id));
 
 // prototype chain
-console.log(b2.get("fiz"));
+console.assert(b2.get("fiz") == 9);
 
 // equivalency
-console.log(b2.value.equals(b3.value));
-console.log(b2.value.equals(b1.value));
+console.assert(b2.value.equals(b3.value));
+console.assert(!b2.value.equals(b1.value));
 
 
 // schema
@@ -626,37 +621,39 @@ const pe2Id = new UUID();
 const pr2Id = new Key("proto1");
 const b4Id = new UUID();
 
-const pe2 = store.set(pe2Id, new Struct({
-  foo: new Struct({
+const pe2 = store.set(pe2Id, new Value({
+  foo: new Value({
     _proto: new Key("strong"),
     type: new Key("Object"),
     default: "default_value"
   }),
 }));
-const pr2 = store.set(pr2Id, new Struct({
+const pr2 = store.set(pr2Id, new Value({
   _proto: pe2Id,
 }));
-const b4 = store.set(b4Id, new Struct({
+const b4 = store.set(b4Id, new Value({
   _proto: pr2Id,
 }));
 
 // prototype chain by schema
-console.log(b4.get("foo"));
+console.assert(b4.get("foo") == "default_value");
 
 
-// nested struct box
-const b5 = store.set(new UUID(), new Struct({
+// nested struct entity
+const b5 = store.set(new UUID(), new Value({
   hoge: 3,
   fuga: 4
 }));
-const b6 = store.set(new UUID(), new Struct({
-  foo: new Struct({
+const b6 = store.set(new UUID(), new Value({
+  foo: new Value({
     _proto: b5.id,
     hoge: 5,
   })
 }));
-console.log(b6.get("foo").get("hoge"));
-console.log(b6.get("foo").proto.get("hoge"));
+console.assert(b6.get("foo").get("hoge") == 5);
+console.assert(b6.get("foo").proto.get("hoge") == 3);
+
+console.log("all tests success.")
 
 </script>
 </head>
