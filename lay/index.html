@@ -439,6 +439,13 @@ const TodoMVC = {
 class LayObject {
 }
 
+class Entity extends LayObject {
+  constructor(init={}) {
+    super();
+    Object.assign(this, init);
+  }
+}
+
 class Value extends LayObject {
   constructor(init={}) {
     super();
@@ -494,22 +501,46 @@ class Store {
   }
   
   set(id, value) {
+    const comps = {};
+    let proto = value._proto ? this.box(value._proto) : undefined;
+    while (proto) {
+      const val = proto.value;
+      for (var key in val) {
+        if (val.hasOwnProperty(key) && !comps[key]) {
+          const v = val[key];
+          if (v instanceof Entity) {
+            comps[key] = v;
+            this.append(new Value(v));
+          }
+        }
+      }
+      
+      proto = proto.proto;
+    }
+    
+    for (var key in comps) {
+      if (comps.hasOwnProperty(key)) {
+        const v = comps[key];
+        const comp = this.append(new Value(v));
+        value[key] = comp.id;
+      }
+    }
+    
     this[id.toString()] = value;
-    return this.entity(id);
+    return this.box(id);
   }
   
   get(id) {
     return this[id.toString()];
   }
 
-  entity(...path) {
-    return new Entity(this, ...path);
+  box(...path) {
+    return new Box(this, ...path);
   }
 }
 
-class Entity extends LayObject {
+class Box {
   constructor(store, ...path) {
-    super();
     this.store = store;
     this.path = path;
   }
@@ -517,7 +548,7 @@ class Entity extends LayObject {
   get proto() {
     const protoId = this.value._proto;
     if (protoId != undefined) {
-      return store.entity(protoId);
+      return store.box(protoId);
     }
     return undefined;
   }
@@ -538,14 +569,12 @@ class Entity extends LayObject {
   get(key) {
     const v = this.value[key];
     if (v instanceof Key) {
-      return store.entity(v);
+      return this.store.box(v);
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
-    } else if (v._proto == "strong" && v.default) { // todo: fix adhoc logic !!
-      return v.default;
     } else if (v instanceof Value) {
       const path = this.path.concat([key]);
-      return store.entity(...path);
+      return this.store.box(...path);
     } else {
       return v;
     }
@@ -589,11 +618,11 @@ const b3 = store.set(b3Id, new Value({
   baz: b1Id
 }));
 
-// entity generation
+// box generation
 console.assert(b1.id instanceof UUID);
 console.assert(b2.id instanceof UUID);
 
-// entity property access
+// box property access
 console.assert(b1.get("foo") == 3);
 console.assert(b1.get("bar") == 4);
 console.assert(b2.get("foo") == 5);
@@ -618,14 +647,12 @@ console.assert(!b2.value.equals(b1.value));
 
 // schema
 const pe2Id = new UUID();
-const pr2Id = new Key("proto1");
+const pr2Id = new Key("proto2");
 const b4Id = new UUID();
 
 const pe2 = store.set(pe2Id, new Value({
-  foo: new Value({
-    _proto: new Key("strong"),
-    type: new Key("Object"),
-    default: "default_value"
+  foo: new Entity({
+    bar: 3
   }),
 }));
 const pr2 = store.set(pr2Id, new Value({
@@ -635,11 +662,15 @@ const b4 = store.set(b4Id, new Value({
   _proto: pr2Id,
 }));
 
-// prototype chain by schema
-console.assert(b4.get("foo") == "default_value");
+// prototype chain by entity
+console.assert(b4.get("foo").get("bar") == 3);
+// entity is not box
+console.assert(pe2.get("foo").id == undefined); 
+// instantiation with proto entity generates new box
+console.assert(b4.get("foo").id instanceof UUID);
 
 
-// nested struct entity
+// nested value box
 const b5 = store.set(new UUID(), new Value({
   hoge: 3,
   fuga: 4
