@@ -521,6 +521,7 @@ class Store {
     for (var key in comps) {
       if (comps.hasOwnProperty(key)) {
         const v = comps[key];
+        v["_parent"] = id;
         const comp = this.append(new Value(v));
         value[key] = comp.id;
       }
@@ -553,6 +554,14 @@ class Box {
     return undefined;
   }
   
+  get parent() {
+    const parentId = this.value._parent;
+    if (parentId != undefined) {
+      return store.box(parentId);
+    }
+    return undefined;
+  }
+  
   get id() {
     return this.path[0];
   }
@@ -565,7 +574,7 @@ class Box {
     }
     return v;
   }
-  
+    
   get(key) {
     const v = this.value[key];
     if (v instanceof Key) {
@@ -645,7 +654,7 @@ console.assert(b2.value.equals(b3.value));
 console.assert(!b2.value.equals(b1.value));
 
 
-// schema
+// entity schema for composition
 const pe2Id = new UUID();
 const pr2Id = new Key("proto2");
 const b4Id = new UUID();
@@ -668,6 +677,8 @@ console.assert(b4.get("foo").get("bar") == 3);
 console.assert(pe2.get("foo").id == undefined); 
 // instantiation with proto entity generates new box
 console.assert(b4.get("foo").id instanceof UUID);
+// parent entity access
+console.assert(b4.get("foo").parent.id.equals(b4.id));
 
 
 // nested value box
