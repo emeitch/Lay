@@ -436,31 +436,25 @@ const TodoMVC = {
 };
 // console.log(TodoMVC);
 
+Object.prototype.equals = function(other) {
+  return JSON.stringify(this) === JSON.stringify(other);
+};
 class LayObject {
-}
-
-class Entity extends LayObject {
-  constructor(init={}) {
-    super();
-    Object.assign(this, init);
+  constructor(obj={}) {
+    Object.assign(this, obj);
   }
 }
 
 class Value extends LayObject {
-  constructor(init={}) {
-    super();
-    Object.assign(this, init);
-  }
-  
-  equals(other) {
-    return JSON.stringify(this) == JSON.stringify(other);
-  }
 }
 
-class Identifier extends Value {
+class Entity extends LayObject {
 }
 
-class Key extends Value {
+class Identifier extends LayObject {
+}
+
+class Key extends Identifier {
   constructor(str) {
     super();
     this.str = str;
@@ -504,13 +498,13 @@ class Store {
     const comps = {};
     let proto = value._proto ? this.box(value._proto) : undefined;
     while (proto) {
-      const val = proto.value;
+      const val = proto.obj;
       for (var key in val) {
         if (val.hasOwnProperty(key) && !comps[key]) {
           const v = val[key];
           if (v instanceof Entity) {
             comps[key] = v;
-            this.append(new Value(v));
+            this.append(v);
           }
         }
       }
@@ -522,7 +516,7 @@ class Store {
       if (comps.hasOwnProperty(key)) {
         const v = comps[key];
         v["_parent"] = id;
-        const comp = this.append(new Value(v));
+        const comp = this.append(v);
         value[key] = comp.id;
       }
     }
@@ -547,7 +541,7 @@ class Box {
   }
     
   get proto() {
-    const protoId = this.value._proto;
+    const protoId = this.obj._proto;
     if (protoId != undefined) {
       return store.box(protoId);
     }
@@ -555,7 +549,7 @@ class Box {
   }
   
   get parent() {
-    const parentId = this.value._parent;
+    const parentId = this.obj._parent;
     if (parentId != undefined) {
       return store.box(parentId);
     }
@@ -566,7 +560,7 @@ class Box {
     return this.path[0];
   }
   
-  get value() {
+  get obj() {
     let v = this.store.get(this.id);
     const rest = this.path.slice(1);
     for (const key of rest) {
@@ -580,12 +574,12 @@ class Box {
   }
     
   get(key) {
-    const v = this.value[key];
+    const v = this.obj[key];
     if (v instanceof Key) {
       return this.store.box(v);
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
-    } else if (v instanceof Value) {
+    } else if (v instanceof Object) {
       const path = this.path.concat([key]);
       return this.store.box(...path);
     } else {
@@ -598,34 +592,34 @@ class Box {
 // test suite
 const store = new Store();
 
-const pe1 = store.append(new Value({
+const pe1 = store.append({
   foo: 1,
   bar: 2,
   fiz: 9
-}));
-const pr1 = store.set(new Key("proto1"), new Value({
+});
+const pr1 = store.set(new Key("proto1"), {
   _proto: pe1.id
-}));
+});
 
 const b2Id = new UUID();
-const b1 = store.append(new Value({
+const b1 = store.append({
   _proto: pr1.id,
   foo: 3, 
   bar: 4,
   baz: b2Id
-}));
-const b2 = store.set(b2Id, new Value({
+});
+const b2 = store.set(b2Id, {
   _proto: pr1.id,
   foo: 5,
   bar: 6,
   baz: b1.id
-}));
-const b3 = store.append(new Value({
+});
+const b3 = store.append({
   _proto: pr1.id,
   foo: 5,
   bar: 6,
   baz: b1.id
-}));
+});
 
 // box generation
 console.assert(b1.id instanceof UUID);
@@ -650,44 +644,43 @@ console.assert(b2.proto.equals(pr1));
 console.assert(b2.get("fiz") == 9);
 
 // equivalency
-console.assert(b2.value.equals(b3.value));
-console.assert(!b2.value.equals(b1.value));
+console.assert(b2.obj.equals(b3.obj));
+console.assert(!b2.obj.equals(b1.obj));
 
 
 // entity schema for composition
-const pe2 = store.append(new Value({
+const pe2 = store.append({
   foo: new Entity({
     bar: 3
   }),
-}));
-const pr2 = store.set(new Key("proto2"), new Value({
+});
+const pr2 = store.set(new Key("proto2"), {
   _proto: pe2.id,
-}));
-const b4 = store.append(new Value({
+});
+const b4 = store.append({
   _proto: pr2.id,
-}));
+});
 
 // prototype chain by entity
 console.assert(b4.get("foo").get("bar") == 3);
-// entity is not box
-console.assert(pe2.get("foo").id == undefined); 
 // instantiation with proto entity generates a child box
-console.assert(b4.get("foo").id instanceof UUID);
+console.assert(pe2.get("foo").id.equals(pe2.id)); 
+console.assert(!b4.get("foo").id.equals(b4.id));
 // parent entity access
 console.assert(b4.get("foo").parent.equals(b4));
 
 
 // nested value box
-const b5 = store.append(new Value({
+const b5 = store.append({
   hoge: 3,
   fuga: 4
-}));
-const b6 = store.append(new Value({
-  foo: new Value({
+});
+const b6 = store.append({
+  foo: {
     _proto: b5.id,
     hoge: 5,
-  })
-}));
+  }
+});
 console.assert(b6.get("foo").get("hoge") == 5);
 console.assert(b6.get("foo").proto.get("hoge") == 3);
 
