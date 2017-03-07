@@ -494,17 +494,16 @@ class Store {
     return this.set(id, value);
   }
   
-  set(id, value) {
+  set(id, object) {
     const comps = {};
-    let proto = value._proto ? this.box(value._proto) : undefined;
+    let proto = object._proto ? this.box(object._proto) : undefined;
     while (proto) {
-      const val = proto.obj;
-      for (var key in val) {
-        if (val.hasOwnProperty(key) && !comps[key]) {
-          const v = val[key];
-          if (v instanceof Entity) {
-            comps[key] = v;
-            this.append(v);
+      const obj = proto.obj;
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key) && !comps[key]) {
+          const o = obj[key];
+          if (o instanceof Entity) {
+            comps[key] = o;
           }
         }
       }
@@ -514,14 +513,15 @@ class Store {
     
     for (var key in comps) {
       if (comps.hasOwnProperty(key)) {
-        const v = comps[key];
-        v["_parent"] = id;
-        const comp = this.append(v);
-        value[key] = comp.id;
+        const o = comps[key];
+        const obj = object[key] ? Object.assign({}, o, object[key]) : o;
+        obj["_parent"] = id;
+        const comp = this.append(obj);
+        object[key] = comp.id;
       }
     }
     
-    this[id.toString()] = value;
+    this[id.toString()] = object;
     return this.box(id);
   }
   
@@ -651,7 +651,8 @@ console.assert(!b2.obj.equals(b1.obj));
 // entity schema for composition
 const pe2 = store.append({
   foo: new Entity({
-    bar: 3
+    bar: 3,
+    baz: 4
   }),
 });
 const pr2 = store.set(new Key("proto2"), {
@@ -659,6 +660,9 @@ const pr2 = store.set(new Key("proto2"), {
 });
 const b4 = store.append({
   _proto: pr2.id,
+  foo: {
+    baz: 5
+  },
 });
 
 // prototype chain by entity
@@ -668,6 +672,8 @@ console.assert(pe2.get("foo").id.equals(pe2.id));
 console.assert(!b4.get("foo").id.equals(b4.id));
 // parent entity access
 console.assert(b4.get("foo").parent.equals(b4));
+// override child entity property
+console.assert(b4.get("foo").get("baz") == 5);
 
 
 // nested value box
