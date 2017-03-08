@@ -705,6 +705,10 @@ console.assert(b4.get("foo").get("baz") == 6);
 b4.set({fiz: 9});
 console.assert(b4.get("fiz") == 9);
 
+// update child by object
+b4.get("foo").set({baz: 7});
+console.assert(b4.get("foo").get("baz") == 7);
+
 
 // nested value box
 const b5 = store.append({
