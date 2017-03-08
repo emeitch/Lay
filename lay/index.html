@@ -586,6 +586,11 @@ class Box {
       return v;
     }
   }
+  
+  set(key, value) {
+    const object = Object.assign({}, this.obj, {[key]: value});
+    this.store.set(this.id, object);
+  }
 }
 
 
@@ -652,7 +657,7 @@ console.assert(!b2.obj.equals(b1.obj));
 const pe2 = store.append({
   foo: new Entity({
     bar: 3,
-    baz: 4
+    baz: 4,
   }),
 });
 const pr2 = store.set(new Key("proto2"), {
@@ -661,8 +666,9 @@ const pr2 = store.set(new Key("proto2"), {
 const b4 = store.append({
   _proto: pr2.id,
   foo: {
-    baz: 5
+    baz: 5,
   },
+  fiz: 9,
 });
 
 // prototype chain by entity
@@ -675,6 +681,10 @@ console.assert(b4.get("foo").parent.equals(b4));
 // override child entity property
 console.assert(b4.get("foo").get("baz") == 5);
 
+// setter
+console.assert(b4.get("fiz") == 9);
+b4.set("fiz", 8);
+console.assert(b4.get("fiz") == 8);
 
 // nested value box
 const b5 = store.append({
