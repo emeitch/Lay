@@ -486,24 +486,17 @@ class UUID extends Key {
 }
 
 class Store {
-  constructor() {
-  }
-  
-  append(value) {
-    const id = new UUID();
-    return this.set(id, value);
-  }
-  
-  set(id, object) {
-    const comps = {};
+  entities(object) {
+    const entities = {};
+    
     let proto = object._proto ? this.box(object._proto) : undefined;
     while (proto) {
       const obj = proto.obj;
       for (var key in obj) {
-        if (obj.hasOwnProperty(key) && !comps[key]) {
+        if (obj.hasOwnProperty(key)) {
           const o = obj[key];
-          if (o instanceof Entity) {
-            comps[key] = o;
+          if (o instanceof Entity && !entities[key]) {
+            entities[key] = o;
           }
         }
       }
@@ -511,9 +504,14 @@ class Store {
       proto = proto.proto;
     }
     
+    return entities;
+  }
+  
+  set(id, object) {
     const box = this.box(id);    
-    for (var key in comps) {
-      if (comps.hasOwnProperty(key)) {
+    const entities = this.entities(object);
+    for (var key in entities) {
+      if (entities.hasOwnProperty(key)) {
         
         // removing old child parent
         if (box) {
@@ -524,21 +522,26 @@ class Store {
           }
         }
         
-        const o = comps[key];
-        const obj = object[key] ? Object.assign({}, o, object[key]) : o;
-        
+        const entity = entities[key];
+        const override = object[key];
+        const obj = override ? Object.assign({}, entity, override) : entity;
         const childId = obj._id || new UUID();
-        delete obj._id;
         
+        delete obj._id;
         obj._parent = id;
         
-        const comp = this.set(childId, obj);
-        object[key] = comp.id;
+        this.set(childId, obj);
+        object[key] = childId;
       }
     }
     
     this[id.toString()] = object;
     return this.box(id);
+  }
+  
+  append(object) {
+    const id = new UUID();
+    return this.set(id, object);
   }
   
   get(id) {
