@@ -511,9 +511,19 @@ class Store {
       proto = proto.proto;
     }
     
-    
+    const box = this.box(id);    
     for (var key in comps) {
       if (comps.hasOwnProperty(key)) {
+        
+        // removing old child parent
+        if (box) {
+          const old = box.get(key);
+          if (old) {
+            const o = Object.assign({}, old.obj, {_parent: null});
+            old.set(o);
+          }
+        }
+        
         const o = comps[key];
         const obj = object[key] ? Object.assign({}, o, object[key]) : o;
         
@@ -536,7 +546,12 @@ class Store {
   }
 
   box(...path) {
-    return new Box(this, ...path);
+    const box = new Box(this, ...path);
+    if (box.obj) {
+      return box;
+    }
+    
+    return undefined;
   }
 }
 
@@ -606,6 +621,14 @@ class Box {
     }
     
     const object = Object.assign({}, this.obj, obj);
+    
+    // remove null property
+    for (var key in object) {
+      if (object.hasOwnProperty(key) && object[key] === null) {
+        delete object[key];
+      }
+    }
+    
     this.store.set(this.id, object);
   }
 }
@@ -716,11 +739,13 @@ b4.get("foo").set({baz: 7});
 console.assert(b4.get("foo").get("baz") == 7);
 
 // update parent and child by object
-const oldFooId = b4.get("foo").id;
+const oldFoo = b4.get("foo");
 b4.set({fiz: 7, foo: {baz: 8}});
 console.assert(b4.get("fiz") == 7);
 console.assert(b4.get("foo").get("baz") == 8);
-console.assert(!b4.get("foo").id.equals(oldFooId)); // updated
+console.assert(!b4.get("foo").id.equals(oldFoo.id)); // updated
+console.assert(oldFoo.obj._parent === undefined);
+console.assert(oldFoo.parent === undefined);
 
 // update parent and child by object with child identifier
 const fooId = b4.get("foo").id;
