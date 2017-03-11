@@ -770,16 +770,25 @@ b4.get("foo").set("baz", 6);
 console.assert(b4.get("foo").get("baz") == 6);
 
 // update by object
-b4.set({fiz: 9});
+b4.set({
+  fiz: 9
+});
 console.assert(b4.get("fiz") == 9);
 
 // update child by object
-b4.get("foo").set({baz: 7});
+b4.get("foo").set({
+  baz: 7
+});
 console.assert(b4.get("foo").get("baz") == 7);
 
 // update parent and child by object
 const oldFoo = b4.get("foo");
-b4.set({fiz: 7, foo: {baz: 8}});
+b4.set({
+  fiz: 7,
+  foo: {
+    baz: 8
+  }
+});
 console.assert(b4.get("fiz") == 7);
 console.assert(b4.get("foo").get("baz") == 8);
 console.assert(!b4.get("foo").id.equals(oldFoo.id)); // updated
@@ -788,7 +797,13 @@ console.assert(oldFoo.parent === undefined);
 
 // update parent and child by object with child identifier
 const fooId = b4.get("foo").id;
-b4.set({fiz: 6, foo: {_id: fooId, baz: 9}});
+b4.set({
+  fiz: 6, 
+  foo: {
+    _id: fooId,
+    baz: 9
+  }
+});
 console.assert(b4.get("fiz") == 6);
 console.assert(b4.get("foo").get("baz") == 9);
 console.assert(b4.get("foo").id.equals(fooId)); // not updated
