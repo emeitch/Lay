@@ -517,7 +517,28 @@ class Store {
   }
   
   set(id, object) {
-    const box = this.box(id);    
+    const box = this.box(id);
+    
+    const key = object._key;
+    if (key) {
+      this.set(key, id);
+      
+      if (box && box.key && box.key != key) {
+        delete this[box.key];
+      }
+    }
+    
+    // key referencing termination
+    for (const key in object) {
+      if (object.hasOwnProperty(key)) {
+        const o = object[key];
+        
+        if (o instanceof Key) {
+          object[key] = this.box(o).id;
+        }
+      }
+    }
+     
     const entities = this.entities(object);
     for (const key in entities) {
       if (entities.hasOwnProperty(key)) {
@@ -543,11 +564,6 @@ class Store {
       }
     }
     
-    const key = object._key;
-    if (key) {
-      this.set(key, id);
-    }
-
     this[id.toString()] = object;
     return this.box(id);
   }
@@ -774,6 +790,15 @@ b4.set({fiz: 6, foo: {_id: fooId, baz: 9}});
 console.assert(b4.get("fiz") == 6);
 console.assert(b4.get("foo").get("baz") == 9);
 console.assert(b4.get("foo").id.equals(fooId)); // not updated
+
+// update proto's key name
+console.assert(store.box("proto2"));
+console.assert(!store.box("proto2dash"));
+const k2dash = new Key("proto2dash");
+p2.set("_key", k2dash.str);
+console.assert(!store.box("proto2"));
+console.assert(b4.proto.key == "proto2dash");
+console.assert(store.box("proto2dash").equals(p2));
 
 
 // nested value box
