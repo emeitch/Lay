@@ -486,10 +486,21 @@ class UUID extends Key {
 }
 
 class Store {
+  protoOf(object) {
+    const _proto = object._proto;
+    if (_proto instanceof UUID) {
+      return this.box(_proto);
+    } else if (_proto instanceof Key) {
+      return this.box(this.get(_proto));
+    }
+
+    return undefined;
+  }
+  
   entities(object) {
     const entities = {};
     
-    let proto = object._proto ? this.box(object._proto) : undefined;
+    let proto = this.protoOf(object);
     while (proto) {
       const obj = proto.obj;
       for (var key in obj) {
@@ -512,7 +523,6 @@ class Store {
     const entities = this.entities(object);
     for (const key in entities) {
       if (entities.hasOwnProperty(key)) {
-        
         // removing old child parent
         if (box) {
           const old = box.get(key);
@@ -537,7 +547,7 @@ class Store {
     
     const key = object._key;
     if (key) {
-      this.set(key, {_proto: id});
+      this.set(key, id);
     }
 
     this[id.toString()] = object;
@@ -570,11 +580,7 @@ class Box {
   }
     
   get proto() {
-    const protoId = this.obj._proto;
-    if (protoId != undefined) {
-      return store.box(protoId);
-    }
-    return undefined;
+    return this.store.protoOf(this.obj);
   }
   
   get parent() {
@@ -603,8 +609,12 @@ class Box {
   }
     
   get(key) {
+    if (key == "_proto") {
+      return this.proto;
+    }
+    
     const v = this.obj[key];
-    if (v instanceof Key) {
+    if (v instanceof UUID) {
       return this.store.box(v);
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
@@ -688,8 +698,8 @@ console.assert(b2.get("baz").get("baz").equals(b2));
 console.assert(b2.get("baz").get("baz").get("baz").equals(b1));
 
 // prototype definition
-console.assert(b2.get("_proto").equals(store.box(k1)));
-console.assert(b2.proto.equals(store.box(k1)));
+console.assert(b2.get("_proto").equals(p1));
+console.assert(b2.proto.equals(p1));
 
 // prototype chain
 console.assert(b2.get("fiz") == 9);
@@ -700,26 +710,27 @@ console.assert(!b2.obj.equals(b1.obj));
 
 
 // entity schema for composition
+const k2 = new Key("proto2");
 const p2 = store.append({
-  _key: "proto2",
+  _key: k2.str,
   foo: new Entity({
     bar: 3,
     baz: 4,
   }),
 });
 const b4 = store.append({
-  _proto: new Key("proto2"),
+  _proto: k2,
   foo: {
     baz: 5,
   },
   fiz: 9,
 });
 
-// prototype chain by entity
-console.assert(b4.get("foo").get("bar") == 3);
 // instantiation with proto entity generates a child box
 console.assert(p2.get("foo").id.equals(p2.id)); 
 console.assert(!b4.get("foo").id.equals(b4.id));
+// prototype chain by entity
+console.assert(b4.get("foo").get("bar") == 3);
 // parent entity access
 console.assert(b4.get("foo").parent.equals(b4));
 // override child entity property
