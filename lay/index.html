@@ -595,6 +595,10 @@ class Box {
     return this.path[0];
   }
   
+  get key() {
+    return this.obj._key;
+  }
+  
   get obj() {
     let v = this.store.get(this.id);
     const rest = this.path.slice(1);
@@ -700,6 +704,9 @@ console.assert(b2.get("baz").get("baz").get("baz").equals(b1));
 // prototype definition
 console.assert(b2.get("_proto").equals(p1));
 console.assert(b2.proto.equals(p1));
+
+// prototype
+console.assert(b2.proto.key == "proto1");
 
 // prototype chain
 console.assert(b2.get("fiz") == 9);
