@@ -517,6 +517,11 @@ class Store {
   }
   
   set(id, object) {
+    if (object == null) {
+      delete this[id];
+      return undefined;
+    }
+    
     const box = this.box(id);
     
     const key = object._key;
@@ -524,17 +529,22 @@ class Store {
       this.set(key, id);
       
       if (box && box.key && box.key != key) {
-        delete this[box.key];
+        this.set(box.key, null);
       }
     }
     
-    // key referencing termination
     for (const key in object) {
       if (object.hasOwnProperty(key)) {
         const o = object[key];
         
+        // key referencing termination
         if (o instanceof Key) {
           object[key] = this.box(o).id;
+        }
+        
+        // remove null property
+        if (o === null) {
+          delete object[key];
         }
       }
     }
@@ -654,15 +664,7 @@ class Box {
       throw `arguments error #{args}`;
     }
     
-    const object = Object.assign({}, this.obj, obj);
-    
-    // remove null property
-    for (var key in object) {
-      if (object.hasOwnProperty(key) && object[key] === null) {
-        delete object[key];
-      }
-    }
-    
+    const object = Object.assign({}, this.obj, obj);        
     this.store.set(this.id, object);
   }
 }
