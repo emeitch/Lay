@@ -452,9 +452,6 @@ class Entity extends LayObject {
 }
 
 class Identifier extends LayObject {
-}
-
-class Key extends Identifier {
   constructor(str) {
     super();
     this.str = str;
@@ -465,7 +462,10 @@ class Key extends Identifier {
   }
 }
 
-class UUID extends Key {
+class Key extends Identifier {
+}
+
+class UUID extends Identifier {
   static uuid() {
     // UUID ver 4 / RFC 4122
     var uuid = "", i, random;
