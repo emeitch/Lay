@@ -488,10 +488,8 @@ class UUID extends Identifier {
 class Store {
   protoOf(object) {
     const _proto = object._proto;
-    if (_proto instanceof UUID) {
+    if (_proto) {
       return this.box(_proto);
-    } else if (_proto instanceof Key) {
-      return this.box(this.get(_proto));
     }
 
     return undefined;
@@ -615,12 +613,8 @@ class Box {
   }
     
   get(key) {
-    if (key == "_proto") {
-      return this.proto;
-    }
-    
     const v = this.obj[key];
-    if (v instanceof UUID) {
+    if (v instanceof Identifier) {
       return this.store.box(v);
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
