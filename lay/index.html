@@ -565,11 +565,13 @@ class Store {
 
   box(...path) {
     const box = new Box(this, ...path);
-    if (box.obj) {
-      return box;
+    if (!box.obj) {
+      return undefined;
+    } else if (box.obj instanceof Identifier) {
+      return this.box(box.obj);
     }
     
-    return undefined;
+    return box;
   }
 }
 
@@ -704,9 +706,12 @@ console.assert(b2.get("baz").get("baz").get("baz").equals(b1));
 // prototype definition
 console.assert(b2.get("_proto").equals(p1));
 console.assert(b2.proto.equals(p1));
-
-// prototype
 console.assert(b2.proto.key == "proto1");
+
+// get method returns raw id value
+console.assert(store.get("proto1").equals(p1.id));
+// box method resolves id reference
+console.assert(store.box("proto1").equals(p1));
 
 // prototype chain
 console.assert(b2.get("fiz") == 9);
