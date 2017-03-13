@@ -439,6 +439,9 @@ const TodoMVC = {
 Object.prototype.equals = function(other) {
   return JSON.stringify(this) === JSON.stringify(other);
 };
+Object.prototype.notEquals = function(other) {
+  return !this.equals(other);
+}
 class LayObject {
   constructor(obj={}) {
     Object.assign(this, obj);
@@ -730,7 +733,7 @@ console.assert(b2.get("fiz") == 9);
 
 // equivalency
 console.assert(b2.obj.equals(b3.obj));
-console.assert(!b2.obj.equals(b1.obj));
+console.assert(b2.obj.notEquals(b1.obj));
 
 
 // entity schema for composition
@@ -752,7 +755,7 @@ const b4 = store.append({
 
 // instantiation with proto entity generates a child box
 console.assert(p2.get("foo").id.equals(p2.id)); 
-console.assert(!b4.get("foo").id.equals(b4.id));
+console.assert(b4.get("foo").id.notEquals(b4.id));
 // prototype chain by entity
 console.assert(b4.get("foo").get("bar") == 3);
 // parent entity access
@@ -791,7 +794,7 @@ b4.set({
 });
 console.assert(b4.get("fiz") == 7);
 console.assert(b4.get("foo").get("baz") == 8);
-console.assert(!b4.get("foo").id.equals(oldFoo.id)); // updated
+console.assert(b4.get("foo").id.notEquals(oldFoo.id)); // updated
 console.assert(oldFoo.obj._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
