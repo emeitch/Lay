@@ -846,6 +846,7 @@ console.log("all tests succeeded.")
 // algebraic data type
 // e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
 const integer = store.append({
+  _proto: Value.name,
   _key: "Integer",
 })
 const color = store.append({
