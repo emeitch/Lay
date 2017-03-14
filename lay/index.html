@@ -837,6 +837,37 @@ console.assert(b6.get("foo").proto.get("hoge") == 3);
 
 console.log("all tests succeeded.")
 
+
+// algebraic data type
+// e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
+const integer = store.append({
+  _key: "Integer",
+})
+const color = store.append({
+  _key: "Color"
+});
+const red = store.append({
+  _proto: color.key,
+  _key: "Red",
+});
+const blue = store.append({
+  _proto: color.key,
+  _key: "Green",
+});
+const green = store.append({
+  _proto: color.key,
+  _key: "Blue",
+});
+const rgb = store.append({
+  _proto: color.key,
+  _key: "RGB",
+  r: new Key("Integer"),
+  g: new Key("Integer"),
+  b: new Key("Integer"),
+});
+
+
+
 </script>
 </head>
 <body>
