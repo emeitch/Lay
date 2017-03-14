@@ -489,6 +489,11 @@ class UUID extends Identifier {
 }
 
 class Store {
+  constructor() {
+    this.append(new Value({_key: Value.name}));
+    this.append(new Entity({_key: Entity.name}));
+  }
+  
   protoOf(object) {
     const _proto = object._proto;
     if (_proto) {
@@ -844,6 +849,7 @@ const integer = store.append({
   _key: "Integer",
 })
 const color = store.append({
+  _proto: Value.name,
   _key: "Color"
 });
 const red = store.append({
