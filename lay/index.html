@@ -448,6 +448,12 @@ class LayObject {
   }
 }
 
+class Error extends LayObject {
+}
+
+class TypeError extends Error {
+}
+
 class Value extends LayObject {
 }
 
@@ -497,6 +503,9 @@ class Store {
     this.append(Object.assign(new Array(), {_key: Array.name}));
     this.append(new Value({_key: Value.name}));
     this.append(new Entity({_key: Entity.name}));
+    
+    this.append(new Error({_key: Error.name}));
+    this.append(new TypeError({_key: TypeError.name}));
   }
   
   protoOf(object) {
@@ -536,6 +545,13 @@ class Store {
     }
     
     const box = this.box(id);
+    
+    const proto = this.protoOf(object);
+    const error = proto ? proto.validate(object) : undefined;
+    if (error) {
+      this[id.toString()] = error;
+      return this.box(id);
+    }
     
     const key = object._key;
     if (key) {
@@ -649,6 +665,25 @@ class Box {
   
   equals(other) {
     return this.id.equals(other.id);
+  }
+  
+  validate(object) {
+    for (var key in object) {
+      if (object.hasOwnProperty(key)) {
+        const v = object[key];
+        const prop = this.get(key);
+        const pv = (prop && prop.obj) || prop;
+        if (pv 
+          && pv.notEquals(v.__proto__) 
+          && pv.__proto__.notEquals(v.__proto__)) {
+          return new Value({
+            _proto: new Key(TypeError.name),
+          });
+        }
+      }
+    }
+    
+    return null;
   }
     
   get(key) {
@@ -852,7 +887,7 @@ console.log("all tests succeeded.")
 // e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
 const color = store.append({
   _proto: Value.name,
-  _key: "Color"
+  _key: "Color",
 });
 const red = store.append({
   _proto: color.key,
@@ -874,6 +909,14 @@ const rgb = store.append({
   b: new Key("Number"),
 });
 
+// premitive type error
+const err1 = store.append({
+  _proto: rgb.key,
+  r: 5,
+  g: 6,
+  b: "invalid",
+});
+console.assert(err1.proto.equals(store.box("TypeError")));
 
 
 </script>
