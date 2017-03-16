@@ -880,8 +880,6 @@ const b6 = store.append({
 console.assert(b6.get("foo").get("hoge") == 5);
 console.assert(b6.get("foo").proto.get("hoge") == 3);
 
-console.log("all tests succeeded.")
-
 
 // algebraic data type
 // e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
@@ -919,6 +917,7 @@ const err1 = store.append({
 console.assert(err1.proto.equals(store.box("TypeError")));
 
 
+console.log("all tests succeeded.");
 </script>
 </head>
 <body>
