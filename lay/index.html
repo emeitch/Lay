@@ -490,6 +490,11 @@ class UUID extends Identifier {
 
 class Store {
   constructor() {
+    // premitives
+    this.append(Object.assign(new Boolean(false), {_key: Boolean.name}));
+    this.append(Object.assign(new Number(0), {_key: Number.name}));
+    this.append(Object.assign(new String(""), {_key: String.name}));
+    this.append(Object.assign(new Array(), {_key: Array.name}));
     this.append(new Value({_key: Value.name}));
     this.append(new Entity({_key: Entity.name}));
   }
@@ -845,10 +850,6 @@ console.log("all tests succeeded.")
 
 // algebraic data type
 // e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
-const integer = store.append({
-  _proto: Value.name,
-  _key: "Integer",
-})
 const color = store.append({
   _proto: Value.name,
   _key: "Color"
@@ -868,9 +869,9 @@ const green = store.append({
 const rgb = store.append({
   _proto: color.key,
   _key: "RGB",
-  r: new Key("Integer"),
-  g: new Key("Integer"),
-  b: new Key("Integer"),
+  r: new Key("Number"),
+  g: new Key("Number"),
+  b: new Key("Number"),
 });
 
 
