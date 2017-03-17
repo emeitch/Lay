@@ -454,6 +454,9 @@ class Error extends LayObject {
 class TypeError extends Error {
 }
 
+class RequiredPropertyError extends Error {
+}
+
 class Value extends LayObject {
 }
 
@@ -497,15 +500,34 @@ class UUID extends Identifier {
 class Store {
   constructor() {
     // premitives
-    this.append(Object.assign(new Boolean(false), {_key: Boolean.name}));
-    this.append(Object.assign(new Number(0), {_key: Number.name}));
-    this.append(Object.assign(new String(""), {_key: String.name}));
-    this.append(Object.assign(new Array(), {_key: Array.name}));
-    this.append(new Value({_key: Value.name}));
-    this.append(new Entity({_key: Entity.name}));
+    this.append(Object.assign(new Boolean(false), {
+      _key: Boolean.name, 
+      _abstract: true
+    }));
+    this.append(Object.assign(new Number(0), {
+      _key: Number.name,
+      _abstract: true
+    }));
+    this.append(Object.assign(new String(""), {
+      _key: String.name,
+      _abstract: true
+    }));
+    this.append(Object.assign(new Array(), {
+      _key: Array.name,
+      _abstract: true
+    }));
+    this.append(new Value({
+      _key: Value.name,
+      _abstract: true
+    }));
+    this.append(new Entity({
+      _key: Entity.name,
+      _abstract: true
+    }));
     
     this.append(new Error({_key: Error.name}));
     this.append(new TypeError({_key: TypeError.name}));
+    this.append(new RequiredPropertyError({_key: RequiredPropertyError.name}));
   }
   
   protoOf(object) {
@@ -655,6 +677,10 @@ class Box {
     return this.path[0];
   }
   
+  get isAbstract() {
+    return this.obj._abstract;
+  }
+  
   get key() {
     return this.obj._key;
   }
@@ -683,6 +709,16 @@ class Box {
           && pv.__proto__.notEquals(v.__proto__)) {
           return new Value({
             _proto: new Key(TypeError.name),
+          });
+        }
+      }
+    }
+    
+    for (var key in this.obj) {
+      if (this.obj.hasOwnProperty(key)) {
+        if (this.get(key).isAbstract && object[key] == undefined) {
+          return new Value({
+            _proto: new Key(RequiredPropertyError.name),
           });
         }
       }
@@ -920,6 +956,16 @@ const err1 = store.append({
   b: "invalid",
 });
 console.assert(err1.proto.equals(store.box("TypeError")));
+
+
+// required property error
+const err2 = store.append({
+  _proto: rgb.key,
+  r: 5,
+  g: 6,
+  // b: "nothing",
+});
+console.assert(err2.proto.equals(store.box("RequiredPropertyError")));
 
 
 // recurcive definition
