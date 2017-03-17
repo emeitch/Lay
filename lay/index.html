@@ -568,7 +568,12 @@ class Store {
         
         // key referencing termination
         if (o instanceof Key) {
-          object[key] = this.box(o).id;
+          if (o.str == object._key) {
+            // for recurcive definition
+            object[key] = id;
+          } else {
+            object[key] = this.box(o).id;  
+          }
         }
         
         // remove null property
@@ -915,6 +920,15 @@ const err1 = store.append({
   b: "invalid",
 });
 console.assert(err1.proto.equals(store.box("TypeError")));
+
+
+// recurcive definition
+const list = store.append({
+  _key: "List",
+  car: new Key("Entity"),
+  cdr: new Key("List"),
+});
+console.assert(store.box("List").get("cdr").equals(store.box("List")));
 
 
 console.log("all tests succeeded.");
