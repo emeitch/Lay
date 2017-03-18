@@ -898,7 +898,7 @@ b4.setObj({
 });
 console.assert(b4.get("fiz") == 7);
 console.assert(b4.get("foo").get("baz") == 8);
-console.assert(b4.get("foo").path.top.notEquals(oldFoo.path.top)); // updated
+console.assert(b4.get("foo").path.notEquals(oldFoo.path)); // updated
 console.assert(oldFoo.obj._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
