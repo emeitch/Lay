@@ -903,17 +903,17 @@ console.assert(oldFoo.obj._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
 // update parent and child by object with child identifier
-const fooId = b4.get("foo").path.top;
+const fooPath = b4.get("foo").path;
 b4.setObj({
   fiz: 6, 
   foo: {
-    _id: fooId,
+    _id: fooPath.top,
     baz: 9
   }
 });
 console.assert(b4.get("fiz") == 6);
 console.assert(b4.get("foo").get("baz") == 9);
-console.assert(b4.get("foo").path.top.equals(fooId)); // not updated
+console.assert(b4.get("foo").path.equals(fooPath)); // not updated
 
 // update proto's key name
 console.assert(store.get("proto2"));
