@@ -435,7 +435,7 @@ const TodoMVC = {
   }
 };
 // console.log(TodoMVC);
-
+  
 Object.prototype.equals = function(other) {
   return JSON.stringify(this) === JSON.stringify(other);
 };
@@ -464,6 +464,32 @@ class Entity extends LayObject {
 }
 
 class Path extends LayObject {
+  static generateUUID() {
+    // UUID ver 4 / RFC 4122
+    var uuid = "", i, random;
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+      
+      if (i == 8 || i == 12 || i == 16 || i == 20) {
+        uuid += "-"
+      }
+      uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+    }
+    return uuid;
+  }
+
+  static uuid() {
+    return "urn:uuid:" + this.generateUUID();
+  }
+  
+  static isUUID(key) {
+    return key.match(/^urn:uuid:/);
+  }
+  
+  static isSymbol(key) {
+    return !this.isUUID(key);
+  }
+
   constructor(...keys) {
     super();
     this.keys = keys;
@@ -480,44 +506,6 @@ class Path extends LayObject {
   child(key) {
     const keys = this.keys.concat([key]);
     return new this.constructor(...keys);
-  }
-}
-
-class Identifier extends LayObject {
-  constructor(str) {
-    super();
-    this.str = str;
-  }
-  
-  toString() {
-    return this.str;
-  }
-  
-  path(...rest) {
-    return new Path(this, ...rest);
-  }
-}
-
-class Key extends Identifier {
-}
-
-class UUID extends Identifier {
-  static uuid() {
-    // UUID ver 4 / RFC 4122
-    var uuid = "", i, random;
-    for (i = 0; i < 32; i++) {
-      random = Math.random() * 16 | 0;
-      
-      if (i == 8 || i == 12 || i == 16 || i == 20) {
-        uuid += "-"
-      }
-      uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
-    }
-    return uuid;
-  }
-  
-  constructor() {
-    super("urn:uuid:" + UUID.uuid());
   }
 }
 
@@ -555,9 +543,9 @@ class Store {
   }
   
   protoOf(object) {
-    const _proto = object._proto;
-    if (_proto) {
-      return this.get(_proto);
+    const protoPath = object._proto;
+    if (protoPath) {
+      return this.get(protoPath);
     }
 
     return undefined;
@@ -584,95 +572,100 @@ class Store {
     return entities;
   }
   
-  setObj(id, object) {
+  setObj(key, object) {
     if (object == null) {
-      delete this[id];
+      delete this[key];
       return undefined;
     }
     
-    const box = this.get(id);
+    const box = this.get(key);
     
     const proto = this.protoOf(object);
     const error = proto ? proto.validate(object) : undefined;
     if (error) {
-      this[id.toString()] = error;
-      return this.get(id);
+      this[key] = error;
+      return this.get(key);
     }
     
-    const key = object._key;
-    if (key) {
-      this.setObj(key, id);
+    const k = object._key;
+    if (k) {
+      this.setObj(k, new Path(key));
       
-      if (box && box.key && box.key != key) {
+      if (box && box.key && box.key != k) {
         this.setObj(box.key, null);
       }
     }
     
-    for (const key in object) {
-      if (object.hasOwnProperty(key)) {
-        const o = object[key];
+    for (const k in object) {
+      if (object.hasOwnProperty(k)) {
+        const o = object[k];
         
-        // key referencing termination
-        if (o instanceof Key) {
-          if (o.str == object._key) {
+        // symbol referencing termination
+        if (o instanceof Path && Path.isSymbol(o.top) && o.rest.length == 0) {
+          if (o.top == object._key) {
             // for recurcive definition
-            object[key] = id;
+            object[k] = new Path(key);
           } else {
-            object[key] = this.get(o).id;  
+            object[k] = this.get(o).path;
           }
         }
         
         // remove null property
         if (o === null) {
-          delete object[key];
+          delete object[k];
         }
       }
     }
      
     const entities = this.entities(object);
-    for (const key in entities) {
-      if (entities.hasOwnProperty(key)) {
-        // removing old child parent
+    for (const k in entities) {
+      if (entities.hasOwnProperty(k)) {
+        // remove old child parent
         if (box) {
-          const old = box.get(key);
+          const old = box.get(k);
           if (old) {
             const o = Object.assign({}, old.obj, {_parent: null});
             old.setObj(o);
           }
         }
         
-        const entity = entities[key];
-        const override = object[key];
+        const entity = entities[k];
+        const override = object[k];
         const obj = override ? Object.assign({}, entity, override) : entity;
-        const childId = obj._id || new UUID();
+        const childId = obj._id || Path.uuid();
         
         delete obj._id;
-        obj._parent = id;
+        obj._parent = new Path(key);
         
         this.setObj(childId, obj);
-        object[key] = childId;
+        object[k] = new Path(childId);
       }
     }
     
-    this[id.toString()] = object;
-    return this.get(id);
+    this[key] = object;
+    return this.get(key);
   }
   
   append(object) {
-    const id = new UUID();
-    return this.setObj(id, object);
+    const key = Path.uuid();
+    return this.setObj(key, object);
   }
   
-  getObj(id) {
-    return this[id.toString()];
+  getObj(key) {
+    return this[key];
   }
 
-  get(...ids) {
-    const box = new Box(this, ...ids);
+  get(keyOrPath) {
+    const pth = keyOrPath instanceof Path ? keyOrPath : new Path(keyOrPath);
+    const box = new Box(this, pth);
     if (!box.obj) {
       return undefined;
-    } else if (box.obj instanceof Identifier) {
-      return this.get(box.obj);
+    } else if (box.obj instanceof Path) {
+      let b = this;
+      for (const k of box.obj.keys) {
+        b = b.get(k);
+      }
+      return b;
     }
     
     return box;
@@ -680,15 +673,11 @@ class Store {
 }
 
 class Box {
-  constructor(store, ...ids) {
+  constructor(store, pth) {
     this.store = store;
-    this.path = new Path(...ids);
+    this.path = pth;
   }
   
-  get id() {
-    return this.path.top;
-  }
-    
   get proto() {
     return this.store.protoOf(this.obj);
   }
@@ -718,7 +707,7 @@ class Box {
   }
   
   equals(other) {
-    return this.id.equals(other.id);
+    return this.path.equals(other.path);
   }
   
   validate(object) {
@@ -731,7 +720,7 @@ class Box {
           && pv.notEquals(v.__proto__) 
           && pv.__proto__.notEquals(v.__proto__)) {
           return new Value({
-            _proto: new Key(TypeError.name),
+            _proto: new Path(TypeError.name),
           });
         }
       }
@@ -741,7 +730,7 @@ class Box {
       if (this.obj.hasOwnProperty(key)) {
         if (this.get(key).isAbstract && object[key] == undefined) {
           return new Value({
-            _proto: new Key(RequiredPropertyError.name),
+            _proto: new Path(RequiredPropertyError.name),
           });
         }
       }
@@ -752,12 +741,17 @@ class Box {
     
   get(key) {
     const v = this.obj[key];
-    if (v instanceof Identifier) {
-      return this.store.get(v);
+    if (v instanceof Path) {
+      // todo: Storeのgetと実装が重複している
+      let b = this.store;
+      for (const k of v.keys) {
+        b = b.get(k);
+      }
+      return b;
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
     } else if (v instanceof Object) {
-      return this.store.get(...this.path.child(key).keys);
+      return this.store.get(this.path.child(key));
     } else {
       return v;
     }
@@ -775,8 +769,9 @@ class Box {
       throw `arguments error #{args}`;
     }
     
+    // todo: 多段Pathの場合の子階層書き換えに対応できていない
     const object = Object.assign({}, this.obj, obj);        
-    this.store.setObj(this.id, object);
+    this.store.setObj(this.path.top, object);
   }
 }
 
@@ -784,36 +779,36 @@ class Box {
 // test suite
 const store = new Store();
 
-const k1 = new Key("proto1");
+const pth1 = new Path("proto1");
 const p1 = store.append({
-  _key: k1.str,
+  _key: pth1.top,
   foo: 1,
   bar: 2,
   fiz: 9
 });
-const b2Id = new UUID();
+const b2id = Path.uuid();
 const b1 = store.append({
-  _proto: k1,
+  _proto: p1.path,
   foo: 3, 
   bar: 4,
-  baz: b2Id
+  baz: new Path(b2id)
 });
-const b2 = store.setObj(b2Id, {
-  _proto: k1,
+const b2 = store.setObj(b2id, {
+  _proto: p1.path,
   foo: 5,
   bar: 6,
-  baz: b1.id
+  baz: b1.path
 });
 const b3 = store.append({
-  _proto: k1,
+  _proto: p1.path,
   foo: 5,
   bar: 6,
-  baz: b1.id
+  baz: b1.path
 });
 
 // box generation
-console.assert(b1.id instanceof UUID);
-console.assert(b2.id instanceof UUID);
+console.assert(b1.path instanceof Path);
+console.assert(b2.path instanceof Path);
 
 // box property access
 console.assert(b1.get("foo") == 3);
@@ -832,7 +827,7 @@ console.assert(b2.proto.equals(p1));
 console.assert(b2.proto.key == "proto1");
 
 // get method returns raw id value
-console.assert(store.getObj("proto1").equals(p1.id));
+console.assert(store.getObj("proto1").equals(p1.path));
 // box method resolves id reference
 console.assert(store.get("proto1").equals(p1));
 
@@ -845,16 +840,16 @@ console.assert(b2.obj.notEquals(b1.obj));
 
 
 // entity schema for composition
-const k2 = new Key("proto2");
+const k2 = "proto2";
 const p2 = store.append({
-  _key: k2.str,
+  _key: k2,
   foo: new Entity({
     bar: 3,
     baz: 4,
   }),
 });
 const b4 = store.append({
-  _proto: k2,
+  _proto: new Path(k2),
   foo: {
     baz: 5,
   },
@@ -862,8 +857,9 @@ const b4 = store.append({
 });
 
 // instantiation with proto entity generates a child box
-console.assert(p2.get("foo").id.equals(p2.id)); 
-console.assert(b4.get("foo").id.notEquals(b4.id));
+console.assert(p2.get("foo").path.keys.equals([p2.path.top, "foo"])); 
+console.assert(p2.get("foo").path.keys.length == 2); 
+console.assert(b4.get("foo").path.keys.length == 1);
 // prototype chain by entity
 console.assert(b4.get("foo").get("bar") == 3);
 // parent entity access
@@ -902,12 +898,12 @@ b4.setObj({
 });
 console.assert(b4.get("fiz") == 7);
 console.assert(b4.get("foo").get("baz") == 8);
-console.assert(b4.get("foo").id.notEquals(oldFoo.id)); // updated
+console.assert(b4.get("foo").path.top.notEquals(oldFoo.path.top)); // updated
 console.assert(oldFoo.obj._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
 // update parent and child by object with child identifier
-const fooId = b4.get("foo").id;
+const fooId = b4.get("foo").path.top;
 b4.setObj({
   fiz: 6, 
   foo: {
@@ -917,13 +913,13 @@ b4.setObj({
 });
 console.assert(b4.get("fiz") == 6);
 console.assert(b4.get("foo").get("baz") == 9);
-console.assert(b4.get("foo").id.equals(fooId)); // not updated
+console.assert(b4.get("foo").path.top.equals(fooId)); // not updated
 
 // update proto's key name
 console.assert(store.get("proto2"));
 console.assert(!store.get("proto2dash"));
-const k2dash = new Key("proto2dash");
-p2.setObj("_key", k2dash.str);
+const k2dash = new Path("proto2dash");
+p2.setObj("_key", k2dash.top);
 console.assert(!store.get("proto2"));
 console.assert(b4.proto.key == "proto2dash");
 console.assert(store.get("proto2dash").equals(p2));
@@ -936,7 +932,7 @@ const b5 = store.append({
 });
 const b6 = store.append({
   foo: {
-    _proto: b5.id,
+    _proto: b5.path,
     hoge: 5,
   }
 });
@@ -965,9 +961,9 @@ const green = store.append({
 const rgb = store.append({
   _proto: color.key,
   _key: "RGB",
-  r: new Key("Number"),
-  g: new Key("Number"),
-  b: new Key("Number"),
+  r: new Path("Number"),
+  g: new Path("Number"),
+  b: new Path("Number"),
 });
 
 // premitive type error
@@ -995,8 +991,8 @@ console.assert(store.get("Color"));
 // recurcive definition
 const list = store.append({
   _key: "List",
-  car: new Key("Entity"),
-  cdr: new Key("List"),
+  car: new Path("Entity"),
+  cdr: new Path("List"),
 });
 console.assert(store.get("List").get("cdr").equals(store.get("List")));
 
