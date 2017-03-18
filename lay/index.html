@@ -533,7 +533,7 @@ class Store {
   protoOf(object) {
     const _proto = object._proto;
     if (_proto) {
-      return this.box(_proto);
+      return this.get(_proto);
     }
 
     return undefined;
@@ -566,13 +566,13 @@ class Store {
       return undefined;
     }
     
-    const box = this.box(id);
+    const box = this.get(id);
     
     const proto = this.protoOf(object);
     const error = proto ? proto.validate(object) : undefined;
     if (error) {
       this[id.toString()] = error;
-      return this.box(id);
+      return this.get(id);
     }
     
     const key = object._key;
@@ -594,7 +594,7 @@ class Store {
             // for recurcive definition
             object[key] = id;
           } else {
-            object[key] = this.box(o).id;  
+            object[key] = this.get(o).id;  
           }
         }
         
@@ -631,7 +631,7 @@ class Store {
     }
     
     this[id.toString()] = object;
-    return this.box(id);
+    return this.get(id);
   }
   
   append(object) {
@@ -643,12 +643,12 @@ class Store {
     return this[id.toString()];
   }
 
-  box(...path) {
+  get(...path) {
     const box = new Box(this, ...path);
     if (!box.obj) {
       return undefined;
     } else if (box.obj instanceof Identifier) {
-      return this.box(box.obj);
+      return this.get(box.obj);
     }
     
     return box;
@@ -668,7 +668,7 @@ class Box {
   get parent() {
     const parentId = this.obj._parent;
     if (parentId != undefined) {
-      return store.box(parentId);
+      return store.get(parentId);
     }
     return undefined;
   }
@@ -730,12 +730,12 @@ class Box {
   get(key) {
     const v = this.obj[key];
     if (v instanceof Identifier) {
-      return this.store.box(v);
+      return this.store.get(v);
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
     } else if (v instanceof Object) {
       const path = this.path.concat([key]);
-      return this.store.box(...path);
+      return this.store.get(...path);
     } else {
       return v;
     }
@@ -812,7 +812,7 @@ console.assert(b2.proto.key == "proto1");
 // get method returns raw id value
 console.assert(store.getValue("proto1").equals(p1.id));
 // box method resolves id reference
-console.assert(store.box("proto1").equals(p1));
+console.assert(store.get("proto1").equals(p1));
 
 // prototype chain
 console.assert(b2.get("fiz") == 9);
@@ -898,13 +898,13 @@ console.assert(b4.get("foo").get("baz") == 9);
 console.assert(b4.get("foo").id.equals(fooId)); // not updated
 
 // update proto's key name
-console.assert(store.box("proto2"));
-console.assert(!store.box("proto2dash"));
+console.assert(store.get("proto2"));
+console.assert(!store.get("proto2dash"));
 const k2dash = new Key("proto2dash");
 p2.set("_key", k2dash.str);
-console.assert(!store.box("proto2"));
+console.assert(!store.get("proto2"));
 console.assert(b4.proto.key == "proto2dash");
-console.assert(store.box("proto2dash").equals(p2));
+console.assert(store.get("proto2dash").equals(p2));
 
 
 // nested value box
@@ -955,7 +955,7 @@ const err1 = store.append({
   g: 6,
   b: "invalid",
 });
-console.assert(err1.proto.equals(store.box("TypeError")));
+console.assert(err1.proto.equals(store.get("TypeError")));
 
 // required property error
 const err2 = store.append({
@@ -964,10 +964,10 @@ const err2 = store.append({
   g: 6,
   // b: "nothing",
 });
-console.assert(err2.proto.equals(store.box("RequiredPropertyError")));
+console.assert(err2.proto.equals(store.get("RequiredPropertyError")));
 
 // namespace
-console.assert(store.box("Color"));
+console.assert(store.get("Color"));
 
 
 // recurcive definition
@@ -976,7 +976,7 @@ const list = store.append({
   car: new Key("Entity"),
   cdr: new Key("List"),
 });
-console.assert(store.box("List").get("cdr").equals(store.box("List")));
+console.assert(store.get("List").get("cdr").equals(store.get("List")));
 
 
 console.log("all tests succeeded.");
