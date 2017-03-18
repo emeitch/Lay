@@ -463,6 +463,25 @@ class Value extends LayObject {
 class Entity extends LayObject {
 }
 
+class Path extends LayObject {
+  constructor(...ids) {
+    super();
+    this.ids = ids;
+  }
+  
+  get top() {
+    return this.ids[0];
+  }
+  
+  get rest() {
+    return this.ids.slice(1);
+  }
+  
+  child(key) {
+    return new this.constructor(...this.ids.concat([key]));
+  }
+}
+
 class Identifier extends LayObject {
   constructor(str) {
     super();
@@ -471,6 +490,10 @@ class Identifier extends LayObject {
   
   toString() {
     return this.str;
+  }
+  
+  path(...rest) {
+    return new Path(this, ...rest);
   }
 }
 
@@ -643,8 +666,8 @@ class Store {
     return this[id.toString()];
   }
 
-  get(...path) {
-    const box = new Box(this, ...path);
+  get(...ids) {
+    const box = new Box(this, ...ids);
     if (!box.obj) {
       return undefined;
     } else if (box.obj instanceof Identifier) {
@@ -656,9 +679,13 @@ class Store {
 }
 
 class Box {
-  constructor(store, ...path) {
+  constructor(store, ...ids) {
     this.store = store;
-    this.path = path;
+    this.path = new Path(...ids);
+  }
+  
+  get id() {
+    return this.path.top;
   }
     
   get proto() {
@@ -673,10 +700,6 @@ class Box {
     return undefined;
   }
   
-  get id() {
-    return this.path[0];
-  }
-  
   get isAbstract() {
     return this.obj._abstract;
   }
@@ -686,9 +709,8 @@ class Box {
   }
   
   get obj() {
-    let v = this.store.getObj(this.id);
-    const rest = this.path.slice(1);
-    for (const key of rest) {
+    let v = this.store.getObj(this.path.top);
+    for (const key of this.path.rest) {
       v = v[key];
     }
     return v;
@@ -734,8 +756,7 @@ class Box {
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
     } else if (v instanceof Object) {
-      const path = this.path.concat([key]);
-      return this.store.get(...path);
+      return this.store.get(...this.path.child(key).ids);
     } else {
       return v;
     }
