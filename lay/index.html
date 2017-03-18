@@ -856,11 +856,11 @@ const b4 = store.append({
 });
 
 // instantiation with proto entity generates a child box
-console.assert(p2.get("foo").path.top.equals(p2.path.top));
 console.assert(p2.get("foo").path.keys.length == 2);
+console.assert(b4.get("foo").path.keys.length == 1);
+console.assert(p2.get("foo").path.top.equals(p2.path.top));
 console.assert(p2.get("foo").path.keys[1] == "foo");
 console.assert(b4.get("foo").path.top.notEquals(b4.path.top));
-console.assert(b4.get("foo").path.keys.length == 1);
 // prototype chain by entity
 console.assert(b4.get("foo").get("bar") == 3);
 // parent entity access
