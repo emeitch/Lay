@@ -639,7 +639,7 @@ class Store {
     return this.set(id, object);
   }
   
-  get(id) {
+  getValue(id) {
     return this[id.toString()];
   }
 
@@ -686,7 +686,7 @@ class Box {
   }
   
   get obj() {
-    let v = this.store.get(this.id);
+    let v = this.store.getValue(this.id);
     const rest = this.path.slice(1);
     for (const key of rest) {
       v = v[key];
@@ -810,7 +810,7 @@ console.assert(b2.proto.equals(p1));
 console.assert(b2.proto.key == "proto1");
 
 // get method returns raw id value
-console.assert(store.get("proto1").equals(p1.id));
+console.assert(store.getValue("proto1").equals(p1.id));
 // box method resolves id reference
 console.assert(store.box("proto1").equals(p1));
 
