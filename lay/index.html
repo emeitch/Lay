@@ -560,7 +560,7 @@ class Store {
     return entities;
   }
   
-  set(id, object) {
+  setObj(id, object) {
     if (object == null) {
       delete this[id];
       return undefined;
@@ -577,10 +577,10 @@ class Store {
     
     const key = object._key;
     if (key) {
-      this.set(key, id);
+      this.setObj(key, id);
       
       if (box && box.key && box.key != key) {
-        this.set(box.key, null);
+        this.setObj(box.key, null);
       }
     }
     
@@ -613,7 +613,7 @@ class Store {
           const old = box.get(key);
           if (old) {
             const o = Object.assign({}, old.obj, {_parent: null});
-            old.set(o);
+            old.setObj(o);
           }
         }
         
@@ -625,7 +625,7 @@ class Store {
         delete obj._id;
         obj._parent = id;
         
-        this.set(childId, obj);
+        this.setObj(childId, obj);
         object[key] = childId;
       }
     }
@@ -636,10 +636,10 @@ class Store {
   
   append(object) {
     const id = new UUID();
-    return this.set(id, object);
+    return this.setObj(id, object);
   }
   
-  getValue(id) {
+  getObj(id) {
     return this[id.toString()];
   }
 
@@ -686,7 +686,7 @@ class Box {
   }
   
   get obj() {
-    let v = this.store.getValue(this.id);
+    let v = this.store.getObj(this.id);
     const rest = this.path.slice(1);
     for (const key of rest) {
       v = v[key];
@@ -741,7 +741,7 @@ class Box {
     }
   }
   
-  set(...args) {
+  setObj(...args) {
     let obj = undefined;
     if (typeof(args[0]) == "string" && args[1] != undefined) {
       const key = args[0];
@@ -754,7 +754,7 @@ class Box {
     }
     
     const object = Object.assign({}, this.obj, obj);        
-    this.store.set(this.id, object);
+    this.store.setObj(this.id, object);
   }
 }
 
@@ -776,7 +776,7 @@ const b1 = store.append({
   bar: 4,
   baz: b2Id
 });
-const b2 = store.set(b2Id, {
+const b2 = store.setObj(b2Id, {
   _proto: k1,
   foo: 5,
   bar: 6,
@@ -810,7 +810,7 @@ console.assert(b2.proto.equals(p1));
 console.assert(b2.proto.key == "proto1");
 
 // get method returns raw id value
-console.assert(store.getValue("proto1").equals(p1.id));
+console.assert(store.getObj("proto1").equals(p1.id));
 // box method resolves id reference
 console.assert(store.get("proto1").equals(p1));
 
@@ -851,28 +851,28 @@ console.assert(b4.get("foo").get("baz") == 5);
 
 // update property
 console.assert(b4.get("fiz") == 9);
-b4.set("fiz", 8);
+b4.setObj("fiz", 8);
 console.assert(b4.get("fiz") == 8);
 
 // update child property
-b4.get("foo").set("baz", 6);
+b4.get("foo").setObj("baz", 6);
 console.assert(b4.get("foo").get("baz") == 6);
 
 // update by object
-b4.set({
+b4.setObj({
   fiz: 9
 });
 console.assert(b4.get("fiz") == 9);
 
 // update child by object
-b4.get("foo").set({
+b4.get("foo").setObj({
   baz: 7
 });
 console.assert(b4.get("foo").get("baz") == 7);
 
 // update parent and child by object
 const oldFoo = b4.get("foo");
-b4.set({
+b4.setObj({
   fiz: 7,
   foo: {
     baz: 8
@@ -886,7 +886,7 @@ console.assert(oldFoo.parent === undefined);
 
 // update parent and child by object with child identifier
 const fooId = b4.get("foo").id;
-b4.set({
+b4.setObj({
   fiz: 6, 
   foo: {
     _id: fooId,
@@ -901,7 +901,7 @@ console.assert(b4.get("foo").id.equals(fooId)); // not updated
 console.assert(store.get("proto2"));
 console.assert(!store.get("proto2dash"));
 const k2dash = new Key("proto2dash");
-p2.set("_key", k2dash.str);
+p2.setObj("_key", k2dash.str);
 console.assert(!store.get("proto2"));
 console.assert(b4.proto.key == "proto2dash");
 console.assert(store.get("proto2dash").equals(p2));
