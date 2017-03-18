@@ -957,7 +957,6 @@ const err1 = store.append({
 });
 console.assert(err1.proto.equals(store.box("TypeError")));
 
-
 // required property error
 const err2 = store.append({
   _proto: rgb.key,
@@ -966,6 +965,9 @@ const err2 = store.append({
   // b: "nothing",
 });
 console.assert(err2.proto.equals(store.box("RequiredPropertyError")));
+
+// namespace
+console.assert(store.box("Color"));
 
 
 // recurcive definition
