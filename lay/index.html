@@ -464,21 +464,22 @@ class Entity extends LayObject {
 }
 
 class Path extends LayObject {
-  constructor(...ids) {
+  constructor(...keys) {
     super();
-    this.ids = ids;
+    this.keys = keys;
   }
   
   get top() {
-    return this.ids[0];
+    return this.keys[0];
   }
   
   get rest() {
-    return this.ids.slice(1);
+    return this.keys.slice(1);
   }
   
   child(key) {
-    return new this.constructor(...this.ids.concat([key]));
+    const keys = this.keys.concat([key]);
+    return new this.constructor(...keys);
   }
 }
 
@@ -756,7 +757,7 @@ class Box {
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
     } else if (v instanceof Object) {
-      return this.store.get(...this.path.child(key).ids);
+      return this.store.get(...this.path.child(key).keys);
     } else {
       return v;
     }
