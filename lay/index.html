@@ -486,7 +486,7 @@ class Path extends LayObject {
     return key.match(/^urn:uuid:/);
   }
   
-  static isSymbol(key) {
+  static isName(key) {
     return !this.isUUID(key);
   }
 
@@ -601,7 +601,7 @@ class Store {
         const o = object[k];
         
         // symbol referencing termination
-        if (o instanceof Path && Path.isSymbol(o.top) && o.rest.length == 0) {
+        if (o instanceof Path && Path.isName(o.top) && o.rest.length == 0) {
           if (o.top == object._name) {
             // for recurcive definition
             object[k] = new Path(key);
