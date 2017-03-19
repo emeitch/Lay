@@ -745,16 +745,14 @@ class Box {
   get(key) {
     const v = this.obj[key];
     if (v instanceof Path) {
-      // todo: Storeのgetと実装が重複している
-      let b = this.store;
-      for (const k of v.keys) {
-        b = b.get(k);
-      }
-      return b;
-    } else if (v == undefined && this.proto != undefined) {
-      return this.proto.get(key);
+      // entity reference
+      return this.store.getByPath(v);
     } else if (v instanceof Object) {
+      // embeded object
       return this.store.getByPath(this.path.child(key));
+    } else if (v == undefined && this.proto != undefined) {
+      // prototype chain
+      return this.proto.get(key);
     } else {
       return v;
     }
