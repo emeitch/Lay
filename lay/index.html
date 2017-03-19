@@ -545,7 +545,7 @@ class Store {
   protoOf(object) {
     const protoPath = object._proto;
     if (protoPath) {
-      return this.get(protoPath);
+      return this.getByPath(protoPath);
     }
 
     return undefined;
@@ -606,7 +606,7 @@ class Store {
             // for recurcive definition
             object[k] = new Path(key);
           } else {
-            object[k] = this.get(o).path;
+            object[k] = this.getByPath(o).path;
           }
         }
         
@@ -655,8 +655,22 @@ class Store {
     return this[key];
   }
 
-  get(keyOrPath) {
-    const path = keyOrPath instanceof Path ? keyOrPath : new Path(keyOrPath);
+  get(key) {
+    const box = new Box(this, new Path(key));
+    if (!box.obj) {
+      return undefined;
+    } else if (box.obj instanceof Path) {
+      let b = this;
+      for (const k of box.obj.keys) {
+        b = b.get(k);
+      }
+      return b;
+    }
+    
+    return box;
+  }
+  
+  getByPath(path) {
     const box = new Box(this, path);
     if (!box.obj) {
       return undefined;
@@ -683,9 +697,9 @@ class Box {
   }
   
   get parent() {
-    const parentId = this.obj._parent;
-    if (parentId != undefined) {
-      return store.get(parentId);
+    const parentPath = this.obj._parent;
+    if (parentPath) {
+      return store.getByPath(parentPath);
     }
     return undefined;
   }
@@ -751,7 +765,7 @@ class Box {
     } else if (v == undefined && this.proto != undefined) {
       return this.proto.get(key);
     } else if (v instanceof Object) {
-      return this.store.get(this.path.child(key));
+      return this.store.getByPath(this.path.child(key));
     } else {
       return v;
     }
@@ -944,23 +958,23 @@ console.assert(b6.get("foo").proto.get("hoge") == 3);
 // algebraic data type
 // e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
 const color = store.append({
-  _proto: Value.name,
+  _proto: new Path(Value.name),
   _name: "Color",
 });
 const red = store.append({
-  _proto: color.name,
+  _proto: new Path(color.name),
   _name: "Red",
 });
 const blue = store.append({
-  _proto: color.name,
+  _proto: new Path(color.name),
   _name: "Green",
 });
 const green = store.append({
-  _proto: color.name,
+  _proto: new Path(color.name),
   _name: "Blue",
 });
 const rgb = store.append({
-  _proto: color.name,
+  _proto: new Path(color.name),
   _name: "RGB",
   r: new Path("Number"),
   g: new Path("Number"),
@@ -969,7 +983,7 @@ const rgb = store.append({
 
 // premitive type error
 const err1 = store.append({
-  _proto: rgb.name,
+  _proto: new Path(rgb.name),
   r: 5,
   g: 6,
   b: "invalid",
@@ -978,7 +992,7 @@ console.assert(err1.proto.equals(store.get("TypeError")));
 
 // required property error
 const err2 = store.append({
-  _proto: rgb.name,
+  _proto: new Path(rgb.name),
   r: 5,
   g: 6,
   // b: "nothing",
