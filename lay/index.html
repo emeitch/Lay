@@ -499,8 +499,22 @@ class Path extends LayObject {
     return this.keys[0];
   }
   
+  get last() {
+    return this.keys[this.keys.length-1];
+  }
+  
   get rest() {
     return this.keys.slice(1);
+  }
+  
+  parent() {
+    if (this.keys.length == 1) {
+      return undefined;
+    }
+    
+    const keys = this.keys.concat();
+    keys.pop();
+    return new this.constructor(...keys);
   }
   
   child(key) {
@@ -745,10 +759,10 @@ class Box {
   get(key) {
     const v = this.obj[key];
     if (v instanceof Path) {
-      // entity reference
+      // reference entity
       return this.store.getByPath(v);
     } else if (v instanceof Object) {
-      // embeded object
+      // nested value
       return this.store.getByPath(this.path.child(key));
     } else if (v == undefined && this.proto != undefined) {
       // prototype chain
@@ -759,9 +773,13 @@ class Box {
   }
 
   update(obj) {
-    // todo: 多段Pathの場合の子階層書き換えに対応できていない
-    const object = Object.assign({}, this.obj, obj);        
-    this.store.setObj(this.path.top, object);
+    const object = Object.assign({}, this.obj, obj);
+    const parentPath = this.path.parent();
+    if (parentPath) {
+      this.store.getByPath(parentPath).update({[this.path.last]: object});  
+    } else {
+      this.store.setObj(this.path.top, object);
+    }
   }
   
   set(key, value) {
@@ -934,6 +952,22 @@ const b6 = store.append({
 });
 console.assert(b6.get("foo").get("hoge") == 5);
 console.assert(b6.get("foo").proto.get("hoge") == 3);
+
+// update deep nested value
+const b7 = store.append({
+  foo: {
+    bar: {
+      baz: {
+        fiz: 5
+      }
+    }
+  }
+});
+console.assert(b7.get("foo").get("bar").get("baz").get("fiz") == 5);
+b7.get("foo").get("bar").get("baz").set("fiz", 7);
+console.assert(b7.get("foo").get("bar").get("baz").get("fiz") == 7);
+b7.get("foo").get("bar").get("baz").update({fiz: 8});
+console.assert(b7.get("foo").get("bar").get("baz").get("fiz") == 8);
 
 
 // algebraic data type
