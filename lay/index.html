@@ -656,8 +656,8 @@ class Store {
   }
 
   get(keyOrPath) {
-    const pth = keyOrPath instanceof Path ? keyOrPath : new Path(keyOrPath);
-    const box = new Box(this, pth);
+    const path = keyOrPath instanceof Path ? keyOrPath : new Path(keyOrPath);
+    const box = new Box(this, path);
     if (!box.obj) {
       return undefined;
     } else if (box.obj instanceof Path) {
@@ -673,9 +673,9 @@ class Store {
 }
 
 class Box {
-  constructor(store, pth) {
+  constructor(store, path) {
     this.store = store;
-    this.path = pth;
+    this.path = path;
   }
   
   get proto() {
