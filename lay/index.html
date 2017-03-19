@@ -513,33 +513,33 @@ class Store {
   constructor() {
     // premitives
     this.append(Object.assign(new Boolean(false), {
-      _key: Boolean.name, 
+      _name: Boolean.name, 
       _abstract: true
     }));
     this.append(Object.assign(new Number(0), {
-      _key: Number.name,
+      _name: Number.name,
       _abstract: true
     }));
     this.append(Object.assign(new String(""), {
-      _key: String.name,
+      _name: String.name,
       _abstract: true
     }));
     this.append(Object.assign(new Array(), {
-      _key: Array.name,
+      _name: Array.name,
       _abstract: true
     }));
     this.append(new Value({
-      _key: Value.name,
+      _name: Value.name,
       _abstract: true
     }));
     this.append(new Entity({
-      _key: Entity.name,
+      _name: Entity.name,
       _abstract: true
     }));
     
-    this.append(new Error({_key: Error.name}));
-    this.append(new TypeError({_key: TypeError.name}));
-    this.append(new RequiredPropertyError({_key: RequiredPropertyError.name}));
+    this.append(new Error({_name: Error.name}));
+    this.append(new TypeError({_name: TypeError.name}));
+    this.append(new RequiredPropertyError({_name: RequiredPropertyError.name}));
   }
   
   protoOf(object) {
@@ -587,7 +587,7 @@ class Store {
       return this.get(key);
     }
     
-    const k = object._key;
+    const k = object._name;
     if (k) {
       this.setObj(k, new Path(key));
       
@@ -602,7 +602,7 @@ class Store {
         
         // symbol referencing termination
         if (o instanceof Path && Path.isSymbol(o.top) && o.rest.length == 0) {
-          if (o.top == object._key) {
+          if (o.top == object._name) {
             // for recurcive definition
             object[k] = new Path(key);
           } else {
@@ -695,7 +695,7 @@ class Box {
   }
   
   get key() {
-    return this.obj._key;
+    return this.obj._name;
   }
   
   get obj() {
@@ -780,7 +780,7 @@ class Box {
 const store = new Store();
 
 const p1 = store.append({
-  _key: "proto1",
+  _name: "proto1",
   foo: 1,
   bar: 2,
   fiz: 9
@@ -841,7 +841,7 @@ console.assert(b2.obj.notEquals(b1.obj));
 // entity schema for composition
 const k2 = "proto2";
 const p2 = store.append({
-  _key: k2,
+  _name: k2,
   foo: new Entity({
     bar: 3,
     baz: 4,
@@ -920,7 +920,7 @@ console.assert(b4.get("foo").path.equals(fooPath)); // not updated
 console.assert(store.get("proto2"));
 console.assert(!store.get("proto2dash"));
 const k2dash = new Path("proto2dash");
-p2.setObj("_key", k2dash.top);
+p2.setObj("_name", k2dash.top);
 console.assert(!store.get("proto2"));
 console.assert(b4.proto.key == "proto2dash");
 console.assert(store.get("proto2dash").equals(p2));
@@ -945,23 +945,23 @@ console.assert(b6.get("foo").proto.get("hoge") == 3);
 // e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
 const color = store.append({
   _proto: Value.name,
-  _key: "Color",
+  _name: "Color",
 });
 const red = store.append({
   _proto: color.key,
-  _key: "Red",
+  _name: "Red",
 });
 const blue = store.append({
   _proto: color.key,
-  _key: "Green",
+  _name: "Green",
 });
 const green = store.append({
   _proto: color.key,
-  _key: "Blue",
+  _name: "Blue",
 });
 const rgb = store.append({
   _proto: color.key,
-  _key: "RGB",
+  _name: "RGB",
   r: new Path("Number"),
   g: new Path("Number"),
   b: new Path("Number"),
@@ -991,7 +991,7 @@ console.assert(store.get("Color"));
 
 // recurcive definition
 const list = store.append({
-  _key: "List",
+  _name: "List",
   car: new Path("Entity"),
   cdr: new Path("List"),
 });
