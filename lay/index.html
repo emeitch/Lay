@@ -625,7 +625,7 @@ class Store {
           const old = box.get(k);
           if (old) {
             const o = Object.assign({}, old.obj, {_parent: null});
-            old.setObj(o);
+            old.update(o);
           }
         }
         
@@ -757,22 +757,16 @@ class Box {
       return v;
     }
   }
-  
-  setObj(...args) {
-    let obj = undefined;
-    if (typeof(args[0]) == "string" && args[1] != undefined) {
-      const key = args[0];
-      const value = args[1];
-      obj = {[key]: value};
-    } else if (args[0] instanceof Object) {
-      obj = args[0];
-    } else {
-      throw `arguments error #{args}`;
-    }
-    
+
+  update(obj) {
     // todo: 多段Pathの場合の子階層書き換えに対応できていない
     const object = Object.assign({}, this.obj, obj);        
     this.store.setObj(this.path.top, object);
+  }
+  
+  set(key, value) {
+    const obj = {[key]: value};
+    this.update(obj);
   }
 }
 
@@ -871,28 +865,28 @@ console.assert(b4.get("foo").get("baz") == 5);
 
 // update property
 console.assert(b4.get("fiz") == 9);
-b4.setObj("fiz", 8);
+b4.set("fiz", 8);
 console.assert(b4.get("fiz") == 8);
 
 // update child property
-b4.get("foo").setObj("baz", 6);
+b4.get("foo").set("baz", 6);
 console.assert(b4.get("foo").get("baz") == 6);
 
 // update by object
-b4.setObj({
+b4.update({
   fiz: 9
 });
 console.assert(b4.get("fiz") == 9);
 
 // update child by object
-b4.get("foo").setObj({
+b4.get("foo").update({
   baz: 7
 });
 console.assert(b4.get("foo").get("baz") == 7);
 
 // update parent and child by object
 const oldFoo = b4.get("foo");
-b4.setObj({
+b4.update({
   fiz: 7,
   foo: {
     baz: 8
@@ -906,7 +900,7 @@ console.assert(oldFoo.parent === undefined);
 
 // update parent and child by object with child identifier
 const fooPath = b4.get("foo").path;
-b4.setObj({
+b4.update({
   fiz: 6, 
   foo: {
     _id: fooPath.top,
@@ -921,7 +915,7 @@ console.assert(b4.get("foo").path.equals(fooPath)); // not updated
 console.assert(store.get("proto2"));
 console.assert(!store.get("proto2dash"));
 const k2dash = new Path("proto2dash");
-p2.setObj("_name", k2dash.top);
+p2.set("_name", k2dash.top);
 console.assert(!store.get("proto2"));
 console.assert(b4.proto.name == "proto2dash");
 console.assert(store.get("proto2dash").equals(p2));
