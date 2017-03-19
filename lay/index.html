@@ -655,21 +655,6 @@ class Store {
     return this[key];
   }
 
-  get(key) {
-    const box = new Box(this, new Path(key));
-    if (!box.obj) {
-      return undefined;
-    } else if (box.obj instanceof Path) {
-      let b = this;
-      for (const k of box.obj.keys) {
-        b = b.get(k);
-      }
-      return b;
-    }
-    
-    return box;
-  }
-  
   getByPath(path) {
     const box = new Box(this, path);
     if (!box.obj) {
@@ -683,6 +668,10 @@ class Store {
     }
     
     return box;
+  }
+
+  get(key) {
+    return this.getByPath(new Path(key));
   }
 }
 
