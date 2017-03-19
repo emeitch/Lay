@@ -587,12 +587,12 @@ class Store {
       return this.get(key);
     }
     
-    const k = object._name;
-    if (k) {
-      this.setObj(k, new Path(key));
+    const name = object._name;
+    if (name) {
+      this.setObj(name, new Path(key));
       
-      if (box && box.key && box.key != k) {
-        this.setObj(box.key, null);
+      if (box && box.name && box.name != name) {
+        this.setObj(box.name, null);
       }
     }
     
@@ -694,7 +694,7 @@ class Box {
     return this.obj._abstract;
   }
   
-  get key() {
+  get name() {
     return this.obj._name;
   }
   
@@ -823,7 +823,7 @@ console.assert(b2.get("baz").get("baz").get("baz").equals(b1));
 // prototype definition
 console.assert(b2.get("_proto").equals(p1));
 console.assert(b2.proto.equals(p1));
-console.assert(b2.proto.key == "proto1");
+console.assert(b2.proto.name == "proto1");
 
 // get method returns raw id value
 console.assert(store.getObj("proto1").equals(p1.path));
@@ -922,7 +922,7 @@ console.assert(!store.get("proto2dash"));
 const k2dash = new Path("proto2dash");
 p2.setObj("_name", k2dash.top);
 console.assert(!store.get("proto2"));
-console.assert(b4.proto.key == "proto2dash");
+console.assert(b4.proto.name == "proto2dash");
 console.assert(store.get("proto2dash").equals(p2));
 
 
@@ -948,19 +948,19 @@ const color = store.append({
   _name: "Color",
 });
 const red = store.append({
-  _proto: color.key,
+  _proto: color.name,
   _name: "Red",
 });
 const blue = store.append({
-  _proto: color.key,
+  _proto: color.name,
   _name: "Green",
 });
 const green = store.append({
-  _proto: color.key,
+  _proto: color.name,
   _name: "Blue",
 });
 const rgb = store.append({
-  _proto: color.key,
+  _proto: color.name,
   _name: "RGB",
   r: new Path("Number"),
   g: new Path("Number"),
@@ -969,7 +969,7 @@ const rgb = store.append({
 
 // premitive type error
 const err1 = store.append({
-  _proto: rgb.key,
+  _proto: rgb.name,
   r: 5,
   g: 6,
   b: "invalid",
@@ -978,7 +978,7 @@ console.assert(err1.proto.equals(store.get("TypeError")));
 
 // required property error
 const err2 = store.append({
-  _proto: rgb.key,
+  _proto: rgb.name,
   r: 5,
   g: 6,
   // b: "nothing",
