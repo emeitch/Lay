@@ -857,6 +857,9 @@ console.assert(store.get("proto1").equals(p1));
 console.assert(b2.get("fiz").equals(9));
 
 // equivalency
+console.assert(b2.equals(b2));
+console.assert(b2.notEquals(b3));
+console.assert(b2.equals(b2.obj)); // obj equivalency
 console.assert(b2.obj.equals(b3.obj));
 console.assert(b2.obj.notEquals(b1.obj));
 
