@@ -758,14 +758,11 @@ class Box {
     
   get(key) {
     const v = this.obj[key];
-    if (v instanceof Path) {
-      // reference entity
+    if (v instanceof Path) { // reference entity
       return this.store.getByPath(v);
-    } else if (v instanceof Object) {
-      // nested value
+    } else if (v instanceof Object) { // nested value
       return this.store.getByPath(this.path.child(key));
-    } else if (v == undefined && this.proto != undefined) {
-      // prototype chain
+    } else if (v == undefined && this.proto != undefined) { // prototype chain
       return this.proto.get(key);
     } else {
       return v;
