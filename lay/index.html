@@ -508,7 +508,7 @@ class Path extends LayObject {
   }
   
   parent() {
-    if (this.keys.length == 1) {
+    if (this.keys.length === 1) {
       return undefined;
     }
     
@@ -587,7 +587,7 @@ class Store {
   }
   
   setObj(key, object) {
-    if (object == null) {
+    if (object === null) {
       delete this[key];
       return undefined;
     }
@@ -605,7 +605,7 @@ class Store {
     if (name) {
       this.setObj(name, new Path(key));
       
-      if (box && box.name && box.name != name) {
+      if (box && box.name && box.name !== name) {
         this.setObj(box.name, null);
       }
     }
@@ -615,8 +615,8 @@ class Store {
         const o = object[k];
         
         // symbol referencing termination
-        if (o instanceof Path && Path.isName(o.top) && o.rest.length == 0) {
-          if (o.top == object._name) {
+        if (o instanceof Path && Path.isName(o.top) && o.rest.length === 0) {
+          if (o.top === object._name) {
             // for recurcive definition
             object[k] = new Path(key);
           } else {
@@ -674,7 +674,7 @@ class Store {
     for (const key of path.rest) {
       obj = obj[key];
       if (!obj) {
-        throw "Key Not Found Error!";
+        return undefined;
       } else if (obj instanceof Path) {
         obj = this.getObjByPath(obj);
       }
@@ -733,7 +733,13 @@ class Box {
   }
   
   equals(other) {
-    return this.path.equals(other.path);
+    if (other instanceof Box) {
+      // todo: 本当は正規化したpathの同値性で判断すべき
+      return this.path.equals(other.path);
+    } else {
+      // object equivalency
+      return this.obj.equals(other);
+    }
   }
   
   validate(object) {
@@ -754,7 +760,7 @@ class Box {
     
     for (var key in this.obj) {
       if (this.obj.hasOwnProperty(key)) {
-        if (this.get(key).isAbstract && object[key] == undefined) {
+        if (this.get(key).isAbstract && object[key] === undefined) {
           return new Value({
             _proto: new Path(RequiredPropertyError.name),
           });
@@ -769,12 +775,10 @@ class Box {
     const v = this.obj[key];
     if (v instanceof Path) { // reference entity
       return this.store.getByPath(v);
-    } else if (v instanceof Object) { // nested value
-      return this.store.getByPath(this.path.child(key));
-    } else if (v == undefined && this.proto != undefined) { // prototype chain
+    } else if (v === undefined && this.proto !== undefined) { // prototype chain
       return this.proto.get(key);
     } else {
-      return v;
+      return this.store.getByPath(this.path.child(key));
     }
   }
 
@@ -829,10 +833,10 @@ console.assert(b1.path instanceof Path);
 console.assert(b2.path instanceof Path);
 
 // box property access
-console.assert(b1.get("foo") == 3);
-console.assert(b1.get("bar") == 4);
-console.assert(b2.get("foo") == 5);
-console.assert(b2.get("bar") == 6);
+console.assert(b1.get("foo").equals(3));
+console.assert(b1.get("bar").equals(4));
+console.assert(b2.get("foo").equals(5));
+console.assert(b2.get("bar").equals(6));
 
 // circular referencing
 console.assert(b2.get("baz").equals(b1));
@@ -842,7 +846,7 @@ console.assert(b2.get("baz").get("baz").get("baz").equals(b1));
 // prototype definition
 console.assert(b2.get("_proto").equals(p1));
 console.assert(b2.proto.equals(p1));
-console.assert(b2.proto.name == "proto1");
+console.assert(b2.proto.name === "proto1");
 
 // get method returns raw id value
 console.assert(store.getObj("proto1").equals(p1.path));
@@ -850,7 +854,7 @@ console.assert(store.getObj("proto1").equals(p1.path));
 console.assert(store.get("proto1").equals(p1));
 
 // prototype chain
-console.assert(b2.get("fiz") == 9);
+console.assert(b2.get("fiz").equals(9));
 
 // equivalency
 console.assert(b2.obj.equals(b3.obj));
@@ -875,42 +879,42 @@ const b4 = store.append({
 });
 
 // instantiation with proto entity generates a child box
-console.assert(p2.get("foo").path.keys.length == 2);
-console.assert(b4.get("foo").path.keys.length == 1);
+console.assert(p2.get("foo").path.keys.length === 2);
+console.assert(b4.get("foo").path.keys.length === 1);
 console.assert(p2.get("foo").path.top.equals(p2.path.top));
-console.assert(p2.get("foo").path.keys[1] == "foo");
+console.assert(p2.get("foo").path.keys[1] === "foo");
 console.assert(b4.get("foo").path.top.notEquals(b4.path.top));
 // prototype chain by entity
-console.assert(b4.get("foo").get("bar") == 3);
+console.assert(b4.get("foo").get("bar").equals(3));
 // parent entity access
 console.assert(b4.get("foo").parent.equals(b4));
 // override child entity property
-console.assert(b4.get("foo").get("baz") == 5);
+console.assert(b4.get("foo").get("baz").equals(5));
 // get by path
-console.assert(store.getByPath(new Path(b4.path.top)).get("foo").get("baz") == 5);
-console.assert(store.getByPath(new Path(b4.path.top, "foo")).get("baz") == 5);
-console.assert(store.getByPath(new Path(b4.path.top, "foo", "baz")).obj == 5);
+console.assert(store.getByPath(new Path(b4.path.top)).get("foo").get("baz").equals(5));
+console.assert(store.getByPath(new Path(b4.path.top, "foo")).get("baz").equals(5));
+console.assert(store.getByPath(new Path(b4.path.top, "foo", "baz")).equals(5));
 
 // update property
-console.assert(b4.get("fiz") == 9);
+console.assert(b4.get("fiz").equals(9));
 b4.set("fiz", 8);
-console.assert(b4.get("fiz") == 8);
+console.assert(b4.get("fiz").equals(8));
 
 // update child property
 b4.get("foo").set("baz", 6);
-console.assert(b4.get("foo").get("baz") == 6);
+console.assert(b4.get("foo").get("baz").equals(6));
 
 // update by object
 b4.update({
   fiz: 9
 });
-console.assert(b4.get("fiz") == 9);
+console.assert(b4.get("fiz").equals(9));
 
 // update child by object
 b4.get("foo").update({
   baz: 7
 });
-console.assert(b4.get("foo").get("baz") == 7);
+console.assert(b4.get("foo").get("baz").equals(7));
 
 // update parent and child by object
 const oldFoo = b4.get("foo");
@@ -920,8 +924,8 @@ b4.update({
     baz: 8
   }
 });
-console.assert(b4.get("fiz") == 7);
-console.assert(b4.get("foo").get("baz") == 8);
+console.assert(b4.get("fiz").equals(7));
+console.assert(b4.get("foo").get("baz").equals(8));
 console.assert(b4.get("foo").path.notEquals(oldFoo.path)); // updated
 console.assert(oldFoo.obj._parent === undefined);
 console.assert(oldFoo.parent === undefined);
@@ -935,8 +939,8 @@ b4.update({
     baz: 9
   }
 });
-console.assert(b4.get("fiz") == 6);
-console.assert(b4.get("foo").get("baz") == 9);
+console.assert(b4.get("fiz").equals(6));
+console.assert(b4.get("foo").get("baz").equals(9));
 console.assert(b4.get("foo").path.equals(fooPath)); // not updated
 
 // update proto's key name
@@ -945,7 +949,7 @@ console.assert(!store.get("proto2dash"));
 const k2dash = new Path("proto2dash");
 p2.set("_name", k2dash.top);
 console.assert(!store.get("proto2"));
-console.assert(b4.proto.name == "proto2dash");
+console.assert(b4.proto.name === "proto2dash");
 console.assert(store.get("proto2dash").equals(p2));
 
 
@@ -960,8 +964,8 @@ const b6 = store.append({
     hoge: 5,
   }
 });
-console.assert(b6.get("foo").get("hoge") == 5);
-console.assert(b6.get("foo").proto.get("hoge") == 3);
+console.assert(b6.get("foo").get("hoge").equals(5));
+console.assert(b6.get("foo").proto.get("hoge").equals(3));
 
 // update deep nested value
 const b7 = store.append({
@@ -973,11 +977,11 @@ const b7 = store.append({
     }
   }
 });
-console.assert(b7.get("foo").get("bar").get("baz").get("fiz") == 5);
+console.assert(b7.get("foo").get("bar").get("baz").get("fiz").equals(5));
 b7.get("foo").get("bar").get("baz").set("fiz", 7);
-console.assert(b7.get("foo").get("bar").get("baz").get("fiz") == 7);
+console.assert(b7.get("foo").get("bar").get("baz").get("fiz").equals(7));
 b7.get("foo").get("bar").get("baz").update({fiz: 8});
-console.assert(b7.get("foo").get("bar").get("baz").get("fiz") == 8);
+console.assert(b7.get("foo").get("bar").get("baz").get("fiz").equals(8));
 
 
 // algebraic data type
