@@ -668,6 +668,19 @@ class Store {
   getObj(key) {
     return this[key];
   }
+  
+  getObjByPath(path) {
+    let obj = this.getObj(path.top);
+    for (const key of path.rest) {
+      obj = obj[key];
+      if (!obj) {
+        throw "Key Not Found Error!";
+      } else if (obj instanceof Path) {
+        obj = this.getObjByPath(obj);
+      }
+    }
+    return obj;
+  }
 
   getByPath(path) {
     const box = new Box(this, path);
@@ -716,11 +729,7 @@ class Box {
   }
   
   get obj() {
-    let v = this.store.getObj(this.path.top);
-    for (const key of this.path.rest) {
-      v = v[key];
-    }
-    return v;
+    return this.store.getObjByPath(this.path);
   }
   
   equals(other) {
@@ -877,6 +886,10 @@ console.assert(b4.get("foo").get("bar") == 3);
 console.assert(b4.get("foo").parent.equals(b4));
 // override child entity property
 console.assert(b4.get("foo").get("baz") == 5);
+// get by path
+console.assert(store.getByPath(new Path(b4.path.top)).get("foo").get("baz") == 5);
+console.assert(store.getByPath(new Path(b4.path.top, "foo")).get("baz") == 5);
+console.assert(store.getByPath(new Path(b4.path.top, "foo", "baz")).obj == 5);
 
 // update property
 console.assert(b4.get("fiz") == 9);
