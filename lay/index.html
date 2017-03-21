@@ -639,7 +639,7 @@ class Store {
           const old = box.get(k);
           if (old) {
             const o = Object.assign({}, old.obj, {_parent: null});
-            old.update(o);
+            old.put(o);
           }
         }
         
@@ -782,11 +782,11 @@ class Box {
     }
   }
 
-  update(obj) {
+  put(obj) {
     const object = Object.assign({}, this.obj, obj);
     const parentPath = this.path.parent();
     if (parentPath) {
-      this.store.getByPath(parentPath).update({[this.path.last]: object});  
+      this.store.getByPath(parentPath).put({[this.path.last]: object});  
     } else {
       this.store.setObj(this.path.top, object);
     }
@@ -794,7 +794,7 @@ class Box {
   
   set(key, value) {
     const obj = {[key]: value};
-    this.update(obj);
+    this.put(obj);
   }
 }
 
@@ -908,20 +908,20 @@ b4.get("foo").set("baz", 6);
 console.assert(b4.get("foo").get("baz").equals(6));
 
 // update by object
-b4.update({
+b4.put({
   fiz: 9
 });
 console.assert(b4.get("fiz").equals(9));
 
 // update child by object
-b4.get("foo").update({
+b4.get("foo").put({
   baz: 7
 });
 console.assert(b4.get("foo").get("baz").equals(7));
 
 // update parent and child by object
 const oldFoo = b4.get("foo");
-b4.update({
+b4.put({
   fiz: 7,
   foo: {
     baz: 8
@@ -935,7 +935,7 @@ console.assert(oldFoo.parent === undefined);
 
 // update parent and child by object with child identifier
 const fooPath = b4.get("foo").path;
-b4.update({
+b4.put({
   fiz: 6, 
   foo: {
     _id: fooPath.top,
@@ -983,7 +983,7 @@ const b7 = store.append({
 console.assert(b7.get("foo").get("bar").get("baz").get("fiz").equals(5));
 b7.get("foo").get("bar").get("baz").set("fiz", 7);
 console.assert(b7.get("foo").get("bar").get("baz").get("fiz").equals(7));
-b7.get("foo").get("bar").get("baz").update({fiz: 8});
+b7.get("foo").get("bar").get("baz").put({fiz: 8});
 console.assert(b7.get("foo").get("bar").get("baz").get("fiz").equals(8));
 
 
