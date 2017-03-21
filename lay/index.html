@@ -586,7 +586,7 @@ class Store {
     return entities;
   }
   
-  setObj(key, object) {
+  put(key, object) {
     if (object === null) {
       delete this[key];
       return undefined;
@@ -603,10 +603,10 @@ class Store {
     
     const name = object._name;
     if (name) {
-      this.setObj(name, new Path(key));
+      this.put(name, new Path(key));
       
       if (box && box.name && box.name !== name) {
-        this.setObj(box.name, null);
+        this.put(box.name, null);
       }
     }
     
@@ -651,7 +651,7 @@ class Store {
         delete obj._id;
         obj._parent = new Path(key);
         
-        this.setObj(childId, obj);
+        this.put(childId, obj);
         object[k] = new Path(childId);
       }
     }
@@ -662,7 +662,7 @@ class Store {
   
   post(object) {
     const key = Path.uuid();
-    return this.setObj(key, object);
+    return this.put(key, object);
   }
   
   getObj(key) {
@@ -788,7 +788,7 @@ class Box {
     if (parentPath) {
       this.store.getByPath(parentPath).put({[this.path.last]: object});  
     } else {
-      this.store.setObj(this.path.top, object);
+      this.store.put(this.path.top, object);
     }
   }
   
@@ -815,7 +815,7 @@ const b1 = store.post({
   bar: 4,
   baz: new Path(b2id)
 });
-const b2 = store.setObj(b2id, {
+const b2 = store.put(b2id, {
   _proto: p1.path,
   foo: 5,
   bar: 6,
