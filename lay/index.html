@@ -526,34 +526,34 @@ class Path extends LayObject {
 class Store {
   constructor() {
     // premitives
-    this.append(Object.assign(new Boolean(false), {
+    this.post(Object.assign(new Boolean(false), {
       _name: Boolean.name, 
       _abstract: true
     }));
-    this.append(Object.assign(new Number(0), {
+    this.post(Object.assign(new Number(0), {
       _name: Number.name,
       _abstract: true
     }));
-    this.append(Object.assign(new String(""), {
+    this.post(Object.assign(new String(""), {
       _name: String.name,
       _abstract: true
     }));
-    this.append(Object.assign(new Array(), {
+    this.post(Object.assign(new Array(), {
       _name: Array.name,
       _abstract: true
     }));
-    this.append(new Value({
+    this.post(new Value({
       _name: Value.name,
       _abstract: true
     }));
-    this.append(new Entity({
+    this.post(new Entity({
       _name: Entity.name,
       _abstract: true
     }));
     
-    this.append(new Error({_name: Error.name}));
-    this.append(new TypeError({_name: TypeError.name}));
-    this.append(new RequiredPropertyError({_name: RequiredPropertyError.name}));
+    this.post(new Error({_name: Error.name}));
+    this.post(new TypeError({_name: TypeError.name}));
+    this.post(new RequiredPropertyError({_name: RequiredPropertyError.name}));
   }
   
   protoOf(object) {
@@ -660,7 +660,7 @@ class Store {
     return this.get(key);
   }
   
-  append(object) {
+  post(object) {
     const key = Path.uuid();
     return this.setObj(key, object);
   }
@@ -802,14 +802,14 @@ class Box {
 // test suite
 const store = new Store();
 
-const p1 = store.append({
+const p1 = store.post({
   _name: "proto1",
   foo: 1,
   bar: 2,
   fiz: 9
 });
 const b2id = Path.uuid();
-const b1 = store.append({
+const b1 = store.post({
   _proto: p1.path,
   foo: 3, 
   bar: 4,
@@ -821,7 +821,7 @@ const b2 = store.setObj(b2id, {
   bar: 6,
   baz: b1.path
 });
-const b3 = store.append({
+const b3 = store.post({
   _proto: p1.path,
   foo: 5,
   bar: 6,
@@ -866,14 +866,14 @@ console.assert(b2.obj.notEquals(b1.obj));
 
 // entity schema for composition
 const k2 = "proto2";
-const p2 = store.append({
+const p2 = store.post({
   _name: k2,
   foo: new Entity({
     bar: 3,
     baz: 4,
   }),
 });
-const b4 = store.append({
+const b4 = store.post({
   _proto: new Path(k2),
   foo: {
     baz: 5,
@@ -957,11 +957,11 @@ console.assert(store.get("proto2dash").equals(p2));
 
 
 // nested value box
-const b5 = store.append({
+const b5 = store.post({
   hoge: 3,
   fuga: 4
 });
-const b6 = store.append({
+const b6 = store.post({
   foo: {
     _proto: b5.path,
     hoge: 5,
@@ -971,7 +971,7 @@ console.assert(b6.get("foo").get("hoge").equals(5));
 console.assert(b6.get("foo").proto.get("hoge").equals(3));
 
 // update deep nested value
-const b7 = store.append({
+const b7 = store.post({
   foo: {
     bar: {
       baz: {
@@ -989,23 +989,23 @@ console.assert(b7.get("foo").get("bar").get("baz").get("fiz").equals(8));
 
 // algebraic data type
 // e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
-const color = store.append({
+const color = store.post({
   _proto: new Path(Value.name),
   _name: "Color",
 });
-const red = store.append({
+const red = store.post({
   _proto: new Path(color.name),
   _name: "Red",
 });
-const blue = store.append({
+const blue = store.post({
   _proto: new Path(color.name),
   _name: "Green",
 });
-const green = store.append({
+const green = store.post({
   _proto: new Path(color.name),
   _name: "Blue",
 });
-const rgb = store.append({
+const rgb = store.post({
   _proto: new Path(color.name),
   _name: "RGB",
   r: new Path("Number"),
@@ -1014,7 +1014,7 @@ const rgb = store.append({
 });
 
 // premitive type error
-const err1 = store.append({
+const err1 = store.post({
   _proto: new Path(rgb.name),
   r: 5,
   g: 6,
@@ -1023,7 +1023,7 @@ const err1 = store.append({
 console.assert(err1.proto.equals(store.get("TypeError")));
 
 // required property error
-const err2 = store.append({
+const err2 = store.post({
   _proto: new Path(rgb.name),
   r: 5,
   g: 6,
@@ -1036,7 +1036,7 @@ console.assert(store.get("Color"));
 
 
 // recurcive definition
-const list = store.append({
+const list = store.post({
   _name: "List",
   car: new Path("Entity"),
   cdr: new Path("List"),
