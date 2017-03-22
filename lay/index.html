@@ -570,10 +570,10 @@ class Store {
     
     let proto = this.protoOf(state);
     while (proto) {
-      const obj = proto.state;
-      for (var key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          const o = obj[key];
+      const state = proto.state;
+      for (var key in state) {
+        if (state.hasOwnProperty(key)) {
+          const o = state[key];
           if (o instanceof Entity && !entities[key]) {
             entities[key] = o;
           }
@@ -645,13 +645,13 @@ class Store {
         
         const entity = entities[k];
         const override = state[k];
-        const obj = override ? Object.assign({}, entity, override) : entity;
-        const childId = obj._id || Path.uuid();
+        const child = override ? Object.assign({}, entity, override) : entity;
+        const childId = child._id || Path.uuid();
         
-        delete obj._id;
-        obj._parent = new Path(key);
+        delete child._id;
+        child._parent = new Path(key);
         
-        this.put(childId, obj);
+        this.put(childId, child);
         state[k] = new Path(childId);
       }
     }
@@ -670,16 +670,16 @@ class Store {
   }
   
   getObjByPath(path) {
-    let obj = this.getObj(path.top);
+    let state = this.getObj(path.top);
     for (const key of path.rest) {
-      obj = obj[key];
-      if (!obj) {
+      state = state[key];
+      if (!state) {
         return undefined;
-      } else if (obj instanceof Path) {
-        obj = this.getObjByPath(obj);
+      } else if (state instanceof Path) {
+        state = this.getObjByPath(state);
       }
     }
-    return obj;
+    return state;
   }
 
   getByPath(path) {
@@ -782,19 +782,19 @@ class Box {
     }
   }
 
-  put(obj) {
-    const state = Object.assign({}, this.state, obj);
+  put(state) {
+    const newState = Object.assign({}, this.state, state);
     const parentPath = this.path.parent();
     if (parentPath) {
-      this.store.getByPath(parentPath).put({[this.path.last]: state});  
+      this.store.getByPath(parentPath).put({[this.path.last]: newState});
     } else {
-      this.store.put(this.path.top, state);
+      this.store.put(this.path.top, newState);
     }
   }
   
   patch(key, value) {
-    const obj = {[key]: value};
-    this.put(obj);
+    const state = {[key]: value};
+    this.put(state);
   }
 }
 
