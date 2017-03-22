@@ -728,10 +728,6 @@ class Box {
     return this.get()._name;
   }
   
-  get obj() {
-    return this.store.getObjByPath(this.path);
-  }
-  
   equals(other) {
     if (other instanceof Box) {
       // todo: 本当は正規化したpathの同値性で判断すべき
@@ -772,11 +768,12 @@ class Box {
   }
     
   get(key) {
+    const obj = this.store.getObjByPath(this.path);
     if (key === undefined) {
-      return this.obj;
+      return obj;
     }
     
-    const v = this.obj[key];
+    const v = obj[key];
     if (v instanceof Path) { // reference entity
       return this.store.getByPath(v);
     } else if (v === undefined && this.proto !== undefined) { // prototype chain
