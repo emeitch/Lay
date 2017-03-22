@@ -570,7 +570,7 @@ class Store {
     
     let proto = this.protoOf(object);
     while (proto) {
-      const obj = proto.get();
+      const obj = proto.state;
       for (var key in obj) {
         if (obj.hasOwnProperty(key)) {
           const o = obj[key];
@@ -638,7 +638,7 @@ class Store {
         if (box) {
           const old = box.get(k);
           if (old) {
-            const o = Object.assign({}, old.get(), {_parent: null});
+            const o = Object.assign({}, old.state, {_parent: null});
             old.put(o);
           }
         }
@@ -684,11 +684,11 @@ class Store {
 
   getByPath(path) {
     const box = new Box(this, path);
-    if (!box.get()) {
+    if (!box.state) {
       return undefined;
-    } else if (box.get() instanceof Path) {
+    } else if (box.state instanceof Path) {
       let b = this;
-      for (const k of box.get().keys) {
+      for (const k of box.state.keys) {
         b = b.get(k);
       }
       return b;
@@ -708,12 +708,16 @@ class Box {
     this.path = path;
   }
   
+  get state() {
+    return this.store.getObjByPath(this.path);
+  }
+  
   get proto() {
-    return this.store.protoOf(this.get());
+    return this.store.protoOf(this.state);
   }
   
   get parent() {
-    const parentPath = this.get()._parent;
+    const parentPath = this.state._parent;
     if (parentPath) {
       return store.getByPath(parentPath);
     }
@@ -721,11 +725,11 @@ class Box {
   }
   
   get isAbstract() {
-    return this.get()._abstract;
+    return this.state._abstract;
   }
   
   get name() {
-    return this.get()._name;
+    return this.state._name;
   }
   
   equals(other) {
@@ -734,7 +738,7 @@ class Box {
       return this.path.equals(other.path);
     } else {
       // object equivalency
-      return this.get().equals(other);
+      return this.state.equals(other);
     }
   }
   
@@ -743,7 +747,7 @@ class Box {
       if (object.hasOwnProperty(key)) {
         const v = object[key];
         const prop = this.get(key);
-        const pv = (prop && prop.get()) || prop;
+        const pv = (prop && prop.state) || prop;
         if (pv 
           && pv.notEquals(v.__proto__) 
           && pv.__proto__.notEquals(v.__proto__)) {
@@ -754,8 +758,8 @@ class Box {
       }
     }
     
-    for (var key in this.get()) {
-      if (this.get().hasOwnProperty(key)) {
+    for (var key in this.state) {
+      if (this.state.hasOwnProperty(key)) {
         if (this.get(key).isAbstract && object[key] === undefined) {
           return new Value({
             _proto: new Path(RequiredPropertyError.name),
@@ -768,12 +772,7 @@ class Box {
   }
     
   get(key) {
-    const obj = this.store.getObjByPath(this.path);
-    if (key === undefined) {
-      return obj;
-    }
-    
-    const v = obj[key];
+    const v = this.state[key];
     if (v instanceof Path) { // reference entity
       return this.store.getByPath(v);
     } else if (v === undefined && this.proto !== undefined) { // prototype chain
@@ -784,7 +783,7 @@ class Box {
   }
 
   put(obj) {
-    const object = Object.assign({}, this.get(), obj);
+    const object = Object.assign({}, this.state, obj);
     const parentPath = this.path.parent();
     if (parentPath) {
       this.store.getByPath(parentPath).put({[this.path.last]: object});  
@@ -860,9 +859,9 @@ console.assert(b2.get("fiz").equals(9));
 // equivalency
 console.assert(b2.equals(b2));
 console.assert(b2.notEquals(b3));
-console.assert(b2.equals(b2.get())); // obj equivalency
-console.assert(b2.get().equals(b3.get()));
-console.assert(b2.get().notEquals(b1.get()));
+console.assert(b2.equals(b2.state)); // state equivalency
+console.assert(b2.state.equals(b3.state));
+console.assert(b2.state.notEquals(b1.state));
 
 
 // entity schema for composition
@@ -931,7 +930,7 @@ b4.put({
 console.assert(b4.get("fiz").equals(7));
 console.assert(b4.get("foo").get("baz").equals(8));
 console.assert(b4.get("foo").path.notEquals(oldFoo.path)); // updated
-console.assert(oldFoo.get("_parent") === undefined);
+console.assert(oldFoo.state._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
 // update parent and child by object with child identifier
