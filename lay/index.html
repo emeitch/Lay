@@ -556,8 +556,8 @@ class Store {
     this.post(new RequiredPropertyError({_name: RequiredPropertyError.name}));
   }
   
-  protoOf(object) {
-    const protoPath = object._proto;
+  protoOf(state) {
+    const protoPath = state._proto;
     if (protoPath) {
       return this.getByPath(protoPath);
     }
@@ -565,10 +565,10 @@ class Store {
     return undefined;
   }
   
-  entities(object) {
+  entities(state) {
     const entities = {};
     
-    let proto = this.protoOf(object);
+    let proto = this.protoOf(state);
     while (proto) {
       const obj = proto.state;
       for (var key in obj) {
@@ -586,22 +586,22 @@ class Store {
     return entities;
   }
   
-  put(key, object) {
-    if (object === null) {
+  put(key, state) {
+    if (state === null) {
       delete this[key];
       return undefined;
     }
     
     const box = this.get(key);
     
-    const proto = this.protoOf(object);
-    const error = proto ? proto.validate(object) : undefined;
+    const proto = this.protoOf(state);
+    const error = proto ? proto.validate(state) : undefined;
     if (error) {
       this[key] = error;
       return this.get(key);
     }
     
-    const name = object._name;
+    const name = state._name;
     if (name) {
       this.put(name, new Path(key));
       
@@ -610,28 +610,28 @@ class Store {
       }
     }
     
-    for (const k in object) {
-      if (object.hasOwnProperty(k)) {
-        const o = object[k];
+    for (const k in state) {
+      if (state.hasOwnProperty(k)) {
+        const o = state[k];
         
         // symbol referencing termination
         if (o instanceof Path && Path.isName(o.top) && o.rest.length === 0) {
-          if (o.top === object._name) {
+          if (o.top === state._name) {
             // for recurcive definition
-            object[k] = new Path(key);
+            state[k] = new Path(key);
           } else {
-            object[k] = this.getByPath(o).path;
+            state[k] = this.getByPath(o).path;
           }
         }
         
         // remove null property
         if (o === null) {
-          delete object[k];
+          delete state[k];
         }
       }
     }
      
-    const entities = this.entities(object);
+    const entities = this.entities(state);
     for (const k in entities) {
       if (entities.hasOwnProperty(k)) {
         // remove old child parent
@@ -644,7 +644,7 @@ class Store {
         }
         
         const entity = entities[k];
-        const override = object[k];
+        const override = state[k];
         const obj = override ? Object.assign({}, entity, override) : entity;
         const childId = obj._id || Path.uuid();
         
@@ -652,17 +652,17 @@ class Store {
         obj._parent = new Path(key);
         
         this.put(childId, obj);
-        object[k] = new Path(childId);
+        state[k] = new Path(childId);
       }
     }
     
-    this[key] = object;
+    this[key] = state;
     return this.get(key);
   }
   
-  post(object) {
+  post(state) {
     const key = Path.uuid();
-    return this.put(key, object);
+    return this.put(key, state);
   }
   
   getObj(key) {
@@ -737,15 +737,15 @@ class Box {
       // todo: 本当は正規化したpathの同値性で判断すべき
       return this.path.equals(other.path);
     } else {
-      // object equivalency
+      // state equivalency
       return this.state.equals(other);
     }
   }
   
-  validate(object) {
-    for (var key in object) {
-      if (object.hasOwnProperty(key)) {
-        const v = object[key];
+  validate(state) {
+    for (var key in state) {
+      if (state.hasOwnProperty(key)) {
+        const v = state[key];
         const prop = this.get(key);
         const pv = (prop && prop.state) || prop;
         if (pv 
@@ -760,7 +760,7 @@ class Box {
     
     for (var key in this.state) {
       if (this.state.hasOwnProperty(key)) {
-        if (this.get(key).isAbstract && object[key] === undefined) {
+        if (this.get(key).isAbstract && state[key] === undefined) {
           return new Value({
             _proto: new Path(RequiredPropertyError.name),
           });
@@ -783,12 +783,12 @@ class Box {
   }
 
   put(obj) {
-    const object = Object.assign({}, this.state, obj);
+    const state = Object.assign({}, this.state, obj);
     const parentPath = this.path.parent();
     if (parentPath) {
-      this.store.getByPath(parentPath).put({[this.path.last]: object});  
+      this.store.getByPath(parentPath).put({[this.path.last]: state});  
     } else {
-      this.store.put(this.path.top, object);
+      this.store.put(this.path.top, state);
     }
   }
   
@@ -907,19 +907,19 @@ console.assert(b4.get("fiz").equals(8));
 b4.get("foo").patch("baz", 6);
 console.assert(b4.get("foo").get("baz").equals(6));
 
-// update by object
+// update by state
 b4.put({
   fiz: 9
 });
 console.assert(b4.get("fiz").equals(9));
 
-// update child by object
+// update child by state
 b4.get("foo").put({
   baz: 7
 });
 console.assert(b4.get("foo").get("baz").equals(7));
 
-// update parent and child by object
+// update parent and child by state
 const oldFoo = b4.get("foo");
 b4.put({
   fiz: 7,
@@ -933,7 +933,7 @@ console.assert(b4.get("foo").path.notEquals(oldFoo.path)); // updated
 console.assert(oldFoo.state._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
-// update parent and child by object with child identifier
+// update parent and child by state with child identifier
 const fooPath = b4.get("foo").path;
 b4.put({
   fiz: 6, 
