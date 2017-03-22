@@ -559,10 +559,51 @@ class Store {
   protoOf(state) {
     const protoPath = state._proto;
     if (protoPath) {
-      return this.getByPath(protoPath);
+      return this.get(protoPath);
     }
 
     return undefined;
+  }
+  
+  getState(id) {
+    if (typeof(id) == "string") {
+      const key = id;
+      return this[key];
+    }
+    
+    const path = id;
+    let state = this.getState(path.top);
+    for (const key of path.rest) {
+      state = state[key];
+      if (!state) {
+        return undefined;
+      } else if (state instanceof Path) {
+        const p = state;
+        state = this.getState(p);
+      }
+    }
+    return state;
+  }
+  
+  get(id) {
+    if (typeof(id) == "string") {
+      const key = id;
+      return this.get(new Path(key));
+    }
+    
+    const path = id;
+    const box = new Box(this, path);
+    if (!box.state) {
+      return undefined;
+    } else if (box.state instanceof Path) {
+      let b = this;
+      for (const k of box.state.keys) {
+        b = b.get(k);
+      }
+      return b;
+    }
+    
+    return box;
   }
   
   entities(state) {
@@ -620,7 +661,7 @@ class Store {
             // for recurcive definition
             state[k] = new Path(key);
           } else {
-            state[k] = this.getByPath(o).path;
+            state[k] = this.get(o).path;
           }
         }
         
@@ -663,43 +704,7 @@ class Store {
   post(state) {
     const key = Path.uuid();
     return this.put(key, state);
-  }
-  
-  getObj(key) {
-    return this[key];
-  }
-  
-  getObjByPath(path) {
-    let state = this.getObj(path.top);
-    for (const key of path.rest) {
-      state = state[key];
-      if (!state) {
-        return undefined;
-      } else if (state instanceof Path) {
-        state = this.getObjByPath(state);
-      }
-    }
-    return state;
-  }
-
-  getByPath(path) {
-    const box = new Box(this, path);
-    if (!box.state) {
-      return undefined;
-    } else if (box.state instanceof Path) {
-      let b = this;
-      for (const k of box.state.keys) {
-        b = b.get(k);
-      }
-      return b;
-    }
-    
-    return box;
-  }
-
-  get(key) {
-    return this.getByPath(new Path(key));
-  }
+  }  
 }
 
 class Box {
@@ -709,7 +714,7 @@ class Box {
   }
   
   get state() {
-    return this.store.getObjByPath(this.path);
+    return this.store.getState(this.path);
   }
   
   get proto() {
@@ -719,7 +724,7 @@ class Box {
   get parent() {
     const parentPath = this.state._parent;
     if (parentPath) {
-      return store.getByPath(parentPath);
+      return store.get(parentPath);
     }
     return undefined;
   }
@@ -774,11 +779,11 @@ class Box {
   get(key) {
     const v = this.state[key];
     if (v instanceof Path) { // reference entity
-      return this.store.getByPath(v);
+      return this.store.get(v);
     } else if (v === undefined && this.proto !== undefined) { // prototype chain
       return this.proto.get(key);
     } else {
-      return this.store.getByPath(this.path.child(key));
+      return this.store.get(this.path.child(key));
     }
   }
 
@@ -786,7 +791,7 @@ class Box {
     const newState = Object.assign({}, this.state, state);
     const parentPath = this.path.parent();
     if (parentPath) {
-      this.store.getByPath(parentPath).put({[this.path.last]: newState});
+      this.store.get(parentPath).put({[this.path.last]: newState});
     } else {
       this.store.put(this.path.top, newState);
     }
@@ -849,7 +854,7 @@ console.assert(b2.proto.equals(p1));
 console.assert(b2.proto.name === "proto1");
 
 // get method returns raw id value
-console.assert(store.getObj("proto1").equals(p1.path));
+console.assert(store.getState("proto1").equals(p1.path));
 // box method resolves id reference
 console.assert(store.get("proto1").equals(p1));
 
@@ -894,9 +899,9 @@ console.assert(b4.get("foo").parent.equals(b4));
 // override child entity property
 console.assert(b4.get("foo").get("baz").equals(5));
 // get by path
-console.assert(store.getByPath(new Path(b4.path.top)).get("foo").get("baz").equals(5));
-console.assert(store.getByPath(new Path(b4.path.top, "foo")).get("baz").equals(5));
-console.assert(store.getByPath(new Path(b4.path.top, "foo", "baz")).equals(5));
+console.assert(store.get(new Path(b4.path.top)).get("foo").get("baz").equals(5));
+console.assert(store.get(new Path(b4.path.top, "foo")).get("baz").equals(5));
+console.assert(store.get(new Path(b4.path.top, "foo", "baz")).equals(5));
 
 // update property
 console.assert(b4.get("fiz").equals(9));
