@@ -931,7 +931,7 @@ b4.put({
 console.assert(b4.get("fiz").equals(7));
 console.assert(b4.get("foo").get("baz").equals(8));
 console.assert(b4.get("foo").path.notEquals(oldFoo.path)); // updated
-console.assert(oldFoo.get()._parent === undefined);
+console.assert(oldFoo.get("_parent") === undefined);
 console.assert(oldFoo.parent === undefined);
 
 // update parent and child by object with child identifier
