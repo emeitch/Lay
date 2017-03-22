@@ -442,13 +442,13 @@ Object.prototype.equals = function(other) {
 Object.prototype.notEquals = function(other) {
   return !this.equals(other);
 }
-class LayObject {
-  constructor(obj={}) {
-    Object.assign(this, obj);
+class State {
+  constructor(init={}) {
+    Object.assign(this, init);
   }
 }
 
-class Error extends LayObject {
+class Error extends State {
 }
 
 class TypeError extends Error {
@@ -457,13 +457,13 @@ class TypeError extends Error {
 class RequiredPropertyError extends Error {
 }
 
-class Value extends LayObject {
+class Value extends State {
 }
 
-class Entity extends LayObject {
+class Entity extends State {
 }
 
-class Path extends LayObject {
+class Path extends State {
   static generateUUID() {
     // UUID ver 4 / RFC 4122
     var uuid = "", i, random;
