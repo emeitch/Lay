@@ -688,9 +688,9 @@ class Store {
         const entity = entities[k];
         const override = state[k];
         const child = override ? Object.assign({}, entity, override) : entity;
-        const childId = child._id || Path.uuid();
+        const childId = child._uuid || Path.uuid();
         
-        delete child._id;
+        delete child._uuid;
         child._parent = new Path(key);
         
         this.setState(childId, child);
@@ -956,7 +956,7 @@ const fooPath = r4.follow("foo").path;
 r4.patch({
   fiz: 6, 
   foo: {
-    _id: fooPath.top,
+    _uuid: fooPath.top,
     baz: 9
   }
 });
