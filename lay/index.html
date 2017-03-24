@@ -593,11 +593,12 @@ class Store {
     
     const path = id;
     const box = new Box(this, path);
-    if (!box.state) {
+    const state = box.get();
+    if (!state) {
       return undefined;
-    } else if (box.state instanceof Path) {
+    } else if (state instanceof Path) {
       let b = this;
-      for (const k of box.state.keys) {
+      for (const k of state.keys) {
         b = b.follow(k);
       }
       return b;
@@ -611,7 +612,7 @@ class Store {
     
     let proto = this.protoOf(state);
     while (proto) {
-      const state = proto.state;
+      const state = proto.get();
       for (var key in state) {
         if (state.hasOwnProperty(key)) {
           const o = state[key];
@@ -679,7 +680,8 @@ class Store {
         if (box) {
           const old = box.follow(k);
           if (old) {
-            const o = Object.assign({}, old.state, {_parent: null});
+            const state = old.get();
+            const o = Object.assign({}, state, {_parent: null});
             old.put(o);
           }
         }
@@ -712,38 +714,39 @@ class Box {
     this.store = store;
     this.path = path;
   }
-  
-  get state() {
-    return this.store.getState(this.path);
-  }
-  
+    
   get proto() {
-    return this.store.protoOf(this.state);
+    const state = this.get();
+    return this.store.protoOf(state);
   }
   
   get parent() {
-    const parentPath = this.state._parent;
+    const state = this.get();
+    const parentPath = state._parent;
     if (parentPath) {
-      return store.follow(parentPath);
+      return this.store.follow(parentPath);
     }
     return undefined;
   }
   
   get isAbstract() {
-    return this.state._abstract;
+    const state = this.get();
+    return state._abstract;
   }
   
   get name() {
-    return this.state._name;
+    const state = this.get();
+    return state._name;
   }
   
   equals(other) {
+    const state = this.get();
     if (other instanceof Box) {
       // todo: 本当は正規化したpathの同値性で判断すべき
       return this.path.equals(other.path);
     } else {
       // state equivalency
-      return this.state.equals(other);
+      return state.equals(other);
     }
   }
   
@@ -752,10 +755,10 @@ class Box {
       if (state.hasOwnProperty(key)) {
         const v = state[key];
         const prop = this.follow(key);
-        const pv = (prop && prop.state) || prop;
-        if (pv 
-          && pv.notEquals(v.__proto__) 
-          && pv.__proto__.notEquals(v.__proto__)) {
+        const propState = (prop && prop.get()) || prop;
+        if (propState 
+          && propState.notEquals(v.__proto__) 
+          && propState.__proto__.notEquals(v.__proto__)) {
           return new Value({
             _proto: new Path(TypeError.name),
           });
@@ -763,8 +766,9 @@ class Box {
       }
     }
     
-    for (var key in this.state) {
-      if (this.state.hasOwnProperty(key)) {
+    const current = this.get();
+    for (var key in current) {
+      if (current.hasOwnProperty(key)) {
         if (this.follow(key).isAbstract && state[key] === undefined) {
           return new Value({
             _proto: new Path(RequiredPropertyError.name),
@@ -777,7 +781,8 @@ class Box {
   }
     
   follow(key) {
-    const v = this.state[key];
+    const state = this.get();
+    const v = state[key];
     if (v instanceof Path) { // reference entity
       return this.store.follow(v);
     } else if (v === undefined && this.proto !== undefined) { // prototype chain
@@ -786,14 +791,19 @@ class Box {
       return this.store.follow(this.path.child(key));
     }
   }
+  
+  get() {
+    return this.store.getState(this.path);
+  }
 
   put(state) {
-    const newState = Object.assign({}, this.state, state);
+    const current = this.get();
+    const next = Object.assign({}, current, state);
     const parentPath = this.path.parent();
     if (parentPath) {
-      this.store.follow(parentPath).put({[this.path.last]: newState});
+      this.store.follow(parentPath).put({[this.path.last]: next});
     } else {
-      this.store.put(this.path.top, newState);
+      this.store.put(this.path.top, next);
     }
   }
   
@@ -864,9 +874,9 @@ console.assert(b2.follow("fiz").equals(9));
 // equivalency
 console.assert(b2.equals(b2));
 console.assert(b2.notEquals(b3));
-console.assert(b2.equals(b2.state)); // state equivalency
-console.assert(b2.state.equals(b3.state));
-console.assert(b2.state.notEquals(b1.state));
+console.assert(b2.equals(b2.get())); // state equivalency
+console.assert(b2.get().equals(b3.get()));
+console.assert(b2.get().notEquals(b1.get()));
 
 
 // entity schema for composition
@@ -935,7 +945,7 @@ b4.put({
 console.assert(b4.follow("fiz").equals(7));
 console.assert(b4.follow("foo").follow("baz").equals(8));
 console.assert(b4.follow("foo").path.notEquals(oldFoo.path)); // updated
-console.assert(oldFoo.state._parent === undefined);
+console.assert(oldFoo.get()._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
 // update parent and child by state with child identifier
