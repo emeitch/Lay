@@ -556,7 +556,7 @@ class Store {
     this.appendState(new RequiredPropertyError({_name: RequiredPropertyError.name}));
   }
   
-  protoOf(state) {
+  getProtoResource(state) {
     const protoPath = state._proto;
     if (protoPath) {
       return this.follow(protoPath);
@@ -589,7 +589,7 @@ class Store {
   entities(state) {
     const entities = {};
     
-    let proto = this.protoOf(state);
+    let proto = this.getProtoResource(state);
     while (proto) {
       const state = proto.get();
       for (var key in state) {
@@ -615,7 +615,7 @@ class Store {
     
     const resource = this.follow(key);
     
-    const proto = this.protoOf(state);
+    const proto = this.getProtoResource(state);
     const error = proto ? proto.validate(state) : undefined;
     if (error) {
       this[key] = error;
@@ -726,7 +726,7 @@ class Resource {
     
   get proto() {
     const state = this.get();
-    return this.store.protoOf(state);
+    return this.store.getProtoResource(state);
   }
   
   get parent() {
