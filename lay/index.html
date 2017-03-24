@@ -713,6 +713,11 @@ class Resource {
     this.store = store;
     this.path = path;
   }
+  
+  get identifier() {
+    // returns path as resource identifer
+    return this.path;
+  }
     
   get proto() {
     const state = this.get();
