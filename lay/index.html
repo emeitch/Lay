@@ -526,34 +526,34 @@ class Path extends State {
 class Store {
   constructor() {
     // premitives
-    this.post(Object.assign(new Boolean(false), {
+    this.appendState(Object.assign(new Boolean(false), {
       _name: Boolean.name, 
       _abstract: true
     }));
-    this.post(Object.assign(new Number(0), {
+    this.appendState(Object.assign(new Number(0), {
       _name: Number.name,
       _abstract: true
     }));
-    this.post(Object.assign(new String(""), {
+    this.appendState(Object.assign(new String(""), {
       _name: String.name,
       _abstract: true
     }));
-    this.post(Object.assign(new Array(), {
+    this.appendState(Object.assign(new Array(), {
       _name: Array.name,
       _abstract: true
     }));
-    this.post(new Value({
+    this.appendState(new Value({
       _name: Value.name,
       _abstract: true
     }));
-    this.post(new Entity({
+    this.appendState(new Entity({
       _name: Entity.name,
       _abstract: true
     }));
     
-    this.post(new Error({_name: Error.name}));
-    this.post(new TypeError({_name: TypeError.name}));
-    this.post(new RequiredPropertyError({_name: RequiredPropertyError.name}));
+    this.appendState(new Error({_name: Error.name}));
+    this.appendState(new TypeError({_name: TypeError.name}));
+    this.appendState(new RequiredPropertyError({_name: RequiredPropertyError.name}));
   }
   
   protoOf(state) {
@@ -680,11 +680,11 @@ class Store {
     return this.follow(key);
   }
   
-  post(state) {
+  appendState(state) {
     const key = Path.uuid();
     return this.setState(key, state);
   }
-  
+    
   // same interface for Resource
   follow(id) {
     if (typeof(id) == "string") {
@@ -706,6 +706,10 @@ class Store {
     }
     
     return resource;
+  }
+    
+  post(state) {
+    return this.appendState(state);
   }
 }
 
@@ -815,6 +819,8 @@ class Resource {
     const state = Object.assign({}, current, diff);
     this.put(state);
   }
+  
+  // todo: postを追加する(resourceがprotoになる?)
 }
 
 
