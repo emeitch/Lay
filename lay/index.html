@@ -740,12 +740,12 @@ class Resource {
   }
   
   equals(other) {
-    const state = this.get();
     if (other instanceof Resource) {
       // todo: 本当は正規化したpathの同値性で判断すべき
       return this.path.equals(other.path);
     } else {
       // state equivalency
+      const state = this.get();
       return state.equals(other);
     }
   }
