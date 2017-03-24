@@ -592,8 +592,8 @@ class Store {
     }
     
     const path = id;
-    const box = new Box(this, path);
-    const state = box.get();
+    const resource = new Resource(this, path);
+    const state = resource.get();
     if (!state) {
       return undefined;
     } else if (state instanceof Path) {
@@ -604,7 +604,7 @@ class Store {
       return b;
     }
     
-    return box;
+    return resource;
   }
   
   entities(state) {
@@ -634,7 +634,7 @@ class Store {
       return undefined;
     }
     
-    const box = this.follow(key);
+    const resource = this.follow(key);
     
     const proto = this.protoOf(state);
     const error = proto ? proto.validate(state) : undefined;
@@ -647,8 +647,8 @@ class Store {
     if (name) {
       this.put(name, new Path(key));
       
-      if (box && box.name && box.name !== name) {
-        this.put(box.name, null);
+      if (resource && resource.name && resource.name !== name) {
+        this.put(resource.name, null);
       }
     }
     
@@ -677,8 +677,8 @@ class Store {
     for (const k in entities) {
       if (entities.hasOwnProperty(k)) {
         // remove old child parent
-        if (box) {
-          const old = box.follow(k);
+        if (resource) {
+          const old = resource.follow(k);
           if (old) {
             const state = old.get();
             const o = Object.assign({}, state, {_parent: null});
@@ -709,7 +709,7 @@ class Store {
   }  
 }
 
-class Box {
+class Resource {
   constructor(store, path) {
     this.store = store;
     this.path = path;
@@ -741,7 +741,7 @@ class Box {
   
   equals(other) {
     const state = this.get();
-    if (other instanceof Box) {
+    if (other instanceof Resource) {
       // todo: 本当は正規化したpathの同値性で判断すべき
       return this.path.equals(other.path);
     } else {
@@ -807,8 +807,8 @@ class Box {
     }
   }
   
-  patch(key, value) {
-    const state = {[key]: value};
+  patch(key, val) {
+    const state = {[key]: val};
     this.put(state);
   }
 }
@@ -823,60 +823,60 @@ const p1 = store.post({
   bar: 2,
   fiz: 9
 });
-const b2id = Path.uuid();
-const b1 = store.post({
+const r2id = Path.uuid();
+const r1 = store.post({
   _proto: p1.path,
   foo: 3, 
   bar: 4,
-  baz: new Path(b2id)
+  baz: new Path(r2id)
 });
-const b2 = store.put(b2id, {
+const r2 = store.put(r2id, {
   _proto: p1.path,
   foo: 5,
   bar: 6,
-  baz: b1.path
+  baz: r1.path
 });
-const b3 = store.post({
+const r3 = store.post({
   _proto: p1.path,
   foo: 5,
   bar: 6,
-  baz: b1.path
+  baz: r1.path
 });
 
-// box generation
-console.assert(b1.path instanceof Path);
-console.assert(b2.path instanceof Path);
+// resource generation
+console.assert(r1.path instanceof Path);
+console.assert(r2.path instanceof Path);
 
-// box property access
-console.assert(b1.follow("foo").equals(3));
-console.assert(b1.follow("bar").equals(4));
-console.assert(b2.follow("foo").equals(5));
-console.assert(b2.follow("bar").equals(6));
+// resource property access
+console.assert(r1.follow("foo").equals(3));
+console.assert(r1.follow("bar").equals(4));
+console.assert(r2.follow("foo").equals(5));
+console.assert(r2.follow("bar").equals(6));
 
 // circular referencing
-console.assert(b2.follow("baz").equals(b1));
-console.assert(b2.follow("baz").follow("baz").equals(b2));
-console.assert(b2.follow("baz").follow("baz").follow("baz").equals(b1));
+console.assert(r2.follow("baz").equals(r1));
+console.assert(r2.follow("baz").follow("baz").equals(r2));
+console.assert(r2.follow("baz").follow("baz").follow("baz").equals(r1));
 
 // prototype definition
-console.assert(b2.follow("_proto").equals(p1));
-console.assert(b2.proto.equals(p1));
-console.assert(b2.proto.name === "proto1");
+console.assert(r2.follow("_proto").equals(p1));
+console.assert(r2.proto.equals(p1));
+console.assert(r2.proto.name === "proto1");
 
-// get method returns raw id value
+// get method returns raw path
 console.assert(store.getState("proto1").equals(p1.path));
-// box method resolves id reference
+// resource method resolves id reference
 console.assert(store.follow("proto1").equals(p1));
 
 // prototype chain
-console.assert(b2.follow("fiz").equals(9));
+console.assert(r2.follow("fiz").equals(9));
 
 // equivalency
-console.assert(b2.equals(b2));
-console.assert(b2.notEquals(b3));
-console.assert(b2.equals(b2.get())); // state equivalency
-console.assert(b2.get().equals(b3.get()));
-console.assert(b2.get().notEquals(b1.get()));
+console.assert(r2.equals(r2));
+console.assert(r2.notEquals(r3));
+console.assert(r2.equals(r2.get())); // state equivalency
+console.assert(r2.get().equals(r3.get()));
+console.assert(r2.get().notEquals(r1.get()));
 
 
 // entity schema for composition
@@ -888,7 +888,7 @@ const p2 = store.post({
     baz: 4,
   }),
 });
-const b4 = store.post({
+const r4 = store.post({
   _proto: new Path(k2),
   foo: {
     baz: 5,
@@ -896,70 +896,70 @@ const b4 = store.post({
   fiz: 9,
 });
 
-// instantiation with proto entity generates a child box
+// instantiation with proto entity generates a child resource
 console.assert(p2.follow("foo").path.keys.length === 2);
-console.assert(b4.follow("foo").path.keys.length === 1);
+console.assert(r4.follow("foo").path.keys.length === 1);
 console.assert(p2.follow("foo").path.top.equals(p2.path.top));
 console.assert(p2.follow("foo").path.keys[1] === "foo");
-console.assert(b4.follow("foo").path.top.notEquals(b4.path.top));
+console.assert(r4.follow("foo").path.top.notEquals(r4.path.top));
 // prototype chain by entity
-console.assert(b4.follow("foo").follow("bar").equals(3));
+console.assert(r4.follow("foo").follow("bar").equals(3));
 // parent entity access
-console.assert(b4.follow("foo").parent.equals(b4));
+console.assert(r4.follow("foo").parent.equals(r4));
 // override child entity property
-console.assert(b4.follow("foo").follow("baz").equals(5));
+console.assert(r4.follow("foo").follow("baz").equals(5));
 // get by path
-console.assert(store.follow(new Path(b4.path.top)).follow("foo").follow("baz").equals(5));
-console.assert(store.follow(new Path(b4.path.top, "foo")).follow("baz").equals(5));
-console.assert(store.follow(new Path(b4.path.top, "foo", "baz")).equals(5));
+console.assert(store.follow(new Path(r4.path.top)).follow("foo").follow("baz").equals(5));
+console.assert(store.follow(new Path(r4.path.top, "foo")).follow("baz").equals(5));
+console.assert(store.follow(new Path(r4.path.top, "foo", "baz")).equals(5));
 
 // update property
-console.assert(b4.follow("fiz").equals(9));
-b4.patch("fiz", 8);
-console.assert(b4.follow("fiz").equals(8));
+console.assert(r4.follow("fiz").equals(9));
+r4.patch("fiz", 8);
+console.assert(r4.follow("fiz").equals(8));
 
 // update child property
-b4.follow("foo").patch("baz", 6);
-console.assert(b4.follow("foo").follow("baz").equals(6));
+r4.follow("foo").patch("baz", 6);
+console.assert(r4.follow("foo").follow("baz").equals(6));
 
 // update by state
-b4.put({
+r4.put({
   fiz: 9
 });
-console.assert(b4.follow("fiz").equals(9));
+console.assert(r4.follow("fiz").equals(9));
 
 // update child by state
-b4.follow("foo").put({
+r4.follow("foo").put({
   baz: 7
 });
-console.assert(b4.follow("foo").follow("baz").equals(7));
+console.assert(r4.follow("foo").follow("baz").equals(7));
 
 // update parent and child by state
-const oldFoo = b4.follow("foo");
-b4.put({
+const oldFoo = r4.follow("foo");
+r4.put({
   fiz: 7,
   foo: {
     baz: 8
   }
 });
-console.assert(b4.follow("fiz").equals(7));
-console.assert(b4.follow("foo").follow("baz").equals(8));
-console.assert(b4.follow("foo").path.notEquals(oldFoo.path)); // updated
+console.assert(r4.follow("fiz").equals(7));
+console.assert(r4.follow("foo").follow("baz").equals(8));
+console.assert(r4.follow("foo").path.notEquals(oldFoo.path)); // updated
 console.assert(oldFoo.get()._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
 // update parent and child by state with child identifier
-const fooPath = b4.follow("foo").path;
-b4.put({
+const fooPath = r4.follow("foo").path;
+r4.put({
   fiz: 6, 
   foo: {
     _id: fooPath.top,
     baz: 9
   }
 });
-console.assert(b4.follow("fiz").equals(6));
-console.assert(b4.follow("foo").follow("baz").equals(9));
-console.assert(b4.follow("foo").path.equals(fooPath)); // not updated
+console.assert(r4.follow("fiz").equals(6));
+console.assert(r4.follow("foo").follow("baz").equals(9));
+console.assert(r4.follow("foo").path.equals(fooPath)); // not updated
 
 // update proto's key name
 console.assert(store.follow("proto2"));
@@ -967,26 +967,26 @@ console.assert(!store.follow("proto2dash"));
 const k2dash = new Path("proto2dash");
 p2.patch("_name", k2dash.top);
 console.assert(!store.follow("proto2"));
-console.assert(b4.proto.name === "proto2dash");
+console.assert(r4.proto.name === "proto2dash");
 console.assert(store.follow("proto2dash").equals(p2));
 
 
-// nested value box
-const b5 = store.post({
+// nested state resource
+const r5 = store.post({
   hoge: 3,
   fuga: 4
 });
-const b6 = store.post({
+const r6 = store.post({
   foo: {
-    _proto: b5.path,
+    _proto: r5.path,
     hoge: 5,
   }
 });
-console.assert(b6.follow("foo").follow("hoge").equals(5));
-console.assert(b6.follow("foo").proto.follow("hoge").equals(3));
+console.assert(r6.follow("foo").follow("hoge").equals(5));
+console.assert(r6.follow("foo").proto.follow("hoge").equals(3));
 
-// update deep nested value
-const b7 = store.post({
+// update deep nested state
+const r7 = store.post({
   foo: {
     bar: {
       baz: {
@@ -995,11 +995,11 @@ const b7 = store.post({
     }
   }
 });
-console.assert(b7.follow("foo").follow("bar").follow("baz").follow("fiz").equals(5));
-b7.follow("foo").follow("bar").follow("baz").patch("fiz", 7);
-console.assert(b7.follow("foo").follow("bar").follow("baz").follow("fiz").equals(7));
-b7.follow("foo").follow("bar").follow("baz").put({fiz: 8});
-console.assert(b7.follow("foo").follow("bar").follow("baz").follow("fiz").equals(8));
+console.assert(r7.follow("foo").follow("bar").follow("baz").follow("fiz").equals(5));
+r7.follow("foo").follow("bar").follow("baz").patch("fiz", 7);
+console.assert(r7.follow("foo").follow("bar").follow("baz").follow("fiz").equals(7));
+r7.follow("foo").follow("bar").follow("baz").put({fiz: 8});
+console.assert(r7.follow("foo").follow("bar").follow("baz").follow("fiz").equals(8));
 
 
 // algebraic data type
