@@ -629,7 +629,7 @@ class Store {
     return entities;
   }
   
-  put(key, state) {
+  setState(key, state) {
     if (state === null) {
       delete this[key];
       return undefined;
@@ -646,10 +646,10 @@ class Store {
     
     const name = state._name;
     if (name) {
-      this.put(name, new Path(key));
+      this.setState(name, new Path(key));
       
       if (resource && resource.name && resource.name !== name) {
-        this.put(resource.name, null);
+        this.setState(resource.name, null);
       }
     }
     
@@ -681,9 +681,7 @@ class Store {
         if (resource) {
           const old = resource.follow(k);
           if (old) {
-            const state = old.get();
-            const o = Object.assign({}, state, {_parent: null});
-            old.put(o);
+            old.patch({_parent: null});
           }
         }
         
@@ -695,7 +693,7 @@ class Store {
         delete child._id;
         child._parent = new Path(key);
         
-        this.put(childId, child);
+        this.setState(childId, child);
         state[k] = new Path(childId);
       }
     }
@@ -706,7 +704,7 @@ class Store {
   
   post(state) {
     const key = Path.uuid();
-    return this.put(key, state);
+    return this.setState(key, state);
   }  
 }
 
@@ -796,20 +794,19 @@ class Resource {
   get() {
     return this.store.getState(this.path);
   }
-
+  
   put(state) {
-    const current = this.get();
-    const next = Object.assign({}, current, state);
     const parentPath = this.path.parent();
     if (parentPath) {
-      this.store.follow(parentPath).put({[this.path.last]: next});
+      this.store.follow(parentPath).patch({[this.path.last]: state});
     } else {
-      this.store.put(this.path.top, next);
-    }
+      this.store.setState(this.path.top, state);
+    }    
   }
-  
-  patch(key, val) {
-    const state = {[key]: val};
+
+  patch(diff) {
+    const current = this.get();
+    const state = Object.assign({}, current, diff);
     this.put(state);
   }
 }
@@ -831,7 +828,7 @@ const r1 = store.post({
   bar: 4,
   baz: new Path(r2id)
 });
-const r2 = store.put(r2id, {
+const r2 = store.setState(r2id, {
   _proto: p1.path,
   foo: 5,
   bar: 6,
@@ -916,28 +913,28 @@ console.assert(store.follow(new Path(r4.path.top, "foo", "baz")).equals(5));
 
 // update property
 console.assert(r4.follow("fiz").equals(9));
-r4.patch("fiz", 8);
+r4.patch({fiz: 8});
 console.assert(r4.follow("fiz").equals(8));
 
 // update child property
-r4.follow("foo").patch("baz", 6);
+r4.follow("foo").patch({baz: 6});
 console.assert(r4.follow("foo").follow("baz").equals(6));
 
 // update by state
-r4.put({
+r4.patch({
   fiz: 9
 });
 console.assert(r4.follow("fiz").equals(9));
 
 // update child by state
-r4.follow("foo").put({
+r4.follow("foo").patch({
   baz: 7
 });
 console.assert(r4.follow("foo").follow("baz").equals(7));
 
 // update parent and child by state
 const oldFoo = r4.follow("foo");
-r4.put({
+r4.patch({
   fiz: 7,
   foo: {
     baz: 8
@@ -951,7 +948,7 @@ console.assert(oldFoo.parent === undefined);
 
 // update parent and child by state with child identifier
 const fooPath = r4.follow("foo").path;
-r4.put({
+r4.patch({
   fiz: 6, 
   foo: {
     _id: fooPath.top,
@@ -966,7 +963,7 @@ console.assert(r4.follow("foo").path.equals(fooPath)); // not updated
 console.assert(store.follow("proto2"));
 console.assert(!store.follow("proto2dash"));
 const k2dash = new Path("proto2dash");
-p2.patch("_name", k2dash.top);
+p2.patch({_name: k2dash.top});
 console.assert(!store.follow("proto2"));
 console.assert(r4.proto.name === "proto2dash");
 console.assert(store.follow("proto2dash").equals(p2));
@@ -997,9 +994,9 @@ const r7 = store.post({
   }
 });
 console.assert(r7.follow("foo").follow("bar").follow("baz").follow("fiz").equals(5));
-r7.follow("foo").follow("bar").follow("baz").patch("fiz", 7);
+r7.follow("foo").follow("bar").follow("baz").patch({fiz: 7});
 console.assert(r7.follow("foo").follow("bar").follow("baz").follow("fiz").equals(7));
-r7.follow("foo").follow("bar").follow("baz").put({fiz: 8});
+r7.follow("foo").follow("bar").follow("baz").patch({fiz: 8});
 console.assert(r7.follow("foo").follow("bar").follow("baz").follow("fiz").equals(8));
 
 
