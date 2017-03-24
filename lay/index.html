@@ -574,12 +574,13 @@ class Store {
     const path = id;
     let state = this.getState(path.top);
     for (const key of path.rest) {
-      state = state[key];
-      if (!state) {
+      const val = state[key];
+      if (!val) {
         return undefined;
-      } else if (state instanceof Path) {
-        const p = state;
-        state = this.getState(p);
+      } else if (val instanceof Path) {
+        state = this.getState(val);
+      } else {
+        state = val;
       }
     }
     return state;
@@ -615,9 +616,9 @@ class Store {
       const state = proto.get();
       for (var key in state) {
         if (state.hasOwnProperty(key)) {
-          const o = state[key];
-          if (o instanceof Entity && !entities[key]) {
-            entities[key] = o;
+          const val = state[key];
+          if (val instanceof Entity && !entities[key]) {
+            entities[key] = val;
           }
         }
       }
@@ -753,12 +754,12 @@ class Resource {
   validate(state) {
     for (var key in state) {
       if (state.hasOwnProperty(key)) {
-        const v = state[key];
+        const val = state[key];
         const prop = this.follow(key);
         const propState = (prop && prop.get()) || prop;
         if (propState 
-          && propState.notEquals(v.__proto__) 
-          && propState.__proto__.notEquals(v.__proto__)) {
+          && propState.notEquals(val.__proto__) 
+          && propState.__proto__.notEquals(val.__proto__)) {
           return new Value({
             _proto: new Path(TypeError.name),
           });
@@ -782,10 +783,10 @@ class Resource {
     
   follow(key) {
     const state = this.get();
-    const v = state[key];
-    if (v instanceof Path) { // reference entity
-      return this.store.follow(v);
-    } else if (v === undefined && this.proto !== undefined) { // prototype chain
+    const val = state[key];
+    if (val instanceof Path) { // reference entity
+      return this.store.follow(val);
+    } else if (val === undefined && this.proto !== undefined) { // prototype chain
       return this.proto.follow(key);
     } else {
       return this.store.follow(this.path.child(key));
