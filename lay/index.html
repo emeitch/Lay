@@ -525,6 +525,8 @@ class Path extends State {
 
 class Store {
   constructor() {
+    this.bindings = {}
+    
     // premitives
     this.appendState(Object.assign(new Boolean(false), {
       _name: Boolean.name, 
@@ -565,13 +567,35 @@ class Store {
     return undefined;
   }
   
+  resolveName(key) {
+    if (!Path.isName(key)) {
+      return key;
+    }
+    
+    const uuid = this.bindings[key];
+    if (!uuid) {
+      return undefined;
+    }
+    
+    return uuid;
+  }
+    
+  resolvePathTopName(path) {
+    const top = this.resolveName(path.top);
+    if (!top) {
+      return undefined;
+    }
+    
+    return new Path(top, ...path.rest);
+  }
+  
   getState(id) {
     if (typeof(id) == "string") {
-      const key = id;
+      const key = this.resolveName(id);
       return this[key];
     }
     
-    const path = id;
+    const path = this.resolvePathTopName(id);
     let state = this.getState(path.top);
     for (const key of path.rest) {
       const val = state[key];
@@ -624,10 +648,10 @@ class Store {
     
     const name = state._name;
     if (name) {
-      this.setState(name, new Path(key));
+      this.bindings[name] = key;
       
       if (resource && resource.name && resource.name !== name) {
-        this.setState(resource.name, null);
+        delete this.bindings[resource.name];
       }
     }
     
@@ -692,7 +716,11 @@ class Store {
       return this.follow(new Path(key));
     }
     
-    const path = id;
+    const path = this.resolvePathTopName(id);
+    if (!path) {
+      return undefined;
+    }
+    
     const resource = new Resource(this, path);
     const state = resource.get();
     if (!state) {
@@ -874,7 +902,7 @@ console.assert(r2.proto.equals(p1));
 console.assert(r2.proto.name === "proto1");
 
 // get method returns raw path
-console.assert(store.getState("proto1").equals(p1.path));
+console.assert(store.getState("proto1").equals(p1.get()));
 // resource method resolves id reference
 console.assert(store.follow("proto1").equals(p1));
 
@@ -1056,7 +1084,7 @@ const err2 = store.post({
 });
 console.assert(err2.proto.equals(store.follow("RequiredPropertyError")));
 
-// namespace
+// bindingspace
 console.assert(store.follow("Color"));
 
 
