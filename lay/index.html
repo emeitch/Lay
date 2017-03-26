@@ -737,6 +737,10 @@ class Resource {
     // returns path as resource identifer
     return this.path;
   }
+  
+  get state() {
+    return this.get();
+  }
     
   get proto() {
     const state = this.get();
