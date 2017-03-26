@@ -711,23 +711,15 @@ class Store {
     
   // same interface for Resource
   follow(id) {
-    if (typeof(id) == "string") {
-      const key = id;
-      return this.follow(new Path(key));
-    }
+    const path = this.resolvePathTopName(
+      typeof(id) === "string" ? new Path(id) : id
+    );
     
-    const path = this.resolvePathTopName(id);
-    if (!path) {
+    if (!path || !this.getState(path)) {
       return undefined;
     }
     
-    const res = new Resource(this, path);
-    const state = res.get();
-    if (!state) {
-      return undefined;
-    }
-    
-    return res;
+    return new Resource(this, path);
   }
     
   post(state) {
