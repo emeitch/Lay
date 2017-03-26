@@ -1039,30 +1039,34 @@ console.assert(r7.follow("foo").follow("bar").follow("baz").follow("fiz").equals
 const color = store.post({
   _proto: new Path(Value.name),
   _name: "Color",
+  Red: { _proto: new Path("Color") },
+  Blue: { _proto: new Path("Color") },
+  Green: { _proto: new Path("Color") },
+  RGB: {
+    _proto: new Path("Color"),
+    r: new Path("Number"),
+    g: new Path("Number"),
+    b: new Path("Number"),
+  }
 });
-const red = store.post({
-  _proto: new Path(color.name),
-  _name: "Red",
+
+// namespace & proto
+console.assert(store.follow("Color").equals(color));
+console.assert(store.follow("Color").follow("Red").proto.equals(color));
+console.assert(store.follow("Color").follow("RGB").proto.equals(color));
+
+// concrete resource
+const c1 = store.post({
+  _proto: new Path("Color", "RGB"),
+  r: 5,
+  g: 6,
+  b: 7
 });
-const blue = store.post({
-  _proto: new Path(color.name),
-  _name: "Green",
-});
-const green = store.post({
-  _proto: new Path(color.name),
-  _name: "Blue",
-});
-const rgb = store.post({
-  _proto: new Path(color.name),
-  _name: "RGB",
-  r: new Path("Number"),
-  g: new Path("Number"),
-  b: new Path("Number"),
-});
+console.assert(c1.proto.equals(color.follow("RGB")));
 
 // premitive type error
 const err1 = store.post({
-  _proto: new Path(rgb.name),
+  _proto: new Path("Color", "RGB"),
   r: 5,
   g: 6,
   b: "invalid",
@@ -1071,15 +1075,12 @@ console.assert(err1.proto.equals(store.follow("TypeError")));
 
 // required property error
 const err2 = store.post({
-  _proto: new Path(rgb.name),
+  _proto: new Path("Color", "RGB"),
   r: 5,
   g: 6,
   // b: "nothing",
 });
 console.assert(err2.proto.equals(store.follow("RequiredPropertyError")));
-
-// bindingspace
-console.assert(store.follow("Color"));
 
 
 // recurcive definition
