@@ -725,12 +725,6 @@ class Store {
     const state = resource.get();
     if (!state) {
       return undefined;
-    } else if (state instanceof Path) {
-      let b = this;
-      for (const k of state.keys) {
-        b = b.follow(k);
-      }
-      return b;
     }
     
     return resource;
