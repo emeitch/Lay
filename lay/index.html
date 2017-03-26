@@ -637,7 +637,7 @@ class Store {
       return undefined;
     }
     
-    const resource = this.follow(key);
+    const res = this.follow(key);
     
     const proto = this.getProtoResource(state);
     const error = proto ? proto.validate(state) : undefined;
@@ -650,8 +650,8 @@ class Store {
     if (name) {
       this.bindings[name] = key;
       
-      if (resource && resource.name && resource.name !== name) {
-        delete this.bindings[resource.name];
+      if (res && res.name && res.name !== name) {
+        delete this.bindings[res.name];
       }
     }
     
@@ -680,8 +680,8 @@ class Store {
     for (const k in entities) {
       if (entities.hasOwnProperty(k)) {
         // remove old child parent
-        if (resource) {
-          const old = resource.follow(k);
+        if (res) {
+          const old = res.follow(k);
           if (old) {
             old.patch({_parent: null});
           }
@@ -721,13 +721,13 @@ class Store {
       return undefined;
     }
     
-    const resource = new Resource(this, path);
-    const state = resource.get();
+    const res = new Resource(this, path);
+    const state = res.get();
     if (!state) {
       return undefined;
     }
     
-    return resource;
+    return res;
   }
     
   post(state) {
