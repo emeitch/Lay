@@ -846,7 +846,7 @@ class Resource {
 const store = new Store();
 
 const p1 = store.post({
-  _name: "proto1",
+  _name: "Proto1",
   foo: 1,
   bar: 2,
   fiz: 9
@@ -889,12 +889,12 @@ console.assert(r2.follow("baz").follow("baz").follow("baz").equals(r1));
 // prototype definition
 console.assert(r2.follow("_proto").equals(p1));
 console.assert(r2.proto.equals(p1));
-console.assert(r2.proto.name === "proto1");
+console.assert(r2.proto.name === "Proto1");
 
 // get method returns raw path
-console.assert(store.getState("proto1").equals(p1.get()));
+console.assert(store.getState("Proto1").equals(p1.get()));
 // resource method resolves id reference
-console.assert(store.follow("proto1").equals(p1));
+console.assert(store.follow("Proto1").equals(p1));
 
 // prototype chain
 console.assert(r2.follow("fiz").equals(9));
@@ -908,7 +908,7 @@ console.assert(r2.get().notEquals(r1.get()));
 
 
 // entity schema for composition
-const k2 = "proto2";
+const k2 = "Proto2";
 const p2 = store.post({
   _name: k2,
   foo: new Entity({
@@ -990,13 +990,13 @@ console.assert(r4.follow("foo").follow("baz").equals(9));
 console.assert(r4.follow("foo").path.equals(fooPath)); // not updated
 
 // update proto's key name
-console.assert(store.follow("proto2"));
-console.assert(!store.follow("proto2dash"));
-const k2dash = new Path("proto2dash");
+console.assert(store.follow("Proto2"));
+console.assert(!store.follow("Proto2dash"));
+const k2dash = new Path("Proto2dash");
 p2.patch({_name: k2dash.top});
-console.assert(!store.follow("proto2"));
-console.assert(r4.proto.name === "proto2dash");
-console.assert(store.follow("proto2dash").equals(p2));
+console.assert(!store.follow("Proto2"));
+console.assert(r4.proto.name === "Proto2dash");
+console.assert(store.follow("Proto2dash").equals(p2));
 
 
 // nested state resource
