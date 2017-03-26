@@ -657,20 +657,20 @@ class Store {
     
     for (const k in state) {
       if (state.hasOwnProperty(k)) {
-        const o = state[k];
+        const v = state[k];
         
         // symbol referencing termination
-        if (o instanceof Path && Path.isName(o.top) && o.rest.length === 0) {
-          if (o.top === state._name) {
+        if (v instanceof Path && Path.isName(v.top) && v.rest.length === 0) {
+          if (v.top === state._name) {
             // for recurcive definition
             state[k] = new Path(key);
           } else {
-            state[k] = this.follow(o).path;
+            state[k] = this.follow(v).path;
           }
         }
         
         // remove null property
-        if (o === null) {
+        if (v === null) {
           delete state[k];
         }
       }
