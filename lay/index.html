@@ -489,6 +489,10 @@ class Path extends State {
   static isName(key) {
     return !this.isUUID(key);
   }
+  
+  static isConst(key) {
+    return !!key.match(/^[A-Z]/);
+  }
 
   constructor(...keys) {
     super();
@@ -617,7 +621,8 @@ class Store {
     while (proto) {
       const state = proto.get();
       for (var key in state) {
-        if (state.hasOwnProperty(key)) {
+        // reject const key for namespase
+        if (state.hasOwnProperty(key) && !Path.isConst(key)) { 
           const val = state[key];
           if (val instanceof Entity && !entities[key]) {
             entities[key] = val;
@@ -1044,15 +1049,15 @@ console.assert(store.follow("List").follow("cdr").equals(store.follow("List")));
 const color = store.post({
   _proto: new Path(Value.name),
   _name: "Color",
-  Red: { _proto: new Path("Color") },
-  Blue: { _proto: new Path("Color") },
-  Green: { _proto: new Path("Color") },
-  RGB: {
+  Red: new Entity({ _proto: new Path("Color") }),
+  Blue: new Entity({ _proto: new Path("Color") }),
+  Green: new Entity({ _proto: new Path("Color") }),
+  RGB: new Entity({
     _proto: new Path("Color"),
     r: new Path("Number"),
     g: new Path("Number"),
     b: new Path("Number"),
-  }
+  }),
 });
 
 // namespace & proto
