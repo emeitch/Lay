@@ -740,9 +740,9 @@ class Resource {
     this.path = path;
   }
   
-  get identifier() {
-    // normalized path
-    return this.normalize().path;
+  get permanent() {
+    // normalization
+    return this.normalize();
   }
   
   get state() {
@@ -783,7 +783,7 @@ class Resource {
   
   equals(other) {
     if (other instanceof Resource) {
-      return this.identifier.equals(other.identifier);
+      return this.permanent.path.equals(other.permanent.path);
     } else {
       // state equivalency
       const state = this.get();
