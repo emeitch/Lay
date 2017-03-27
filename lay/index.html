@@ -623,7 +623,7 @@ class Store {
       for (var key in state) {
         // reject const key for namespase
         if (state.hasOwnProperty(key) && !Path.isConst(key)) { 
-          const val = state[key];
+          const val = proto.follow(key).get();
           if (val instanceof Entity && !entities[key]) {
             entities[key] = val;
           }
@@ -635,7 +635,7 @@ class Store {
     
     return entities;
   }
-  
+    
   setState(key, state) {
     if (state === null) {
       delete this[key];
@@ -660,22 +660,29 @@ class Store {
       }
     }
     
+    const appendChild = (child) => {
+      const childId = child._uuid || Path.uuid();
+      
+      delete child._uuid;
+      child._parent = new Path(key);
+      
+      this.setState(childId, child);
+      return childId;
+    };
+    
     for (const k in state) {
       if (state.hasOwnProperty(k)) {
         const v = state[k];
-        
-        // symbol referencing termination
-        if (v instanceof Path && Path.isName(v.top) && v.rest.length === 0) {
-          if (v.top === state._name) {
-            // for recurcive definition
-            state[k] = new Path(key);
-          } else {
-            state[k] = this.follow(v).path;
-          }
-        }
-        
-        // remove null property
-        if (v === null) {
+        if (v instanceof Path) {
+          // resolve name and recurcive definition
+          state[k] = this.resolvePathTopName(v);
+        } else if (v instanceof Entity) {
+          // set entity as child resource
+          const entity = v;
+          const childId = appendChild(entity);
+          state[k] = new Path(childId);
+        } else if (v === null) {
+          // remove null property
           delete state[k];
         }
       }
@@ -695,12 +702,7 @@ class Store {
         const entity = entities[k];
         const override = state[k];
         const child = override ? Object.assign({}, entity, override) : entity;
-        const childId = child._uuid || Path.uuid();
-        
-        delete child._uuid;
-        child._parent = new Path(key);
-        
-        this.setState(childId, child);
+        const childId = appendChild(child);
         state[k] = new Path(childId);
       }
     }
@@ -739,8 +741,8 @@ class Resource {
   }
   
   get identifier() {
-    // returns path as resource identifer
-    return this.path;
+    // normalized path
+    return this.normalize().path;
   }
   
   get state() {
@@ -771,10 +773,17 @@ class Resource {
     return state._name;
   }
   
+  normalize() {
+    let res = this.store;
+    for (const key of this.path.keys) {
+      res = res.follow(key);
+    }
+    return res;
+  }
+  
   equals(other) {
     if (other instanceof Resource) {
-      // todo: 本当は正規化したpathの同値性で判断すべき
-      return this.path.equals(other.path);
+      return this.identifier.equals(other.identifier);
     } else {
       // state equivalency
       const state = this.get();
@@ -929,12 +938,6 @@ const r4 = store.post({
   fiz: 9,
 });
 
-// instantiation with proto entity generates a child resource
-console.assert(p2.follow("foo").path.keys.length === 2);
-console.assert(r4.follow("foo").path.keys.length === 1);
-console.assert(p2.follow("foo").path.top.equals(p2.path.top));
-console.assert(p2.follow("foo").path.keys[1] === "foo");
-console.assert(r4.follow("foo").path.top.notEquals(r4.path.top));
 // prototype chain by entity
 console.assert(r4.follow("foo").follow("bar").equals(3));
 // parent entity access
@@ -1049,9 +1052,15 @@ console.assert(store.follow("List").follow("cdr").equals(store.follow("List")));
 const color = store.post({
   _proto: new Path(Value.name),
   _name: "Color",
-  Red: new Entity({ _proto: new Path("Color") }),
-  Blue: new Entity({ _proto: new Path("Color") }),
-  Green: new Entity({ _proto: new Path("Color") }),
+  Red: new Entity({ 
+    _proto: new Path("Color"),
+  }),
+  Blue: new Entity({ 
+    _proto: new Path("Color"),
+  }),
+  Green: new Entity({ 
+    _proto: new Path("Color"),
+  }),
   RGB: new Entity({
     _proto: new Path("Color"),
     r: new Path("Number"),
