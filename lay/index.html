@@ -1030,6 +1030,15 @@ r7.follow("foo").follow("bar").follow("baz").patch({fiz: 8});
 console.assert(r7.follow("foo").follow("bar").follow("baz").follow("fiz").equals(8));
 
 
+// recurcive definition
+const list = store.post({
+  _name: "List",
+  car: new Path("Entity"),
+  cdr: new Path("List"),
+});
+console.assert(store.follow("List").follow("cdr").equals(store.follow("List")));
+
+
 // algebraic data type
 // e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
 const color = store.post({
@@ -1077,15 +1086,6 @@ const err2 = store.post({
   // b: "nothing",
 });
 console.assert(err2.proto.equals(store.follow("RequiredPropertyError")));
-
-
-// recurcive definition
-const list = store.post({
-  _name: "List",
-  car: new Path("Entity"),
-  cdr: new Path("List"),
-});
-console.assert(store.follow("List").follow("cdr").equals(store.follow("List")));
 
 
 console.log("all tests succeeded.");
