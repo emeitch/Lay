@@ -1016,6 +1016,7 @@ const r6 = store.post({
 console.assert(r6.follow("foo").follow("hoge").equals(5));
 console.assert(r6.follow("foo").proto.follow("hoge").equals(3));
 
+
 // update deep nested state
 const r7 = store.post({
   foo: {
