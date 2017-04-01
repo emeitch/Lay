@@ -955,13 +955,13 @@ console.assert(r4.follow("foo").follow("baz").equals(6));
 
 // update by state
 r4.patch({
-  fiz: 9
+  fiz: 9,
 });
 console.assert(r4.follow("fiz").equals(9));
 
 // update child by state
 r4.follow("foo").patch({
-  baz: 7
+  baz: 7,
 });
 console.assert(r4.follow("foo").follow("baz").equals(7));
 
@@ -970,7 +970,7 @@ const oldFoo = r4.follow("foo");
 r4.patch({
   fiz: 7,
   foo: {
-    baz: 8
+    baz: 8,
   }
 });
 console.assert(r4.follow("fiz").equals(7));
@@ -985,7 +985,7 @@ r4.patch({
   fiz: 6, 
   foo: {
     _uuid: fooPath.top,
-    baz: 9
+    baz: 9,
   }
 });
 console.assert(r4.follow("fiz").equals(6));
@@ -1005,7 +1005,7 @@ console.assert(store.follow("Proto2dash").equals(p2));
 // nested state resource
 const r5 = store.post({
   hoge: 3,
-  fuga: 4
+  fuga: 4,
 });
 const r6 = store.post({
   foo: {
@@ -1022,7 +1022,7 @@ const r7 = store.post({
   foo: {
     bar: {
       baz: {
-        fiz: 5
+        fiz: 5,
       }
     }
   }
