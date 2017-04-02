@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "webpack --watch -d & browser-sync start --server --files build/bundle.js"
+    "start": "webpack --watch -d --devtool source-map & browser-sync start --server --files build/bundle.js"
   },
   "dependencies": {},
   "devDependencies": {
