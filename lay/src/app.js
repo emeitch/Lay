@@ -424,13 +424,11 @@ const TodoMVC = {
   }
 };
 // console.log(TodoMVC);
-  
-Object.prototype.equals = function(other) {
-  return JSON.stringify(this) === JSON.stringify(other);
-};
-Object.prototype.notEquals = function(other) {
-  return !this.equals(other);
+
+function equals(o1, o2) {
+  return JSON.stringify(o1) === JSON.stringify(o2);
 }
+  
 class State {
   constructor(init={}) {
     Object.assign(this, init);
@@ -768,10 +766,10 @@ class Resource {
   
   equals(other) {
     if (other instanceof Resource) {
-      return this.permanent.path.equals(other.permanent.path);
+      return equals(this.permanent.path, other.permanent.path);
     } else {
       // state equivalency
-      return this.state.equals(other);
+      return equals(this.state, other);
     }
   }
   
@@ -782,8 +780,8 @@ class Resource {
         const prop = this.follow(key);
         const propState = (prop && prop.get()) || prop;
         if (propState 
-          && propState.notEquals(val.__proto__) 
-          && propState.__proto__.notEquals(val.__proto__)) {
+          && !equals(propState, val.__proto__) 
+          && !equals(propState.__proto__, val.__proto__)) {
           return new Value({
             _proto: new Path(TypeError.name),
           });
@@ -890,7 +888,7 @@ console.assert(r2.proto.equals(p1));
 console.assert(r2.proto.name === "Proto1");
 
 // get method returns raw path
-console.assert(store.getState("Proto1").equals(p1.get()));
+console.assert(equals(store.getState("Proto1"), p1.get()));
 // resource method resolves id reference
 console.assert(store.follow("Proto1").equals(p1));
 
@@ -899,10 +897,10 @@ console.assert(r2.follow("fiz").equals(9));
 
 // equivalency
 console.assert(r2.equals(r2));
-console.assert(r2.notEquals(r3));
+console.assert(!r2.equals(r3));
 console.assert(r2.equals(r2.get())); // state equivalency
-console.assert(r2.get().equals(r3.get()));
-console.assert(r2.get().notEquals(r1.get()));
+console.assert(equals(r2.get(), r3.get()));
+console.assert(!equals(r2.get(),r1.get()));
 
 
 // entity schema for composition
@@ -964,7 +962,7 @@ r4.patch({
 });
 console.assert(r4.follow("fiz").equals(7));
 console.assert(r4.follow("foo").follow("baz").equals(8));
-console.assert(r4.follow("foo").path.notEquals(oldFoo.path)); // updated
+console.assert(!equals(r4.follow("foo").path, oldFoo.path)); // updated
 console.assert(oldFoo.get()._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
@@ -979,7 +977,7 @@ r4.patch({
 });
 console.assert(r4.follow("fiz").equals(6));
 console.assert(r4.follow("foo").follow("baz").equals(9));
-console.assert(r4.follow("foo").path.equals(fooPath)); // not updated
+console.assert(equals(r4.follow("foo").path, fooPath)); // not updated
 
 // update proto's key name
 console.assert(store.follow("Proto2"));

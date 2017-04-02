@@ -1,9 +1,10 @@
 {
-  "devDependencies": {
-    "webpack": "^2.3.2",
-    "webpack-dev-server": "^2.4.2"
+  "scripts": {
+    "start": "webpack --watch -d & browser-sync start --server --files build/bundle.js"
   },
-  "dependencies": {
-    "browser-sync": "^2.18.8"
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.18.8",
+    "webpack": "^2.3.2"
   }
 }
