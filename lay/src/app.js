@@ -1,3 +1,12 @@
+const BiMap = require('bidirectional-map');
+
+// BiMap test
+const bmap = new BiMap();
+bmap.set('bob', 'alice');
+console.assert(bmap.get('bob') === 'alice');
+console.assert(bmap.getKey('alice') === 'bob');
+
+
 function flatten(array) {
   return Array.prototype.concat.apply([], array);
 }

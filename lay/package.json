@@ -2,7 +2,9 @@
   "scripts": {
     "start": "webpack --watch -d --devtool source-map & browser-sync start --server --files build/bundle.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "bidirectional-map": "^1.0.3"
+  },
   "devDependencies": {
     "browser-sync": "^2.18.8",
     "webpack": "^2.3.2"
