@@ -77,13 +77,6 @@
 
 const BiMap = __webpack_require__(/*! bidirectional-map */ 1);
 
-// BiMap test
-const bmap = new BiMap();
-bmap.set('bob', 'alice');
-console.assert(bmap.get('bob') === 'alice');
-console.assert(bmap.getKey('alice') === 'bob');
-
-
 function flatten(array) {
   return Array.prototype.concat.apply([], array);
 }
@@ -602,7 +595,7 @@ class Path extends State {
 
 class Store {
   constructor() {
-    this.bindings = {}
+    this.bindings = new BiMap();
     
     // premitives
     this.appendState(Object.assign(new Boolean(false), {
@@ -649,7 +642,7 @@ class Store {
       return key;
     }
     
-    const uuid = this.bindings[key];
+    const uuid = this.bindings.get(key);
     if (!uuid) {
       return undefined;
     }
@@ -726,11 +719,7 @@ class Store {
     
     const name = state._name;
     if (name) {
-      this.bindings[name] = key;
-      
-      if (res && res.name && res.name !== name) {
-        delete this.bindings[res.name];
-      }
+      this.bindings.set(name, key);
     }
     
     const appendChild = (child) => {
