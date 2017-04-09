@@ -11,11 +11,7 @@ function equals(o1, o2) {
   return JSON.stringify(o1) === JSON.stringify(o2);
 }
   
-class State {
-  constructor(init={}) {
-    Object.assign(this, init);
-  }
-}
+const State = require('./state');
 
 class Error extends State {
 }

@@ -88,11 +88,7 @@ function equals(o1, o2) {
   return JSON.stringify(o1) === JSON.stringify(o2);
 }
   
-class State {
-  constructor(init={}) {
-    Object.assign(this, init);
-  }
-}
+const State = __webpack_require__(/*! ./state */ 3);
 
 class Error extends State {
 }
@@ -1312,6 +1308,22 @@ module.exports = {
     }
   }
 };
+
+/***/ }),
+/* 3 */
+/* unknown exports provided */
+/* all exports used */
+/*!**********************!*\
+  !*** ./src/state.js ***!
+  \**********************/
+/***/ (function(module, exports) {
+
+class State {
+  constructor(init={}) {
+    Object.assign(this, init);
+  }
+}
+module.exports = State;
 
 /***/ })
 /******/ ]);
