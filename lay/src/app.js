@@ -1,24 +1,15 @@
-const BiMap = require('bidirectional-map');
+import BiMap from 'bidirectional-map';
+
+import TodoMVC from './todomvc';
+import State from './state';
+import Error, { TypeError, RequiredPropertyError } from './error';
 
 function flatten(array) {
   return Array.prototype.concat.apply([], array);
 }
 
-const TodoMVC = require('./todomvc');
-// console.log(TodoMVC);
-
 function equals(o1, o2) {
   return JSON.stringify(o1) === JSON.stringify(o2);
-}
-  
-const State = require('./state');
-
-import Error from './error';
-
-class TypeError extends Error {
-}
-
-class RequiredPropertyError extends Error {
 }
 
 class Value extends State {

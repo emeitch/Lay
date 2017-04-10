@@ -1,5 +1,12 @@
-const State = require("./state");
+import State from "./state";
 
-class Error extends State {
+export default class Error extends State {
 }
-module.exports = Error;
+
+class TypeError extends Error {
+}
+
+class RequiredPropertyError extends Error {
+}
+
+export { TypeError, RequiredPropertyError }

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   domain: {
     Task: {
       _proto: "Entity",

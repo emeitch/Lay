@@ -77,38 +77,32 @@
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__error__ = __webpack_require__(/*! ./error */ 4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__error___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__error__);
-const BiMap = __webpack_require__(/*! bidirectional-map */ 1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_bidirectional_map__ = __webpack_require__(/*! bidirectional-map */ 1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_bidirectional_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_bidirectional_map__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__todomvc__ = __webpack_require__(/*! ./todomvc */ 2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__state__ = __webpack_require__(/*! ./state */ 3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__error__ = __webpack_require__(/*! ./error */ 4);
+
+
+
+
+
 
 function flatten(array) {
   return Array.prototype.concat.apply([], array);
 }
 
-const TodoMVC = __webpack_require__(/*! ./todomvc */ 2);
-// console.log(TodoMVC);
-
 function equals(o1, o2) {
   return JSON.stringify(o1) === JSON.stringify(o2);
 }
-  
-const State = __webpack_require__(/*! ./state */ 3);
 
-
-
-class TypeError extends __WEBPACK_IMPORTED_MODULE_0__error___default.a {
+class Value extends __WEBPACK_IMPORTED_MODULE_2__state__["a" /* default */] {
 }
 
-class RequiredPropertyError extends __WEBPACK_IMPORTED_MODULE_0__error___default.a {
+class Entity extends __WEBPACK_IMPORTED_MODULE_2__state__["a" /* default */] {
 }
 
-class Value extends State {
-}
-
-class Entity extends State {
-}
-
-class Path extends State {
+class Path extends __WEBPACK_IMPORTED_MODULE_2__state__["a" /* default */] {
   static generateUUID() {
     // UUID ver 4 / RFC 4122
     var uuid = "", i, random;
@@ -174,7 +168,7 @@ class Path extends State {
 
 class Store {
   constructor() {
-    this.bindings = new BiMap();
+    this.bindings = new __WEBPACK_IMPORTED_MODULE_0_bidirectional_map___default.a();
     
     // premitives
     this.appendState(Object.assign(new Boolean(false), {
@@ -202,9 +196,9 @@ class Store {
       _abstract: true
     }));
     
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_0__error___default.a({_name: __WEBPACK_IMPORTED_MODULE_0__error___default.a.name}));
-    this.appendState(new TypeError({_name: TypeError.name}));
-    this.appendState(new RequiredPropertyError({_name: RequiredPropertyError.name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_3__error__["a" /* default */]({_name: __WEBPACK_IMPORTED_MODULE_3__error__["a" /* default */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_3__error__["b" /* TypeError */]({_name: __WEBPACK_IMPORTED_MODULE_3__error__["b" /* TypeError */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_3__error__["c" /* RequiredPropertyError */]({_name: __WEBPACK_IMPORTED_MODULE_3__error__["c" /* RequiredPropertyError */].name}));
   }
   
   getProtoResource(state) {
@@ -437,7 +431,7 @@ class Resource {
           && !equals(propState, val.__proto__) 
           && !equals(propState.__proto__, val.__proto__)) {
           return new Value({
-            _proto: new Path(TypeError.name),
+            _proto: new Path(__WEBPACK_IMPORTED_MODULE_3__error__["b" /* TypeError */].name),
           });
         }
       }
@@ -448,7 +442,7 @@ class Resource {
       if (current.hasOwnProperty(key)) {
         if (this.follow(key).isAbstract && state[key] === undefined) {
           return new Value({
-            _proto: new Path(RequiredPropertyError.name),
+            _proto: new Path(__WEBPACK_IMPORTED_MODULE_3__error__["c" /* RequiredPropertyError */].name),
           });
         }
       }
@@ -744,7 +738,7 @@ console.log("all tests succeeded.");
 /***/ }),
 /* 1 */
 /* unknown exports provided */
-/* all exports used */
+/* exports used: default */
 /*!*******************************************!*\
   !*** ./~/bidirectional-map/dist/index.js ***!
   \*******************************************/
@@ -883,14 +877,14 @@ module.exports = exports["default"];
 
 /***/ }),
 /* 2 */
-/* unknown exports provided */
-/* all exports used */
+/* exports provided: default */
 /*!************************!*\
   !*** ./src/todomvc.js ***!
   \************************/
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = {
+"use strict";
+/* unused harmony default export */ var _unused_webpack_default_export = ({
   domain: {
     Task: {
       _proto: "Entity",
@@ -1310,38 +1304,53 @@ module.exports = {
       ]
     }
   }
-};
+});
 
 /***/ }),
 /* 3 */
-/* unknown exports provided */
-/* all exports used */
+/* exports provided: default */
+/* exports used: default */
 /*!**********************!*\
   !*** ./src/state.js ***!
   \**********************/
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
 class State {
   constructor(init={}) {
     Object.assign(this, init);
   }
 }
-module.exports = State;
+/* harmony export (immutable) */ __webpack_exports__["a"] = State;
+
+
 
 /***/ }),
 /* 4 */
-/* unknown exports provided */
-/* exports used: default */
+/* exports provided: default, TypeError, RequiredPropertyError */
+/* exports used: default, TypeError, RequiredPropertyError */
 /*!**********************!*\
   !*** ./src/error.js ***!
   \**********************/
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-const State = __webpack_require__(/*! ./state */ 3);
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__state__ = __webpack_require__(/*! ./state */ 3);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return TypeError; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return RequiredPropertyError; });
 
-class Error extends State {
+
+class Error extends __WEBPACK_IMPORTED_MODULE_0__state__["a" /* default */] {
 }
-module.exports = Error;
+/* harmony export (immutable) */ __webpack_exports__["a"] = Error;
+
+
+class TypeError extends Error {
+}
+
+class RequiredPropertyError extends Error {
+}
+
 
 
 /***/ })
