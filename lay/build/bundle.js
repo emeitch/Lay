@@ -73,8 +73,12 @@
 /*!********************!*\
   !*** ./src/app.js ***!
   \********************/
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__error__ = __webpack_require__(/*! ./error */ 4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__error___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__error__);
 const BiMap = __webpack_require__(/*! bidirectional-map */ 1);
 
 function flatten(array) {
@@ -90,12 +94,12 @@ function equals(o1, o2) {
   
 const State = __webpack_require__(/*! ./state */ 3);
 
-const Error = __webpack_require__(/*! ./error */ 4);
 
-class TypeError extends Error {
+
+class TypeError extends __WEBPACK_IMPORTED_MODULE_0__error___default.a {
 }
 
-class RequiredPropertyError extends Error {
+class RequiredPropertyError extends __WEBPACK_IMPORTED_MODULE_0__error___default.a {
 }
 
 class Value extends State {
@@ -198,7 +202,7 @@ class Store {
       _abstract: true
     }));
     
-    this.appendState(new Error({_name: Error.name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_0__error___default.a({_name: __WEBPACK_IMPORTED_MODULE_0__error___default.a.name}));
     this.appendState(new TypeError({_name: TypeError.name}));
     this.appendState(new RequiredPropertyError({_name: RequiredPropertyError.name}));
   }
@@ -1327,7 +1331,7 @@ module.exports = State;
 /***/ }),
 /* 4 */
 /* unknown exports provided */
-/* all exports used */
+/* exports used: default */
 /*!**********************!*\
   !*** ./src/error.js ***!
   \**********************/
