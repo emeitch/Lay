@@ -1,16 +1,9 @@
 import BiMap from 'bidirectional-map';
 
+import { flatten, equals } from './utils';
 import TodoMVC from './todomvc';
 import State from './state';
 import Error, { TypeError, RequiredPropertyError } from './error';
-
-function flatten(array) {
-  return Array.prototype.concat.apply([], array);
-}
-
-function equals(o1, o2) {
-  return JSON.stringify(o1) === JSON.stringify(o2);
-}
 
 class Value extends State {
 }

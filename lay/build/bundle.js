@@ -79,30 +79,24 @@
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_bidirectional_map__ = __webpack_require__(/*! bidirectional-map */ 1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_bidirectional_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_bidirectional_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__todomvc__ = __webpack_require__(/*! ./todomvc */ 2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__state__ = __webpack_require__(/*! ./state */ 3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__error__ = __webpack_require__(/*! ./error */ 4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils__ = __webpack_require__(/*! ./utils */ 5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__todomvc__ = __webpack_require__(/*! ./todomvc */ 2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__state__ = __webpack_require__(/*! ./state */ 3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__error__ = __webpack_require__(/*! ./error */ 4);
 
 
 
 
 
 
-function flatten(array) {
-  return Array.prototype.concat.apply([], array);
+
+class Value extends __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */] {
 }
 
-function equals(o1, o2) {
-  return JSON.stringify(o1) === JSON.stringify(o2);
+class Entity extends __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */] {
 }
 
-class Value extends __WEBPACK_IMPORTED_MODULE_2__state__["a" /* default */] {
-}
-
-class Entity extends __WEBPACK_IMPORTED_MODULE_2__state__["a" /* default */] {
-}
-
-class Path extends __WEBPACK_IMPORTED_MODULE_2__state__["a" /* default */] {
+class Path extends __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */] {
   static generateUUID() {
     // UUID ver 4 / RFC 4122
     var uuid = "", i, random;
@@ -196,9 +190,9 @@ class Store {
       _abstract: true
     }));
     
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_3__error__["a" /* default */]({_name: __WEBPACK_IMPORTED_MODULE_3__error__["a" /* default */].name}));
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_3__error__["b" /* TypeError */]({_name: __WEBPACK_IMPORTED_MODULE_3__error__["b" /* TypeError */].name}));
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_3__error__["c" /* RequiredPropertyError */]({_name: __WEBPACK_IMPORTED_MODULE_3__error__["c" /* RequiredPropertyError */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__error__["a" /* default */]({_name: __WEBPACK_IMPORTED_MODULE_4__error__["a" /* default */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__error__["b" /* TypeError */]({_name: __WEBPACK_IMPORTED_MODULE_4__error__["b" /* TypeError */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__error__["c" /* RequiredPropertyError */]({_name: __WEBPACK_IMPORTED_MODULE_4__error__["c" /* RequiredPropertyError */].name}));
   }
   
   getProtoResource(state) {
@@ -414,10 +408,10 @@ class Resource {
   
   equals(other) {
     if (other instanceof Resource) {
-      return equals(this.permanent.path, other.permanent.path);
+      return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(this.permanent.path, other.permanent.path);
     } else {
       // state equivalency
-      return equals(this.state, other);
+      return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(this.state, other);
     }
   }
   
@@ -428,10 +422,10 @@ class Resource {
         const prop = this.follow(key);
         const propState = (prop && prop.get()) || prop;
         if (propState 
-          && !equals(propState, val.__proto__) 
-          && !equals(propState.__proto__, val.__proto__)) {
+          && !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(propState, val.__proto__) 
+          && !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(propState.__proto__, val.__proto__)) {
           return new Value({
-            _proto: new Path(__WEBPACK_IMPORTED_MODULE_3__error__["b" /* TypeError */].name),
+            _proto: new Path(__WEBPACK_IMPORTED_MODULE_4__error__["b" /* TypeError */].name),
           });
         }
       }
@@ -442,7 +436,7 @@ class Resource {
       if (current.hasOwnProperty(key)) {
         if (this.follow(key).isAbstract && state[key] === undefined) {
           return new Value({
-            _proto: new Path(__WEBPACK_IMPORTED_MODULE_3__error__["c" /* RequiredPropertyError */].name),
+            _proto: new Path(__WEBPACK_IMPORTED_MODULE_4__error__["c" /* RequiredPropertyError */].name),
           });
         }
       }
@@ -536,7 +530,7 @@ console.assert(r2.proto.equals(p1));
 console.assert(r2.proto.name === "Proto1");
 
 // get method returns raw path
-console.assert(equals(store.getState("Proto1"), p1.get()));
+console.assert(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(store.getState("Proto1"), p1.get()));
 // resource method resolves id reference
 console.assert(store.follow("Proto1").equals(p1));
 
@@ -547,8 +541,8 @@ console.assert(r2.follow("fiz").equals(9));
 console.assert(r2.equals(r2));
 console.assert(!r2.equals(r3));
 console.assert(r2.equals(r2.get())); // state equivalency
-console.assert(equals(r2.get(), r3.get()));
-console.assert(!equals(r2.get(),r1.get()));
+console.assert(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(r2.get(), r3.get()));
+console.assert(!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(r2.get(),r1.get()));
 
 
 // entity schema for composition
@@ -610,7 +604,7 @@ r4.patch({
 });
 console.assert(r4.follow("fiz").equals(7));
 console.assert(r4.follow("foo").follow("baz").equals(8));
-console.assert(!equals(r4.follow("foo").path, oldFoo.path)); // updated
+console.assert(!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(r4.follow("foo").path, oldFoo.path)); // updated
 console.assert(oldFoo.get()._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
@@ -625,7 +619,7 @@ r4.patch({
 });
 console.assert(r4.follow("fiz").equals(6));
 console.assert(r4.follow("foo").follow("baz").equals(9));
-console.assert(equals(r4.follow("foo").path, fooPath)); // not updated
+console.assert(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(r4.follow("foo").path, fooPath)); // not updated
 
 // update proto's key name
 console.assert(store.follow("Proto2"));
@@ -1349,6 +1343,28 @@ class TypeError extends Error {
 }
 
 class RequiredPropertyError extends Error {
+}
+
+
+
+/***/ }),
+/* 5 */
+/* exports provided: flatten, equals */
+/* exports used: equals */
+/*!**********************!*\
+  !*** ./src/utils.js ***!
+  \**********************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export flatten */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return equals; });
+function flatten(array) {
+  return Array.prototype.concat.apply([], array);
+}
+
+function equals(o1, o2) {
+  return JSON.stringify(o1) === JSON.stringify(o2);
 }
 
 
