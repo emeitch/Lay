@@ -90,8 +90,7 @@ function equals(o1, o2) {
   
 const State = __webpack_require__(/*! ./state */ 3);
 
-class Error extends State {
-}
+const Error = __webpack_require__(/*! ./error */ 4);
 
 class TypeError extends Error {
 }
@@ -1324,6 +1323,22 @@ class State {
   }
 }
 module.exports = State;
+
+/***/ }),
+/* 4 */
+/* unknown exports provided */
+/* all exports used */
+/*!**********************!*\
+  !*** ./src/error.js ***!
+  \**********************/
+/***/ (function(module, exports, __webpack_require__) {
+
+const State = __webpack_require__(/*! ./state */ 3);
+
+class Error extends State {
+}
+module.exports = Error;
+
 
 /***/ })
 /******/ ]);

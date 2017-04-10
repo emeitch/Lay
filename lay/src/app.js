@@ -13,8 +13,7 @@ function equals(o1, o2) {
   
 const State = require('./state');
 
-class Error extends State {
-}
+const Error = require('./error');
 
 class TypeError extends Error {
 }
