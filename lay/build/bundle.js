@@ -82,7 +82,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils__ = __webpack_require__(/*! ./utils */ 5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__todomvc__ = __webpack_require__(/*! ./todomvc */ 2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__state__ = __webpack_require__(/*! ./state */ 3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__error__ = __webpack_require__(/*! ./error */ 4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__value__ = __webpack_require__(/*! ./value */ 7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__entity__ = __webpack_require__(/*! ./entity */ 6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__error__ = __webpack_require__(/*! ./error */ 4);
 
 
 
@@ -90,11 +92,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-class Value extends __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */] {
-}
 
-class Entity extends __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */] {
-}
 
 class Path extends __WEBPACK_IMPORTED_MODULE_3__state__["a" /* default */] {
   static generateUUID() {
@@ -181,18 +179,18 @@ class Store {
       _name: Array.name,
       _abstract: true
     }));
-    this.appendState(new Value({
-      _name: Value.name,
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__value__["a" /* default */]({
+      _name: __WEBPACK_IMPORTED_MODULE_4__value__["a" /* default */].name,
       _abstract: true
     }));
-    this.appendState(new Entity({
-      _name: Entity.name,
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({
+      _name: __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */].name,
       _abstract: true
     }));
     
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__error__["a" /* default */]({_name: __WEBPACK_IMPORTED_MODULE_4__error__["a" /* default */].name}));
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__error__["b" /* TypeError */]({_name: __WEBPACK_IMPORTED_MODULE_4__error__["b" /* TypeError */].name}));
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__error__["c" /* RequiredPropertyError */]({_name: __WEBPACK_IMPORTED_MODULE_4__error__["c" /* RequiredPropertyError */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_6__error__["a" /* default */]({_name: __WEBPACK_IMPORTED_MODULE_6__error__["a" /* default */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_6__error__["b" /* TypeError */]({_name: __WEBPACK_IMPORTED_MODULE_6__error__["b" /* TypeError */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_6__error__["c" /* RequiredPropertyError */]({_name: __WEBPACK_IMPORTED_MODULE_6__error__["c" /* RequiredPropertyError */].name}));
   }
   
   getProtoResource(state) {
@@ -257,7 +255,7 @@ class Store {
         // reject const key for namespase
         if (state.hasOwnProperty(key) && !Path.isConst(key)) { 
           const val = proto.follow(key).get();
-          if (val instanceof Entity && !entities[key]) {
+          if (val instanceof __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */] && !entities[key]) {
             entities[key] = val;
           }
         }
@@ -305,7 +303,7 @@ class Store {
         if (v instanceof Path) {
           // resolve name and recurcive definition
           state[k] = this.resolvePathTopName(v);
-        } else if (v instanceof Entity) {
+        } else if (v instanceof __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]) {
           // set entity as child resource
           const entity = v;
           const childId = appendChild(entity);
@@ -424,8 +422,8 @@ class Resource {
         if (propState 
           && !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(propState, val.__proto__) 
           && !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(propState.__proto__, val.__proto__)) {
-          return new Value({
-            _proto: new Path(__WEBPACK_IMPORTED_MODULE_4__error__["b" /* TypeError */].name),
+          return new __WEBPACK_IMPORTED_MODULE_4__value__["a" /* default */]({
+            _proto: new Path(__WEBPACK_IMPORTED_MODULE_6__error__["b" /* TypeError */].name),
           });
         }
       }
@@ -435,8 +433,8 @@ class Resource {
     for (var key in current) {
       if (current.hasOwnProperty(key)) {
         if (this.follow(key).isAbstract && state[key] === undefined) {
-          return new Value({
-            _proto: new Path(__WEBPACK_IMPORTED_MODULE_4__error__["c" /* RequiredPropertyError */].name),
+          return new __WEBPACK_IMPORTED_MODULE_4__value__["a" /* default */]({
+            _proto: new Path(__WEBPACK_IMPORTED_MODULE_6__error__["c" /* RequiredPropertyError */].name),
           });
         }
       }
@@ -549,7 +547,7 @@ console.assert(!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /
 const k2 = "Proto2";
 const p2 = store.post({
   _name: k2,
-  foo: new Entity({
+  foo: new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({
     bar: 3,
     baz: 4,
   }),
@@ -675,18 +673,18 @@ console.assert(store.follow("List").follow("cdr").equals(store.follow("List")));
 // algebraic data type
 // e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
 const color = store.post({
-  _proto: new Path(Value.name),
+  _proto: new Path(__WEBPACK_IMPORTED_MODULE_4__value__["a" /* default */].name),
   _name: "Color",
-  Red: new Entity({ 
+  Red: new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({ 
     _proto: new Path("Color"),
   }),
-  Blue: new Entity({ 
+  Blue: new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({ 
     _proto: new Path("Color"),
   }),
-  Green: new Entity({ 
+  Green: new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({ 
     _proto: new Path("Color"),
   }),
-  RGB: new Entity({
+  RGB: new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({
     _proto: new Path("Color"),
     r: new Path("Number"),
     g: new Path("Number"),
@@ -1366,6 +1364,44 @@ function flatten(array) {
 function equals(o1, o2) {
   return JSON.stringify(o1) === JSON.stringify(o2);
 }
+
+
+
+/***/ }),
+/* 6 */
+/* exports provided: default */
+/* exports used: default */
+/*!***********************!*\
+  !*** ./src/entity.js ***!
+  \***********************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__state__ = __webpack_require__(/*! ./state */ 3);
+
+
+class Entity extends __WEBPACK_IMPORTED_MODULE_0__state__["a" /* default */] {
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Entity;
+
+
+
+/***/ }),
+/* 7 */
+/* exports provided: default */
+/* exports used: default */
+/*!**********************!*\
+  !*** ./src/value.js ***!
+  \**********************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__state__ = __webpack_require__(/*! ./state */ 3);
+
+
+class Value extends __WEBPACK_IMPORTED_MODULE_0__state__["a" /* default */] {
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Value;
 
 
 

@@ -3,13 +3,9 @@ import BiMap from 'bidirectional-map';
 import { flatten, equals } from './utils';
 import TodoMVC from './todomvc';
 import State from './state';
+import Value from './value';
+import Entity from './entity';
 import Error, { TypeError, RequiredPropertyError } from './error';
-
-class Value extends State {
-}
-
-class Entity extends State {
-}
 
 class Path extends State {
   static generateUUID() {
