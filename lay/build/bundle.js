@@ -77,15 +77,13 @@
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_bidirectional_map__ = __webpack_require__(/*! bidirectional-map */ 1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_bidirectional_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_bidirectional_map__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils__ = __webpack_require__(/*! ./utils */ 5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__todomvc__ = __webpack_require__(/*! ./todomvc */ 2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__state__ = __webpack_require__(/*! ./state */ 3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__value__ = __webpack_require__(/*! ./value */ 7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__entity__ = __webpack_require__(/*! ./entity */ 6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__path__ = __webpack_require__(/*! ./path */ 8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__error__ = __webpack_require__(/*! ./error */ 4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils__ = __webpack_require__(/*! ./utils */ 5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__value__ = __webpack_require__(/*! ./value */ 7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__entity__ = __webpack_require__(/*! ./entity */ 6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__path__ = __webpack_require__(/*! ./path */ 8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__resource__ = __webpack_require__(/*! ./resource */ 9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__store__ = __webpack_require__(/*! ./store */ 10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__todomvc__ = __webpack_require__(/*! ./todomvc */ 2);
 
 
 
@@ -94,330 +92,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-
-
-class Store {
-  constructor() {
-    this.bindings = new __WEBPACK_IMPORTED_MODULE_0_bidirectional_map___default.a();
-    
-    // premitives
-    this.appendState(Object.assign(new Boolean(false), {
-      _name: Boolean.name, 
-      _abstract: true
-    }));
-    this.appendState(Object.assign(new Number(0), {
-      _name: Number.name,
-      _abstract: true
-    }));
-    this.appendState(Object.assign(new String(""), {
-      _name: String.name,
-      _abstract: true
-    }));
-    this.appendState(Object.assign(new Array(), {
-      _name: Array.name,
-      _abstract: true
-    }));
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__value__["a" /* default */]({
-      _name: __WEBPACK_IMPORTED_MODULE_4__value__["a" /* default */].name,
-      _abstract: true
-    }));
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({
-      _name: __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */].name,
-      _abstract: true
-    }));
-    
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_7__error__["a" /* default */]({_name: __WEBPACK_IMPORTED_MODULE_7__error__["a" /* default */].name}));
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_7__error__["b" /* TypeError */]({_name: __WEBPACK_IMPORTED_MODULE_7__error__["b" /* TypeError */].name}));
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_7__error__["c" /* RequiredPropertyError */]({_name: __WEBPACK_IMPORTED_MODULE_7__error__["c" /* RequiredPropertyError */].name}));
-  }
-  
-  getProtoResource(state) {
-    const protoPath = state._proto;
-    if (protoPath) {
-      return this.follow(protoPath);
-    }
-
-    return undefined;
-  }
-  
-  resolveName(key) {
-    if (!__WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */].isName(key)) {
-      return key;
-    }
-    
-    const uuid = this.bindings.get(key);
-    if (!uuid) {
-      return undefined;
-    }
-    
-    return uuid;
-  }
-    
-  resolvePathTopName(path) {
-    const top = this.resolveName(path.top);
-    if (!top) {
-      return undefined;
-    }
-    
-    return new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](top, ...path.rest);
-  }
-  
-  getState(id) {
-    if (typeof(id) === "string") {
-      const key = this.resolveName(id);
-      return this[key];
-    }
-    
-    const path = this.resolvePathTopName(id);
-    let state = this.getState(path.top);
-    for (const key of path.rest) {
-      const val = state[key];
-      if (!val) {
-        return undefined;
-      } else if (val instanceof __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]) {
-        state = this.getState(val);
-      } else {
-        state = val;
-      }
-    }
-    return state;
-  }
-  
-  entities(state) {
-    const entities = {};
-    
-    let proto = this.getProtoResource(state);
-    while (proto) {
-      const state = proto.get();
-      for (var key in state) {
-        // reject const key for namespase
-        if (state.hasOwnProperty(key) && !__WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */].isConst(key)) { 
-          const val = proto.follow(key).get();
-          if (val instanceof __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */] && !entities[key]) {
-            entities[key] = val;
-          }
-        }
-      }
-      
-      proto = proto.proto;
-    }
-    
-    return entities;
-  }
-    
-  setState(key, state) {
-    if (state === null) {
-      delete this[key];
-      return undefined;
-    }
-    
-    const res = this.follow(key);
-    
-    const proto = this.getProtoResource(state);
-    const error = proto ? proto.validate(state) : undefined;
-    if (error) {
-      this[key] = error;
-      return this.follow(key);
-    }
-    
-    const name = state._name;
-    if (name) {
-      this.bindings.set(name, key);
-    }
-    
-    const appendChild = (child) => {
-      const childId = child._uuid || __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */].uuid();
-      
-      delete child._uuid;
-      child._parent = new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](key);
-      
-      this.setState(childId, child);
-      return childId;
-    };
-    
-    for (const k in state) {
-      if (state.hasOwnProperty(k)) {
-        const v = state[k];
-        if (v instanceof __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]) {
-          // resolve name and recurcive definition
-          state[k] = this.resolvePathTopName(v);
-        } else if (v instanceof __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]) {
-          // set entity as child resource
-          const entity = v;
-          const childId = appendChild(entity);
-          state[k] = new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](childId);
-        } else if (v === null) {
-          // remove null property
-          delete state[k];
-        }
-      }
-    }
-     
-    const entities = this.entities(state);
-    for (const k in entities) {
-      if (entities.hasOwnProperty(k)) {
-        // remove old child parent
-        if (res) {
-          const old = res.follow(k);
-          if (old) {
-            old.patch({_parent: null});
-          }
-        }
-        
-        const entity = entities[k];
-        const override = state[k];
-        const child = override ? Object.assign({}, entity, override) : entity;
-        const childId = appendChild(child);
-        state[k] = new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](childId);
-      }
-    }
-    
-    this[key] = state;
-    return this.follow(key);
-  }
-  
-  appendState(state) {
-    const key = __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */].uuid();
-    return this.setState(key, state);
-  }
-    
-  // same interface for Resource
-  follow(id) {
-    const path = this.resolvePathTopName(
-      typeof(id) === "string" ? new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](id) : id
-    );
-    
-    if (!path || !this.getState(path)) {
-      return undefined;
-    }
-    
-    return new Resource(this, path);
-  }
-    
-  post(state) {
-    return this.appendState(state);
-  }
-}
-
-class Resource {
-  constructor(store, path) {
-    this.store = store;
-    this.path = path;
-  }
-  
-  get permanent() {
-    // normalization
-    return this.normalize();
-  }
-  
-  get state() {
-    return this.get();
-  }
-    
-  get proto() {
-    return this.store.getProtoResource(this.state);
-  }
-  
-  get parent() {
-    const parentPath = this.state._parent;
-    if (parentPath) {
-      return this.store.follow(parentPath);
-    }
-    return undefined;
-  }
-  
-  get isAbstract() {
-    return this.state._abstract;
-  }
-  
-  get name() {
-    return this.state._name;
-  }
-  
-  normalize() {
-    let res = this.store;
-    for (const key of this.path.keys) {
-      res = res.follow(key);
-    }
-    return res;
-  }
-  
-  equals(other) {
-    if (other instanceof Resource) {
-      return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(this.permanent.path, other.permanent.path);
-    } else {
-      // state equivalency
-      return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(this.state, other);
-    }
-  }
-  
-  validate(state) {
-    for (var key in state) {
-      if (state.hasOwnProperty(key)) {
-        const val = state[key];
-        const prop = this.follow(key);
-        const propState = (prop && prop.get()) || prop;
-        if (propState 
-          && !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(propState, val.__proto__) 
-          && !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(propState.__proto__, val.__proto__)) {
-          return new __WEBPACK_IMPORTED_MODULE_4__value__["a" /* default */]({
-            _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](__WEBPACK_IMPORTED_MODULE_7__error__["b" /* TypeError */].name),
-          });
-        }
-      }
-    }
-    
-    const current = this.get();
-    for (var key in current) {
-      if (current.hasOwnProperty(key)) {
-        if (this.follow(key).isAbstract && state[key] === undefined) {
-          return new __WEBPACK_IMPORTED_MODULE_4__value__["a" /* default */]({
-            _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](__WEBPACK_IMPORTED_MODULE_7__error__["c" /* RequiredPropertyError */].name),
-          });
-        }
-      }
-    }
-    
-    return null;
-  }
-    
-  follow(key) {
-    const state = this.get();
-    const val = state[key];
-    if (val instanceof __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]) { // reference entity
-      return this.store.follow(val);
-    } else if (val === undefined && this.proto !== undefined) { // prototype chain
-      return this.proto.follow(key);
-    } else {
-      return this.store.follow(this.path.child(key));
-    }
-  }
-  
-  get() {
-    return this.store.getState(this.path);
-  }
-  
-  put(state) {
-    const parentPath = this.path.parent();
-    if (parentPath) {
-      this.store.follow(parentPath).patch({[this.path.last]: state});
-    } else {
-      this.store.setState(this.path.top, state);
-    }    
-  }
-
-  patch(diff) {
-    const current = this.get();
-    const state = Object.assign({}, current, diff);
-    this.put(state);
-  }
-  
-  // todo: postを追加する(resourceがprotoになる?)
-}
 
 
 // test suite
-const store = new Store();
+const store = new __WEBPACK_IMPORTED_MODULE_5__store__["a" /* default */]();
 
 const p1 = store.post({
   _name: "Proto1",
@@ -425,12 +103,12 @@ const p1 = store.post({
   bar: 2,
   fiz: 9
 });
-const r2id = __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */].uuid();
+const r2id = __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */].uuid();
 const r1 = store.post({
   _proto: p1.path,
   foo: 3, 
   bar: 4,
-  baz: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](r2id)
+  baz: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */](r2id)
 });
 const r2 = store.setState(r2id, {
   _proto: p1.path,
@@ -446,8 +124,8 @@ const r3 = store.post({
 });
 
 // resource generation
-console.assert(r1.path instanceof __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]);
-console.assert(r2.path instanceof __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]);
+console.assert(r1.path instanceof __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]);
+console.assert(r2.path instanceof __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]);
 
 // resource property access
 console.assert(r1.follow("foo").equals(3));
@@ -466,7 +144,7 @@ console.assert(r2.proto.equals(p1));
 console.assert(r2.proto.name === "Proto1");
 
 // get method returns raw path
-console.assert(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(store.getState("Proto1"), p1.get()));
+console.assert(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(store.getState("Proto1"), p1.get()));
 // resource method resolves id reference
 console.assert(store.follow("Proto1").equals(p1));
 
@@ -477,21 +155,21 @@ console.assert(r2.follow("fiz").equals(9));
 console.assert(r2.equals(r2));
 console.assert(!r2.equals(r3));
 console.assert(r2.equals(r2.get())); // state equivalency
-console.assert(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(r2.get(), r3.get()));
-console.assert(!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(r2.get(),r1.get()));
+console.assert(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(r2.get(), r3.get()));
+console.assert(!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(r2.get(),r1.get()));
 
 
 // entity schema for composition
 const k2 = "Proto2";
 const p2 = store.post({
   _name: k2,
-  foo: new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({
+  foo: new __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */]({
     bar: 3,
     baz: 4,
   }),
 });
 const r4 = store.post({
-  _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](k2),
+  _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */](k2),
   foo: {
     baz: 5,
   },
@@ -505,9 +183,9 @@ console.assert(r4.follow("foo").parent.equals(r4));
 // override child entity property
 console.assert(r4.follow("foo").follow("baz").equals(5));
 // get by path
-console.assert(store.follow(new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](r4.path.top)).follow("foo").follow("baz").equals(5));
-console.assert(store.follow(new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](r4.path.top, "foo")).follow("baz").equals(5));
-console.assert(store.follow(new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](r4.path.top, "foo", "baz")).equals(5));
+console.assert(store.follow(new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */](r4.path.top)).follow("foo").follow("baz").equals(5));
+console.assert(store.follow(new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */](r4.path.top, "foo")).follow("baz").equals(5));
+console.assert(store.follow(new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */](r4.path.top, "foo", "baz")).equals(5));
 
 // update property
 console.assert(r4.follow("fiz").equals(9));
@@ -540,7 +218,7 @@ r4.patch({
 });
 console.assert(r4.follow("fiz").equals(7));
 console.assert(r4.follow("foo").follow("baz").equals(8));
-console.assert(!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(r4.follow("foo").path, oldFoo.path)); // updated
+console.assert(!__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(r4.follow("foo").path, oldFoo.path)); // updated
 console.assert(oldFoo.get()._parent === undefined);
 console.assert(oldFoo.parent === undefined);
 
@@ -555,12 +233,12 @@ r4.patch({
 });
 console.assert(r4.follow("fiz").equals(6));
 console.assert(r4.follow("foo").follow("baz").equals(9));
-console.assert(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__utils__["a" /* equals */])(r4.follow("foo").path, fooPath)); // not updated
+console.assert(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(r4.follow("foo").path, fooPath)); // not updated
 
 // update proto's key name
 console.assert(store.follow("Proto2"));
 console.assert(!store.follow("Proto2dash"));
-const k2dash = new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Proto2dash");
+const k2dash = new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Proto2dash");
 p2.patch({_name: k2dash.top});
 console.assert(!store.follow("Proto2"));
 console.assert(r4.proto.name === "Proto2dash");
@@ -602,8 +280,8 @@ console.assert(r7.follow("foo").follow("bar").follow("baz").follow("fiz").equals
 // recurcive definition
 const list = store.post({
   _name: "List",
-  car: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Entity"),
-  cdr: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("List"),
+  car: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Entity"),
+  cdr: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("List"),
 });
 console.assert(store.follow("List").follow("cdr").equals(store.follow("List")));
 
@@ -611,22 +289,22 @@ console.assert(store.follow("List").follow("cdr").equals(store.follow("List")));
 // algebraic data type
 // e.g. http://qiita.com/xmeta/items/91dfb24fa87c3a9f5993
 const color = store.post({
-  _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](__WEBPACK_IMPORTED_MODULE_4__value__["a" /* default */].name),
+  _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */](__WEBPACK_IMPORTED_MODULE_1__value__["a" /* default */].name),
   _name: "Color",
-  Red: new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({ 
-    _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Color"),
+  Red: new __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */]({ 
+    _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Color"),
   }),
-  Blue: new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({ 
-    _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Color"),
+  Blue: new __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */]({ 
+    _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Color"),
   }),
-  Green: new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({ 
-    _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Color"),
+  Green: new __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */]({ 
+    _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Color"),
   }),
-  RGB: new __WEBPACK_IMPORTED_MODULE_5__entity__["a" /* default */]({
-    _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Color"),
-    r: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Number"),
-    g: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Number"),
-    b: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Number"),
+  RGB: new __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */]({
+    _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Color"),
+    r: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Number"),
+    g: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Number"),
+    b: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Number"),
   }),
 });
 
@@ -637,7 +315,7 @@ console.assert(store.follow("Color").follow("RGB").proto.equals(color));
 
 // concrete resource
 const c1 = store.post({
-  _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Color", "RGB"),
+  _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Color", "RGB"),
   r: 5,
   g: 6,
   b: 7
@@ -646,7 +324,7 @@ console.assert(c1.proto.equals(color.follow("RGB")));
 
 // premitive type error
 const err1 = store.post({
-  _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Color", "RGB"),
+  _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Color", "RGB"),
   r: 5,
   g: 6,
   b: "invalid",
@@ -655,7 +333,7 @@ console.assert(err1.proto.equals(store.follow("TypeError")));
 
 // required property error
 const err2 = store.post({
-  _proto: new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]("Color", "RGB"),
+  _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]("Color", "RGB"),
   r: 5,
   g: 6,
   // b: "nothing",
@@ -1420,6 +1098,377 @@ class Path extends __WEBPACK_IMPORTED_MODULE_0__state__["a" /* default */] {
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Path;
+
+
+/***/ }),
+/* 9 */
+/* exports provided: default */
+/* exports used: default */
+/*!*************************!*\
+  !*** ./src/resource.js ***!
+  \*************************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils__ = __webpack_require__(/*! ./utils */ 5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__value__ = __webpack_require__(/*! ./value */ 7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__error__ = __webpack_require__(/*! ./error */ 4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__path__ = __webpack_require__(/*! ./path */ 8);
+
+
+
+
+
+
+
+class Resource {
+  constructor(store, path) {
+    this.store = store;
+    this.path = path;
+  }
+  
+  get permanent() {
+    // normalization
+    return this.normalize();
+  }
+  
+  get state() {
+    return this.get();
+  }
+    
+  get proto() {
+    return this.store.getProtoResource(this.state);
+  }
+  
+  get parent() {
+    const parentPath = this.state._parent;
+    if (parentPath) {
+      return this.store.follow(parentPath);
+    }
+    return undefined;
+  }
+  
+  get isAbstract() {
+    return this.state._abstract;
+  }
+  
+  get name() {
+    return this.state._name;
+  }
+  
+  normalize() {
+    let res = this.store;
+    for (const key of this.path.keys) {
+      res = res.follow(key);
+    }
+    return res;
+  }
+  
+  equals(other) {
+    if (other instanceof Resource) {
+      return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(this.permanent.path, other.permanent.path);
+    } else {
+      // state equivalency
+      return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(this.state, other);
+    }
+  }
+  
+  validate(state) {
+    for (var key in state) {
+      if (state.hasOwnProperty(key)) {
+        const val = state[key];
+        const prop = this.follow(key);
+        const propState = (prop && prop.get()) || prop;
+        if (propState 
+          && !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(propState, val.__proto__) 
+          && !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(propState.__proto__, val.__proto__)) {
+          return new __WEBPACK_IMPORTED_MODULE_1__value__["a" /* default */]({
+            _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__error__["b" /* TypeError */].name),
+          });
+        }
+      }
+    }
+    
+    const current = this.get();
+    for (var key in current) {
+      if (current.hasOwnProperty(key)) {
+        if (this.follow(key).isAbstract && state[key] === undefined) {
+          return new __WEBPACK_IMPORTED_MODULE_1__value__["a" /* default */]({
+            _proto: new __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */](__WEBPACK_IMPORTED_MODULE_2__error__["c" /* RequiredPropertyError */].name),
+          });
+        }
+      }
+    }
+    
+    return null;
+  }
+    
+  follow(key) {
+    const state = this.get();
+    const val = state[key];
+    if (val instanceof __WEBPACK_IMPORTED_MODULE_3__path__["a" /* default */]) { // reference entity
+      return this.store.follow(val);
+    } else if (val === undefined && this.proto !== undefined) { // prototype chain
+      return this.proto.follow(key);
+    } else {
+      return this.store.follow(this.path.child(key));
+    }
+  }
+  
+  get() {
+    return this.store.getState(this.path);
+  }
+  
+  put(state) {
+    const parentPath = this.path.parent();
+    if (parentPath) {
+      this.store.follow(parentPath).patch({[this.path.last]: state});
+    } else {
+      this.store.setState(this.path.top, state);
+    }    
+  }
+
+  patch(diff) {
+    const current = this.get();
+    const state = Object.assign({}, current, diff);
+    this.put(state);
+  }
+  
+  // todo: postを追加する(resourceがprotoになる?)
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Resource;
+
+
+/***/ }),
+/* 10 */
+/* exports provided: default */
+/* exports used: default */
+/*!**********************!*\
+  !*** ./src/store.js ***!
+  \**********************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_bidirectional_map__ = __webpack_require__(/*! bidirectional-map */ 1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_bidirectional_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_bidirectional_map__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__value__ = __webpack_require__(/*! ./value */ 7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__entity__ = __webpack_require__(/*! ./entity */ 6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__error__ = __webpack_require__(/*! ./error */ 4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__path__ = __webpack_require__(/*! ./path */ 8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__resource__ = __webpack_require__(/*! ./resource */ 9);
+
+
+
+
+
+
+
+
+
+class Store {
+  constructor() {
+    this.bindings = new __WEBPACK_IMPORTED_MODULE_0_bidirectional_map___default.a();
+    
+    // premitives
+    this.appendState(Object.assign(new Boolean(false), {
+      _name: Boolean.name, 
+      _abstract: true
+    }));
+    this.appendState(Object.assign(new Number(0), {
+      _name: Number.name,
+      _abstract: true
+    }));
+    this.appendState(Object.assign(new String(""), {
+      _name: String.name,
+      _abstract: true
+    }));
+    this.appendState(Object.assign(new Array(), {
+      _name: Array.name,
+      _abstract: true
+    }));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_1__value__["a" /* default */]({
+      _name: __WEBPACK_IMPORTED_MODULE_1__value__["a" /* default */].name,
+      _abstract: true
+    }));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */]({
+      _name: __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */].name,
+      _abstract: true
+    }));
+    
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_3__error__["a" /* default */]({_name: __WEBPACK_IMPORTED_MODULE_3__error__["a" /* default */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_3__error__["b" /* TypeError */]({_name: __WEBPACK_IMPORTED_MODULE_3__error__["b" /* TypeError */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_3__error__["c" /* RequiredPropertyError */]({_name: __WEBPACK_IMPORTED_MODULE_3__error__["c" /* RequiredPropertyError */].name}));
+  }
+  
+  getProtoResource(state) {
+    const protoPath = state._proto;
+    if (protoPath) {
+      return this.follow(protoPath);
+    }
+
+    return undefined;
+  }
+  
+  resolveName(key) {
+    if (!__WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */].isName(key)) {
+      return key;
+    }
+    
+    const uuid = this.bindings.get(key);
+    if (!uuid) {
+      return undefined;
+    }
+    
+    return uuid;
+  }
+    
+  resolvePathTopName(path) {
+    const top = this.resolveName(path.top);
+    if (!top) {
+      return undefined;
+    }
+    
+    return new __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */](top, ...path.rest);
+  }
+  
+  getState(id) {
+    if (typeof(id) === "string") {
+      const key = this.resolveName(id);
+      return this[key];
+    }
+    
+    const path = this.resolvePathTopName(id);
+    let state = this.getState(path.top);
+    for (const key of path.rest) {
+      const val = state[key];
+      if (!val) {
+        return undefined;
+      } else if (val instanceof __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */]) {
+        state = this.getState(val);
+      } else {
+        state = val;
+      }
+    }
+    return state;
+  }
+  
+  entities(state) {
+    const entities = {};
+    
+    let proto = this.getProtoResource(state);
+    while (proto) {
+      const state = proto.get();
+      for (var key in state) {
+        // reject const key for namespase
+        if (state.hasOwnProperty(key) && !__WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */].isConst(key)) { 
+          const val = proto.follow(key).get();
+          if (val instanceof __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */] && !entities[key]) {
+            entities[key] = val;
+          }
+        }
+      }
+      
+      proto = proto.proto;
+    }
+    
+    return entities;
+  }
+    
+  setState(key, state) {
+    if (state === null) {
+      delete this[key];
+      return undefined;
+    }
+    
+    const res = this.follow(key);
+    
+    const proto = this.getProtoResource(state);
+    const error = proto ? proto.validate(state) : undefined;
+    if (error) {
+      this[key] = error;
+      return this.follow(key);
+    }
+    
+    const name = state._name;
+    if (name) {
+      this.bindings.set(name, key);
+    }
+    
+    const appendChild = (child) => {
+      const childId = child._uuid || __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */].uuid();
+      
+      delete child._uuid;
+      child._parent = new __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */](key);
+      
+      this.setState(childId, child);
+      return childId;
+    };
+    
+    for (const k in state) {
+      if (state.hasOwnProperty(k)) {
+        const v = state[k];
+        if (v instanceof __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */]) {
+          // resolve name and recurcive definition
+          state[k] = this.resolvePathTopName(v);
+        } else if (v instanceof __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */]) {
+          // set entity as child resource
+          const entity = v;
+          const childId = appendChild(entity);
+          state[k] = new __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */](childId);
+        } else if (v === null) {
+          // remove null property
+          delete state[k];
+        }
+      }
+    }
+     
+    const entities = this.entities(state);
+    for (const k in entities) {
+      if (entities.hasOwnProperty(k)) {
+        // remove old child parent
+        if (res) {
+          const old = res.follow(k);
+          if (old) {
+            old.patch({_parent: null});
+          }
+        }
+        
+        const entity = entities[k];
+        const override = state[k];
+        const child = override ? Object.assign({}, entity, override) : entity;
+        const childId = appendChild(child);
+        state[k] = new __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */](childId);
+      }
+    }
+    
+    this[key] = state;
+    return this.follow(key);
+  }
+  
+  appendState(state) {
+    const key = __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */].uuid();
+    return this.setState(key, state);
+  }
+    
+  // same interface for Resource
+  follow(id) {
+    const path = this.resolvePathTopName(
+      typeof(id) === "string" ? new __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */](id) : id
+    );
+    
+    if (!path || !this.getState(path)) {
+      return undefined;
+    }
+    
+    return new __WEBPACK_IMPORTED_MODULE_5__resource__["a" /* default */](this, path);
+  }
+    
+  post(state) {
+    return this.appendState(state);
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Store;
+
 
 
 /***/ })
