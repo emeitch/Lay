@@ -944,8 +944,6 @@ class State {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__state__ = __webpack_require__(/*! ./state */ 3);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return TypeError; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return RequiredPropertyError; });
 
 
 class Error extends __WEBPACK_IMPORTED_MODULE_0__state__["a" /* default */] {
@@ -955,9 +953,12 @@ class Error extends __WEBPACK_IMPORTED_MODULE_0__state__["a" /* default */] {
 
 class TypeError extends Error {
 }
+/* harmony export (immutable) */ __webpack_exports__["b"] = TypeError;
+
 
 class RequiredPropertyError extends Error {
 }
+/* harmony export (immutable) */ __webpack_exports__["c"] = RequiredPropertyError;
 
 
 
@@ -972,7 +973,7 @@ class RequiredPropertyError extends Error {
 
 "use strict";
 /* unused harmony export flatten */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return equals; });
+/* harmony export (immutable) */ __webpack_exports__["a"] = equals;
 function flatten(array) {
   return Array.prototype.concat.apply([], array);
 }
@@ -980,7 +981,6 @@ function flatten(array) {
 function equals(o1, o2) {
   return JSON.stringify(o1) === JSON.stringify(o2);
 }
-
 
 
 /***/ }),
