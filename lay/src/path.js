@@ -1,4 +1,4 @@
-import State from './state'
+import State from './state';
 
 export default class Path extends State {
   static generateUUID() {
