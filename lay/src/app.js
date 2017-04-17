@@ -6,7 +6,7 @@ import Path from './path';
 import Resource from './resource';
 import Store from './store';
 
-import TodoMVC from './todomvc';
+// import TodoMVC from './todomvc';
 
 // test suite
 const store = new Store();
