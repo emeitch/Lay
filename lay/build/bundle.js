@@ -164,6 +164,7 @@ class Path extends __WEBPACK_IMPORTED_MODULE_0__state__["a" /* default */] {
 /* harmony export (immutable) */ __webpack_exports__["a"] = Path;
 
 
+
 /***/ }),
 /* 2 */
 /* exports provided: default */
@@ -340,6 +341,7 @@ class Resource {
   // todo: postを追加する(resourceがprotoになる?)
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Resource;
+
 
 
 /***/ }),
