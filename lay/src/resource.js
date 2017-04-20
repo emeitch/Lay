@@ -2,7 +2,8 @@ import { equals } from './utils';
 
 import Value from './value';
 import Error from './error';
-import { TypeError, RequiredPropertyError } from './app_errors';
+import TypeError from './type_error';
+import RequiredPropertyError from './required_property_error';
 
 import Path from './path';
 

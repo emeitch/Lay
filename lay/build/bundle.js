@@ -217,8 +217,10 @@ class Entity extends __WEBPACK_IMPORTED_MODULE_0__state__["a" /* default */] {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils__ = __webpack_require__(/*! ./utils */ 13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__value__ = __webpack_require__(/*! ./value */ 2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__error__ = __webpack_require__(/*! ./error */ 6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__app_errors__ = __webpack_require__(/*! ./app_errors */ 14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__path__ = __webpack_require__(/*! ./path */ 1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__type_error__ = __webpack_require__(/*! ./type_error */ 16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__required_property_error__ = __webpack_require__(/*! ./required_property_error */ 15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__path__ = __webpack_require__(/*! ./path */ 1);
+
 
 
 
@@ -289,7 +291,7 @@ class Resource {
           && !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(propState, val.__proto__) 
           && !__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__utils__["a" /* equals */])(propState.__proto__, val.__proto__)) {
           return new __WEBPACK_IMPORTED_MODULE_1__value__["a" /* default */]({
-            _proto: new __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__app_errors__["a" /* TypeError */].name),
+            _proto: new __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__type_error__["a" /* default */].name),
           });
         }
       }
@@ -300,7 +302,7 @@ class Resource {
       if (current.hasOwnProperty(key)) {
         if (this.follow(key).isAbstract && state[key] === undefined) {
           return new __WEBPACK_IMPORTED_MODULE_1__value__["a" /* default */]({
-            _proto: new __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__app_errors__["b" /* RequiredPropertyError */].name),
+            _proto: new __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */](__WEBPACK_IMPORTED_MODULE_4__required_property_error__["a" /* default */].name),
           });
         }
       }
@@ -312,7 +314,7 @@ class Resource {
   follow(key) {
     const state = this.get();
     const val = state[key];
-    if (val instanceof __WEBPACK_IMPORTED_MODULE_4__path__["a" /* default */]) { // reference entity
+    if (val instanceof __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */]) { // reference entity
       return this.store.follow(val);
     } else if (val === undefined && this.proto !== undefined) { // prototype chain
       return this.proto.follow(key);
@@ -380,9 +382,11 @@ class Error extends __WEBPACK_IMPORTED_MODULE_0__state__["a" /* default */] {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__value__ = __webpack_require__(/*! ./value */ 2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__entity__ = __webpack_require__(/*! ./entity */ 4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__error__ = __webpack_require__(/*! ./error */ 6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__app_errors__ = __webpack_require__(/*! ./app_errors */ 14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__path__ = __webpack_require__(/*! ./path */ 1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__resource__ = __webpack_require__(/*! ./resource */ 5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__type_error__ = __webpack_require__(/*! ./type_error */ 16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__required_property_error__ = __webpack_require__(/*! ./required_property_error */ 15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__path__ = __webpack_require__(/*! ./path */ 1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__resource__ = __webpack_require__(/*! ./resource */ 5);
+
 
 
 
@@ -424,8 +428,8 @@ class Store {
     }));
     
     this.appendState(new __WEBPACK_IMPORTED_MODULE_3__error__["a" /* default */]({_name: __WEBPACK_IMPORTED_MODULE_3__error__["a" /* default */].name}));
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__app_errors__["a" /* TypeError */]({_name: __WEBPACK_IMPORTED_MODULE_4__app_errors__["a" /* TypeError */].name}));
-    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__app_errors__["b" /* RequiredPropertyError */]({_name: __WEBPACK_IMPORTED_MODULE_4__app_errors__["b" /* RequiredPropertyError */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_4__type_error__["a" /* default */]({_name: __WEBPACK_IMPORTED_MODULE_4__type_error__["a" /* default */].name}));
+    this.appendState(new __WEBPACK_IMPORTED_MODULE_5__required_property_error__["a" /* default */]({_name: __WEBPACK_IMPORTED_MODULE_5__required_property_error__["a" /* default */].name}));
   }
   
   getProtoResource(state) {
@@ -438,7 +442,7 @@ class Store {
   }
   
   resolveName(key) {
-    if (!__WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */].isName(key)) {
+    if (!__WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */].isName(key)) {
       return key;
     }
     
@@ -456,7 +460,7 @@ class Store {
       return undefined;
     }
     
-    return new __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */](top, ...path.rest);
+    return new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](top, ...path.rest);
   }
   
   getState(id) {
@@ -471,7 +475,7 @@ class Store {
       const val = state[key];
       if (!val) {
         return undefined;
-      } else if (val instanceof __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */]) {
+      } else if (val instanceof __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]) {
         state = this.getState(val);
       } else {
         state = val;
@@ -488,7 +492,7 @@ class Store {
       const state = proto.get();
       for (var key in state) {
         // reject const key for namespase
-        if (state.hasOwnProperty(key) && !__WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */].isConst(key)) { 
+        if (state.hasOwnProperty(key) && !__WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */].isConst(key)) { 
           const val = proto.follow(key).get();
           if (val instanceof __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */] && !entities[key]) {
             entities[key] = val;
@@ -523,10 +527,10 @@ class Store {
     }
     
     const appendChild = (child) => {
-      const childId = child._uuid || __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */].uuid();
+      const childId = child._uuid || __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */].uuid();
       
       delete child._uuid;
-      child._parent = new __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */](key);
+      child._parent = new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](key);
       
       this.setState(childId, child);
       return childId;
@@ -535,14 +539,14 @@ class Store {
     for (const k in state) {
       if (state.hasOwnProperty(k)) {
         const v = state[k];
-        if (v instanceof __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */]) {
+        if (v instanceof __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */]) {
           // resolve name and recurcive definition
           state[k] = this.resolvePathTopName(v);
         } else if (v instanceof __WEBPACK_IMPORTED_MODULE_2__entity__["a" /* default */]) {
           // set entity as child resource
           const entity = v;
           const childId = appendChild(entity);
-          state[k] = new __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */](childId);
+          state[k] = new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](childId);
         } else if (v === null) {
           // remove null property
           delete state[k];
@@ -565,7 +569,7 @@ class Store {
         const override = state[k];
         const child = override ? Object.assign({}, entity, override) : entity;
         const childId = appendChild(child);
-        state[k] = new __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */](childId);
+        state[k] = new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](childId);
       }
     }
     
@@ -574,21 +578,21 @@ class Store {
   }
   
   appendState(state) {
-    const key = __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */].uuid();
+    const key = __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */].uuid();
     return this.setState(key, state);
   }
     
   // same interface for Resource
   follow(id) {
     const path = this.resolvePathTopName(
-      typeof(id) === "string" ? new __WEBPACK_IMPORTED_MODULE_5__path__["a" /* default */](id) : id
+      typeof(id) === "string" ? new __WEBPACK_IMPORTED_MODULE_6__path__["a" /* default */](id) : id
     );
     
     if (!path || !this.getState(path)) {
       return undefined;
     }
     
-    return new __WEBPACK_IMPORTED_MODULE_6__resource__["a" /* default */](this, path);
+    return new __WEBPACK_IMPORTED_MODULE_7__resource__["a" /* default */](this, path);
   }
     
   post(state) {
@@ -1040,11 +1044,31 @@ function equals(o1, o2) {
 
 
 /***/ }),
-/* 14 */
-/* exports provided: TypeError, RequiredPropertyError */
-/* exports used: TypeError, RequiredPropertyError */
+/* 14 */,
+/* 15 */
+/* exports provided: default */
+/* exports used: default */
+/*!****************************************!*\
+  !*** ./src/required_property_error.js ***!
+  \****************************************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__error__ = __webpack_require__(/*! ./error */ 6);
+
+
+class RequiredPropertyError extends __WEBPACK_IMPORTED_MODULE_0__error__["a" /* default */] {
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = RequiredPropertyError;
+
+
+
+/***/ }),
+/* 16 */
+/* exports provided: default */
+/* exports used: default */
 /*!***************************!*\
-  !*** ./src/app_errors.js ***!
+  !*** ./src/type_error.js ***!
   \***************************/
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1055,11 +1079,6 @@ function equals(o1, o2) {
 class TypeError extends __WEBPACK_IMPORTED_MODULE_0__error__["a" /* default */] {
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = TypeError;
-
-
-class RequiredPropertyError extends __WEBPACK_IMPORTED_MODULE_0__error__["a" /* default */] {
-}
-/* harmony export (immutable) */ __webpack_exports__["b"] = RequiredPropertyError;
 
 
 

@@ -3,7 +3,8 @@ import BiMap from 'bidirectional-map';
 import Value from './value';
 import Entity from './entity';
 import Error from './error';
-import { TypeError, RequiredPropertyError } from './app_errors';
+import TypeError from './type_error';
+import RequiredPropertyError from './required_property_error';
 
 import Path from './path';
 import Resource from './resource';
