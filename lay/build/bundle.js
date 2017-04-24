@@ -79,9 +79,19 @@
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__property__ = __webpack_require__(/*! ./property */ 18);
+
 
 
 console.assert(__WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].generate().str.match(/^urn:uuid:.*$/));
+
+const sbj = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].generate();
+const prd = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].generate();
+const obj = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].generate();
+const prop = new __WEBPACK_IMPORTED_MODULE_1__property__["a" /* default */](sbj, prd, obj);
+console.assert(prop.subject == sbj);
+console.assert(prop.predicate == prd);
+console.assert(prop.object == obj);
 
 console.log("all tests succeeded.");
 
@@ -124,6 +134,31 @@ class UUID {
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = UUID;
+
+
+/***/ }),
+
+/***/ 18:
+/* exports provided: default */
+/* exports used: default */
+/*!*************************!*\
+  !*** ./src/property.js ***!
+  \*************************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 17);
+
+
+class Property {
+  constructor(subject, predicate, object, id=__WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].generate()) {
+    this.subject = subject;
+    this.predicate = predicate;
+    this.object = object;
+    this.id = id;
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Property;
 
 
 /***/ })
