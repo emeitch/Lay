@@ -1,14 +1,14 @@
 import UUID from './uuid';
-import Property from './property'
+import Link from './link'
 
 console.assert(UUID.generate().str.match(/^urn:uuid:.*$/));
 
-const sbj = UUID.generate();
-const prd = UUID.generate();
-const obj = UUID.generate();
-const prop = new Property(sbj, prd, obj);
-console.assert(prop.subject == sbj);
-console.assert(prop.predicate == prd);
-console.assert(prop.object == obj);
+const type = UUID.generate();
+const from = UUID.generate();
+const to = UUID.generate();
+const ln = new Link(type, from, to);
+console.assert(ln.type == type);
+console.assert(ln.from == from);
+console.assert(ln.to == to);
 
 console.log("all tests succeeded.");
