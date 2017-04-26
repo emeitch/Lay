@@ -88,10 +88,10 @@ console.assert(__WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path().mat
 const type = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path()
 const from = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path();
 const to = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path();
-const ln = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to);
-console.assert(ln.type == type);
-console.assert(ln.from == from);
-console.assert(ln.to == to);
+const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to);
+console.assert(link.type == type);
+console.assert(link.from == from);
+console.assert(link.to == to);
 
 console.log("all tests succeeded.");
 
