@@ -13,15 +13,7 @@ export default class UUID {
     return uuid;
   }
   
-  static uuid() {
-    return "urn:uuid:" + this.generateUUIDString();
-  }
-
-  static generate() {
-    return new this();
-  }
-  
-  constructor() {
-    this.str = this.constructor.uuid();
+  static path() {
+    return "/uuid/" + this.generateUUIDString();
   }
 }

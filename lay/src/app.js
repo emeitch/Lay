@@ -1,11 +1,11 @@
 import UUID from './uuid';
 import Link from './link'
 
-console.assert(UUID.generate().str.match(/^urn:uuid:.*$/));
+console.assert(UUID.path().match(/^\/uuid\/.*$/));
 
-const type = UUID.generate();
-const from = UUID.generate();
-const to = UUID.generate();
+const type = UUID.path()
+const from = UUID.path();
+const to = UUID.path();
 const ln = new Link(type, from, to);
 console.assert(ln.type == type);
 console.assert(ln.from == from);

@@ -83,11 +83,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-console.assert(__WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].generate().str.match(/^urn:uuid:.*$/));
+console.assert(__WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path().match(/^\/uuid\/.*$/));
 
-const type = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].generate();
-const from = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].generate();
-const to = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].generate();
+const type = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path()
+const from = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path();
+const to = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path();
 const ln = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to);
 console.assert(ln.type == type);
 console.assert(ln.from == from);
@@ -121,16 +121,8 @@ class UUID {
     return uuid;
   }
   
-  static uuid() {
-    return "urn:uuid:" + this.generateUUIDString();
-  }
-
-  static generate() {
-    return new this();
-  }
-  
-  constructor() {
-    this.str = this.constructor.uuid();
+  static path() {
+    return "/uuid/" + this.generateUUIDString();
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = UUID;
@@ -151,7 +143,7 @@ class UUID {
 
 
 class Link {
-  constructor(type, from, to, id=__WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].generate()) {
+  constructor(type, from, to, id=__WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path()) {
     this.type = type;
     this.from = from;
     this.to = to;
