@@ -3,7 +3,7 @@ import Link from './link'
 
 console.assert(UUID.path().match(/^\/uuid\/.*$/));
 
-const type = UUID.path()
+const type = "membership";
 const from = UUID.path();
 const to = UUID.path();
 const link = new Link(type, from, to);
