@@ -85,7 +85,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 console.assert(__WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path().match(/^\/uuid\/.*$/));
 
-const type = "membership";
+const type = "/membership";
 const from = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path();
 const to = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path();
 const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to);
