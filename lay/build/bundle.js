@@ -83,11 +83,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-console.assert(__WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path().match(/^\/uuid\/.*$/));
+console.assert(new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]().urn.match(/^urn:uuid:.*$/));
 
-const type = "/membership";
-const from = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path();
-const to = __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path();
+const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
 const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to);
 console.assert(link.type == type);
 console.assert(link.from == from);
@@ -121,8 +121,16 @@ class UUID {
     return uuid;
   }
   
-  static path() {
-    return "/uuid/" + this.generateUUIDString();
+  constructor() {
+    this.origin = this.constructor.generateUUIDString();
+  }
+  
+  get urn() {
+    return "urn:uuid:" + this.origin;
+  }
+  
+  toString() {
+    return this.origin;
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = UUID;
@@ -143,7 +151,7 @@ class UUID {
 
 
 class Link {
-  constructor(type, from, to, id=__WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */].path()) {
+  constructor(type, from, to, id=new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]()) {
     this.type = type;
     this.from = from;
     this.to = to;
