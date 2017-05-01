@@ -3,11 +3,15 @@ export default class Store {
     this.links = {};
   }
   
-  append(link) {
-    this.links[link.id] = link;
-  }
-  
   get(id) {
     return this.links[id];
+  }
+  
+  set(id, link) {
+    this.links[id] = link;
+  }
+
+  append(link) {
+    this.set(link.id, link);
   }
 }
