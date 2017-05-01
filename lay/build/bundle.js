@@ -63,41 +63,11 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 12:
-/* unknown exports provided */
-/* all exports used */
-/*!********************!*\
-  !*** ./src/app.js ***!
-  \********************/
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__link__ = __webpack_require__(/*! ./link */ 19);
-
-
-
-console.assert(new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]().urn.match(/^urn:uuid:.*$/));
-
-const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to);
-console.assert(link.type == type);
-console.assert(link.from == from);
-console.assert(link.to == to);
-
-console.log("all tests succeeded.");
-
-/***/ }),
-
-/***/ 17:
+/******/ ([
+/* 0 */
 /* exports provided: default */
 /* exports used: default */
 /*!*********************!*\
@@ -137,8 +107,7 @@ class UUID {
 
 
 /***/ }),
-
-/***/ 19:
+/* 1 */
 /* exports provided: default */
 /* exports used: default */
 /*!*********************!*\
@@ -147,7 +116,7 @@ class UUID {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 0);
 
 
 class Link {
@@ -161,7 +130,66 @@ class Link {
 /* harmony export (immutable) */ __webpack_exports__["a"] = Link;
 
 
-/***/ })
+/***/ }),
+/* 2 */
+/* exports provided: default */
+/* exports used: default */
+/*!**********************!*\
+  !*** ./src/store.js ***!
+  \**********************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-/******/ });
+"use strict";
+class Store {
+  constructor() {
+    this.links = {};
+  }
+  
+  append(link) {
+    this.links[link.id] = link;
+  }
+  
+  get(id) {
+    return this.links[id];
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Store;
+
+
+/***/ }),
+/* 3 */
+/* unknown exports provided */
+/* all exports used */
+/*!********************!*\
+  !*** ./src/app.js ***!
+  \********************/
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__link__ = __webpack_require__(/*! ./link */ 1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store__ = __webpack_require__(/*! ./store */ 2);
+
+
+
+
+console.assert(new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]().urn.match(/^urn:uuid:.*$/));
+
+const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to);
+console.assert(link.type == type);
+console.assert(link.from == from);
+console.assert(link.to == to);
+
+const store = new __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */]();
+store.append(link);
+console.assert(store.get(link.id) == link);
+
+console.log("all tests succeeded.");
+
+/***/ })
+/******/ ]);
 //# sourceMappingURL=bundle.js.map
