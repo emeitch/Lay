@@ -1,3 +1,5 @@
+import Link from './link';
+
 export default class Store {
   constructor() {
     this.links = {};
@@ -13,5 +15,11 @@ export default class Store {
 
   append(link) {
     this.set(link.id, link);
+  }
+  
+  add(type, from, to) {
+    const link = new Link(type, from, to);
+    this.append(link);
+    return link;
   }
 }

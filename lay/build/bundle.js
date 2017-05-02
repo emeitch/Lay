@@ -140,6 +140,9 @@ class Link {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__link__ = __webpack_require__(/*! ./link */ 1);
+
+
 class Store {
   constructor() {
     this.links = {};
@@ -155,6 +158,12 @@ class Store {
 
   append(link) {
     this.set(link.id, link);
+  }
+  
+  add(type, from, to) {
+    const link = new __WEBPACK_IMPORTED_MODULE_0__link__["a" /* default */](type, from, to);
+    this.append(link);
+    return link;
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Store;
@@ -191,6 +200,17 @@ console.assert(link.to == to);
 const store = new __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */]();
 store.append(link);
 console.assert(store.get(link.id) == link);
+
+{
+  const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+  const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+  const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+  const link = store.add(type, from, to);
+  console.assert(link.type == type);
+  console.assert(link.from == from);
+  console.assert(link.to == to);
+  console.assert(store.get(link.id) == link);
+}
 
 console.log("all tests succeeded.");
 
