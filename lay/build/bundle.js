@@ -187,25 +187,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-console.assert(new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]().urn.match(/^urn:uuid:.*$/));
-
-const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to);
-console.assert(link.type == type);
-console.assert(link.from == from);
-console.assert(link.to == to);
-
-const store = new __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */]();
-store.append(link);
-console.assert(store.get(link.id) == link);
+{
+  console.assert(new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]().urn.match(/^urn:uuid:.*$/));
+}
 
 {
+  const store = new __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */]();
+  const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+  const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+  const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+  const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to);
+
+  console.assert(link.type == type);
+  console.assert(link.from == from);
+  console.assert(link.to == to);
+  
+  store.append(link);
+  console.assert(store.get(link.id) == link);
+}
+
+{
+  const store = new __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */]();
   const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
   const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
   const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
   const link = store.add(type, from, to);
+
   console.assert(link.type == type);
   console.assert(link.from == from);
   console.assert(link.to == to);
