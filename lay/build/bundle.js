@@ -120,11 +120,12 @@ class UUID {
 
 
 class Link {
-  constructor(type, from, to, id=new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]()) {
+  constructor(type, from, to, transaction, id=new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]()) {
+    this.id = id;
     this.type = type;
     this.from = from;
     this.to = to;
-    this.id = id;
+    this.transaction = transaction;
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Link;
@@ -140,12 +141,15 @@ class Link {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__link__ = __webpack_require__(/*! ./link */ 1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__link__ = __webpack_require__(/*! ./link */ 1);
+
 
 
 class Store {
   constructor() {
     this.links = {};
+    this.transactionTimeLink = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
   }
   
   get(id) {
@@ -160,10 +164,22 @@ class Store {
     this.set(link.id, link);
   }
   
-  add(type, from, to) {
-    const link = new __WEBPACK_IMPORTED_MODULE_0__link__["a" /* default */](type, from, to);
+  addLink(type, from, to, tran) {
+    const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to, tran);
     this.append(link);
     return link;
+  }
+  
+  addTransaction() {
+    const tran = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+    this.addLink(this.transactionTimeLink, tran, new Date(), tran);
+    return tran;
+  }
+  
+  add(type, from, to) {
+    // todo: アトミックな操作に修正する
+    const tran = this.addTransaction();
+    return this.addLink(type, from, to, tran);
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Store;
