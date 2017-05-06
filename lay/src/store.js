@@ -19,21 +19,21 @@ export default class Store {
     this.set(link.id, link);
   }
   
-  addLink(type, from, to, tran) {
-    const link = new Link(type, from, to, tran);
+  addLink(type, from, to, tid) {
+    const link = new Link(type, from, to, tid);
     this.append(link);
     return link;
   }
   
   addTransaction() {
-    const tran = new UUID();
-    this.addLink(this.transactionTimeLink, tran, new Date(), tran);
-    return tran;
+    const tid = new UUID();
+    this.addLink(this.transactionTimeLink, tid, new Date(), tid);
+    return tid;
   }
   
   add(type, from, to) {
     // todo: アトミックな操作に修正する
-    const tran = this.addTransaction();
-    return this.addLink(type, from, to, tran);
+    const tid = this.addTransaction();
+    return this.addLink(type, from, to, tid);
   }
 }
