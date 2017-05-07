@@ -4,7 +4,7 @@ import Link from './link';
 export default class Store {
   constructor() {
     this.links = {};
-    this.transactionTimeLink = new UUID();
+    this.transactionTime = new UUID();
   }
   
   get(id) {
@@ -27,7 +27,7 @@ export default class Store {
   
   addTransaction() {
     const tid = new UUID();
-    this.addLink(this.transactionTimeLink, tid, new Date(), tid);
+    this.addLink(this.transactionTime, tid, new Date(), tid);
     return tid;
   }
   

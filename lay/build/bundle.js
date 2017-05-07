@@ -149,7 +149,7 @@ class Link {
 class Store {
   constructor() {
     this.links = {};
-    this.transactionTimeLink = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+    this.transactionTime = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
   }
   
   get(id) {
@@ -172,7 +172,7 @@ class Store {
   
   addTransaction() {
     const tid = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-    this.addLink(this.transactionTimeLink, tid, new Date(), tid);
+    this.addLink(this.transactionTime, tid, new Date(), tid);
     return tid;
   }
   
