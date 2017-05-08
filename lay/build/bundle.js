@@ -143,13 +143,15 @@ class Link {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__link__ = __webpack_require__(/*! ./link */ 1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ontology__ = __webpack_require__(/*! ./ontology */ 4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ontology___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__ontology__);
+
 
 
 
 class Store {
   constructor() {
     this.links = {};
-    this.transactionTime = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
   }
   
   get(id) {
@@ -172,7 +174,7 @@ class Store {
   
   addTransaction() {
     const tid = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-    this.addLink(this.transactionTime, tid, new Date(), tid);
+    this.addLink(__WEBPACK_IMPORTED_MODULE_2__ontology__["transactionTime"], tid, new Date(), tid);
     return tid;
   }
   
@@ -236,6 +238,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 }
 
 console.log("all tests succeeded.");
+
+/***/ }),
+/* 4 */
+/* unknown exports provided */
+/* exports used: transactionTime */
+/*!*************************!*\
+  !*** ./src/ontology.js ***!
+  \*************************/
+/***/ (function(module, exports) {
+
+
 
 /***/ })
 /******/ ]);

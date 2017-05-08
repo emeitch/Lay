@@ -1,10 +1,10 @@
 import UUID from './uuid';
 import Link from './link';
+import { transactionTime } from './ontology';
 
 export default class Store {
   constructor() {
     this.links = {};
-    this.transactionTime = new UUID();
   }
   
   get(id) {
@@ -27,7 +27,7 @@ export default class Store {
   
   addTransaction() {
     const tid = new UUID();
-    this.addLink(this.transactionTime, tid, new Date(), tid);
+    this.addLink(transactionTime, tid, new Date(), tid);
     return tid;
   }
   
