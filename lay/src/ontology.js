@@ -1,5 +1,3 @@
 import UUID from './uuid';
 
-export {
-  transactionTime: new UUID()
-};
+export const transactionTime = new UUID()
