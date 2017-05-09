@@ -173,7 +173,7 @@ class Store {
   
   addTransaction() {
     const tid = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-    this.addLink(__WEBPACK_IMPORTED_MODULE_2__ontology__["a" /* transactionTime */], tid, new Date(), tid);
+    this.addLink(__WEBPACK_IMPORTED_MODULE_2__ontology__["a" /* transactionTimeUUID */], tid, new Date(), tid);
     return tid;
   }
   
@@ -240,8 +240,8 @@ console.log("all tests succeeded.");
 
 /***/ }),
 /* 4 */
-/* exports provided: transactionTime */
-/* exports used: transactionTime */
+/* exports provided: transactionTimeUUID */
+/* exports used: transactionTimeUUID */
 /*!*************************!*\
   !*** ./src/ontology.js ***!
   \*************************/
@@ -251,8 +251,8 @@ console.log("all tests succeeded.");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 0);
 
 
-const transactionTime = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]()
-/* harmony export (immutable) */ __webpack_exports__["a"] = transactionTime;
+const transactionTimeUUID = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]()
+/* harmony export (immutable) */ __webpack_exports__["a"] = transactionTimeUUID;
 
 
 
