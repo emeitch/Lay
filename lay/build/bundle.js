@@ -171,16 +171,17 @@ class Store {
     return link;
   }
   
-  addTransaction() {
+  transaction(block) {
+    // todo: アトミックな操作に修正する
     const tid = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
     this.addLink(__WEBPACK_IMPORTED_MODULE_2__ontology__["a" /* transactionTimeUUID */], tid, new Date(), tid);
-    return tid;
+    return block(tid);
   }
   
   add(type, from, to) {
-    // todo: アトミックな操作に修正する
-    const tid = this.addTransaction();
-    return this.addLink(type, from, to, tid);
+    return this.transaction(tid =>
+      this.addLink(type, from, to, tid)
+    );
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Store;

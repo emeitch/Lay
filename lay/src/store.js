@@ -25,15 +25,16 @@ export default class Store {
     return link;
   }
   
-  addTransaction() {
+  transaction(block) {
+    // todo: アトミックな操作に修正する
     const tid = new UUID();
     this.addLink(transactionTime, tid, new Date(), tid);
-    return tid;
+    return block(tid);
   }
   
   add(type, from, to) {
-    // todo: アトミックな操作に修正する
-    const tid = this.addTransaction();
-    return this.addLink(type, from, to, tid);
+    return this.transaction(tid =>
+      this.addLink(type, from, to, tid)
+    );
   }
 }
