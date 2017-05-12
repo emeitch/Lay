@@ -120,11 +120,12 @@ class UUID {
 
 
 class Link {
-  constructor(type, from, to, transaction, id=new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]()) {
+  constructor(type, from, to, place, transaction, id=new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]()) {
     this.id = id;
     this.type = type;
     this.from = from;
     this.to = to;
+    this.in = place;
     this.transaction = transaction;
   }
 }
@@ -165,8 +166,8 @@ class Store {
     this.set(link.id, link);
   }
   
-  addLink(type, from, to, tid) {
-    const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to, tid);
+  addLink(type, from, to, place, tid) {
+    const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to, place, tid);
     this.append(link);
     return link;
   }
@@ -174,13 +175,13 @@ class Store {
   transaction(block) {
     // todo: アトミックな操作に修正する
     const tid = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-    this.addLink(__WEBPACK_IMPORTED_MODULE_2__ontology__["a" /* transactionTimeUUID */], tid, new Date(), tid);
+    this.addLink(__WEBPACK_IMPORTED_MODULE_2__ontology__["a" /* transactionTimeUUID */], tid, new Date(), undefined, tid);
     return block(tid);
   }
   
-  add(type, from, to) {
+  add(type, from, to, place) {
     return this.transaction(tid =>
-      this.addLink(type, from, to, tid)
+      this.addLink(type, from, to, place, tid)
     );
   }
 }
@@ -234,6 +235,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   console.assert(link.type == type);
   console.assert(link.from == from);
   console.assert(link.to == to);
+  console.assert(link.in == undefined);
+  console.assert(store.get(link.id) == link);
+  
+}
+
+{
+  const store = new __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */]();
+  const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+  const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+  const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+  const place = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
+  const link = store.add(type, from, to, place);
+  console.assert(link.type == type);
+  console.assert(link.from == from);
+  console.assert(link.to == to);
+  console.assert(link.in == place);
   console.assert(store.get(link.id) == link);
 }
 
