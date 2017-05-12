@@ -68,125 +68,190 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/* exports provided: default */
-/* exports used: default */
+/* unknown exports provided */
+/* all exports used */
 /*!*********************!*\
   !*** ./src/uuid.js ***!
   \*********************/
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-class UUID {
-  static generateUUIDString() {
-    // UUID ver 4 / RFC 4122
-    var uuid = "", i, random;
-    for (i = 0; i < 32; i++) {
-      random = Math.random() * 16 | 0;
-      
-      if (i == 8 || i == 12 || i == 16 || i == 20) {
-        uuid += "-"
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var UUID = function () {
+  _createClass(UUID, null, [{
+    key: "generateUUIDString",
+    value: function generateUUIDString() {
+      // UUID ver 4 / RFC 4122
+      var uuid = "",
+          i,
+          random;
+      for (i = 0; i < 32; i++) {
+        random = Math.random() * 16 | 0;
+
+        if (i == 8 || i == 12 || i == 16 || i == 20) {
+          uuid += "-";
+        }
+        uuid += (i == 12 ? 4 : i == 16 ? random & 3 | 8 : random).toString(16);
       }
-      uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+      return uuid;
     }
-    return uuid;
-  }
-  
-  constructor() {
+  }]);
+
+  function UUID() {
+    _classCallCheck(this, UUID);
+
     this.origin = this.constructor.generateUUIDString();
   }
-  
-  get urn() {
-    return "urn:uuid:" + this.origin;
-  }
-  
-  toString() {
-    return this.origin;
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = UUID;
 
+  _createClass(UUID, [{
+    key: "toString",
+    value: function toString() {
+      return this.origin;
+    }
+  }, {
+    key: "urn",
+    get: function get() {
+      return "urn:uuid:" + this.origin;
+    }
+  }]);
+
+  return UUID;
+}();
+
+exports.default = UUID;
 
 /***/ }),
 /* 1 */
-/* exports provided: default */
-/* exports used: default */
+/* unknown exports provided */
+/* all exports used */
 /*!*********************!*\
   !*** ./src/link.js ***!
   \*********************/
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 0);
 
 
-class Link {
-  constructor(type, from, to, place, transaction, id=new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]()) {
-    this.id = id;
-    this.type = type;
-    this.from = from;
-    this.to = to;
-    this.in = place;
-    this.transaction = transaction;
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Link;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
+var _uuid = __webpack_require__(/*! ./uuid */ 0);
+
+var _uuid2 = _interopRequireDefault(_uuid);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Link = function Link(type, from, to, place, transaction) {
+  var id = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : new _uuid2.default();
+
+  _classCallCheck(this, Link);
+
+  this.id = id;
+  this.type = type;
+  this.from = from;
+  this.to = to;
+  this.in = place;
+  this.transaction = transaction;
+};
+
+exports.default = Link;
 
 /***/ }),
 /* 2 */
-/* exports provided: default */
-/* exports used: default */
+/* unknown exports provided */
+/* all exports used */
 /*!**********************!*\
   !*** ./src/store.js ***!
   \**********************/
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__link__ = __webpack_require__(/*! ./link */ 1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ontology__ = __webpack_require__(/*! ./ontology */ 4);
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-class Store {
-  constructor() {
+var _uuid = __webpack_require__(/*! ./uuid */ 0);
+
+var _uuid2 = _interopRequireDefault(_uuid);
+
+var _link = __webpack_require__(/*! ./link */ 1);
+
+var _link2 = _interopRequireDefault(_link);
+
+var _ontology = __webpack_require__(/*! ./ontology */ 4);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Store = function () {
+  function Store() {
+    _classCallCheck(this, Store);
+
     this.links = {};
   }
-  
-  get(id) {
-    return this.links[id];
-  }
-  
-  set(id, link) {
-    this.links[id] = link;
-  }
 
-  append(link) {
-    this.set(link.id, link);
-  }
-  
-  addLink(type, from, to, place, tid) {
-    const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to, place, tid);
-    this.append(link);
-    return link;
-  }
-  
-  transaction(block) {
-    // todo: アトミックな操作に修正する
-    const tid = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-    this.addLink(__WEBPACK_IMPORTED_MODULE_2__ontology__["a" /* transactionTimeUUID */], tid, new Date(), undefined, tid);
-    return block(tid);
-  }
-  
-  add(type, from, to, place) {
-    return this.transaction(tid =>
-      this.addLink(type, from, to, place, tid)
-    );
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Store;
+  _createClass(Store, [{
+    key: 'get',
+    value: function get(id) {
+      return this.links[id];
+    }
+  }, {
+    key: 'set',
+    value: function set(id, link) {
+      this.links[id] = link;
+    }
+  }, {
+    key: 'append',
+    value: function append(link) {
+      this.set(link.id, link);
+    }
+  }, {
+    key: 'addLink',
+    value: function addLink(type, from, to, place, tid) {
+      var link = new _link2.default(type, from, to, place, tid);
+      this.append(link);
+      return link;
+    }
+  }, {
+    key: 'transaction',
+    value: function transaction(block) {
+      // todo: アトミックな操作に修正する
+      var tid = new _uuid2.default();
+      this.addLink(_ontology.transactionTimeUUID, tid, new Date(), undefined, tid);
+      return block(tid);
+    }
+  }, {
+    key: 'add',
+    value: function add(type, from, to, place) {
+      var _this = this;
 
+      return this.transaction(function (tid) {
+        return _this.addLink(type, from, to, place, tid);
+      });
+    }
+  }]);
+
+  return Store;
+}();
+
+exports.default = Store;
 
 /***/ }),
 /* 3 */
@@ -195,84 +260,98 @@ class Store {
 /*!********************!*\
   !*** ./src/app.js ***!
   \********************/
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__link__ = __webpack_require__(/*! ./link */ 1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store__ = __webpack_require__(/*! ./store */ 2);
 
 
+var _uuid = __webpack_require__(/*! ./uuid */ 0);
 
+var _uuid2 = _interopRequireDefault(_uuid);
+
+var _link3 = __webpack_require__(/*! ./link */ 1);
+
+var _link4 = _interopRequireDefault(_link3);
+
+var _store3 = __webpack_require__(/*! ./store */ 2);
+
+var _store4 = _interopRequireDefault(_store3);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 {
-  console.assert(new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]().urn.match(/^urn:uuid:.*$/));
+  console.assert(new _uuid2.default().urn.match(/^urn:uuid:.*$/));
 }
 
 {
-  const store = new __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */]();
-  const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-  const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-  const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-  const link = new __WEBPACK_IMPORTED_MODULE_1__link__["a" /* default */](type, from, to);
+  var store = new _store4.default();
+  var type = new _uuid2.default();
+  var from = new _uuid2.default();
+  var to = new _uuid2.default();
+  var link = new _link4.default(type, from, to);
 
   console.assert(link.type == type);
   console.assert(link.from == from);
   console.assert(link.to == to);
-  
+
   store.append(link);
   console.assert(store.get(link.id) == link);
 }
 
 {
-  const store = new __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */]();
-  const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-  const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-  const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-  const link = store.add(type, from, to);
+  var _store = new _store4.default();
+  var _type = new _uuid2.default();
+  var _from = new _uuid2.default();
+  var _to = new _uuid2.default();
+  var _link = _store.add(_type, _from, _to);
 
-  console.assert(link.type == type);
-  console.assert(link.from == from);
-  console.assert(link.to == to);
-  console.assert(link.in == undefined);
-  console.assert(store.get(link.id) == link);
-  
+  console.assert(_link.type == _type);
+  console.assert(_link.from == _from);
+  console.assert(_link.to == _to);
+  console.assert(_link.in == undefined);
+  console.assert(_store.get(_link.id) == _link);
 }
 
 {
-  const store = new __WEBPACK_IMPORTED_MODULE_2__store__["a" /* default */]();
-  const type = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-  const from = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-  const to = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-  const place = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]();
-  const link = store.add(type, from, to, place);
-  console.assert(link.type == type);
-  console.assert(link.from == from);
-  console.assert(link.to == to);
-  console.assert(link.in == place);
-  console.assert(store.get(link.id) == link);
+  var _store2 = new _store4.default();
+  var _type2 = new _uuid2.default();
+  var _from2 = new _uuid2.default();
+  var _to2 = new _uuid2.default();
+  var place = new _uuid2.default();
+  var _link2 = _store2.add(_type2, _from2, _to2, place);
+  console.assert(_link2.type == _type2);
+  console.assert(_link2.from == _from2);
+  console.assert(_link2.to == _to2);
+  console.assert(_link2.in == place);
+  console.assert(_store2.get(_link2.id) == _link2);
 }
 
 console.log("all tests succeeded.");
 
 /***/ }),
 /* 4 */
-/* exports provided: transactionTimeUUID */
-/* exports used: transactionTimeUUID */
+/* unknown exports provided */
+/* all exports used */
 /*!*************************!*\
   !*** ./src/ontology.js ***!
   \*************************/
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__uuid__ = __webpack_require__(/*! ./uuid */ 0);
 
 
-const transactionTimeUUID = new __WEBPACK_IMPORTED_MODULE_0__uuid__["a" /* default */]()
-/* harmony export (immutable) */ __webpack_exports__["a"] = transactionTimeUUID;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.transactionTimeUUID = undefined;
 
+var _uuid = __webpack_require__(/*! ./uuid */ 0);
 
+var _uuid2 = _interopRequireDefault(_uuid);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var transactionTimeUUID = exports.transactionTimeUUID = new _uuid2.default();
 
 /***/ })
 /******/ ]);
