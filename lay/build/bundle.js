@@ -269,64 +269,17 @@ var _uuid = __webpack_require__(/*! ./uuid */ 0);
 
 var _uuid2 = _interopRequireDefault(_uuid);
 
-var _link3 = __webpack_require__(/*! ./link */ 1);
+var _link = __webpack_require__(/*! ./link */ 1);
 
-var _link4 = _interopRequireDefault(_link3);
+var _link2 = _interopRequireDefault(_link);
 
-var _store3 = __webpack_require__(/*! ./store */ 2);
+var _store = __webpack_require__(/*! ./store */ 2);
 
-var _store4 = _interopRequireDefault(_store3);
+var _store2 = _interopRequireDefault(_store);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-{
-  console.assert(new _uuid2.default().urn.match(/^urn:uuid:.*$/));
-}
-
-{
-  var store = new _store4.default();
-  var type = new _uuid2.default();
-  var from = new _uuid2.default();
-  var to = new _uuid2.default();
-  var link = new _link4.default(type, from, to);
-
-  console.assert(link.type == type);
-  console.assert(link.from == from);
-  console.assert(link.to == to);
-
-  store.append(link);
-  console.assert(store.get(link.id) == link);
-}
-
-{
-  var _store = new _store4.default();
-  var _type = new _uuid2.default();
-  var _from = new _uuid2.default();
-  var _to = new _uuid2.default();
-  var _link = _store.add(_type, _from, _to);
-
-  console.assert(_link.type == _type);
-  console.assert(_link.from == _from);
-  console.assert(_link.to == _to);
-  console.assert(_link.in == undefined);
-  console.assert(_store.get(_link.id) == _link);
-}
-
-{
-  var _store2 = new _store4.default();
-  var _type2 = new _uuid2.default();
-  var _from2 = new _uuid2.default();
-  var _to2 = new _uuid2.default();
-  var place = new _uuid2.default();
-  var _link2 = _store2.add(_type2, _from2, _to2, place);
-  console.assert(_link2.type == _type2);
-  console.assert(_link2.from == _from2);
-  console.assert(_link2.to == _to2);
-  console.assert(_link2.in == place);
-  console.assert(_store2.get(_link2.id) == _link2);
-}
-
-console.log("all tests succeeded.");
+console.log("Lay: Hello, world!");
 
 /***/ }),
 /* 4 */
