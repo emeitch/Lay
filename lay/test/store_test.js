@@ -32,5 +32,18 @@ describe('Store', () => {
       console.assert(link.in == undefined);
       console.assert(store.get(link.id) == link);
     });
+    
+    describe('with place', () => {
+      it('shold add a link with place', () => {
+        const place = new UUID();
+        const link = store.add(type, from, to, place);
+        
+        console.assert(link.type == type);
+        console.assert(link.from == from);
+        console.assert(link.to == to);
+        console.assert(link.in == place);
+        console.assert(store.get(link.id) == link);
+      });
+    });
   });
 });
