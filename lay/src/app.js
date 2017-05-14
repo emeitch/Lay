@@ -1,5 +1,5 @@
 import UUID from './uuid';
-import Link from './link';
+import Proposition from './proposition';
 import Store from './store';
 
 console.log("Lay: Hello, world!");

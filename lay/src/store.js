@@ -1,40 +1,40 @@
 import UUID from './uuid';
-import Link from './link';
+import Proposition from './proposition';
 import { transactionTimeUUID as transactionTime } from './ontology';
 
 export default class Store {
   constructor() {
-    this.links = {};
+    this.propositions = {};
   }
   
   get(id) {
-    return this.links[id];
+    return this.propositions[id];
   }
   
-  set(id, link) {
-    this.links[id] = link;
+  set(id, p) {
+    this.propositions[id] = p;
   }
 
-  append(link) {
-    this.set(link.id, link);
+  append(p) {
+    this.set(p.id, p);
   }
   
-  addLink(type, from, to, place, tid) {
-    const link = new Link(type, from, to, place, tid);
-    this.append(link);
-    return link;
+  addProposition(subj, rel, obj, tran, holder) {
+    const p = new Proposition(subj, rel, obj, tran, holder);
+    this.append(p);
+    return p;
   }
   
   transaction(block) {
     // todo: アトミックな操作に修正する
-    const tid = new UUID();
-    this.addLink(transactionTime, tid, new Date(), undefined, tid);
-    return block(tid);
+    const tran = new UUID();
+    this.addProposition(tran, transactionTime, new Date(), tran);
+    return block(tran);
   }
   
-  add(type, from, to, place) {
-    return this.transaction(tid =>
-      this.addLink(type, from, to, place, tid)
+  add(subj, rel, obj, holder) {
+    return this.transaction(tran =>
+      this.addProposition(subj, rel, obj, tran, holder)
     );
   }
 }

@@ -1,48 +1,38 @@
 import assert from 'assert';
 import UUID from '../src/uuid';
-import Link from '../src/link';
 import Store from '../src/store';
 
 describe('Store', () => {
-  const type = new UUID();
-  const from = new UUID();
-  const to = new UUID();
+  const subj = new UUID();
+  const rel = new UUID();
+  const obj = new UUID();
   
   let store;
   before(() => {
     store = new Store();
   })
-  
-  describe('#append', () => {
-    it('should append a link', () => {
-      const link = new Link(type, from, to);
-      store.append(link);
-      
-      console.assert(store.get(link.id) == link);
-    });
-  });
-  
+    
   describe('#add', () => {
-    it('should add a link', () => {
-      const link = store.add(type, from, to);
+    it('should add a proposition', () => {
+      const p = store.add(subj, rel, obj);
 
-      console.assert(link.type == type);
-      console.assert(link.from == from);
-      console.assert(link.to == to);
-      console.assert(link.in == undefined);
-      console.assert(store.get(link.id) == link);
+      console.assert(p.subject == subj);
+      console.assert(p.relation == rel);
+      console.assert(p.object == obj);
+      console.assert(p.holder == undefined);
+      console.assert(store.get(p.id) == p);
     });
     
-    describe('with place', () => {
-      it('shold add a link with place', () => {
-        const place = new UUID();
-        const link = store.add(type, from, to, place);
+    describe('with holder', () => {
+      it('shold add a proposition with place', () => {
+        const holder = new UUID();
+        const p = store.add(subj, rel, obj, holder);
         
-        console.assert(link.type == type);
-        console.assert(link.from == from);
-        console.assert(link.to == to);
-        console.assert(link.in == place);
-        console.assert(store.get(link.id) == link);
+        console.assert(p.subject == subj);
+        console.assert(p.relation == rel);
+        console.assert(p.object == obj);
+        console.assert(p.holder == holder);
+        console.assert(store.get(p.id) == p);
       });
     });
   });

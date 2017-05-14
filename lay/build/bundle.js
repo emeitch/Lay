@@ -130,45 +130,7 @@ var UUID = function () {
 exports.default = UUID;
 
 /***/ }),
-/* 1 */
-/* unknown exports provided */
-/* all exports used */
-/*!*********************!*\
-  !*** ./src/link.js ***!
-  \*********************/
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _uuid = __webpack_require__(/*! ./uuid */ 0);
-
-var _uuid2 = _interopRequireDefault(_uuid);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Link = function Link(type, from, to, place, transaction) {
-  var id = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : new _uuid2.default();
-
-  _classCallCheck(this, Link);
-
-  this.id = id;
-  this.type = type;
-  this.from = from;
-  this.to = to;
-  this.in = place;
-  this.transaction = transaction;
-};
-
-exports.default = Link;
-
-/***/ }),
+/* 1 */,
 /* 2 */
 /* unknown exports provided */
 /* all exports used */
@@ -190,9 +152,9 @@ var _uuid = __webpack_require__(/*! ./uuid */ 0);
 
 var _uuid2 = _interopRequireDefault(_uuid);
 
-var _link = __webpack_require__(/*! ./link */ 1);
+var _proposition = __webpack_require__(/*! ./proposition */ 5);
 
-var _link2 = _interopRequireDefault(_link);
+var _proposition2 = _interopRequireDefault(_proposition);
 
 var _ontology = __webpack_require__(/*! ./ontology */ 4);
 
@@ -204,46 +166,46 @@ var Store = function () {
   function Store() {
     _classCallCheck(this, Store);
 
-    this.links = {};
+    this.propositions = {};
   }
 
   _createClass(Store, [{
     key: 'get',
     value: function get(id) {
-      return this.links[id];
+      return this.propositions[id];
     }
   }, {
     key: 'set',
-    value: function set(id, link) {
-      this.links[id] = link;
+    value: function set(id, p) {
+      this.propositions[id] = p;
     }
   }, {
     key: 'append',
-    value: function append(link) {
-      this.set(link.id, link);
+    value: function append(p) {
+      this.set(p.id, p);
     }
   }, {
-    key: 'addLink',
-    value: function addLink(type, from, to, place, tid) {
-      var link = new _link2.default(type, from, to, place, tid);
-      this.append(link);
-      return link;
+    key: 'addProposition',
+    value: function addProposition(subj, rel, obj, tran, holder) {
+      var p = new _proposition2.default(subj, rel, obj, tran, holder);
+      this.append(p);
+      return p;
     }
   }, {
     key: 'transaction',
     value: function transaction(block) {
       // todo: アトミックな操作に修正する
-      var tid = new _uuid2.default();
-      this.addLink(_ontology.transactionTimeUUID, tid, new Date(), undefined, tid);
-      return block(tid);
+      var tran = new _uuid2.default();
+      this.addProposition(tran, _ontology.transactionTimeUUID, new Date(), tran);
+      return block(tran);
     }
   }, {
     key: 'add',
-    value: function add(type, from, to, place) {
+    value: function add(subj, rel, obj, holder) {
       var _this = this;
 
-      return this.transaction(function (tid) {
-        return _this.addLink(type, from, to, place, tid);
+      return this.transaction(function (tran) {
+        return _this.addProposition(subj, rel, obj, tran, holder);
       });
     }
   }]);
@@ -269,9 +231,9 @@ var _uuid = __webpack_require__(/*! ./uuid */ 0);
 
 var _uuid2 = _interopRequireDefault(_uuid);
 
-var _link = __webpack_require__(/*! ./link */ 1);
+var _proposition = __webpack_require__(/*! ./proposition */ 5);
 
-var _link2 = _interopRequireDefault(_link);
+var _proposition2 = _interopRequireDefault(_proposition);
 
 var _store = __webpack_require__(/*! ./store */ 2);
 
@@ -305,6 +267,48 @@ var _uuid2 = _interopRequireDefault(_uuid);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var transactionTimeUUID = exports.transactionTimeUUID = new _uuid2.default();
+
+/***/ }),
+/* 5 */
+/* unknown exports provided */
+/* all exports used */
+/*!****************************!*\
+  !*** ./src/proposition.js ***!
+  \****************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _uuid = __webpack_require__(/*! ./uuid */ 0);
+
+var _uuid2 = _interopRequireDefault(_uuid);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Proposition = function Proposition(subject, relation, object, transaction, holder) {
+  var id = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : new _uuid2.default();
+
+  _classCallCheck(this, Proposition);
+
+  this.id = id;
+
+  this.subject = subject;
+  this.relation = relation;
+  this.object = object;
+
+  this.transaction = transaction;
+
+  this.holder = holder;
+};
+
+exports.default = Proposition;
 
 /***/ })
 /******/ ]);
