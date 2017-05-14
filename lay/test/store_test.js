@@ -17,6 +17,19 @@ describe('Store', () => {
     it('should append a link', () => {
       const link = new Link(type, from, to);
       store.append(link);
+      
+      console.assert(store.get(link.id) == link);
+    });
+  });
+  
+  describe('#add', () => {
+    it('should add a link', () => {
+      const link = store.add(type, from, to);
+
+      console.assert(link.type == type);
+      console.assert(link.from == from);
+      console.assert(link.to == to);
+      console.assert(link.in == undefined);
       console.assert(store.get(link.id) == link);
     });
   });
