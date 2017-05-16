@@ -156,13 +156,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Proposition = function () {
-  function Proposition(subject, relation, object, transaction, holder) {
+  function Proposition(subject, relation, object, holder) {
     _classCallCheck(this, Proposition);
 
     this.subject = subject;
     this.relation = relation;
     this.object = object;
-    this.transaction = transaction;
     this.holder = holder;
   }
 
@@ -228,36 +227,34 @@ var Store = function () {
     }
   }, {
     key: 'set',
-    value: function set(id, p) {
-      this.propositions[id] = p;
-    }
-  }, {
-    key: 'append',
-    value: function append(p) {
-      this.set(p.id, p);
+    value: function set(p) {
+      this.propositions[p.id] = p;
     }
   }, {
     key: 'addProposition',
-    value: function addProposition(subj, rel, obj, tran, holder) {
-      var p = new _proposition2.default(subj, rel, obj, tran, holder);
-      this.append(p);
+    value: function addProposition(subj, rel, obj, holder, transaction) {
+      var p = new _proposition2.default(subj, rel, obj, holder);
+      this.set(p);
+      var t = new _proposition2.default(transaction, _ontology.commitUUID, p);
+      this.set(t);
       return p;
     }
   }, {
     key: 'transaction',
     value: function transaction(block) {
       // todo: アトミックな操作に修正する
-      var tran = new _uuid2.default();
-      this.addProposition(tran, _ontology.transactionTimeUUID, new Date(), tran);
-      return block(tran);
+      var transaction = new _uuid2.default();
+      var p = new _proposition2.default(transaction, _ontology.transactionTimeUUID, new Date());
+      this.set(p);
+      return block(transaction);
     }
   }, {
     key: 'add',
     value: function add(subj, rel, obj, holder) {
       var _this = this;
 
-      return this.transaction(function (tran) {
-        return _this.addProposition(subj, rel, obj, tran, holder);
+      return this.transaction(function (t) {
+        return _this.addProposition(subj, rel, obj, holder, t);
       });
     }
   }]);
@@ -700,7 +697,7 @@ console.log("Lay: Hello, world!");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.transactionTimeUUID = undefined;
+exports.commitUUID = exports.transactionTimeUUID = undefined;
 
 var _uuid = __webpack_require__(/*! ./uuid */ 0);
 
@@ -709,6 +706,7 @@ var _uuid2 = _interopRequireDefault(_uuid);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var transactionTimeUUID = exports.transactionTimeUUID = new _uuid2.default();
+var commitUUID = exports.commitUUID = new _uuid2.default();
 
 /***/ })
 /******/ ]);

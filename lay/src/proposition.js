@@ -1,11 +1,10 @@
 import jsSHA from 'jssha';
 
 export default class Proposition {
-  constructor(subject, relation, object, transaction, holder) {
+  constructor(subject, relation, object, holder) {
     this.subject = subject;
     this.relation = relation;
     this.object = object;
-    this.transaction = transaction;
     this.holder = holder;
   }
   
