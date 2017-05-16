@@ -5,9 +5,7 @@ export default class Proposition {
     this.subject = subject;
     this.relation = relation;
     this.object = object;
-    
     this.transaction = transaction;
-    
     this.holder = holder;
   }
   
