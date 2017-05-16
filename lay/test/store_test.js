@@ -25,7 +25,7 @@ describe('Store', () => {
     });
     
     describe('with holder', () => {
-      it('shold add a proposition with place', () => {
+      it('shold add a proposition with holder', () => {
         const holder = new UUID();
         const p = store.add(subj, rel, obj, holder);
         
