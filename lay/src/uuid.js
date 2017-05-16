@@ -21,7 +21,7 @@ export default class UUID {
     return "urn:uuid:" + this.origin;
   }
   
-  toString() {
-    return this.origin;
+  toJSON() {
+    return this.urn;
   }
 }

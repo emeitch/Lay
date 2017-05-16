@@ -20,6 +20,7 @@ describe('Store', () => {
       console.assert(p.relation == rel);
       console.assert(p.object == obj);
       console.assert(p.holder == undefined);
+      assert(p.id.match(/^urn:sha256:.*$/));
       console.assert(store.get(p.id) == p);
     });
     

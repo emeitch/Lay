@@ -4,7 +4,8 @@
     "test": "mocha"
   },
   "dependencies": {
-    "bidirectional-map": "^1.0.3"
+    "bidirectional-map": "^1.0.3",
+    "jssha": "^2.3.0"
   },
   "devDependencies": {
     "babel": "^6.23.0",
