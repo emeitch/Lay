@@ -16,12 +16,12 @@ describe('Store', () => {
     it('should add a proposition', () => {
       const p = store.add(subj, rel, obj);
 
-      console.assert(p.subject == subj);
-      console.assert(p.relation == rel);
-      console.assert(p.object == obj);
-      console.assert(p.holder == undefined);
+      assert(p.subject == subj);
+      assert(p.relation == rel);
+      assert(p.object == obj);
+      assert(p.holder == undefined);
       assert(p.id.match(/^urn:sha256:.*$/));
-      console.assert(store.get(p.id) == p);
+      assert(store.get(p.id) == p);
     });
     
     describe('with holder', () => {
@@ -29,11 +29,11 @@ describe('Store', () => {
         const holder = new UUID();
         const p = store.add(subj, rel, obj, holder);
         
-        console.assert(p.subject == subj);
-        console.assert(p.relation == rel);
-        console.assert(p.object == obj);
-        console.assert(p.holder == holder);
-        console.assert(store.get(p.id) == p);
+        assert(p.subject == subj);
+        assert(p.relation == rel);
+        assert(p.object == obj);
+        assert(p.holder == holder);
+        assert(store.get(p.id) == p);
       });
     });
   });
