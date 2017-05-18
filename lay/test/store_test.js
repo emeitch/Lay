@@ -1,7 +1,7 @@
 import assert from 'assert';
 import UUID from '../src/uuid';
 import Store from '../src/store';
-import { commit, transactionTime } from '../src/ontology';
+import { transaction, transactionTime } from '../src/ontology';
 
 describe('Store', () => {
   const subj = new UUID();
@@ -28,10 +28,10 @@ describe('Store', () => {
     it('should append a transaction data', () => {
       const p = store.add(subj, rel, obj);
       
-      const ts = store.where({relation: commit, object: p.id});
+      const ts = store.where({subject: p.id, relation: transaction});
       assert(ts.length == 1);
       
-      const tid = ts[0].subject;
+      const tid = ts[0].object;
       const ttps = store.where({relation: transactionTime, subject: tid});
       assert(ttps.length == 1);
       assert(ttps[0].object.constructor == Date);

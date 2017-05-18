@@ -1,6 +1,6 @@
 import UUID from './uuid';
 import Proposition from './proposition';
-import { commit, transactionTime } from './ontology';
+import { transaction, transactionTime } from './ontology';
 
 export default class Store {
   constructor() {
@@ -33,25 +33,25 @@ export default class Store {
     return results;
   }
   
-  addProposition(subj, rel, obj, loc, transaction) {
+  addProposition(subj, rel, obj, loc, tid) {
     const p = new Proposition(subj, rel, obj, loc);
     this.set(p);
-    const t = new Proposition(transaction, commit, p.id);
+    const t = new Proposition(p.id, transaction, tid);
     this.set(t);
     return p;
   }
   
   transaction(block) {
     // todo: アトミックな操作に修正する
-    const transaction = new UUID();
-    const p = new Proposition(transaction, transactionTime, new Date());
+    const tid = new UUID();
+    const p = new Proposition(tid, transactionTime, new Date());
     this.set(p);
-    return block(transaction);
+    return block(tid);
   }
   
   add(subj, rel, obj, loc) {
-    return this.transaction(t => {
-      return this.addProposition(subj, rel, obj, loc, t);
+    return this.transaction(tid => {
+      return this.addProposition(subj, rel, obj, loc, tid);
     });
   }
 }

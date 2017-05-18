@@ -257,10 +257,10 @@ var Store = function () {
     }
   }, {
     key: 'addProposition',
-    value: function addProposition(subj, rel, obj, loc, transaction) {
+    value: function addProposition(subj, rel, obj, loc, tid) {
       var p = new _proposition2.default(subj, rel, obj, loc);
       this.set(p);
-      var t = new _proposition2.default(transaction, _ontology.commit, p.id);
+      var t = new _proposition2.default(p.id, _ontology.transaction, tid);
       this.set(t);
       return p;
     }
@@ -268,18 +268,18 @@ var Store = function () {
     key: 'transaction',
     value: function transaction(block) {
       // todo: アトミックな操作に修正する
-      var transaction = new _uuid2.default();
-      var p = new _proposition2.default(transaction, _ontology.transactionTime, new Date());
+      var tid = new _uuid2.default();
+      var p = new _proposition2.default(tid, _ontology.transactionTime, new Date());
       this.set(p);
-      return block(transaction);
+      return block(tid);
     }
   }, {
     key: 'add',
     value: function add(subj, rel, obj, loc) {
       var _this2 = this;
 
-      return this.transaction(function (t) {
-        return _this2.addProposition(subj, rel, obj, loc, t);
+      return this.transaction(function (tid) {
+        return _this2.addProposition(subj, rel, obj, loc, tid);
       });
     }
   }]);
@@ -722,7 +722,7 @@ console.log("Lay: Hello, world!");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.commit = exports.transactionTime = undefined;
+exports.transactionTime = exports.transaction = undefined;
 
 var _uuid = __webpack_require__(/*! ./uuid */ 0);
 
@@ -730,8 +730,9 @@ var _uuid2 = _interopRequireDefault(_uuid);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var transaction = exports.transaction = new _uuid2.default();
+
 var transactionTime = exports.transactionTime = new _uuid2.default();
-var commit = exports.commit = new _uuid2.default();
 
 /***/ })
 /******/ ]);
