@@ -207,6 +207,10 @@ var _proposition = __webpack_require__(/*! ./proposition */ 1);
 
 var _proposition2 = _interopRequireDefault(_proposition);
 
+var _entity = __webpack_require__(/*! ./entity */ 6);
+
+var _entity2 = _interopRequireDefault(_entity);
+
 var _ontology = __webpack_require__(/*! ./ontology */ 5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -254,6 +258,11 @@ var Store = function () {
       }
 
       return results;
+    }
+  }, {
+    key: 'entity',
+    value: function entity(id) {
+      return new _entity2.default(this, id);
     }
   }, {
     key: 'addProposition',
@@ -733,6 +742,51 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var transaction = exports.transaction = new _uuid2.default();
 
 var transactionTime = exports.transactionTime = new _uuid2.default();
+
+/***/ }),
+/* 6 */
+/* unknown exports provided */
+/* all exports used */
+/*!***********************!*\
+  !*** ./src/entity.js ***!
+  \***********************/
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Entity = function () {
+  function Entity(store, id) {
+    _classCallCheck(this, Entity);
+
+    this.store = store;
+    this.id = id;
+  }
+
+  _createClass(Entity, [{
+    key: "get",
+    value: function get(rel) {
+      var ps = this.store.where({ subject: this.id, relation: rel });
+      if (ps.length == 0) {
+        return undefined;
+      }
+
+      return this.store.entity(ps[0].object);
+    }
+  }]);
+
+  return Entity;
+}();
+
+exports.default = Entity;
 
 /***/ })
 /******/ ]);

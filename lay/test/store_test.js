@@ -1,6 +1,8 @@
 import assert from 'assert';
+
 import UUID from '../src/uuid';
 import Store from '../src/store';
+import Entity from '../src/entity';
 import { transaction, transactionTime } from '../src/ontology';
 
 describe('Store', () => {
@@ -48,6 +50,17 @@ describe('Store', () => {
         assert(p.location == loc);
         assert(store.get(p.id) == p);
       });
+    });
+  });
+  
+  describe('#entity', () => {
+    beforeEach(() => {
+      store.add(subj, rel, obj);
+    });
+    
+    it('should return a entity', () => {
+      const e = store.entity(subj);
+      assert(e.constructor == Entity);
     });
   });
 });

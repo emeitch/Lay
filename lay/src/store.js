@@ -1,5 +1,6 @@
 import UUID from './uuid';
 import Proposition from './proposition';
+import Entity from './entity';
 import { transaction, transactionTime } from './ontology';
 
 export default class Store {
@@ -31,6 +32,10 @@ export default class Store {
     }
     
     return results;
+  }
+  
+  entity(id) {
+    return new Entity(this, id);
   }
   
   addProposition(subj, rel, obj, loc, tid) {
