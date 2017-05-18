@@ -1,3 +1,5 @@
+import UUID from './uuid'
+
 export default class Entity {
   constructor(store, id) {
     this.store = store;
@@ -10,6 +12,12 @@ export default class Entity {
       return undefined;
     }
     
-    return this.store.entity(ps[0].object);
+    const o = ps[0].object;
+    // todo: sha256をIDオブジェクト化したい
+    if (o.constructor === UUID || typeof(o) === "string" && o.match(/^urn:sha256:/)) {
+      return this.store.entity(ps[0].object);  
+    } else {
+      return o;
+    }
   }
 }

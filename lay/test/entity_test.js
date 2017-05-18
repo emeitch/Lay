@@ -14,7 +14,7 @@ describe('Entity', () => {
     const subj = new UUID();
     const rel = new UUID();
 
-    describe('by UUID object', () => {
+    describe('with UUID object proposition', () => {
       const obj = new UUID();
 
       let entity;
@@ -27,6 +27,21 @@ describe('Entity', () => {
         assert.deepStrictEqual(entity.get(rel), store.entity(obj));
       });
     });
+    
+    describe('with value object proposition', () => {
+      const obj = "value";
+
+      let entity;
+      beforeEach(() => {
+        store.add(subj, rel, obj);
+        entity = store.entity(subj);
+      });
+      
+      it("should return a value", () => {
+        assert.deepStrictEqual(entity.get(rel), obj);
+      });
+    });
+
   });
 });
 
