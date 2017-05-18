@@ -1,6 +1,6 @@
 import UUID from './uuid';
 import Proposition from './proposition';
-import { commitUUID as commit, transactionTimeUUID as transactionTime } from './ontology';
+import { commit, transactionTime } from './ontology';
 
 export default class Store {
   constructor() {
@@ -15,10 +15,28 @@ export default class Store {
     this.propositions[p.id] = p;
   }
   
+  where(cond) {
+    const results = [];
+    
+    // todo: 線形探索になっているので高速化する
+    for (const id in this.propositions) {
+      if (this.propositions.hasOwnProperty(id)) {
+        const p = this.propositions[id];
+        
+        const keys = Object.keys(cond);
+        if (keys.every((k) => JSON.stringify(p[k]) == JSON.stringify(cond[k]))) {
+          results.push(p);
+        }
+      }
+    }
+    
+    return results;
+  }
+  
   addProposition(subj, rel, obj, holder, transaction) {
     const p = new Proposition(subj, rel, obj, holder);
     this.set(p);
-    const t = new Proposition(transaction, commit, p);
+    const t = new Proposition(transaction, commit, p.id);
     this.set(t);
     return p;
   }

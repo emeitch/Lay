@@ -1,4 +1,4 @@
 import UUID from './uuid';
 
-export const transactionTimeUUID = new UUID()
-export const commitUUID = new UUID()
+export const transactionTime = new UUID()
+export const commit = new UUID()
