@@ -231,11 +231,36 @@ var Store = function () {
       this.propositions[p.id] = p;
     }
   }, {
+    key: 'where',
+    value: function where(cond) {
+      var _this = this;
+
+      var results = [];
+
+      // todo: 線形探索になっているので高速化する
+      for (var id in this.propositions) {
+        if (this.propositions.hasOwnProperty(id)) {
+          (function () {
+            var p = _this.propositions[id];
+
+            var keys = Object.keys(cond);
+            if (keys.every(function (k) {
+              return JSON.stringify(p[k]) == JSON.stringify(cond[k]);
+            })) {
+              results.push(p);
+            }
+          })();
+        }
+      }
+
+      return results;
+    }
+  }, {
     key: 'addProposition',
     value: function addProposition(subj, rel, obj, holder, transaction) {
       var p = new _proposition2.default(subj, rel, obj, holder);
       this.set(p);
-      var t = new _proposition2.default(transaction, _ontology.commitUUID, p);
+      var t = new _proposition2.default(transaction, _ontology.commit, p.id);
       this.set(t);
       return p;
     }
@@ -244,17 +269,17 @@ var Store = function () {
     value: function transaction(block) {
       // todo: アトミックな操作に修正する
       var transaction = new _uuid2.default();
-      var p = new _proposition2.default(transaction, _ontology.transactionTimeUUID, new Date());
+      var p = new _proposition2.default(transaction, _ontology.transactionTime, new Date());
       this.set(p);
       return block(transaction);
     }
   }, {
     key: 'add',
     value: function add(subj, rel, obj, holder) {
-      var _this = this;
+      var _this2 = this;
 
       return this.transaction(function (t) {
-        return _this.addProposition(subj, rel, obj, holder, t);
+        return _this2.addProposition(subj, rel, obj, holder, t);
       });
     }
   }]);
@@ -697,7 +722,7 @@ console.log("Lay: Hello, world!");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.commitUUID = exports.transactionTimeUUID = undefined;
+exports.commit = exports.transactionTime = undefined;
 
 var _uuid = __webpack_require__(/*! ./uuid */ 0);
 
@@ -705,8 +730,8 @@ var _uuid2 = _interopRequireDefault(_uuid);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var transactionTimeUUID = exports.transactionTimeUUID = new _uuid2.default();
-var commitUUID = exports.commitUUID = new _uuid2.default();
+var transactionTime = exports.transactionTime = new _uuid2.default();
+var commit = exports.commit = new _uuid2.default();
 
 /***/ })
 /******/ ]);
