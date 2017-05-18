@@ -20,7 +20,7 @@ describe('Store', () => {
       assert(p.subject == subj);
       assert(p.relation == rel);
       assert(p.object == obj);
-      assert(p.holder == undefined);
+      assert(p.location == undefined);
       assert(p.id.match(/^urn:sha256:.*$/));
       assert(store.get(p.id) == p);
     });
@@ -37,15 +37,15 @@ describe('Store', () => {
       assert(ttps[0].object.constructor == Date);
     });
     
-    describe('with holder', () => {
-      it('shold add a proposition with holder', () => {
-        const holder = new UUID();
-        const p = store.add(subj, rel, obj, holder);
+    describe('with location', () => {
+      it('shold add a proposition with location', () => {
+        const loc = new UUID();
+        const p = store.add(subj, rel, obj, loc);
         
         assert(p.subject == subj);
         assert(p.relation == rel);
         assert(p.object == obj);
-        assert(p.holder == holder);
+        assert(p.location == loc);
         assert(store.get(p.id) == p);
       });
     });

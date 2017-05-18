@@ -33,8 +33,8 @@ export default class Store {
     return results;
   }
   
-  addProposition(subj, rel, obj, holder, transaction) {
-    const p = new Proposition(subj, rel, obj, holder);
+  addProposition(subj, rel, obj, loc, transaction) {
+    const p = new Proposition(subj, rel, obj, loc);
     this.set(p);
     const t = new Proposition(transaction, commit, p.id);
     this.set(t);
@@ -49,9 +49,9 @@ export default class Store {
     return block(transaction);
   }
   
-  add(subj, rel, obj, holder) {
+  add(subj, rel, obj, loc) {
     return this.transaction(t => {
-      return this.addProposition(subj, rel, obj, holder, t);
+      return this.addProposition(subj, rel, obj, loc, t);
     });
   }
 }

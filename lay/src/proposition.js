@@ -1,11 +1,11 @@
 import jsSHA from 'jssha';
 
 export default class Proposition {
-  constructor(subject, relation, object, holder) {
+  constructor(subject, relation, object, location) {
     this.subject = subject;
     this.relation = relation;
     this.object = object;
-    this.holder = holder;
+    this.location = location;
   }
   
   get id() {

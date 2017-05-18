@@ -156,13 +156,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Proposition = function () {
-  function Proposition(subject, relation, object, holder) {
+  function Proposition(subject, relation, object, location) {
     _classCallCheck(this, Proposition);
 
     this.subject = subject;
     this.relation = relation;
     this.object = object;
-    this.holder = holder;
+    this.location = location;
   }
 
   _createClass(Proposition, [{
@@ -257,8 +257,8 @@ var Store = function () {
     }
   }, {
     key: 'addProposition',
-    value: function addProposition(subj, rel, obj, holder, transaction) {
-      var p = new _proposition2.default(subj, rel, obj, holder);
+    value: function addProposition(subj, rel, obj, loc, transaction) {
+      var p = new _proposition2.default(subj, rel, obj, loc);
       this.set(p);
       var t = new _proposition2.default(transaction, _ontology.commit, p.id);
       this.set(t);
@@ -275,11 +275,11 @@ var Store = function () {
     }
   }, {
     key: 'add',
-    value: function add(subj, rel, obj, holder) {
+    value: function add(subj, rel, obj, loc) {
       var _this2 = this;
 
       return this.transaction(function (t) {
-        return _this2.addProposition(subj, rel, obj, holder, t);
+        return _this2.addProposition(subj, rel, obj, loc, t);
       });
     }
   }]);
