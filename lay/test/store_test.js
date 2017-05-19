@@ -66,7 +66,6 @@ describe('Store', () => {
   
   describe('#getIdByKey', () => {
     beforeEach(() => {
-      store.add(subj, rel, obj);
       store.setKeyToId("subj", subj);
     });
     
