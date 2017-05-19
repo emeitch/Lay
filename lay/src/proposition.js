@@ -2,6 +2,14 @@ import jsSHA from 'jssha';
 
 export default class Proposition {
   constructor(subject, relation, object, location) {
+    if (!subject) {
+      throw "subject is required";
+    }
+    
+    if (!relation) {
+      throw "relation is required";
+    }
+
     this.subject = subject;
     this.relation = relation;
     this.object = object;

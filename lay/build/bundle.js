@@ -159,6 +159,14 @@ var Proposition = function () {
   function Proposition(subject, relation, object, location) {
     _classCallCheck(this, Proposition);
 
+    if (!subject) {
+      throw "subject is required";
+    }
+
+    if (!relation) {
+      throw "relation is required";
+    }
+
     this.subject = subject;
     this.relation = relation;
     this.object = object;
