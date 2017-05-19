@@ -265,6 +265,20 @@ var Store = function () {
       return new _entity2.default(this, id);
     }
   }, {
+    key: 'getIdByKey',
+    value: function getIdByKey(key) {
+      var ps = this.where({ relation: _ontology.relKey, object: key });
+      var p = ps[0];
+      return p ? p.subject : undefined;
+    }
+  }, {
+    key: 'setKeyToId',
+    value: function setKeyToId(key, id) {
+      // todo: ユニーク制約をかけたい
+      var p = new _proposition2.default(id, _ontology.relKey, key);
+      this.set(p);
+    }
+  }, {
     key: 'addProposition',
     value: function addProposition(subj, rel, obj, loc, tid) {
       var p = new _proposition2.default(subj, rel, obj, loc);
@@ -731,13 +745,15 @@ console.log("Lay: Hello, world!");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.transactionTime = exports.transaction = undefined;
+exports.transactionTime = exports.transaction = exports.key = undefined;
 
 var _uuid = __webpack_require__(/*! ./uuid */ 0);
 
 var _uuid2 = _interopRequireDefault(_uuid);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var key = exports.key = new _uuid2.default();
 
 var transaction = exports.transaction = new _uuid2.default();
 

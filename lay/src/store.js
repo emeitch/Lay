@@ -1,7 +1,7 @@
 import UUID from './uuid';
 import Proposition from './proposition';
 import Entity from './entity';
-import { transaction, transactionTime } from './ontology';
+import { relKey, transaction, transactionTime } from './ontology';
 
 export default class Store {
   constructor() {
@@ -36,6 +36,18 @@ export default class Store {
   
   entity(id) {
     return new Entity(this, id);
+  }
+  
+  getIdByKey(key) {
+    const ps = this.where({relation: relKey, object: key});
+    const p = ps[0];
+    return p ? p.subject : undefined;
+  }
+  
+  setKeyToId(key, id) {
+    // todo: ユニーク制約をかけたい
+    const p = new Proposition(id, relKey, key);
+    this.set(p);
   }
   
   addProposition(subj, rel, obj, loc, tid) {

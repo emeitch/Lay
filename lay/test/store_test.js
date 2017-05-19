@@ -63,4 +63,16 @@ describe('Store', () => {
       assert(e.constructor == Entity);
     });
   });
+  
+  describe('#getIdByKey', () => {
+    beforeEach(() => {
+      store.add(subj, rel, obj);
+      store.setKeyToId("subj", subj);
+    });
+    
+    it('should return a id', () => {
+      const id = store.getIdByKey("subj");
+      assert(id == subj);
+    });
+  });
 });
