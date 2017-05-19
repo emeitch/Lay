@@ -745,7 +745,7 @@ console.log("Lay: Hello, world!");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.transactionTime = exports.transaction = exports.key = undefined;
+exports.transactionTime = exports.transaction = exports.relKey = undefined;
 
 var _uuid = __webpack_require__(/*! ./uuid */ 0);
 
@@ -753,7 +753,7 @@ var _uuid2 = _interopRequireDefault(_uuid);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var key = exports.key = new _uuid2.default();
+var relKey = exports.relKey = new _uuid2.default();
 
 var transaction = exports.transaction = new _uuid2.default();
 

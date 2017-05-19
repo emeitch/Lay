@@ -1,6 +1,6 @@
 import UUID from './uuid';
 
-export const key = new UUID();
+export const relKey = new UUID();
 
 export const transaction = new UUID();
 
