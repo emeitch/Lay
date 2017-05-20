@@ -223,6 +223,8 @@ var _ontology = __webpack_require__(/*! ./ontology */ 5);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Store = function () {
@@ -273,15 +275,15 @@ var Store = function () {
       return new _entity2.default(this, id);
     }
   }, {
-    key: 'getIdByKey',
-    value: function getIdByKey(key) {
+    key: 'ref',
+    value: function ref(key) {
       var ps = this.where({ relation: _ontology.relKey, object: key });
       var p = ps[0];
       return p ? p.subject : undefined;
     }
   }, {
-    key: 'setKeyToId',
-    value: function setKeyToId(key, id) {
+    key: 'assign',
+    value: function assign(key, id) {
       // todo: ユニーク制約をかけたい
       var p = new _proposition2.default(id, _ontology.relKey, key);
       this.set(p);
@@ -306,11 +308,19 @@ var Store = function () {
     }
   }, {
     key: 'add',
-    value: function add(subj, rel, obj, loc) {
+    value: function add() {
       var _this2 = this;
 
+      for (var _len = arguments.length, attrs = Array(_len), _key = 0; _key < _len; _key++) {
+        attrs[_key] = arguments[_key];
+      }
+
+      for (var i = 0; i < 4 - attrs.length; i++) {
+        attrs.push(undefined);
+      }
       return this.transaction(function (tid) {
-        return _this2.addProposition(subj, rel, obj, loc, tid);
+        var args = attrs.concat([tid]);
+        return _this2.addProposition.apply(_this2, _toConsumableArray(args));
       });
     }
   }]);

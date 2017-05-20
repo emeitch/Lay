@@ -64,14 +64,28 @@ describe('Store', () => {
     });
   });
   
-  describe('#getIdByKey', () => {
+  describe('#ref', () => {
     beforeEach(() => {
-      store.setKeyToId("subj", subj);
+      store.assign("s", subj);
     });
     
     it('should return a id', () => {
-      const id = store.getIdByKey("subj");
-      assert(id == subj);
+      assert(store.ref("s") == subj);
+    });
+    
+    describe('#add with #assign and #ref', () => {
+      beforeEach(() => {
+        store.assign("s", subj);
+        store.assign("r", rel);
+        store.assign("o", obj);
+      });
+      
+      it('should add proposition by assigned id', () => {
+        const p = store.add(store.ref("s"), store.ref("r"), store.ref("o"));
+        assert(p.subject == subj);
+        assert(p.relation == rel);
+        assert(p.object == obj);
+      });
     });
   });
 });

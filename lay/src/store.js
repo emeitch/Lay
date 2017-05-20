@@ -38,13 +38,13 @@ export default class Store {
     return new Entity(this, id);
   }
   
-  getIdByKey(key) {
+  ref(key) {
     const ps = this.where({relation: relKey, object: key});
     const p = ps[0];
     return p ? p.subject : undefined;
   }
   
-  setKeyToId(key, id) {
+  assign(key, id) {
     // todo: ユニーク制約をかけたい
     const p = new Proposition(id, relKey, key);
     this.set(p);
@@ -66,9 +66,13 @@ export default class Store {
     return block(tid);
   }
   
-  add(subj, rel, obj, loc) {
+  add(...attrs) {
+    for (let i = 0; i < 4 - attrs.length; i++) {
+      attrs.push(undefined);      
+    }
     return this.transaction(tid => {
-      return this.addProposition(subj, rel, obj, loc, tid);
+      const args = attrs.concat([tid]);
+      return this.addProposition(...args);
     });
   }
 }
