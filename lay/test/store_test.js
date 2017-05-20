@@ -63,43 +63,40 @@ describe('Store', () => {
       assert(e.constructor == Entity);
     });
   });
-  
-  describe('#ref', () => {
+    
+  describe("#assign", () => {
     beforeEach(() => {
       store.assign("s", subj);
+      store.assign("r", rel);
+      store.assign("o", obj);
     });
-    
-    it('should return a id', () => {
-      assert(store.ref("s") == subj);
-    });
-    
-    describe('#add with #assign and #ref', () => {
-      beforeEach(() => {
-        store.assign("s", subj);
-        store.assign("r", rel);
-        store.assign("o", obj);
+
+    describe("#ref", () => {
+      it('should return a id', () => {
+        assert(store.ref("s") == subj);
+        assert(store.ref("r") == rel);
+        assert(store.ref("o") == obj);
       });
       
-      it('should add proposition by assigned id', () => {
-        const p = store.add(store.ref("s"), store.ref("r"), store.ref("o"));
-        assert(p.subject == subj);
-        assert(p.relation == rel);
-        assert(p.object == obj);
-      });
-      
-      describe('#add with re-assign', () => {
+      describe('re-assign', () => {
         const rel2 = new UUID();
 
         beforeEach(() => {
           store.assign("r", rel2);
         });
         
-        it('should add proposition by re-assigned id', () => {
-          const p = store.add(store.ref("s"), store.ref("r"), store.ref("o"));
-          assert(p.subject == subj);
-          assert(p.relation == rel2); // re-assigned id
-          assert(p.object == obj);
+        it('should return a re-assigned id', () => {
+          assert(store.ref("r") == rel2);
         });
+      });
+    });
+    
+    describe("#add", () => {
+      it('should add proposition by assigned id', () => {
+        const p = store.add(store.ref("s"), store.ref("r"), store.ref("o"));
+        assert(p.subject == subj);
+        assert(p.relation == rel);
+        assert(p.object == obj);
       });
     });
   });
