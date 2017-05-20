@@ -39,7 +39,7 @@ describe('Store', () => {
       assert(ttps[0].object.constructor == Date);
     });
     
-    describe('with location', () => {
+    context('with location', () => {
       it('shold add a proposition with location', () => {
         const loc = new UUID();
         const p = store.add(subj, rel, obj, loc);
@@ -49,6 +49,49 @@ describe('Store', () => {
         assert(p.object == obj);
         assert(p.location == loc);
         assert(store.get(p.id) == p);
+      });
+    });
+    
+    context("key assigned", () => {
+      beforeEach(() => {
+        store.assign("s", subj);
+        store.assign("r", rel);
+        store.assign("o", obj);
+      });
+      
+      it('should add proposition by assigned id', () => {
+        const p = store.add(store.ref("s"), store.ref("r"), store.ref("o"));
+        assert(p.subject == subj);
+        assert(p.relation == rel);
+        assert(p.object == obj);
+      });
+    });
+  });
+  
+  describe("#ref", () => {
+    context("key assigned", () => {
+      beforeEach(() => {
+        store.assign("s", subj);
+        store.assign("r", rel);
+        store.assign("o", obj);
+      });
+      
+      it('should return a id by key', () => {
+        assert(store.ref("s") == subj);
+        assert(store.ref("r") == rel);
+        assert(store.ref("o") == obj);
+      });
+
+      context("key re-assigned", () => {
+        const rel2 = new UUID();
+
+        beforeEach(() => {
+          store.assign("r", rel2);
+        });
+        
+        it('should return a re-assigned id by key', () => {
+          assert(store.ref("r") == rel2);
+        });
       });
     });
   });
@@ -61,43 +104,6 @@ describe('Store', () => {
     it('should return a entity', () => {
       const e = store.entity(subj);
       assert(e.constructor == Entity);
-    });
-  });
-    
-  describe("#assign", () => {
-    beforeEach(() => {
-      store.assign("s", subj);
-      store.assign("r", rel);
-      store.assign("o", obj);
-    });
-
-    describe("#ref", () => {
-      it('should return a id', () => {
-        assert(store.ref("s") == subj);
-        assert(store.ref("r") == rel);
-        assert(store.ref("o") == obj);
-      });
-      
-      describe('re-assign', () => {
-        const rel2 = new UUID();
-
-        beforeEach(() => {
-          store.assign("r", rel2);
-        });
-        
-        it('should return a re-assigned id', () => {
-          assert(store.ref("r") == rel2);
-        });
-      });
-    });
-    
-    describe("#add", () => {
-      it('should add proposition by assigned id', () => {
-        const p = store.add(store.ref("s"), store.ref("r"), store.ref("o"));
-        assert(p.subject == subj);
-        assert(p.relation == rel);
-        assert(p.object == obj);
-      });
     });
   });
 });
