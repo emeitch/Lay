@@ -40,7 +40,7 @@ export default class Store {
   
   ref(key) {
     const ps = this.where({relation: relKey, object: key});
-    const p = ps[0];
+    const p = ps[ps.length-1];
     return p ? p.subject : undefined;
   }
   

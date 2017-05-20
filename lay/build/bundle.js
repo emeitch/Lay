@@ -278,7 +278,7 @@ var Store = function () {
     key: 'ref',
     value: function ref(key) {
       var ps = this.where({ relation: _ontology.relKey, object: key });
-      var p = ps[0];
+      var p = ps[ps.length - 1];
       return p ? p.subject : undefined;
     }
   }, {

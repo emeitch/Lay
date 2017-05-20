@@ -86,6 +86,21 @@ describe('Store', () => {
         assert(p.relation == rel);
         assert(p.object == obj);
       });
+      
+      describe('#add with re-assign', () => {
+        const rel2 = new UUID();
+
+        beforeEach(() => {
+          store.assign("r", rel2);
+        });
+        
+        it('should add proposition by re-assigned id', () => {
+          const p = store.add(store.ref("s"), store.ref("r"), store.ref("o"));
+          assert(p.subject == subj);
+          assert(p.relation == rel2); // re-assigned id
+          assert(p.object == obj);
+        });
+      });
     });
   });
 });
