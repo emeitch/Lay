@@ -215,11 +215,11 @@ var _proposition = __webpack_require__(/*! ./proposition */ 1);
 
 var _proposition2 = _interopRequireDefault(_proposition);
 
-var _entity = __webpack_require__(/*! ./entity */ 6);
+var _entity = __webpack_require__(/*! ./entity */ 5);
 
 var _entity2 = _interopRequireDefault(_entity);
 
-var _ontology = __webpack_require__(/*! ./ontology */ 5);
+var _ontology = __webpack_require__(/*! ./ontology */ 6);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -752,35 +752,6 @@ console.log("Lay: Hello, world!");
 /* 5 */
 /* unknown exports provided */
 /* all exports used */
-/*!*************************!*\
-  !*** ./src/ontology.js ***!
-  \*************************/
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.transactionTime = exports.transaction = exports.relKey = undefined;
-
-var _uuid = __webpack_require__(/*! ./uuid */ 0);
-
-var _uuid2 = _interopRequireDefault(_uuid);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var relKey = exports.relKey = new _uuid2.default();
-
-var transaction = exports.transaction = new _uuid2.default();
-
-var transactionTime = exports.transactionTime = new _uuid2.default();
-
-/***/ }),
-/* 6 */
-/* unknown exports provided */
-/* all exports used */
 /*!***********************!*\
   !*** ./src/entity.js ***!
   \***********************/
@@ -833,6 +804,35 @@ var Entity = function () {
 }();
 
 exports.default = Entity;
+
+/***/ }),
+/* 6 */
+/* unknown exports provided */
+/* all exports used */
+/*!*************************!*\
+  !*** ./src/ontology.js ***!
+  \*************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.transactionTime = exports.transaction = exports.relKey = undefined;
+
+var _uuid = __webpack_require__(/*! ./uuid */ 0);
+
+var _uuid2 = _interopRequireDefault(_uuid);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var relKey = exports.relKey = new _uuid2.default();
+
+var transaction = exports.transaction = new _uuid2.default();
+
+var transactionTime = exports.transactionTime = new _uuid2.default();
 
 /***/ })
 /******/ ]);
