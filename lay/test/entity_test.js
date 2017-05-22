@@ -4,7 +4,7 @@ import UUID from '../src/uuid';
 import Store from '../src/store';
 import Entity from '../src/entity';
 
-describe('Entity', () => {
+describe("Entity", () => {
   const subj = new UUID();
 
   let store;
@@ -14,10 +14,11 @@ describe('Entity', () => {
     entity = store.entity(subj);
   });
 
-  describe('#get', () => {
+  describe("#get", () => {
     const rel = new UUID();
+    
 
-    context('with UUID object proposition', () => {
+    context("with UUID object proposition", () => {
       const obj = new UUID();
 
       beforeEach(() => {
@@ -29,7 +30,7 @@ describe('Entity', () => {
       });
     });
     
-    context('with value object proposition', () => {
+    context("with value object proposition", () => {
       const obj = "value";
 
       beforeEach(() => {
@@ -41,7 +42,7 @@ describe('Entity', () => {
       });
     });
     
-    context('with the same relation but different objects proposition', () => {
+    context("with the same relation but different objects proposition", () => {
       const obj1 = "Ver 1.0";
       const obj2 = "Ver 2.0";
       
@@ -56,4 +57,3 @@ describe('Entity', () => {
     });
   });
 });
-

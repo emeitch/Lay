@@ -5,7 +5,7 @@ import Store from '../src/store';
 import Entity from '../src/entity';
 import { transaction, transactionTime } from '../src/ontology';
 
-describe('Store', () => {
+describe("Store", () => {
   const subj = new UUID();
   const rel = new UUID();
   const obj = new UUID();
@@ -15,8 +15,8 @@ describe('Store', () => {
     store = new Store();
   })
     
-  describe('#add', () => {
-    it('should add a proposition', () => {
+  describe("#add", () => {
+    it("should add a proposition", () => {
       const p = store.add(subj, rel, obj);
 
       assert(p.subject == subj);
@@ -27,7 +27,7 @@ describe('Store', () => {
       assert(store.get(p.id) == p);
     });
     
-    it('should append a transaction data', () => {
+    it("should append a transaction data", () => {
       const p = store.add(subj, rel, obj);
       
       const ts = store.where({subject: p.id, relation: transaction});
@@ -39,8 +39,8 @@ describe('Store', () => {
       assert(ttps[0].object.constructor == Date);
     });
     
-    context('with location', () => {
-      it('shold add a proposition with location', () => {
+    context("with location", () => {
+      it("shold add a proposition with location", () => {
         const loc = new UUID();
         const p = store.add(subj, rel, obj, loc);
         
@@ -59,7 +59,7 @@ describe('Store', () => {
         store.assign("o", obj);
       });
       
-      it('should add proposition by assigned id', () => {
+      it("should add proposition by assigned id", () => {
         const p = store.add(store.ref("s"), store.ref("r"), store.ref("o"));
         assert(p.subject == subj);
         assert(p.relation == rel);
@@ -76,7 +76,7 @@ describe('Store', () => {
         store.assign("o", obj);
       });
       
-      it('should return a id by key', () => {
+      it("should return a id by key", () => {
         assert(store.ref("s") == subj);
         assert(store.ref("r") == rel);
         assert(store.ref("o") == obj);
@@ -89,19 +89,19 @@ describe('Store', () => {
           store.assign("r", rel2);
         });
         
-        it('should return a re-assigned id by key', () => {
+        it("should return a re-assigned id by key", () => {
           assert(store.ref("r") == rel2);
         });
       });
     });
   });
   
-  describe('#entity', () => {
+  describe("#entity", () => {
     beforeEach(() => {
       store.add(subj, rel, obj);
     });
     
-    it('should return a entity', () => {
+    it("should return a entity", () => {
       const e = store.entity(subj);
       assert(e.constructor == Entity);
     });
