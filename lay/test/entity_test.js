@@ -41,7 +41,22 @@ describe('Entity', () => {
         assert.deepStrictEqual(entity.get(rel), obj);
       });
     });
-
+    
+    context('with the same relation but different objects proposition', () => {
+      const obj1 = "Ver 1.0";
+      const obj2 = "Ver 2.0";
+      
+      let entity;
+      beforeEach(() => {
+        store.add(subj, rel, obj1);
+        store.add(subj, rel, obj2);
+        entity = store.entity(subj);
+      });
+      
+      it("should return the last object as updating the property", () => {
+        assert.deepStrictEqual(entity.get(rel), obj2);
+      });
+    });
   });
 });
 

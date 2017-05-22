@@ -12,7 +12,7 @@ export default class Entity {
       return undefined;
     }
     
-    const o = ps[0].object;
+    const o = ps[ps.length-1].object;
     // todo: sha256をIDオブジェクト化したい
     if (o.constructor === UUID || typeof(o) === "string" && o.match(/^urn:sha256:/)) {
       return this.store.entity(ps[0].object);  
