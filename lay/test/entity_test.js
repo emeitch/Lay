@@ -16,7 +16,12 @@ describe("Entity", () => {
 
   describe("#get", () => {
     const rel = new UUID();
-    
+
+    context("without propositions", () => {
+      it("should return undefined", () => {
+        assert.deepStrictEqual(entity.get(rel), undefined);
+      });
+    });
 
     context("with UUID object proposition", () => {
       const obj = new UUID();
