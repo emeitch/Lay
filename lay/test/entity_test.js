@@ -73,6 +73,18 @@ describe("Entity", () => {
       it("should return undefined", () => {
         assert.deepStrictEqual(entity.get(rel), undefined);
       });
+      
+      context("add other positive proposition", () => {
+        const obj2 = "value 2";
+        
+        beforeEach(() => {
+          store.add(subj, rel, obj2);
+        });
+        
+        it("should return the object", () => {
+          assert.deepStrictEqual(entity.get(rel), obj2);
+        });
+      });
     });
   });
 });
