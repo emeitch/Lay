@@ -14,7 +14,7 @@ describe('Entity', () => {
     const subj = new UUID();
     const rel = new UUID();
 
-    describe('with UUID object proposition', () => {
+    context('with UUID object proposition', () => {
       const obj = new UUID();
 
       let entity;
@@ -28,7 +28,7 @@ describe('Entity', () => {
       });
     });
     
-    describe('with value object proposition', () => {
+    context('with value object proposition', () => {
       const obj = "value";
 
       let entity;
