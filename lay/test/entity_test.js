@@ -5,22 +5,23 @@ import Store from '../src/store';
 import Entity from '../src/entity';
 
 describe('Entity', () => {
+  const subj = new UUID();
+
   let store;
+  let entity;
   beforeEach(() => {
     store = new Store();
-  })
+    entity = store.entity(subj);
+  });
 
   describe('#get', () => {
-    const subj = new UUID();
     const rel = new UUID();
 
     context('with UUID object proposition', () => {
       const obj = new UUID();
 
-      let entity;
       beforeEach(() => {
         store.add(subj, rel, obj);
-        entity = store.entity(subj);
       });
       
       it("should return a entity of proposition's object", () => {
@@ -31,10 +32,8 @@ describe('Entity', () => {
     context('with value object proposition', () => {
       const obj = "value";
 
-      let entity;
       beforeEach(() => {
         store.add(subj, rel, obj);
-        entity = store.entity(subj);
       });
       
       it("should return a value", () => {
@@ -46,11 +45,9 @@ describe('Entity', () => {
       const obj1 = "Ver 1.0";
       const obj2 = "Ver 2.0";
       
-      let entity;
       beforeEach(() => {
         store.add(subj, rel, obj1);
         store.add(subj, rel, obj2);
-        entity = store.entity(subj);
       });
       
       it("should return the last object as updating the property", () => {
