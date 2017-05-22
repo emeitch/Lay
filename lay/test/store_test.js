@@ -30,13 +30,11 @@ describe("Store", () => {
     it("should append a transaction data", () => {
       const p = store.add(subj, rel, obj);
       
-      const ts = store.where({subject: p.id, relation: transaction});
-      assert(ts.length == 1);
+      const tps = store.transactionPropositions(p);
+      assert(tps.length == 1);
       
-      const tid = ts[0].object;
-      const ttps = store.where({relation: transactionTime, subject: tid});
-      assert(ttps.length == 1);
-      assert(ttps[0].object.constructor == Date);
+      const t = store.transaction(p);
+      assert(t.get(transactionTime).constructor == Date);
     });
     
     context("with location", () => {

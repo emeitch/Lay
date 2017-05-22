@@ -38,6 +38,21 @@ export default class Store {
     return new Entity(this, id);
   }
   
+  transactionPropositions(p) {
+    return this.where({subject: p.id, relation: transaction});
+  }
+  
+  transaction(p) {
+    const tps = this.transactionPropositions(p);
+    if (tps.length == 0) {
+      return undefined
+    }
+    
+    const tp = tps[tps.length-1];
+    const tid = tp.object;
+    return this.entity(tid);
+  }
+  
   ref(key) {
     const ps = this.where({relation: relKey, object: key});
     const p = ps[ps.length-1];
@@ -58,7 +73,7 @@ export default class Store {
     return p;
   }
   
-  transaction(block) {
+  doTransaction(block) {
     // todo: アトミックな操作に修正する
     const tid = new UUID();
     const p = new Proposition(tid, transactionTime, new Date());
@@ -70,7 +85,7 @@ export default class Store {
     for (let i = 0; i < 4 - attrs.length; i++) {
       attrs.push(undefined);      
     }
-    return this.transaction(tid => {
+    return this.doTransaction(tid => {
       const args = attrs.concat([tid]);
       return this.addProposition(...args);
     });
