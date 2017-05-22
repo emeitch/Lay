@@ -3,6 +3,7 @@ import assert from 'assert';
 import UUID from '../src/uuid';
 import Store from '../src/store';
 import Entity from '../src/entity';
+import { not } from '../src/ontology';
 
 describe("Entity", () => {
   const subj = new UUID();
@@ -58,6 +59,19 @@ describe("Entity", () => {
       
       it("should return the last object as updating the property", () => {
         assert.deepStrictEqual(entity.get(rel), obj2);
+      });
+    });
+    
+    context("with negative proposition", () => {
+      const obj = "value";
+      
+      beforeEach(() => {
+        const p = store.add(subj, rel, obj);
+        store.add(p.id, not);
+      });
+
+      it("should return undefined", () => {
+        assert.deepStrictEqual(entity.get(rel), undefined);
       });
     });
   });
