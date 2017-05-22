@@ -82,7 +82,8 @@ export default class Store {
   }
   
   add(...attrs) {
-    for (let i = 0; i < 4 - attrs.length; i++) {
+    const count = 4 - attrs.length;
+    for (let i = 0; i < count; i++) {
       attrs.push(undefined);      
     }
     return this.doTransaction(tid => {

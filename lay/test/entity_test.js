@@ -85,6 +85,16 @@ describe("Entity", () => {
           assert.deepStrictEqual(entity.get(rel), obj2);
         });
       });
+      
+      context("add same positive proposition", () => {
+        beforeEach(() => {
+          store.add(subj, rel, obj);
+        });
+        
+        it("should return the object", () => {
+          assert.deepStrictEqual(entity.get(rel), obj);
+        });
+      });
     });
   });
 });
