@@ -1,4 +1,4 @@
-import UUID from './uuid'
+import UUID from './uuid';
 import { not, transactionTime } from '../src/ontology';
 
 export default class Entity {
