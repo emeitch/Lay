@@ -13,12 +13,15 @@ describe("Store", () => {
   let store;
   beforeEach(() => {
     store = new Store();
-  })
+  });
     
   describe("#add", () => {
+    let p;
+    beforeEach(() => {
+      p = store.add(subj, rel, obj);
+    });
+    
     it("should add a proposition", () => {
-      const p = store.add(subj, rel, obj);
-
       assert(p.subject == subj);
       assert(p.relation == rel);
       assert(p.object == obj);
@@ -28,8 +31,6 @@ describe("Store", () => {
     });
     
     it("should append a transaction data", () => {
-      const p = store.add(subj, rel, obj);
-      
       const tps = store.transactionPropositions(p);
       assert(tps.length == 1);
       
