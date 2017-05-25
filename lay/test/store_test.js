@@ -50,21 +50,6 @@ describe("Store", () => {
         assert(store.get(p.id) == p);
       });
     });
-    
-    context("key assigned", () => {
-      beforeEach(() => {
-        store.assign("s", subj);
-        store.assign("r", rel);
-        store.assign("o", obj);
-      });
-      
-      it("should add proposition by assigned id", () => {
-        const p = store.add(store.ref("s"), store.ref("r"), store.ref("o"));
-        assert(p.subject == subj);
-        assert(p.relation == rel);
-        assert(p.object == obj);
-      });
-    });
   });
   
   describe("#ref", () => {
