@@ -7,6 +7,8 @@ import { not } from '../src/ontology';
 
 describe("Entity", () => {
   const subj = new UUID();
+  const rel = new UUID();
+  const obj = new UUID();
 
   let store;
   let entity;
@@ -16,7 +18,6 @@ describe("Entity", () => {
   });
 
   describe("#get", () => {
-    const rel = new UUID();
 
     context("without propositions", () => {
       it("should return undefined", () => {
@@ -25,8 +26,6 @@ describe("Entity", () => {
     });
 
     context("with UUID object proposition", () => {
-      const obj = new UUID();
-
       beforeEach(() => {
         store.add(subj, rel, obj);
       });
@@ -37,36 +36,29 @@ describe("Entity", () => {
     });
     
     context("with value object proposition", () => {
-      const obj = "value";
-
       beforeEach(() => {
-        store.add(subj, rel, obj);
+        store.add(subj, rel, "value");
       });
       
       it("should return a value", () => {
-        assert.deepStrictEqual(entity.get(rel), obj);
+        assert.deepStrictEqual(entity.get(rel), "value");
       });
     });
     
     context("with the same relation but different objects proposition", () => {
-      const obj1 = "Ver 1.0";
-      const obj2 = "Ver 2.0";
-      
       beforeEach(() => {
-        store.add(subj, rel, obj1);
-        store.add(subj, rel, obj2);
+        store.add(subj, rel, "ver1");
+        store.add(subj, rel, "ver2");
       });
       
       it("should return the last object as updating the property", () => {
-        assert.deepStrictEqual(entity.get(rel), obj2);
+        assert.deepStrictEqual(entity.get(rel), "ver2");
       });
     });
     
     context("with negative proposition", () => {
-      const obj = "value";
-      
       beforeEach(() => {
-        const p = store.add(subj, rel, obj);
+        const p = store.add(subj, rel, "value1");
         store.add(p.id, not);
       });
 
@@ -75,24 +67,22 @@ describe("Entity", () => {
       });
       
       context("add other positive proposition", () => {
-        const obj2 = "value 2";
-        
         beforeEach(() => {
-          store.add(subj, rel, obj2);
+          store.add(subj, rel, "value2");
         });
         
         it("should return the object", () => {
-          assert.deepStrictEqual(entity.get(rel), obj2);
+          assert.deepStrictEqual(entity.get(rel), "value2");
         });
       });
       
       context("add same positive proposition", () => {
         beforeEach(() => {
-          store.add(subj, rel, obj);
+          store.add(subj, rel, "value1");
         });
         
         it("should return the object", () => {
-          assert.deepStrictEqual(entity.get(rel), obj);
+          assert.deepStrictEqual(entity.get(rel), "value1");
         });
       });
     });
