@@ -16,33 +16,39 @@ describe("Store", () => {
   });
     
   describe("#add", () => {
-    let p;
-    beforeEach(() => {
-      p = store.add(subj, rel, obj);
-    });
-    
-    it("should add a proposition", () => {
-      assert(p.subject == subj);
-      assert(p.relation == rel);
-      assert(p.object == obj);
-      assert(p.location == undefined);
-      assert(p.id.match(/^urn:sha256:.*$/));
-      assert(store.get(p.id) == p);
-    });
-    
-    it("should append a transaction data", () => {
-      const tps = store.transactionPropositions(p);
-      assert(tps.length == 1);
+    context("standard arguments", () => {
+      let p;
+      beforeEach(() => {
+        p = store.add(subj, rel, obj);
+      });
       
-      const t = store.transaction(p);
-      assert(t.get(transactionTime).constructor == Date);
+      it("should add a proposition", () => {
+        assert(p.subject == subj);
+        assert(p.relation == rel);
+        assert(p.object == obj);
+        assert(p.location == undefined);
+        assert(p.id.match(/^urn:sha256:.*$/));
+        assert(store.get(p.id) == p);
+      });
+      
+      it("should append a transaction data", () => {
+        const tps = store.transactionPropositions(p);
+        assert(tps.length == 1);
+        
+        const t = store.transaction(p);
+        assert(t.get(transactionTime).constructor == Date);
+      });
     });
     
     context("with location", () => {
+      const loc = new UUID();
+
+      let p;
+      beforeEach(() => {
+        p = store.add(subj, rel, obj, loc);
+      });
+
       it("shold add a proposition with location", () => {
-        const loc = new UUID();
-        const p = store.add(subj, rel, obj, loc);
-        
         assert(p.subject == subj);
         assert(p.relation == rel);
         assert(p.object == obj);
