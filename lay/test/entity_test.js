@@ -18,7 +18,6 @@ describe("Entity", () => {
   });
 
   describe("#get", () => {
-
     context("without propositions", () => {
       it("should return undefined", () => {
         assert.deepStrictEqual(entity.get(rel), undefined);
