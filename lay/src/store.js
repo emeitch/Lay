@@ -45,7 +45,7 @@ export default class Store {
   transaction(p) {
     const tps = this.transactionPropositions(p);
     if (tps.length == 0) {
-      return undefined
+      return undefined;
     }
     
     const tp = tps[tps.length-1];
