@@ -1,5 +1,5 @@
 import UUID from './uuid';
-import { not, transactionTime } from '../src/ontology';
+import { invalid, transactionTime } from '../src/ontology';
 
 export default class Entity {
   constructor(store, id) {
@@ -16,7 +16,7 @@ export default class Entity {
     const p = ps[ps.length-1];
     const t = this.store.transaction(p);
     
-    const nps = this.store.where({subject: p.id, relation: not});
+    const nps = this.store.where({subject: p.id, relation: invalid});
     if (nps.length > 0) {
       const np = nps[nps.length-1];
       const nt = this.store.transaction(np);

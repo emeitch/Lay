@@ -1,6 +1,6 @@
 import UUID from './uuid';
 
-export const not = new UUID();
+export const invalid = new UUID();
 
 export const relKey = new UUID();
 
