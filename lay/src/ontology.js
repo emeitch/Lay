@@ -1,6 +1,6 @@
 import UUID from './uuid';
 
-export const invalid = new UUID();
+export const invalidate = new UUID();
 
 export const relKey = new UUID();
 

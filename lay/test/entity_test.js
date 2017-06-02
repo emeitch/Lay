@@ -3,7 +3,7 @@ import assert from 'assert';
 import UUID from '../src/uuid';
 import Store from '../src/store';
 import Entity from '../src/entity';
-import { invalid } from '../src/ontology';
+import { invalidate } from '../src/ontology';
 
 describe("Entity", () => {
   const subj = new UUID();
@@ -58,7 +58,7 @@ describe("Entity", () => {
     context("with negative proposition", () => {
       beforeEach(() => {
         const p = store.add(subj, rel, "value1");
-        store.add(p.id, invalid);
+        store.add(p.id, invalidate);
       });
 
       it("should return undefined", () => {
