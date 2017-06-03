@@ -61,15 +61,15 @@ describe("Store", () => {
   describe("#ref", () => {
     context("key assigned", () => {
       beforeEach(() => {
-        store.assign("s", id);
+        store.assign("i", id);
         store.assign("r", rel);
-        store.assign("o", val);
+        store.assign("v", val);
       });
       
       it("should return a id by key", () => {
-        assert(store.ref("s") == id);
+        assert(store.ref("i") == id);
         assert(store.ref("r") == rel);
-        assert(store.ref("o") == val);
+        assert(store.ref("v") == val);
       });
 
       context("key re-assigned", () => {
