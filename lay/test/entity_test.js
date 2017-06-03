@@ -56,7 +56,7 @@ describe("Entity", () => {
       });
     });
     
-    context("with negative proposition", () => {
+    context("with invalidated proposition", () => {
       beforeEach(() => {
         const p = store.add(id, rel, "value1");
         store.add(p.hash, invalidate);
