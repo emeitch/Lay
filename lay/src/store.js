@@ -65,8 +65,8 @@ export default class Store {
     this.set(p);
   }
   
-  addProposition(id, rel, val, loc, tid) {
-    const p = new Proposition(id, rel, val, loc);
+  addProposition(id, rel, val, in_, tid) {
+    const p = new Proposition(id, rel, val, in_);
     this.set(p);
     const t = new Proposition(p.hash, transaction, tid);
     this.set(t);

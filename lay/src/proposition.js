@@ -1,7 +1,7 @@
 import jsSHA from 'jssha';
 
 export default class Proposition {
-  constructor(id, rel, val, location) {
+  constructor(id, rel, val, in_) {
     if (!id) {
       throw "id is required";
     }
@@ -13,7 +13,7 @@ export default class Proposition {
     this.id = id;
     this.rel = rel;
     this.val = val;
-    this.location = location;
+    this.in = in_;
   }
   
   get hash() {

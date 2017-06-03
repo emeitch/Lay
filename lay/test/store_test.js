@@ -26,7 +26,7 @@ describe("Store", () => {
         assert(p.id == id);
         assert(p.rel == rel);
         assert(p.val == val);
-        assert(p.location == undefined);
+        assert(p.in == undefined);
         assert(p.hash.match(/^urn:sha256:.*$/));
         assert(store.get(p.hash) == p);
       });
@@ -41,18 +41,18 @@ describe("Store", () => {
     });
     
     context("with location", () => {
-      const loc = new UUID();
+      const location = new UUID();
 
       let p;
       beforeEach(() => {
-        p = store.add(id, rel, val, loc);
+        p = store.add(id, rel, val, location);
       });
 
       it("shold add a proposition with location", () => {
         assert(p.id == id);
         assert(p.rel == rel);
         assert(p.val == val);
-        assert(p.location == loc);
+        assert(p.in == location);
         assert(store.get(p.hash) == p);
       });
     });
