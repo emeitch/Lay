@@ -8,7 +8,7 @@ import { transaction, transactionTime } from '../src/ontology';
 describe("Store", () => {
   const id = new UUID();
   const rel = new UUID();
-  const obj = new UUID();
+  const val = new UUID();
   
   let store;
   beforeEach(() => {
@@ -19,13 +19,13 @@ describe("Store", () => {
     context("standard arguments", () => {
       let p;
       beforeEach(() => {
-        p = store.add(id, rel, obj);
+        p = store.add(id, rel, val);
       });
       
       it("should add a proposition", () => {
         assert(p.id == id);
         assert(p.rel == rel);
-        assert(p.object == obj);
+        assert(p.val == val);
         assert(p.location == undefined);
         assert(p.hash.match(/^urn:sha256:.*$/));
         assert(store.get(p.hash) == p);
@@ -45,13 +45,13 @@ describe("Store", () => {
 
       let p;
       beforeEach(() => {
-        p = store.add(id, rel, obj, loc);
+        p = store.add(id, rel, val, loc);
       });
 
       it("shold add a proposition with location", () => {
         assert(p.id == id);
         assert(p.rel == rel);
-        assert(p.object == obj);
+        assert(p.val == val);
         assert(p.location == loc);
         assert(store.get(p.hash) == p);
       });
@@ -63,13 +63,13 @@ describe("Store", () => {
       beforeEach(() => {
         store.assign("s", id);
         store.assign("r", rel);
-        store.assign("o", obj);
+        store.assign("o", val);
       });
       
       it("should return a id by key", () => {
         assert(store.ref("s") == id);
         assert(store.ref("r") == rel);
-        assert(store.ref("o") == obj);
+        assert(store.ref("o") == val);
       });
 
       context("key re-assigned", () => {
@@ -88,7 +88,7 @@ describe("Store", () => {
   
   describe("#entity", () => {
     beforeEach(() => {
-      store.add(id, rel, obj);
+      store.add(id, rel, val);
     });
     
     it("should return a entity", () => {

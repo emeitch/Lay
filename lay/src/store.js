@@ -49,12 +49,12 @@ export default class Store {
     }
     
     const tp = tps[tps.length-1];
-    const tid = tp.object;
+    const tid = tp.val;
     return this.entity(tid);
   }
   
   ref(key) {
-    const ps = this.where({rel: relKey, object: key});
+    const ps = this.where({rel: relKey, val: key});
     const p = ps[ps.length-1];
     return p ? p.id : undefined;
   }
@@ -65,8 +65,8 @@ export default class Store {
     this.set(p);
   }
   
-  addProposition(id, rel, obj, loc, tid) {
-    const p = new Proposition(id, rel, obj, loc);
+  addProposition(id, rel, val, loc, tid) {
+    const p = new Proposition(id, rel, val, loc);
     this.set(p);
     const t = new Proposition(p.hash, transaction, tid);
     this.set(t);

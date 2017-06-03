@@ -6,11 +6,11 @@ import Proposition from '../src/proposition';
 describe("Proposition", () => {
   const id = new UUID();
   const rel = new UUID();
-  const obj = new UUID();
+  const val = new UUID();
 
   let p;
   beforeEach(() => {
-    p = new Proposition(id, rel, obj);
+    p = new Proposition(id, rel, val);
   });
   
   describe("#id", () => {

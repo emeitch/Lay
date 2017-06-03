@@ -26,12 +26,12 @@ export default class Entity {
       }
     }
     
-    const o = p.object;
+    const val = p.val;
     // todo: sha256をIDオブジェクト化したい
-    if (o.constructor === UUID || typeof(o) === "string" && o.match(/^urn:sha256:/)) {
-      return this.store.entity(ps[0].object);  
+    if (val.constructor === UUID || typeof(val) === "string" && val.match(/^urn:sha256:/)) {
+      return this.store.entity(ps[0].val);  
     } else {
-      return o;
+      return val;
     }
   }
 }

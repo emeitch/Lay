@@ -8,7 +8,6 @@ import { invalidate } from '../src/ontology';
 describe("Entity", () => {
   const id = new UUID();
   const rel = new UUID();
-  const obj = new UUID();
 
   let store;
   let entity;
@@ -24,17 +23,19 @@ describe("Entity", () => {
       });
     });
 
-    context("with UUID object proposition", () => {
+    context("with UUID val proposition", () => {
+      const dst = new UUID();
+
       beforeEach(() => {
-        store.add(id, rel, obj);
+        store.add(id, rel, dst);
       });
       
-      it("should return a entity of proposition's object", () => {
-        assert.deepStrictEqual(entity.get(rel), store.entity(obj));
+      it("should return a entity of proposition's val", () => {
+        assert.deepStrictEqual(entity.get(rel), store.entity(dst));
       });
     });
     
-    context("with value object proposition", () => {
+    context("with value val proposition", () => {
       beforeEach(() => {
         store.add(id, rel, "value");
       });
@@ -44,13 +45,13 @@ describe("Entity", () => {
       });
     });
     
-    context("with the same rel but different objects proposition", () => {
+    context("with the same rel but different vals proposition", () => {
       beforeEach(() => {
         store.add(id, rel, "ver1");
         store.add(id, rel, "ver2");
       });
       
-      it("should return the last object as updating the property", () => {
+      it("should return the last val as updating the property", () => {
         assert.deepStrictEqual(entity.get(rel), "ver2");
       });
     });
@@ -70,7 +71,7 @@ describe("Entity", () => {
           store.add(id, rel, "value2");
         });
         
-        it("should return the object", () => {
+        it("should return the val", () => {
           assert.deepStrictEqual(entity.get(rel), "value2");
         });
       });
@@ -80,7 +81,7 @@ describe("Entity", () => {
           store.add(id, rel, "value1");
         });
         
-        it("should return the object", () => {
+        it("should return the val", () => {
           assert.deepStrictEqual(entity.get(rel), "value1");
         });
       });
