@@ -6,14 +6,14 @@ import Entity from '../src/entity';
 import { invalidate } from '../src/ontology';
 
 describe("Entity", () => {
-  const id = new UUID();
+  const eid = new UUID();
   const rel = new UUID();
 
   let store;
   let entity;
   beforeEach(() => {
     store = new Store();
-    entity = store.entity(id);
+    entity = store.entity(eid);
   });
 
   describe("#get", () => {
@@ -27,7 +27,7 @@ describe("Entity", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        store.add(id, rel, dst);
+        store.add(eid, rel, dst);
       });
       
       it("should return a entity of proposition's val", () => {
@@ -37,7 +37,7 @@ describe("Entity", () => {
     
     context("with value val proposition", () => {
       beforeEach(() => {
-        store.add(id, rel, "value");
+        store.add(eid, rel, "value");
       });
       
       it("should return a value", () => {
@@ -47,8 +47,8 @@ describe("Entity", () => {
     
     context("with the same rel but different vals proposition", () => {
       beforeEach(() => {
-        store.add(id, rel, "ver1");
-        store.add(id, rel, "ver2");
+        store.add(eid, rel, "ver1");
+        store.add(eid, rel, "ver2");
       });
       
       it("should return the last val as updating the property", () => {
@@ -58,7 +58,7 @@ describe("Entity", () => {
     
     context("with invalidated proposition", () => {
       beforeEach(() => {
-        const p = store.add(id, rel, "value1");
+        const p = store.add(eid, rel, "value1");
         store.add(p.hash, invalidate);
       });
 
@@ -68,7 +68,7 @@ describe("Entity", () => {
       
       context("add other positive proposition", () => {
         beforeEach(() => {
-          store.add(id, rel, "value2");
+          store.add(eid, rel, "value2");
         });
         
         it("should return the val", () => {
@@ -78,7 +78,7 @@ describe("Entity", () => {
       
       context("add same positive proposition", () => {
         beforeEach(() => {
-          store.add(id, rel, "value1");
+          store.add(eid, rel, "value1");
         });
         
         it("should return the val", () => {

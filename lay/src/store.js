@@ -34,12 +34,12 @@ export default class Store {
     return results;
   }
   
-  entity(id) {
-    return new Entity(this, id);
+  entity(eid) {
+    return new Entity(this, eid);
   }
   
   transactionPropositions(p) {
-    return this.where({id: p.hash, rel: transaction});
+    return this.where({eid: p.hash, rel: transaction});
   }
   
   transaction(p) {
@@ -56,17 +56,17 @@ export default class Store {
   ref(key) {
     const ps = this.where({rel: relKey, val: key});
     const p = ps[ps.length-1];
-    return p ? p.id : undefined;
+    return p ? p.eid : undefined;
   }
   
-  assign(key, id) {
+  assign(key, eid) {
     // todo: ユニーク制約をかけたい
-    const p = new Proposition(id, relKey, key);
+    const p = new Proposition(eid, relKey, key);
     this.set(p);
   }
   
-  addProposition(id, rel, val, in_, tid) {
-    const p = new Proposition(id, rel, val, in_);
+  addProposition(eid, rel, val, in_, tid) {
+    const p = new Proposition(eid, rel, val, in_);
     this.set(p);
     const t = new Proposition(p.hash, transaction, tid);
     this.set(t);

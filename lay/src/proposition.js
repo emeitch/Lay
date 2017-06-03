@@ -1,16 +1,16 @@
 import jsSHA from 'jssha';
 
 export default class Proposition {
-  constructor(id, rel, val, in_) {
-    if (!id) {
-      throw "id is required";
+  constructor(eid, rel, val, in_) {
+    if (!eid) {
+      throw "eid is required";
     }
     
     if (!rel) {
       throw "rel is required";
     }
 
-    this.id = id;
+    this.eid = eid;
     this.rel = rel;
     this.val = val;
     this.in = in_;

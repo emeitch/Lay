@@ -2,13 +2,13 @@ import UUID from './uuid';
 import { invalidate, transactionTime } from '../src/ontology';
 
 export default class Entity {
-  constructor(store, id) {
+  constructor(store, eid) {
     this.store = store;
-    this.id = id;
+    this.eid = eid;
   }
   
   get(rel) {
-    const ps = this.store.where({id: this.id, rel: rel});
+    const ps = this.store.where({eid: this.eid, rel: rel});
     if (ps.length == 0) {
       return undefined;
     }
@@ -16,7 +16,7 @@ export default class Entity {
     const p = ps[ps.length-1];
     const t = this.store.transaction(p);
     
-    const nps = this.store.where({id: p.hash, rel: invalidate});
+    const nps = this.store.where({eid: p.hash, rel: invalidate});
     if (nps.length > 0) {
       const np = nps[nps.length-1];
       const nt = this.store.transaction(np);

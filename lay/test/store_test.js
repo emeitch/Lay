@@ -6,7 +6,7 @@ import Entity from '../src/entity';
 import { transaction, transactionTime } from '../src/ontology';
 
 describe("Store", () => {
-  const id = new UUID();
+  const eid = new UUID();
   const rel = new UUID();
   const val = new UUID();
   
@@ -19,11 +19,11 @@ describe("Store", () => {
     context("standard arguments", () => {
       let p;
       beforeEach(() => {
-        p = store.add(id, rel, val);
+        p = store.add(eid, rel, val);
       });
       
       it("should add a proposition", () => {
-        assert(p.id == id);
+        assert(p.eid == eid);
         assert(p.rel == rel);
         assert(p.val == val);
         assert(p.in == undefined);
@@ -45,11 +45,11 @@ describe("Store", () => {
 
       let p;
       beforeEach(() => {
-        p = store.add(id, rel, val, location);
+        p = store.add(eid, rel, val, location);
       });
 
       it("shold add a proposition with location", () => {
-        assert(p.id == id);
+        assert(p.eid == eid);
         assert(p.rel == rel);
         assert(p.val == val);
         assert(p.in == location);
@@ -61,13 +61,13 @@ describe("Store", () => {
   describe("#ref", () => {
     context("key assigned", () => {
       beforeEach(() => {
-        store.assign("i", id);
+        store.assign("e", eid);
         store.assign("r", rel);
         store.assign("v", val);
       });
       
       it("should return a id by key", () => {
-        assert(store.ref("i") == id);
+        assert(store.ref("e") == eid);
         assert(store.ref("r") == rel);
         assert(store.ref("v") == val);
       });
@@ -88,11 +88,11 @@ describe("Store", () => {
   
   describe("#entity", () => {
     beforeEach(() => {
-      store.add(id, rel, val);
+      store.add(eid, rel, val);
     });
     
     it("should return a entity", () => {
-      const e = store.entity(id);
+      const e = store.entity(eid);
       assert(e.constructor == Entity);
     });
   });
