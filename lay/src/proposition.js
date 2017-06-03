@@ -1,22 +1,22 @@
 import jsSHA from 'jssha';
 
 export default class Proposition {
-  constructor(subject, relation, object, location) {
-    if (!subject) {
-      throw "subject is required";
+  constructor(id, rel, object, location) {
+    if (!id) {
+      throw "id is required";
     }
     
-    if (!relation) {
-      throw "relation is required";
+    if (!rel) {
+      throw "rel is required";
     }
 
-    this.subject = subject;
-    this.relation = relation;
+    this.id = id;
+    this.rel = rel;
     this.object = object;
     this.location = location;
   }
   
-  get id() {
+  get hash() {
     const str = JSON.stringify(this);
     const jssha = new jsSHA("SHA-256", "TEXT");
     jssha.update(str);

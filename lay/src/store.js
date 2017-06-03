@@ -8,21 +8,21 @@ export default class Store {
     this.propositions = {};
   }
   
-  get(id) {
-    return this.propositions[id];
+  get(hash) {
+    return this.propositions[hash];
   }
   
   set(p) {
-    this.propositions[p.id] = p;
+    this.propositions[p.hash] = p;
   }
   
   where(cond) {
     const results = [];
     
     // todo: 線形探索になっているので高速化する
-    for (const id in this.propositions) {
-      if (this.propositions.hasOwnProperty(id)) {
-        const p = this.propositions[id];
+    for (const hash in this.propositions) {
+      if (this.propositions.hasOwnProperty(hash)) {
+        const p = this.propositions[hash];
         
         const keys = Object.keys(cond);
         if (keys.every((k) => JSON.stringify(p[k]) == JSON.stringify(cond[k]))) {
@@ -39,7 +39,7 @@ export default class Store {
   }
   
   transactionPropositions(p) {
-    return this.where({subject: p.id, relation: transaction});
+    return this.where({id: p.hash, rel: transaction});
   }
   
   transaction(p) {
@@ -54,9 +54,9 @@ export default class Store {
   }
   
   ref(key) {
-    const ps = this.where({relation: relKey, object: key});
+    const ps = this.where({rel: relKey, object: key});
     const p = ps[ps.length-1];
-    return p ? p.subject : undefined;
+    return p ? p.id : undefined;
   }
   
   assign(key, id) {
@@ -65,10 +65,10 @@ export default class Store {
     this.set(p);
   }
   
-  addProposition(subj, rel, obj, loc, tid) {
-    const p = new Proposition(subj, rel, obj, loc);
+  addProposition(id, rel, obj, loc, tid) {
+    const p = new Proposition(id, rel, obj, loc);
     this.set(p);
-    const t = new Proposition(p.id, transaction, tid);
+    const t = new Proposition(p.hash, transaction, tid);
     this.set(t);
     return p;
   }

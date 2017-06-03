@@ -6,7 +6,7 @@ import Entity from '../src/entity';
 import { invalidate } from '../src/ontology';
 
 describe("Entity", () => {
-  const subj = new UUID();
+  const id = new UUID();
   const rel = new UUID();
   const obj = new UUID();
 
@@ -14,7 +14,7 @@ describe("Entity", () => {
   let entity;
   beforeEach(() => {
     store = new Store();
-    entity = store.entity(subj);
+    entity = store.entity(id);
   });
 
   describe("#get", () => {
@@ -26,7 +26,7 @@ describe("Entity", () => {
 
     context("with UUID object proposition", () => {
       beforeEach(() => {
-        store.add(subj, rel, obj);
+        store.add(id, rel, obj);
       });
       
       it("should return a entity of proposition's object", () => {
@@ -36,7 +36,7 @@ describe("Entity", () => {
     
     context("with value object proposition", () => {
       beforeEach(() => {
-        store.add(subj, rel, "value");
+        store.add(id, rel, "value");
       });
       
       it("should return a value", () => {
@@ -44,10 +44,10 @@ describe("Entity", () => {
       });
     });
     
-    context("with the same relation but different objects proposition", () => {
+    context("with the same rel but different objects proposition", () => {
       beforeEach(() => {
-        store.add(subj, rel, "ver1");
-        store.add(subj, rel, "ver2");
+        store.add(id, rel, "ver1");
+        store.add(id, rel, "ver2");
       });
       
       it("should return the last object as updating the property", () => {
@@ -57,8 +57,8 @@ describe("Entity", () => {
     
     context("with negative proposition", () => {
       beforeEach(() => {
-        const p = store.add(subj, rel, "value1");
-        store.add(p.id, invalidate);
+        const p = store.add(id, rel, "value1");
+        store.add(p.hash, invalidate);
       });
 
       it("should return undefined", () => {
@@ -67,7 +67,7 @@ describe("Entity", () => {
       
       context("add other positive proposition", () => {
         beforeEach(() => {
-          store.add(subj, rel, "value2");
+          store.add(id, rel, "value2");
         });
         
         it("should return the object", () => {
@@ -77,7 +77,7 @@ describe("Entity", () => {
       
       context("add same positive proposition", () => {
         beforeEach(() => {
-          store.add(subj, rel, "value1");
+          store.add(id, rel, "value1");
         });
         
         it("should return the object", () => {

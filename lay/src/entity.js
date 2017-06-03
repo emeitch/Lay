@@ -8,7 +8,7 @@ export default class Entity {
   }
   
   get(rel) {
-    const ps = this.store.where({subject: this.id, relation: rel});
+    const ps = this.store.where({id: this.id, rel: rel});
     if (ps.length == 0) {
       return undefined;
     }
@@ -16,7 +16,7 @@ export default class Entity {
     const p = ps[ps.length-1];
     const t = this.store.transaction(p);
     
-    const nps = this.store.where({subject: p.id, relation: invalidate});
+    const nps = this.store.where({id: p.hash, rel: invalidate});
     if (nps.length > 0) {
       const np = nps[nps.length-1];
       const nt = this.store.transaction(np);

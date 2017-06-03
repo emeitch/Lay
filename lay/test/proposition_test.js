@@ -4,18 +4,18 @@ import UUID from '../src/uuid'
 import Proposition from '../src/proposition';
 
 describe("Proposition", () => {
-  const subj = new UUID();
+  const id = new UUID();
   const rel = new UUID();
   const obj = new UUID();
 
   let p;
   beforeEach(() => {
-    p = new Proposition(subj, rel, obj);
+    p = new Proposition(id, rel, obj);
   });
   
   describe("#id", () => {
     it("should return sha256 urn", () => {
-      assert(p.id.match(/^urn:sha256:.*$/));
+      assert(p.hash.match(/^urn:sha256:.*$/));
     });
   });
 });
