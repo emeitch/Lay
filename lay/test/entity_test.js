@@ -6,14 +6,14 @@ import Entity from '../src/entity';
 import { invalidate } from '../src/ontology';
 
 describe("Entity", () => {
-  const eid = new UUID();
+  const oid = new UUID();
   const rel = new UUID();
 
   let store;
   let entity;
   beforeEach(() => {
     store = new Store();
-    entity = store.entity(eid);
+    entity = store.entity(oid);
   });
 
   describe("#get", () => {
@@ -27,7 +27,7 @@ describe("Entity", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        store.log(eid, rel, dst);
+        store.log(oid, rel, dst);
       });
       
       it("should return a entity of log's val", () => {
@@ -37,7 +37,7 @@ describe("Entity", () => {
     
     context("with value val log", () => {
       beforeEach(() => {
-        store.log(eid, rel, "value");
+        store.log(oid, rel, "value");
       });
       
       it("should return a value", () => {
@@ -47,8 +47,8 @@ describe("Entity", () => {
     
     context("with the same rel but different vals log", () => {
       beforeEach(() => {
-        store.log(eid, rel, "ver1");
-        store.log(eid, rel, "ver2");
+        store.log(oid, rel, "ver1");
+        store.log(oid, rel, "ver2");
       });
       
       it("should return the last val as updating the property", () => {
@@ -58,7 +58,7 @@ describe("Entity", () => {
     
     context("with invalidated log", () => {
       beforeEach(() => {
-        const log = store.log(eid, rel, "value1");
+        const log = store.log(oid, rel, "value1");
         store.log(log.hash, invalidate);
       });
 
@@ -68,7 +68,7 @@ describe("Entity", () => {
       
       context("add other positive log", () => {
         beforeEach(() => {
-          store.log(eid, rel, "value2");
+          store.log(oid, rel, "value2");
         });
         
         it("should return the val", () => {
@@ -78,7 +78,7 @@ describe("Entity", () => {
       
       context("add same positive log", () => {
         beforeEach(() => {
-          store.log(eid, rel, "value1");
+          store.log(oid, rel, "value1");
         });
         
         it("should return the val", () => {

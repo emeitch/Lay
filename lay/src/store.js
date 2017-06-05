@@ -34,12 +34,12 @@ export default class Store {
     return results;
   }
   
-  entity(eid) {
-    return new Entity(this, eid);
+  entity(oid) {
+    return new Entity(this, oid);
   }
   
   transactionLogs(log) {
-    return this.where({eid: log.hash, rel: transaction});
+    return this.where({oid: log.hash, rel: transaction});
   }
   
   transaction(log) {
@@ -56,17 +56,17 @@ export default class Store {
   ref(key) {
     const logs = this.where({rel: relKey, val: key});
     const log = logs[logs.length-1];
-    return log ? log.eid : undefined;
+    return log ? log.oid : undefined;
   }
   
-  assign(key, eid) {
+  assign(key, oid) {
     // todo: ユニーク制約をかけたい
-    const log = new Log(eid, relKey, key);
+    const log = new Log(oid, relKey, key);
     this.set(log);
   }
   
-  transactLog(eid, rel, val, in_, tid) {
-    const log = new Log(eid, rel, val, in_);
+  transactLog(oid, rel, val, in_, tid) {
+    const log = new Log(oid, rel, val, in_);
     this.set(log);
     const tlog = new Log(log.hash, transaction, tid);
     this.set(tlog);

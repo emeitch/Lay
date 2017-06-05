@@ -1,16 +1,16 @@
 import jsSHA from 'jssha';
 
 export default class Log {
-  constructor(eid, rel, val, in_) {
-    if (!eid) {
-      throw "eid is required";
+  constructor(oid, rel, val, in_) {
+    if (!oid) {
+      throw "oid is required";
     }
     
     if (!rel) {
       throw "rel is required";
     }
 
-    this.eid = eid;
+    this.oid = oid;
     this.rel = rel;
     this.val = val;
     this.in = in_;
