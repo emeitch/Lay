@@ -1,7 +1,7 @@
 import UUID from './uuid';
 import { invalidate, transactionTime } from '../src/ontology';
 
-export default class Entity {
+export default class Obj {
   constructor(store, oid) {
     this.store = store;
     this.oid = oid;
@@ -29,7 +29,7 @@ export default class Entity {
     const val = log.val;
     // todo: sha256をIDオブジェクト化したい
     if (val.constructor === UUID || typeof(val) === "string" && val.match(/^urn:sha256:/)) {
-      return this.store.entity(logs[0].val);  
+      return this.store.obj(logs[0].val);  
     } else {
       return val;
     }

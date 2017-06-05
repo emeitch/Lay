@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import UUID from '../src/uuid';
 import Store from '../src/store';
-import Entity from '../src/entity';
+import Obj from '../src/obj';
 import { transaction, transactionTime } from '../src/ontology';
 
 describe("Store", () => {
@@ -61,13 +61,13 @@ describe("Store", () => {
   describe("#ref", () => {
     context("key assigned", () => {
       beforeEach(() => {
-        store.assign("e", oid);
+        store.assign("o", oid);
         store.assign("r", rel);
         store.assign("v", val);
       });
       
       it("should return a id by key", () => {
-        assert(store.ref("e") == oid);
+        assert(store.ref("o") == oid);
         assert(store.ref("r") == rel);
         assert(store.ref("v") == val);
       });
@@ -86,14 +86,14 @@ describe("Store", () => {
     });
   });
   
-  describe("#entity", () => {
+  describe("#obj", () => {
     beforeEach(() => {
       store.log(oid, rel, val);
     });
     
-    it("should return a entity", () => {
-      const e = store.entity(oid);
-      assert(e.constructor == Entity);
+    it("should return a object", () => {
+      const o = store.obj(oid);
+      assert(o.constructor == Obj);
     });
   });
 });

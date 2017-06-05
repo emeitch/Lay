@@ -2,24 +2,24 @@ import assert from 'assert';
 
 import UUID from '../src/uuid';
 import Store from '../src/store';
-import Entity from '../src/entity';
+import Obj from '../src/obj';
 import { invalidate } from '../src/ontology';
 
-describe("Entity", () => {
+describe("Obj", () => {
   const oid = new UUID();
   const rel = new UUID();
 
   let store;
-  let entity;
+  let obj;
   beforeEach(() => {
     store = new Store();
-    entity = store.entity(oid);
+    obj = store.obj(oid);
   });
 
   describe("#get", () => {
     context("without logs", () => {
       it("should return undefined", () => {
-        assert.deepStrictEqual(entity.get(rel), undefined);
+        assert.deepStrictEqual(obj.get(rel), undefined);
       });
     });
 
@@ -30,8 +30,8 @@ describe("Entity", () => {
         store.log(oid, rel, dst);
       });
       
-      it("should return a entity of log's val", () => {
-        assert.deepStrictEqual(entity.get(rel), store.entity(dst));
+      it("should return a obj of log's val", () => {
+        assert.deepStrictEqual(obj.get(rel), store.obj(dst));
       });
     });
     
@@ -41,7 +41,7 @@ describe("Entity", () => {
       });
       
       it("should return a value", () => {
-        assert.deepStrictEqual(entity.get(rel), "value");
+        assert.deepStrictEqual(obj.get(rel), "value");
       });
     });
     
@@ -52,7 +52,7 @@ describe("Entity", () => {
       });
       
       it("should return the last val as updating the property", () => {
-        assert.deepStrictEqual(entity.get(rel), "ver2");
+        assert.deepStrictEqual(obj.get(rel), "ver2");
       });
     });
     
@@ -63,7 +63,7 @@ describe("Entity", () => {
       });
 
       it("should return undefined", () => {
-        assert.deepStrictEqual(entity.get(rel), undefined);
+        assert.deepStrictEqual(obj.get(rel), undefined);
       });
       
       context("add other positive log", () => {
@@ -72,7 +72,7 @@ describe("Entity", () => {
         });
         
         it("should return the val", () => {
-          assert.deepStrictEqual(entity.get(rel), "value2");
+          assert.deepStrictEqual(obj.get(rel), "value2");
         });
       });
       
@@ -82,7 +82,7 @@ describe("Entity", () => {
         });
         
         it("should return the val", () => {
-          assert.deepStrictEqual(entity.get(rel), "value1");
+          assert.deepStrictEqual(obj.get(rel), "value1");
         });
       });
     });

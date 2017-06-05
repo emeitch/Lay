@@ -1,6 +1,6 @@
 import UUID from './uuid';
 import Log from './log';
-import Entity from './entity';
+import Obj from './obj';
 import { relKey, transaction, transactionTime } from './ontology';
 
 export default class Store {
@@ -34,8 +34,8 @@ export default class Store {
     return results;
   }
   
-  entity(oid) {
-    return new Entity(this, oid);
+  obj(oid) {
+    return new Obj(this, oid);
   }
   
   transactionLogs(log) {
@@ -50,7 +50,7 @@ export default class Store {
     
     const tlog = tlogs[tlogs.length-1];
     const tid = tlog.val;
-    return this.entity(tid);
+    return this.obj(tid);
   }
   
   ref(key) {
