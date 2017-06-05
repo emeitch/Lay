@@ -12,8 +12,8 @@ export default class Store {
     return this.logs[hash];
   }
   
-  set(p) {
-    this.logs[p.hash] = p;
+  set(log) {
+    this.logs[log.hash] = log;
   }
   
   where(cond) {
@@ -22,11 +22,11 @@ export default class Store {
     // todo: 線形探索になっているので高速化する
     for (const hash in this.logs) {
       if (this.logs.hasOwnProperty(hash)) {
-        const p = this.logs[hash];
+        const log = this.logs[hash];
         
         const keys = Object.keys(cond);
-        if (keys.every((k) => JSON.stringify(p[k]) == JSON.stringify(cond[k]))) {
-          results.push(p);
+        if (keys.every((k) => JSON.stringify(log[k]) == JSON.stringify(cond[k]))) {
+          results.push(log);
         }
       }
     }
@@ -38,46 +38,46 @@ export default class Store {
     return new Entity(this, eid);
   }
   
-  transactionLogs(p) {
-    return this.where({eid: p.hash, rel: transaction});
+  transactionLogs(log) {
+    return this.where({eid: log.hash, rel: transaction});
   }
   
-  transaction(p) {
-    const tps = this.transactionLogs(p);
-    if (tps.length == 0) {
+  transaction(log) {
+    const tlogs = this.transactionLogs(log);
+    if (tlogs.length == 0) {
       return undefined;
     }
     
-    const tp = tps[tps.length-1];
-    const tid = tp.val;
+    const tlog = tlogs[tlogs.length-1];
+    const tid = tlog.val;
     return this.entity(tid);
   }
   
   ref(key) {
-    const ps = this.where({rel: relKey, val: key});
-    const p = ps[ps.length-1];
-    return p ? p.eid : undefined;
+    const logs = this.where({rel: relKey, val: key});
+    const log = logs[logs.length-1];
+    return log ? log.eid : undefined;
   }
   
   assign(key, eid) {
     // todo: ユニーク制約をかけたい
-    const p = new Log(eid, relKey, key);
-    this.set(p);
+    const log = new Log(eid, relKey, key);
+    this.set(log);
   }
   
   transactLog(eid, rel, val, in_, tid) {
-    const p = new Log(eid, rel, val, in_);
-    this.set(p);
-    const t = new Log(p.hash, transaction, tid);
-    this.set(t);
-    return p;
+    const log = new Log(eid, rel, val, in_);
+    this.set(log);
+    const tlog = new Log(log.hash, transaction, tid);
+    this.set(tlog);
+    return log;
   }
   
   doTransaction(block) {
     // todo: アトミックな操作に修正する
     const tid = new UUID();
-    const p = new Log(tid, transactionTime, new Date());
-    this.set(p);
+    const log = new Log(tid, transactionTime, new Date());
+    this.set(log);
     return block(tid);
   }
   

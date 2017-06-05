@@ -17,25 +17,25 @@ describe("Store", () => {
     
   describe("#add", () => {
     context("standard arguments", () => {
-      let p;
+      let log;
       beforeEach(() => {
-        p = store.log(eid, rel, val);
+        log = store.log(eid, rel, val);
       });
       
       it("should add a log", () => {
-        assert(p.eid == eid);
-        assert(p.rel == rel);
-        assert(p.val == val);
-        assert(p.in == undefined);
-        assert(p.hash.match(/^urn:sha256:.*$/));
-        assert(store.get(p.hash) == p);
+        assert(log.eid == eid);
+        assert(log.rel == rel);
+        assert(log.val == val);
+        assert(log.in == undefined);
+        assert(log.hash.match(/^urn:sha256:.*$/));
+        assert(store.get(log.hash) == log);
       });
       
       it("should append a transaction data", () => {
-        const tps = store.transactionLogs(p);
-        assert(tps.length == 1);
+        const tlogs = store.transactionLogs(log);
+        assert(tlogs.length == 1);
         
-        const t = store.transaction(p);
+        const t = store.transaction(log);
         assert(t.get(transactionTime).constructor == Date);
       });
     });
@@ -43,17 +43,17 @@ describe("Store", () => {
     context("with location", () => {
       const location = new UUID();
 
-      let p;
+      let log;
       beforeEach(() => {
-        p = store.log(eid, rel, val, location);
+        log = store.log(eid, rel, val, location);
       });
 
       it("shold add a log with location", () => {
-        assert(p.eid == eid);
-        assert(p.rel == rel);
-        assert(p.val == val);
-        assert(p.in == location);
-        assert(store.get(p.hash) == p);
+        assert(log.eid == eid);
+        assert(log.rel == rel);
+        assert(log.val == val);
+        assert(log.in == location);
+        assert(store.get(log.hash) == log);
       });
     });
   });
