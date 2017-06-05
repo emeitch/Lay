@@ -8,28 +8,28 @@ export default class Entity {
   }
   
   get(rel) {
-    const ps = this.store.where({eid: this.eid, rel: rel});
-    if (ps.length == 0) {
+    const logs = this.store.where({eid: this.eid, rel: rel});
+    if (logs.length == 0) {
       return undefined;
     }
     
-    const p = ps[ps.length-1];
-    const t = this.store.transaction(p);
+    const log = logs[logs.length-1];
+    const t = this.store.transaction(log);
     
-    const nps = this.store.where({eid: p.hash, rel: invalidate});
-    if (nps.length > 0) {
-      const np = nps[nps.length-1];
-      const nt = this.store.transaction(np);
-      if (nt.get(transactionTime) > t.get(transactionTime)) {
+    const ilogs = this.store.where({eid: log.hash, rel: invalidate});
+    if (ilogs.length > 0) {
+      const ilog = ilogs[ilogs.length-1];
+      const it = this.store.transaction(ilog);
+      if (it.get(transactionTime) > t.get(transactionTime)) {
         // apply invalidation
         return undefined;        
       }
     }
     
-    const val = p.val;
+    const val = log.val;
     // todo: sha256をIDオブジェクト化したい
     if (val.constructor === UUID || typeof(val) === "string" && val.match(/^urn:sha256:/)) {
-      return this.store.entity(ps[0].val);  
+      return this.store.entity(logs[0].val);  
     } else {
       return val;
     }

@@ -58,8 +58,8 @@ describe("Entity", () => {
     
     context("with invalidated log", () => {
       beforeEach(() => {
-        const p = store.log(eid, rel, "value1");
-        store.log(p.hash, invalidate);
+        const log = store.log(eid, rel, "value1");
+        store.log(log.hash, invalidate);
       });
 
       it("should return undefined", () => {
