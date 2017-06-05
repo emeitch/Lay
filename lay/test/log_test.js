@@ -8,14 +8,14 @@ describe("Log", () => {
   const rel = new UUID();
   const val = new UUID();
 
-  let p;
+  let log;
   beforeEach(() => {
-    p = new Log(eid, rel, val);
+    log = new Log(eid, rel, val);
   });
   
   describe("#hash", () => {
     it("should return sha256 urn", () => {
-      assert(p.hash.match(/^urn:sha256:.*$/));
+      assert(log.hash.match(/^urn:sha256:.*$/));
     });
   });
 });
