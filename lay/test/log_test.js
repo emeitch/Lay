@@ -1,16 +1,16 @@
 import assert from 'assert';
 
 import UUID from '../src/uuid'
-import Proposition from '../src/proposition';
+import Log from '../src/log';
 
-describe("Proposition", () => {
+describe("Log", () => {
   const eid = new UUID();
   const rel = new UUID();
   const val = new UUID();
 
   let p;
   beforeEach(() => {
-    p = new Proposition(eid, rel, val);
+    p = new Log(eid, rel, val);
   });
   
   describe("#hash", () => {

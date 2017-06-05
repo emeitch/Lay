@@ -19,10 +19,10 @@ describe("Store", () => {
     context("standard arguments", () => {
       let p;
       beforeEach(() => {
-        p = store.add(eid, rel, val);
+        p = store.log(eid, rel, val);
       });
       
-      it("should add a proposition", () => {
+      it("should add a log", () => {
         assert(p.eid == eid);
         assert(p.rel == rel);
         assert(p.val == val);
@@ -32,7 +32,7 @@ describe("Store", () => {
       });
       
       it("should append a transaction data", () => {
-        const tps = store.transactionPropositions(p);
+        const tps = store.transactionLogs(p);
         assert(tps.length == 1);
         
         const t = store.transaction(p);
@@ -45,10 +45,10 @@ describe("Store", () => {
 
       let p;
       beforeEach(() => {
-        p = store.add(eid, rel, val, location);
+        p = store.log(eid, rel, val, location);
       });
 
-      it("shold add a proposition with location", () => {
+      it("shold add a log with location", () => {
         assert(p.eid == eid);
         assert(p.rel == rel);
         assert(p.val == val);
@@ -88,7 +88,7 @@ describe("Store", () => {
   
   describe("#entity", () => {
     beforeEach(() => {
-      store.add(eid, rel, val);
+      store.log(eid, rel, val);
     });
     
     it("should return a entity", () => {

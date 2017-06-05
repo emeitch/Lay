@@ -1,6 +1,6 @@
 import jsSHA from 'jssha';
 
-export default class Proposition {
+export default class Log {
   constructor(eid, rel, val, in_) {
     if (!eid) {
       throw "eid is required";

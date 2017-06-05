@@ -17,27 +17,27 @@ describe("Entity", () => {
   });
 
   describe("#get", () => {
-    context("without propositions", () => {
+    context("without logs", () => {
       it("should return undefined", () => {
         assert.deepStrictEqual(entity.get(rel), undefined);
       });
     });
 
-    context("with UUID val proposition", () => {
+    context("with UUID val log", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        store.add(eid, rel, dst);
+        store.log(eid, rel, dst);
       });
       
-      it("should return a entity of proposition's val", () => {
+      it("should return a entity of log's val", () => {
         assert.deepStrictEqual(entity.get(rel), store.entity(dst));
       });
     });
     
-    context("with value val proposition", () => {
+    context("with value val log", () => {
       beforeEach(() => {
-        store.add(eid, rel, "value");
+        store.log(eid, rel, "value");
       });
       
       it("should return a value", () => {
@@ -45,10 +45,10 @@ describe("Entity", () => {
       });
     });
     
-    context("with the same rel but different vals proposition", () => {
+    context("with the same rel but different vals log", () => {
       beforeEach(() => {
-        store.add(eid, rel, "ver1");
-        store.add(eid, rel, "ver2");
+        store.log(eid, rel, "ver1");
+        store.log(eid, rel, "ver2");
       });
       
       it("should return the last val as updating the property", () => {
@@ -56,19 +56,19 @@ describe("Entity", () => {
       });
     });
     
-    context("with invalidated proposition", () => {
+    context("with invalidated log", () => {
       beforeEach(() => {
-        const p = store.add(eid, rel, "value1");
-        store.add(p.hash, invalidate);
+        const p = store.log(eid, rel, "value1");
+        store.log(p.hash, invalidate);
       });
 
       it("should return undefined", () => {
         assert.deepStrictEqual(entity.get(rel), undefined);
       });
       
-      context("add other positive proposition", () => {
+      context("add other positive log", () => {
         beforeEach(() => {
-          store.add(eid, rel, "value2");
+          store.log(eid, rel, "value2");
         });
         
         it("should return the val", () => {
@@ -76,9 +76,9 @@ describe("Entity", () => {
         });
       });
       
-      context("add same positive proposition", () => {
+      context("add same positive log", () => {
         beforeEach(() => {
-          store.add(eid, rel, "value1");
+          store.log(eid, rel, "value1");
         });
         
         it("should return the val", () => {

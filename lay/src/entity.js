@@ -21,7 +21,7 @@ export default class Entity {
       const np = nps[nps.length-1];
       const nt = this.store.transaction(np);
       if (nt.get(transactionTime) > t.get(transactionTime)) {
-        // apply proposition invalidation
+        // apply invalidation
         return undefined;        
       }
     }
