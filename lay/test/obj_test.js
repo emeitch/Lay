@@ -6,14 +6,14 @@ import Obj from '../src/obj';
 import { invalidate } from '../src/ontology';
 
 describe("Obj", () => {
-  const oid = new UUID();
+  const id = new UUID();
   const rel = new UUID();
 
   let store;
   let obj;
   beforeEach(() => {
     store = new Store();
-    obj = store.obj(oid);
+    obj = store.obj(id);
   });
 
   describe("#get", () => {
@@ -27,7 +27,7 @@ describe("Obj", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        store.log(oid, rel, dst);
+        store.log(id, rel, dst);
       });
       
       it("should return a obj of log's val", () => {
@@ -37,7 +37,7 @@ describe("Obj", () => {
     
     context("with value val log", () => {
       beforeEach(() => {
-        store.log(oid, rel, "value");
+        store.log(id, rel, "value");
       });
       
       it("should return a value", () => {
@@ -47,8 +47,8 @@ describe("Obj", () => {
     
     context("with the same rel but different vals log", () => {
       beforeEach(() => {
-        store.log(oid, rel, "ver1");
-        store.log(oid, rel, "ver2");
+        store.log(id, rel, "ver1");
+        store.log(id, rel, "ver2");
       });
       
       it("should return the last val as updating the property", () => {
@@ -58,7 +58,7 @@ describe("Obj", () => {
     
     context("with invalidated log", () => {
       beforeEach(() => {
-        const log = store.log(oid, rel, "value1");
+        const log = store.log(id, rel, "value1");
         store.log(log.hash, invalidate);
       });
 
@@ -68,7 +68,7 @@ describe("Obj", () => {
       
       context("add other positive log", () => {
         beforeEach(() => {
-          store.log(oid, rel, "value2");
+          store.log(id, rel, "value2");
         });
         
         it("should return the val", () => {
@@ -78,7 +78,7 @@ describe("Obj", () => {
       
       context("add same positive log", () => {
         beforeEach(() => {
-          store.log(oid, rel, "value1");
+          store.log(id, rel, "value1");
         });
         
         it("should return the val", () => {
