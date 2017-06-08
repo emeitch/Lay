@@ -29,7 +29,7 @@ export default class Obj {
     const val = log.val;
     // todo: sha256をIDオブジェクト化したい
     if (val.constructor === UUID || typeof(val) === "string" && val.match(/^urn:sha256:/)) {
-      return this.store.obj(logs[0].val);  
+      return this.store.obj(val);  
     } else {
       return val;
     }
