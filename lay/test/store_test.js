@@ -66,7 +66,7 @@ describe("Store", () => {
         store.assign("v", val);
       });
       
-      it("should return a id by key", () => {
+      it("should return a id by name", () => {
         assert(store.ref("i") == id);
         assert(store.ref("k") == key);
         assert(store.ref("v") == val);
@@ -79,7 +79,7 @@ describe("Store", () => {
           store.assign("r", key2);
         });
         
-        it("should return a re-assigned id by key", () => {
+        it("should return a re-assigned id by name", () => {
           assert(store.ref("r") == key2);
         });
       });
