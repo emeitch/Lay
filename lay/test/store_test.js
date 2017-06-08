@@ -7,7 +7,7 @@ import { transaction, transactionTime } from '../src/ontology';
 
 describe("Store", () => {
   const id = new UUID();
-  const rel = new UUID();
+  const key = new UUID();
   const val = new UUID();
   
   let store;
@@ -19,12 +19,12 @@ describe("Store", () => {
     context("standard arguments", () => {
       let log;
       beforeEach(() => {
-        log = store.log(id, rel, val);
+        log = store.log(id, key, val);
       });
       
       it("should add a log", () => {
         assert(log.id == id);
-        assert(log.rel == rel);
+        assert(log.key == key);
         assert(log.val == val);
         assert(log.in == undefined);
         assert(log.hash.match(/^urn:sha256:.*$/));
@@ -45,12 +45,12 @@ describe("Store", () => {
 
       let log;
       beforeEach(() => {
-        log = store.log(id, rel, val, location);
+        log = store.log(id, key, val, location);
       });
 
       it("shold add a log with location", () => {
         assert(log.id == id);
-        assert(log.rel == rel);
+        assert(log.key == key);
         assert(log.val == val);
         assert(log.in == location);
         assert(store.get(log.hash) == log);
@@ -59,28 +59,28 @@ describe("Store", () => {
   });
   
   describe("#ref", () => {
-    context("key assigned", () => {
+    context("name assigned", () => {
       beforeEach(() => {
-        store.assign("o", id);
-        store.assign("r", rel);
+        store.assign("i", id);
+        store.assign("k", key);
         store.assign("v", val);
       });
       
       it("should return a id by key", () => {
-        assert(store.ref("o") == id);
-        assert(store.ref("r") == rel);
+        assert(store.ref("i") == id);
+        assert(store.ref("k") == key);
         assert(store.ref("v") == val);
       });
 
       context("key re-assigned", () => {
-        const rel2 = new UUID();
+        const key2 = new UUID();
 
         beforeEach(() => {
-          store.assign("r", rel2);
+          store.assign("r", key2);
         });
         
         it("should return a re-assigned id by key", () => {
-          assert(store.ref("r") == rel2);
+          assert(store.ref("r") == key2);
         });
       });
     });
@@ -88,7 +88,7 @@ describe("Store", () => {
   
   describe("#obj", () => {
     beforeEach(() => {
-      store.log(id, rel, val);
+      store.log(id, key, val);
     });
     
     it("should return a object", () => {

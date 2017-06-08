@@ -7,8 +7,8 @@ export default class Obj {
     this.id = id;
   }
   
-  get(rel) {
-    const logs = this.store.where({id: this.id, rel: rel});
+  get(key) {
+    const logs = this.store.where({id: this.id, key: key});
     if (logs.length == 0) {
       return undefined;
     }
@@ -16,7 +16,7 @@ export default class Obj {
     const log = logs[logs.length-1];
     const t = this.store.transaction(log);
     
-    const ilogs = this.store.where({id: log.hash, rel: invalidate});
+    const ilogs = this.store.where({id: log.hash, key: invalidate});
     if (ilogs.length > 0) {
       const ilog = ilogs[ilogs.length-1];
       const it = this.store.transaction(ilog);

@@ -5,12 +5,12 @@ import Log from '../src/log';
 
 describe("Log", () => {
   const id = new UUID();
-  const rel = new UUID();
+  const key = new UUID();
   const val = new UUID();
 
   let log;
   beforeEach(() => {
-    log = new Log(id, rel, val);
+    log = new Log(id, key, val);
   });
   
   describe("#hash", () => {

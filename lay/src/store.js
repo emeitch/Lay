@@ -1,7 +1,7 @@
 import UUID from './uuid';
 import Log from './log';
 import Obj from './obj';
-import { relKey, transaction, transactionTime } from './ontology';
+import { nameKey, transaction, transactionTime } from './ontology';
 
 export default class Store {
   constructor() {
@@ -39,7 +39,7 @@ export default class Store {
   }
   
   transactionLogs(log) {
-    return this.where({id: log.hash, rel: transaction});
+    return this.where({id: log.hash, key: transaction});
   }
   
   transaction(log) {
@@ -53,20 +53,20 @@ export default class Store {
     return this.obj(tid);
   }
   
-  ref(key) {
-    const logs = this.where({rel: relKey, val: key});
+  ref(name) {
+    const logs = this.where({key: nameKey, val: name});
     const log = logs[logs.length-1];
     return log ? log.id : undefined;
   }
   
-  assign(key, id) {
+  assign(name, id) {
     // todo: ユニーク制約をかけたい
-    const log = new Log(id, relKey, key);
+    const log = new Log(id, nameKey, name);
     this.set(log);
   }
   
-  transactLog(id, rel, val, in_, tid) {
-    const log = new Log(id, rel, val, in_);
+  transactLog(id, key, val, in_, tid) {
+    const log = new Log(id, key, val, in_);
     this.set(log);
     const tlog = new Log(log.hash, transaction, tid);
     this.set(tlog);
