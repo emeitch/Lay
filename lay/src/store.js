@@ -8,21 +8,21 @@ export default class Store {
     this.logs = {};
   }
   
-  get(hash) {
-    return this.logs[hash];
+  get(logid) {
+    return this.logs[logid];
   }
   
   set(log) {
-    this.logs[log.hash] = log;
+    this.logs[log.logid] = log;
   }
   
   where(cond) {
     const results = [];
     
     // todo: 線形探索になっているので高速化する
-    for (const hash in this.logs) {
-      if (this.logs.hasOwnProperty(hash)) {
-        const log = this.logs[hash];
+    for (const logid in this.logs) {
+      if (this.logs.hasOwnProperty(logid)) {
+        const log = this.logs[logid];
         
         const keys = Object.keys(cond);
         if (keys.every((k) => JSON.stringify(log[k]) == JSON.stringify(cond[k]))) {
@@ -39,7 +39,7 @@ export default class Store {
   }
   
   transactionLogs(log) {
-    return this.where({id: log.hash, key: transaction});
+    return this.where({id: log.logid, key: transaction});
   }
   
   transaction(log) {
@@ -68,7 +68,7 @@ export default class Store {
   transactLog(id, key, val, in_, tid) {
     const log = new Log(id, key, val, in_);
     this.set(log);
-    const tlog = new Log(log.hash, transaction, tid);
+    const tlog = new Log(log.logid, transaction, tid);
     this.set(tlog);
     return log;
   }

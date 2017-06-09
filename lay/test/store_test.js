@@ -27,8 +27,7 @@ describe("Store", () => {
         assert(log.key == key);
         assert(log.val == val);
         assert(log.in == undefined);
-        assert(log.hash.match(/^urn:sha256:.*$/));
-        assert(store.get(log.hash) == log);
+        assert(store.get(log.logid) == log);
       });
       
       it("should append a transaction data", () => {
@@ -53,7 +52,7 @@ describe("Store", () => {
         assert(log.key == key);
         assert(log.val == val);
         assert(log.in == location);
-        assert(store.get(log.hash) == log);
+        assert(store.get(log.logid) == log);
       });
     });
   });

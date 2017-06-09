@@ -59,7 +59,7 @@ describe("Obj", () => {
     context("with invalidated log", () => {
       beforeEach(() => {
         const log = store.log(id, key, "value1");
-        store.log(log.hash, invalidate);
+        store.log(log.logid, invalidate);
       });
 
       it("should return undefined", () => {

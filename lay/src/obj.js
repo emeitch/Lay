@@ -16,19 +16,18 @@ export default class Obj {
     const log = logs[logs.length-1];
     const t = this.store.transaction(log);
     
-    const ilogs = this.store.where({id: log.hash, key: invalidate});
+    const ilogs = this.store.where({id: log.logid, key: invalidate});
     if (ilogs.length > 0) {
       const ilog = ilogs[ilogs.length-1];
       const it = this.store.transaction(ilog);
-      if (it.get(transactionTime) > t.get(transactionTime)) {
+      if (it.get(transactionTime) >= t.get(transactionTime)) {
         // apply invalidation
         return undefined;        
       }
     }
     
     const val = log.val;
-    // todo: sha256をIDオブジェクト化したい
-    if (val.constructor === UUID || typeof(val) === "string" && val.match(/^urn:sha256:/)) {
+    if (val.constructor === UUID) {
       return this.store.obj(val);  
     } else {
       return val;

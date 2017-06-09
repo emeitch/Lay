@@ -24,4 +24,8 @@ export default class UUID {
   toJSON() {
     return this.urn;
   }
+  
+  toString() {
+    return this.urn;
+  }
 }

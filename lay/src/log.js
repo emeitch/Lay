@@ -1,4 +1,4 @@
-import jsSHA from 'jssha';
+import UUID from './uuid';
 
 export default class Log {
   constructor(id, key, val, in_) {
@@ -10,17 +10,10 @@ export default class Log {
       throw "key is required";
     }
 
+    this.logid = new UUID();
     this.id = id;
     this.key = key;
     this.val = val;
     this.in = in_;
-  }
-  
-  get hash() {
-    const str = JSON.stringify(this);
-    const jssha = new jsSHA("SHA-256", "TEXT");
-    jssha.update(str);
-    const hash = jssha.getHash("HEX");
-    return "urn:sha256:" + hash;
   }
 }

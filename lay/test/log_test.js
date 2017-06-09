@@ -13,9 +13,9 @@ describe("Log", () => {
     log = new Log(id, key, val);
   });
   
-  describe("#hash", () => {
-    it("should return sha256 urn", () => {
-      assert(log.hash.match(/^urn:sha256:.*$/));
+  describe("#logid", () => {
+    it("should return a uuid", () => {
+      assert(log.logid.constructor == UUID);
     });
   });
 });
