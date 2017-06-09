@@ -72,7 +72,7 @@ describe("Store", () => {
         assert(store.ref("v") == val);
       });
 
-      context("key re-assigned", () => {
+      context("name re-assigned", () => {
         const key2 = new UUID();
 
         beforeEach(() => {
@@ -91,7 +91,7 @@ describe("Store", () => {
       store.log(id, key, val);
     });
     
-    it("should return a object", () => {
+    it("should return the object", () => {
       const o = store.obj(id);
       assert(o.constructor == Obj);
     });
