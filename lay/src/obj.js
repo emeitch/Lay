@@ -18,12 +18,8 @@ export default class Obj {
     
     const ilogs = this.store.where({id: log.logid, key: invalidate});
     if (ilogs.length > 0) {
-      const ilog = ilogs[ilogs.length-1];
-      const it = this.store.transaction(ilog);
-      if (it.get(transactionTime) >= t.get(transactionTime)) {
         // apply invalidation
         return undefined;        
-      }
     }
     
     const val = log.val;
