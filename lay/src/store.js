@@ -61,8 +61,7 @@ export default class Store {
   
   assign(name, id) {
     // todo: ユニーク制約をかけたい
-    const log = new Log(id, nameKey, name);
-    this.addLog(log);
+    this.log(id, nameKey, name);
   }
   
   doTransaction(block) {
