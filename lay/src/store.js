@@ -34,12 +34,13 @@ export default class Store {
     return new Obj(this, id);
   }
   
-  transactionLogs(log) {
-    return this.findLogs({id: log.logid, key: transaction});
-  }
-  
   transaction(log) {
-    const tlogs = this.transactionLogs(log);
+    const tlogs = this.findLogs({id: log.logid, key: transaction});
+    
+    if (tlogs.length > 1) {
+      throw "too many transaction logs";
+    }
+    
     if (tlogs.length == 0) {
       return undefined;
     }

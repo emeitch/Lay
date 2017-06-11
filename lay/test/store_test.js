@@ -30,10 +30,12 @@ describe("Store", () => {
         assert(store.getLog(log.logid) == log);
       });
       
-      it("should append a transaction data", () => {
-        const tlogs = store.transactionLogs(log);
+      it("should add one transaction log", () => {
+        const tlogs = store.findLogs({id: log.logid, key: transaction});
         assert(tlogs.length == 1);
-        
+      });
+      
+      it("should append a transaction data", () => {
         const tobj = store.transaction(log);
         assert(tobj.get(transactionTime).constructor == Date);
       });
