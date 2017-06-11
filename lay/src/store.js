@@ -8,7 +8,7 @@ export default class Store {
     this.logs = {};
   }
   
-  get(logid) {
+  getLog(logid) {
     return this.logs[logid];
   }
   

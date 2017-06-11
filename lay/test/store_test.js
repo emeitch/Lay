@@ -27,15 +27,15 @@ describe("Store", () => {
         assert(log.key == key);
         assert(log.val == val);
         assert(log.in == undefined);
-        assert(store.get(log.logid) == log);
+        assert(store.getLog(log.logid) == log);
       });
       
       it("should append a transaction data", () => {
         const tlogs = store.transactionLogs(log);
         assert(tlogs.length == 1);
         
-        const t = store.transaction(log);
-        assert(t.get(transactionTime).constructor == Date);
+        const tobj = store.transaction(log);
+        assert(tobj.get(transactionTime).constructor == Date);
       });
     });
     
@@ -52,7 +52,7 @@ describe("Store", () => {
         assert(log.key == key);
         assert(log.val == val);
         assert(log.in == location);
-        assert(store.get(log.logid) == log);
+        assert(store.getLog(log.logid) == log);
       });
     });
   });
