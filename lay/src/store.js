@@ -13,7 +13,7 @@ export default class Store {
   }
     
   findLogs(cond) {
-    const results = [];
+    const logs = [];
     
     // todo: 線形探索になっているので高速化する
     for (const logid in this.logs) {
@@ -22,12 +22,12 @@ export default class Store {
         
         const keys = Object.keys(cond);
         if (keys.every((k) => JSON.stringify(log[k]) == JSON.stringify(cond[k]))) {
-          results.push(log);
+          logs.push(log);
         }
       }
     }
     
-    return results;
+    return logs;
   }
   
   obj(id) {
