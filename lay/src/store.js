@@ -11,11 +11,7 @@ export default class Store {
   getLog(logid) {
     return this.logs[logid];
   }
-  
-  addLog(log) {
-    this.logs[log.logid] = log;
-  }
-  
+    
   where(cond) {
     const results = [];
     
@@ -66,28 +62,27 @@ export default class Store {
   
   doTransaction(block) {
     // todo: アトミックな操作に修正する
+    const addLog = (log) => {
+      this.logs[log.logid] = log;
+    };
     const tid = new UUID();
-    const log = new Log(tid, transactionTime, new Date());
-    this.addLog(log);
-    return block(tid);
-  }
-  
-  logWithTransaction(id, key, val, in_, tid) {
-    const log = new Log(id, key, val, in_);
-    this.addLog(log);
-    const tlog = new Log(log.logid, transaction, tid);
-    this.addLog(tlog);
-    return log;
+    const ttlog = new Log(tid, transactionTime, new Date());
+    
+    addLog(ttlog);
+    
+    const logWithTransaction = (...args) => {
+      const log = new Log(...args);
+      addLog(log);
+      const tlog = new Log(log.logid, transaction, tid);
+      addLog(tlog);
+      return log;
+    };
+    return block(logWithTransaction);
   }
   
   log(...attrs) {
-    const count = 4 - attrs.length;
-    for (let i = 0; i < count; i++) {
-      attrs.push(undefined);      
-    }
-    return this.doTransaction(tid => {
-      const args = attrs.concat([tid]);
-      return this.logWithTransaction(...args);
+    return this.doTransaction(logWithTransaction => {
+      return logWithTransaction(...attrs);
     });
   }
 }
