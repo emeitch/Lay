@@ -87,6 +87,49 @@ describe("Store", () => {
     });
   });
   
+  describe("#activeLogs", () => {
+    context("no logs", () => {
+      it("should return empty", () => {
+        const logs = store.activeLogs(id, key);
+        assert(logs.length == 0);
+      });      
+    });
+
+    context("log with same id & key", () => {
+      beforeEach(() => {
+        store.log(id, key, "val0");
+        store.log(id, key, "val1");
+      });
+      
+      it("should return logs", () => {
+        const logs = store.activeLogs(id, key);
+        assert(logs[0].val == "val0");
+        assert(logs[1].val == "val1");
+      });
+    });
+  });
+    
+  describe("#activeLog", () => {
+    context("no logs", () => {
+      it("should return undefined", () => {
+        const log = store.activeLog(id, key);
+        assert(log == undefined);
+      });      
+    });
+    
+    context("log with same id & key", () => {
+      beforeEach(() => {
+        store.log(id, key, "val0");
+        store.log(id, key, "val1");
+      });
+      
+      it("should return a last log", () => {
+        const log = store.activeLog(id, key);
+        assert(log.val == "val1");
+      });
+    });
+  });
+  
   describe("#obj", () => {
     beforeEach(() => {
       store.log(id, key, val);

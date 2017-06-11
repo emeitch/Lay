@@ -6,6 +6,7 @@ import { nameKey, transaction, transactionTime } from './ontology';
 export default class Store {
   constructor() {
     this.logs = {};
+    this.activeLogsCache = {};
   }
   
   getLog(logid) {
@@ -28,6 +29,30 @@ export default class Store {
     }
     
     return logs;
+  }
+  
+  activeLogsIterator(id, key) {
+    const i = id + "__" + key;
+    const al = this.activeLogsCache[i];
+    return al ? al.values() : [].entries();
+  }
+  
+  activeLogs(id, key) {
+    const itr = this.activeLogsIterator(id, key);
+    return Array.from(itr);
+  }
+  
+  activeLog(id, key) {
+    const itr = this.activeLogsIterator(id, key);
+    
+    let log = undefined;
+    let ires = itr.next();
+    while(!ires.done) {
+      log = ires.value;
+      ires = itr.next();
+    }
+    
+    return log;
   }
   
   obj(id) {
@@ -65,6 +90,11 @@ export default class Store {
     // todo: アトミックな操作に修正する
     const addLog = (log) => {
       this.logs[log.logid] = log;
+      
+      const i = log.id + "__" + log.key;
+      const al = this.activeLogsCache[i] || new Set();
+      al.add(log);
+      this.activeLogsCache[i] = al;
     };
     const tid = new UUID();
     const ttlog = new Log(tid, transactionTime, new Date());
