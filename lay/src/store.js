@@ -12,7 +12,7 @@ export default class Store {
     return this.logs[logid];
   }
     
-  where(cond) {
+  findLogs(cond) {
     const results = [];
     
     // todo: 線形探索になっているので高速化する
@@ -35,7 +35,7 @@ export default class Store {
   }
   
   transactionLogs(log) {
-    return this.where({id: log.logid, key: transaction});
+    return this.findLogs({id: log.logid, key: transaction});
   }
   
   transaction(log) {
@@ -50,7 +50,7 @@ export default class Store {
   }
   
   ref(name) {
-    const logs = this.where({key: nameKey, val: name});
+    const logs = this.findLogs({key: nameKey, val: name});
     const log = logs[logs.length-1];
     return log ? log.id : undefined;
   }

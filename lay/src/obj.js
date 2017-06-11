@@ -8,7 +8,7 @@ export default class Obj {
   }
   
   get(key) {
-    const logs = this.store.where({id: this.id, key: key});
+    const logs = this.store.findLogs({id: this.id, key: key});
     if (logs.length == 0) {
       return undefined;
     }
@@ -16,7 +16,7 @@ export default class Obj {
     const log = logs[logs.length-1];
     const t = this.store.transaction(log);
     
-    const ilogs = this.store.where({id: log.logid, key: invalidate});
+    const ilogs = this.store.findLogs({id: log.logid, key: invalidate});
     if (ilogs.length > 0) {
         // apply invalidation
         return undefined;        
