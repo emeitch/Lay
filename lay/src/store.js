@@ -65,20 +65,20 @@ export default class Store {
     this.addLog(log);
   }
   
-  transactLog(id, key, val, in_, tid) {
-    const log = new Log(id, key, val, in_);
-    this.addLog(log);
-    const tlog = new Log(log.logid, transaction, tid);
-    this.addLog(tlog);
-    return log;
-  }
-  
   doTransaction(block) {
     // todo: アトミックな操作に修正する
     const tid = new UUID();
     const log = new Log(tid, transactionTime, new Date());
     this.addLog(log);
     return block(tid);
+  }
+  
+  logWithTransaction(id, key, val, in_, tid) {
+    const log = new Log(id, key, val, in_);
+    this.addLog(log);
+    const tlog = new Log(log.logid, transaction, tid);
+    this.addLog(tlog);
+    return log;
   }
   
   log(...attrs) {
@@ -88,7 +88,7 @@ export default class Store {
     }
     return this.doTransaction(tid => {
       const args = attrs.concat([tid]);
-      return this.transactLog(...args);
+      return this.logWithTransaction(...args);
     });
   }
 }
