@@ -12,7 +12,7 @@ export default class Store {
     return this.logs[logid];
   }
   
-  set(log) {
+  addLog(log) {
     this.logs[log.logid] = log;
   }
   
@@ -62,14 +62,14 @@ export default class Store {
   assign(name, id) {
     // todo: ユニーク制約をかけたい
     const log = new Log(id, nameKey, name);
-    this.set(log);
+    this.addLog(log);
   }
   
   transactLog(id, key, val, in_, tid) {
     const log = new Log(id, key, val, in_);
-    this.set(log);
+    this.addLog(log);
     const tlog = new Log(log.logid, transaction, tid);
-    this.set(tlog);
+    this.addLog(tlog);
     return log;
   }
   
@@ -77,7 +77,7 @@ export default class Store {
     // todo: アトミックな操作に修正する
     const tid = new UUID();
     const log = new Log(tid, transactionTime, new Date());
-    this.set(log);
+    this.addLog(log);
     return block(tid);
   }
   
