@@ -15,7 +15,7 @@ describe("Store", () => {
     store = new Store();
   });
     
-  describe("#add", () => {
+  describe("#log", () => {
     context("standard arguments", () => {
       let log;
       beforeEach(() => {
