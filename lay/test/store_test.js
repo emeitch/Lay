@@ -36,7 +36,7 @@ describe("Store", () => {
       });
       
       it("should append a transaction data", () => {
-        const tobj = store.transaction(log);
+        const tobj = store.transactionObj(log);
         assert(tobj.get(transactionTime).constructor == Date);
       });
     });

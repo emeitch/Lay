@@ -34,7 +34,7 @@ export default class Store {
     return new Obj(this, id);
   }
   
-  transaction(log) {
+  transactionObj(log) {
     const tlogs = this.findLogs({id: log.logid, key: transaction});
     
     if (tlogs.length > 1) {
