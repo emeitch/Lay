@@ -14,8 +14,6 @@ export default class Obj {
     }
     
     const log = logs[logs.length-1];
-    const t = this.store.transactionObj(log);
-    
     const ilogs = this.store.findLogs({id: log.logid, key: invalidate});
     if (ilogs.length > 0) {
         // apply invalidation
