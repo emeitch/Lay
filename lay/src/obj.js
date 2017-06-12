@@ -8,16 +8,9 @@ export default class Obj {
   }
   
   get(key) {
-    const logs = this.store.findLogs({id: this.id, key: key});
-    if (logs.length == 0) {
+    const log = this.store.activeLog(this.id, key);
+    if (!log) {
       return undefined;
-    }
-    
-    const log = logs[logs.length-1];
-    const ilogs = this.store.findLogs({id: log.logid, key: invalidate});
-    if (ilogs.length > 0) {
-        // apply invalidation
-        return undefined;        
     }
     
     const val = log.val;
