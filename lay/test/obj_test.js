@@ -45,18 +45,18 @@ describe("Obj", () => {
       });
     });
     
-    context("with the same key but different vals log", () => {
+    context("with the same key but different val logs", () => {
       beforeEach(() => {
         store.log(id, key, "val0");
         store.log(id, key, "val1");
       });
       
-      it("should return the last val as updating the property", () => {
+      it("should return the last val", () => {
         assert.deepStrictEqual(obj.get(key), "val1");
       });
     });
     
-    context("with invalidated log", () => {
+    context("with a invalidated log", () => {
       beforeEach(() => {
         const log = store.log(id, key, "val0");
         store.log(log.logid, invalidate);

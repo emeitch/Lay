@@ -95,13 +95,13 @@ describe("Store", () => {
       });      
     });
 
-    context("log with same id & key", () => {
+    context("log with same ids & keys but different vals", () => {
       beforeEach(() => {
         store.log(id, key, "val0");
         store.log(id, key, "val1");
       });
       
-      it("should return logs", () => {
+      it("should return all logs", () => {
         const logs = store.activeLogs(id, key);
         assert(logs[0].val == "val0");
         assert(logs[1].val == "val1");
@@ -130,7 +130,7 @@ describe("Store", () => {
       });      
     });
     
-    context("twice log with same id & key", () => {
+    context("log with same ids & keys but different vals", () => {
       beforeEach(() => {
         store.log(id, key, "val0");
         store.log(id, key, "val1");
