@@ -47,18 +47,18 @@ describe("Obj", () => {
     
     context("with the same key but different vals log", () => {
       beforeEach(() => {
-        store.log(id, key, "ver1");
-        store.log(id, key, "ver2");
+        store.log(id, key, "val0");
+        store.log(id, key, "val1");
       });
       
       it("should return the last val as updating the property", () => {
-        assert.deepStrictEqual(obj.get(key), "ver2");
+        assert.deepStrictEqual(obj.get(key), "val1");
       });
     });
     
     context("with invalidated log", () => {
       beforeEach(() => {
-        const log = store.log(id, key, "value1");
+        const log = store.log(id, key, "val0");
         store.log(log.logid, invalidate);
       });
 
@@ -68,21 +68,21 @@ describe("Obj", () => {
       
       context("add other positive log", () => {
         beforeEach(() => {
-          store.log(id, key, "value2");
+          store.log(id, key, "val1");
         });
         
         it("should return the val", () => {
-          assert.deepStrictEqual(obj.get(key), "value2");
+          assert.deepStrictEqual(obj.get(key), "val1");
         });
       });
       
-      context("add same positive log", () => {
+      context("add same old positive log", () => {
         beforeEach(() => {
-          store.log(id, key, "value1");
+          store.log(id, key, "val0");
         });
         
         it("should return the val", () => {
-          assert.deepStrictEqual(obj.get(key), "value1");
+          assert.deepStrictEqual(obj.get(key), "val0");
         });
       });
     });
