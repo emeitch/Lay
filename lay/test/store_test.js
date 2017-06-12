@@ -3,7 +3,7 @@ import assert from 'assert';
 import UUID from '../src/uuid';
 import Store from '../src/store';
 import Obj from '../src/obj';
-import { transaction, transactionTime } from '../src/ontology';
+import { transaction, transactionTime, invalidate } from '../src/ontology';
 
 describe("Store", () => {
   const id = new UUID();
@@ -106,6 +106,19 @@ describe("Store", () => {
         assert(logs[0].val == "val0");
         assert(logs[1].val == "val1");
       });
+      
+      context("invalidate the last log", () => {
+        beforeEach(() => {
+          const log = store.activeLog(id, key);
+          store.log(log.logid, invalidate);
+        });
+        
+        it("should return only one log", () => {
+          const logs = store.activeLogs(id, key);
+          assert(logs[0].val == "val0");
+          assert(logs[1] == undefined);
+        });
+      });
     });
   });
     
@@ -117,7 +130,7 @@ describe("Store", () => {
       });      
     });
     
-    context("log with same id & key", () => {
+    context("twice log with same id & key", () => {
       beforeEach(() => {
         store.log(id, key, "val0");
         store.log(id, key, "val1");
@@ -126,6 +139,18 @@ describe("Store", () => {
       it("should return a last log", () => {
         const log = store.activeLog(id, key);
         assert(log.val == "val1");
+      });
+      
+      context("invalidate the last log", () => {
+        beforeEach(() => {
+          const log = store.activeLog(id, key);
+          store.log(log.logid, invalidate);
+        });
+        
+        it("should return a first log", () => {
+          const log = store.activeLog(id, key);
+          assert(log.val == "val0");
+        });
       });
     });
   });

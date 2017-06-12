@@ -1,7 +1,7 @@
 import UUID from './uuid';
 import Log from './log';
 import Obj from './obj';
-import { nameKey, transaction, transactionTime } from './ontology';
+import { nameKey, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Store {
   constructor() {
@@ -86,15 +86,25 @@ export default class Store {
     this.log(id, nameKey, name);
   }
   
+  syncCache(log) {
+    const i = log.id + "__" + log.key;
+    const al = this.activeLogsCache[i] || new Set();
+    al.add(log);
+    this.activeLogsCache[i] = al;
+    
+    if (log.key == invalidate) {
+      const positive = this.getLog(log.id);
+      const i = positive.id + "__" + positive.key;
+      const al = this.activeLogsCache[i];
+      al.delete(positive);
+    }
+  }
+  
   doTransaction(block) {
     // todo: アトミックな操作に修正する
     const addLog = (log) => {
       this.logs[log.logid] = log;
-      
-      const i = log.id + "__" + log.key;
-      const al = this.activeLogsCache[i] || new Set();
-      al.add(log);
-      this.activeLogsCache[i] = al;
+      this.syncCache(log);
     };
     const tid = new UUID();
     const ttlog = new Log(tid, transactionTime, new Date());
