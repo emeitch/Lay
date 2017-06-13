@@ -46,7 +46,7 @@ describe("Store", () => {
 
       let log;
       beforeEach(() => {
-        log = store.log(id, key, val, location);
+        log = store.log(id, key, val, undefined, location);
       });
 
       it("shold add a log with location", () => {
@@ -54,6 +54,23 @@ describe("Store", () => {
         assert(log.key == key);
         assert(log.val == val);
         assert(log.in == location);
+        assert(store.getLog(log.logid) == log);
+      });
+    });
+    
+    context("with time", () => {
+      const time = new Date(2017, 0);
+
+      let log;
+      beforeEach(() => {
+        log = store.log(id, key, val, time);
+      });
+
+      it("shold add a log with location", () => {
+        assert(log.id == id);
+        assert(log.key == key);
+        assert(log.val == val);
+        assert(log.at == time);
         assert(store.getLog(log.logid) == log);
       });
     });

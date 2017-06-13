@@ -1,7 +1,7 @@
 import UUID from './uuid';
 
 export default class Log {
-  constructor(id, key, val, in_) {
+  constructor(id, key, val, at_, in_) {
     if (!id) {
       throw "id is required";
     }
@@ -14,6 +14,7 @@ export default class Log {
     this.id = id;
     this.key = key;
     this.val = val;
+    this.at = at_;
     this.in = in_;
   }
 }
