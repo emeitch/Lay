@@ -149,6 +149,19 @@ describe("Store", () => {
         assert(logs[0].val == "val0");
         assert(logs[1].val == "val1");
       });
+
+      context("invalidate the last log", () => {
+        beforeEach(() => {
+          const log = store.activeLog(id, key);
+          store.log(log.logid, invalidate);
+        });
+        
+        it("should return only one log", () => {
+          const logs = store.activeLogs(id, key);
+          assert(logs[0].val == "val0");
+          assert(logs[1] == undefined);
+        });
+      });
     });
   });
     
