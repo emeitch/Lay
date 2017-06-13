@@ -137,6 +137,19 @@ describe("Store", () => {
         });
       });
     });
+    
+    context("logs with time", () => {
+      beforeEach(() => {
+        store.log(id, key, "val0", new Date(2017, 0));
+        store.log(id, key, "val1", new Date(2017, 1));
+      });
+      
+      it("should return all logs", () => {
+        const logs = store.activeLogs(id, key);
+        assert(logs[0].val == "val0");
+        assert(logs[1].val == "val1");
+      });
+    });
   });
     
   describe("#activeLog", () => {
