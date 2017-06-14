@@ -33,9 +33,9 @@ export default class Store {
   }
   
   activeLogs(id, key, at=new Date()) {
-    const index = id + "__" + key;
-    const actives = new Set(this.activeLogsCache[index] || []);
-    const invalidations = new Set(this.invalidationLogsCache[index] || []);
+    const i = id + "__" + key;
+    const actives = new Set(this.activeLogsCache[i]);
+    const invalidations = new Set(this.invalidationLogsCache[i]);
     for (let invalidation of invalidations) {
       for (let active of actives.values()) {
         if (active.logid === invalidation.id 
