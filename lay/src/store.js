@@ -38,17 +38,15 @@ export default class Store {
   
   activeLogs(id, key, at=new Date()) {
     const i = this.cacheIndex(id, key);
-    const actives = new Set(this.activeLogsCache[i]);
-    const invalidations = new Set(this.invalidationLogsCache[i]);
-    for (let invalidation of invalidations) {
-      for (let active of actives.values()) {
-        if (active.logid === invalidation.id 
-            && (!invalidation.at || invalidation.at <= at)) {
-          actives.delete(active);
-        }
+    const alogs = new Map(this.activeLogsCache[i]);
+    const ilogs = new Map(this.invalidationLogsCache[i]);
+    for (let [_, ilog] of ilogs) {
+      const log = alogs.get(ilog.id);
+      if (log && (!ilog.at || ilog.at <= at)) {
+          alogs.delete(ilog.id);
       }
     }
-    return Array.from(actives);
+    return Array.from(alogs.values());
   }
   
   activeLog(id, key, at=new Date()) {
@@ -89,15 +87,15 @@ export default class Store {
   
   syncCache(log) {
     const i = this.cacheIndex(log.id, log.key);
-    const al = this.activeLogsCache[i] || new Set();
-    al.add(log);
+    const al = this.activeLogsCache[i] || new Map();
+    al.set(log.logid, log);
     this.activeLogsCache[i] = al;
     
     if (log.key == invalidate) {
       const positive = this.getLog(log.id);
       const i = this.cacheIndex(positive.id, positive.key);
-      const il = this.invalidationLogsCache[i] || new Set();
-      il.add(log);
+      const il = this.invalidationLogsCache[i] || new Map();
+      il.set(log.logid, log);
       this.invalidationLogsCache[i] = il;
     }
   }
