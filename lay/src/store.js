@@ -32,8 +32,12 @@ export default class Store {
     return logs;
   }
   
+  cacheIndex(id, key) {
+    return id + "__" + key;
+  }
+  
   activeLogs(id, key, at=new Date()) {
-    const i = id + "__" + key;
+    const i = this.cacheIndex(id, key);
     const actives = new Set(this.activeLogsCache[i]);
     const invalidations = new Set(this.invalidationLogsCache[i]);
     for (let invalidation of invalidations) {
@@ -84,14 +88,14 @@ export default class Store {
   }
   
   syncCache(log) {
-    const i = log.id + "__" + log.key;
+    const i = this.cacheIndex(log.id, log.key);
     const al = this.activeLogsCache[i] || new Set();
     al.add(log);
     this.activeLogsCache[i] = al;
     
     if (log.key == invalidate) {
       const positive = this.getLog(log.id);
-      const i = positive.id + "__" + positive.key;
+      const i = this.cacheIndex(positive.id, positive.key);
       const al = this.invalidationLogsCache[i] || new Set();
       al.add(log);
       this.invalidationLogsCache[i] = al;
