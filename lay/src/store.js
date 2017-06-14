@@ -7,6 +7,7 @@ export default class Store {
   constructor() {
     this.logs = {};
     this.activeLogsCache = {};
+    this.invalidationLogsCache = {};
   }
   
   getLog(logid) {
@@ -31,28 +32,37 @@ export default class Store {
     return logs;
   }
   
-  activeLogsIterator(id, key) {
+  activeLogsIterator(id, key, at) {
     const i = id + "__" + key;
     const al = this.activeLogsCache[i];
     return al ? al.values() : [].entries();
   }
   
-  activeLogs(id, key) {
-    const itr = this.activeLogsIterator(id, key);
-    return Array.from(itr);
+  invalidationLogsIterator(id, key) {
+    const i = id + "__" + key;
+    const il = this.invalidationLogsCache[i];
+    return il ? il.values() : [].entries();
   }
   
-  activeLog(id, key) {
-    const itr = this.activeLogsIterator(id, key);
-    
-    let log = undefined;
-    let ires = itr.next();
-    while(!ires.done) {
-      log = ires.value;
-      ires = itr.next();
+  activeLogs(id, key, at=new Date()) {
+    const pitr = this.activeLogsIterator(id, key);
+    const actives = new Set(pitr);
+    const iitr = this.invalidationLogsIterator(id, key);
+    const invalidations = new Set(iitr);
+    for (let invalidation of invalidations) {
+      for (let active of actives.values()) {
+        if (active.logid === invalidation.id 
+            && (!invalidation.at || invalidation.at <= at)) {
+          actives.delete(active);
+        }
+      }
     }
-    
-    return log;
+    return Array.from(actives);
+  }
+  
+  activeLog(id, key, at=new Date()) {
+    const actives = this.activeLogs(id, key, at);
+    return actives[actives.length-1];
   }
   
   obj(id) {
@@ -95,8 +105,9 @@ export default class Store {
     if (log.key == invalidate) {
       const positive = this.getLog(log.id);
       const i = positive.id + "__" + positive.key;
-      const al = this.activeLogsCache[i];
-      al.delete(positive);
+      const al = this.invalidationLogsCache[i] || new Set();
+      al.add(log);
+      this.invalidationLogsCache[i] = al;
     }
   }
   
