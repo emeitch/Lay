@@ -32,23 +32,10 @@ export default class Store {
     return logs;
   }
   
-  activeLogsIterator(id, key, at) {
-    const i = id + "__" + key;
-    const al = this.activeLogsCache[i];
-    return al ? al.values() : [].entries();
-  }
-  
-  invalidationLogsIterator(id, key) {
-    const i = id + "__" + key;
-    const il = this.invalidationLogsCache[i];
-    return il ? il.values() : [].entries();
-  }
-  
   activeLogs(id, key, at=new Date()) {
-    const pitr = this.activeLogsIterator(id, key);
-    const actives = new Set(pitr);
-    const iitr = this.invalidationLogsIterator(id, key);
-    const invalidations = new Set(iitr);
+    const index = id + "__" + key;
+    const actives = new Set(this.activeLogsCache[index] || []);
+    const invalidations = new Set(this.invalidationLogsCache[index] || []);
     for (let invalidation of invalidations) {
       for (let active of actives.values()) {
         if (active.logid === invalidation.id 
