@@ -96,9 +96,9 @@ export default class Store {
     if (log.key == invalidate) {
       const positive = this.getLog(log.id);
       const i = this.cacheIndex(positive.id, positive.key);
-      const al = this.invalidationLogsCache[i] || new Set();
-      al.add(log);
-      this.invalidationLogsCache[i] = al;
+      const il = this.invalidationLogsCache[i] || new Set();
+      il.add(log);
+      this.invalidationLogsCache[i] = il;
     }
   }
   
