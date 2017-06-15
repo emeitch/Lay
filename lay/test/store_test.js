@@ -170,7 +170,7 @@ describe("Store", () => {
         });
         
         it("should return only one log", () => {
-          const logs = store.activeLogs(id, key, new Date(2017, 5));
+          const logs = store.activeLogs(id, key, new Date(2017, 3));
           assert(logs[0].val == "val0");
           assert(logs[1] == undefined);
         });
@@ -228,7 +228,7 @@ describe("Store", () => {
         });
         
         it("should return the first log", () => {
-          const log = store.activeLog(id, key, new Date(2017, 5));
+          const log = store.activeLog(id, key, new Date(2017, 3));
           assert(log.val == "val0");
         });
         
