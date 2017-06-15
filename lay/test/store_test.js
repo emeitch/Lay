@@ -138,7 +138,7 @@ describe("Store", () => {
       });
     });
     
-    context("logs with time", () => {
+    context("logs with applying time", () => {
       beforeEach(() => {
         store.log(id, key, "val0", new Date(2017, 0));
         store.log(id, key, "val1", new Date(2017, 1));
@@ -163,7 +163,7 @@ describe("Store", () => {
         });
       });
       
-      context("invalidate the last log with time", () => {
+      context("invalidate the last log with applying time", () => {
         beforeEach(() => {
           const log = store.activeLog(id, key);
           store.log(log.logid, invalidate, undefined, new Date(2017, 2));
@@ -221,7 +221,7 @@ describe("Store", () => {
         });
       });
       
-      context("invalidate the last log with time", () => {
+      context("invalidate the last log with applying time", () => {
         beforeEach(() => {
           const log = store.activeLog(id, key);
           store.log(log.logid, invalidate, undefined, new Date(2017, 2));
