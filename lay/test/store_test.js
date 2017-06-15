@@ -175,6 +175,12 @@ describe("Store", () => {
           assert(logs[1] == undefined);
         });
         
+        it("should return only one log by time specified just invalidation time", () => {
+          const logs = store.activeLogs(id, key, new Date(2017, 2));
+          assert(logs[0].val == "val0");
+          assert(logs[1] == undefined);
+        });
+        
         it("should return all logs by time specified before invalidation", () => {
           const logs = store.activeLogs(id, key, new Date(2017, 1));
           assert(logs[0].val == "val0");
