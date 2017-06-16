@@ -188,6 +188,32 @@ describe("Store", () => {
         });
       });
     });
+    
+    context("log with old applying time", () => {
+      beforeEach(() => {
+        store.log(id, key, "val0", new Date(2017, 1));
+        store.log(id, key, "val1", new Date(2017, 0));
+      });
+      
+      it("should return all logs order by applying time", () => {
+        const logs = store.activeLogs(id, key);
+        assert(logs[0].val == "val1");
+        assert(logs[1].val == "val0");
+      });
+
+      context("invalidate the last log", () => {
+        beforeEach(() => {
+          const log = store.activeLog(id, key);
+          store.log(log.logid, invalidate);
+        });
+        
+        it("should return only the first log", () => {
+          const logs = store.activeLogs(id, key);
+          assert(logs[0].val == "val1");
+          assert(logs[1] == undefined);
+        });
+      });
+    });
   });
     
   describe("#activeLog", () => {

@@ -285,7 +285,15 @@ var Store = function () {
         }
       }
 
-      return Array.from(alogs.values());
+      return Array.from(alogs.values()).sort(function (a, b) {
+        if (a.at == undefined) {
+          return -1;
+        } else if (b.at == undefined) {
+          return 1;
+        } else {
+          return a.at.getTime() - b.at.getTime();
+        }
+      });
     }
   }, {
     key: 'activeLog',

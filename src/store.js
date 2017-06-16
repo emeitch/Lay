@@ -46,7 +46,15 @@ export default class Store {
           alogs.delete(ilog.id);
       }
     }
-    return Array.from(alogs.values());
+    return Array.from(alogs.values()).sort((a, b) => {
+      if (a.at == undefined) {
+        return -1;
+      } else if (b.at == undefined) {
+        return 1;
+      } else {
+        return a.at.getTime() - b.at.getTime();
+      }
+    });
   }
   
   activeLog(id, key, at=new Date()) {
