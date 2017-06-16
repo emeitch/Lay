@@ -22,7 +22,7 @@ describe("Store", () => {
         log = store.log(id, key, val);
       });
       
-      it("should add a log", () => {
+      it("should append a log", () => {
         assert(log.id == id);
         assert(log.key == key);
         assert(log.val == val);
@@ -30,7 +30,7 @@ describe("Store", () => {
         assert(store.getLog(log.logid) == log);
       });
       
-      it("should add one transaction log", () => {
+      it("should append a transaction log", () => {
         const tlogs = store.findLogs({id: log.logid, key: transaction});
         assert(tlogs.length == 1);
       });
@@ -49,7 +49,7 @@ describe("Store", () => {
         log = store.log(id, key, val, undefined, location);
       });
 
-      it("shold add a log with location", () => {
+      it("should append a log with location", () => {
         assert(log.id == id);
         assert(log.key == key);
         assert(log.val == val);
@@ -66,7 +66,7 @@ describe("Store", () => {
         log = store.log(id, key, val, time);
       });
 
-      it("shold add a log with location", () => {
+      it("should append a log with time", () => {
         assert(log.id == id);
         assert(log.key == key);
         assert(log.val == val);
@@ -130,7 +130,7 @@ describe("Store", () => {
           store.log(log.logid, invalidate);
         });
         
-        it("should return only one log", () => {
+        it("should return only the first log", () => {
           const logs = store.activeLogs(id, key);
           assert(logs[0].val == "val0");
           assert(logs[1] == undefined);
@@ -156,7 +156,7 @@ describe("Store", () => {
           store.log(log.logid, invalidate);
         });
         
-        it("should return only one log", () => {
+        it("should return only the first log", () => {
           const logs = store.activeLogs(id, key);
           assert(logs[0].val == "val0");
           assert(logs[1] == undefined);
@@ -169,13 +169,13 @@ describe("Store", () => {
           store.log(log.logid, invalidate, undefined, new Date(2017, 2));
         });
         
-        it("should return only one log", () => {
+        it("should return only the first log", () => {
           const logs = store.activeLogs(id, key, new Date(2017, 3));
           assert(logs[0].val == "val0");
           assert(logs[1] == undefined);
         });
         
-        it("should return only one log by time specified just invalidation time", () => {
+        it("should return only the first log by time specified just invalidation time", () => {
           const logs = store.activeLogs(id, key, new Date(2017, 2));
           assert(logs[0].val == "val0");
           assert(logs[1] == undefined);
