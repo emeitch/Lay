@@ -40,7 +40,7 @@ export default class Store {
     const i = this.cacheIndex(id, key);
     const alogs = new Map(this.activeLogsCache[i]);
     const ilogs = new Map(this.invalidationLogsCache[i]);
-    for (let [_, ilog] of ilogs) {
+    for (let [, ilog] of ilogs) {
       const log = alogs.get(ilog.id);
       if (log && (!ilog.at || ilog.at <= at)) {
           alogs.delete(ilog.id);

@@ -1,5 +1,4 @@
 import UUID from './uuid';
-import { invalidate, transactionTime } from '../src/ontology';
 
 export default class Obj {
   constructor(store, id) {

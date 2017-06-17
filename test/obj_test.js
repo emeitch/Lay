@@ -2,7 +2,6 @@ import assert from 'assert';
 
 import UUID from '../src/uuid';
 import Store from '../src/store';
-import Obj from '../src/obj';
 import { invalidate } from '../src/ontology';
 
 describe("Obj", () => {

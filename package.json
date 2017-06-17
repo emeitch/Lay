@@ -1,7 +1,8 @@
 {
   "scripts": {
     "start": "webpack --watch -d --devtool source-map & browser-sync start --server --files build/bundle.js",
-    "test": "mocha"
+    "test": "npm run lint && mocha",
+    "lint": "eslint src/*.js test/*.js"
   },
   "dependencies": {
     "bidirectional-map": "^1.0.3",
@@ -14,6 +15,7 @@
     "babel-preset-power-assert": "^1.0.0",
     "babel-register": "^6.24.1",
     "browser-sync": "^2.18.8",
+    "eslint": "^4.0.0",
     "mocha": "^3.3.0",
     "power-assert": "^1.4.2",
     "webpack": "^2.3.2"

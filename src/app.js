@@ -1,4 +1,4 @@
-import UUID from './uuid';
-import Store from './store';
+/* eslint no-console: ["error", { allow: ["log"] }] */
+/* eslint-env browser */
 
 console.log("Lay: Hello, world!");
