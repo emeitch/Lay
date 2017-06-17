@@ -6,8 +6,8 @@ import { nameKey, transaction, transactionTime, invalidate } from './ontology';
 export default class Store {
   constructor() {
     this.logs = new Map();
-    this.activeLogsCache = {};
-    this.invalidationLogsCache = {};
+    this.activeLogsCache = new Map();
+    this.invalidationLogsCache = new Map();
   }
   
   getLog(logid) {
@@ -34,8 +34,8 @@ export default class Store {
   
   activeLogs(id, key, at=new Date()) {
     const i = this.cacheIndex(id, key);
-    const alogs = new Map(this.activeLogsCache[i]);
-    const ilogs = new Map(this.invalidationLogsCache[i]);
+    const alogs = new Map(this.activeLogsCache.get(i));
+    const ilogs = new Map(this.invalidationLogsCache.get(i));
     for (let [, ilog] of ilogs) {
       const log = alogs.get(ilog.id);
       if (log && (!ilog.at || ilog.at <= at)) {
@@ -87,16 +87,16 @@ export default class Store {
   
   syncCache(log) {
     const i = this.cacheIndex(log.id, log.key);
-    const al = this.activeLogsCache[i] || new Map();
+    const al = this.activeLogsCache.get(i) || new Map();
     al.set(log.logid, log);
-    this.activeLogsCache[i] = al;
+    this.activeLogsCache.set(i, al);
     
     if (log.key == invalidate) {
       const positive = this.getLog(log.id);
       const i = this.cacheIndex(positive.id, positive.key);
-      const il = this.invalidationLogsCache[i] || new Map();
+      const il = this.invalidationLogsCache.get(i) || new Map();
       il.set(log.logid, log);
-      this.invalidationLogsCache[i] = il;
+      this.invalidationLogsCache.set(i, il);
     }
   }
   
