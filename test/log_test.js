@@ -18,4 +18,14 @@ describe("Log", () => {
       assert(log.logid.constructor == UUID);
     });
   });
+  
+  describe("constructor ", () => {
+    it("should require id", () => {
+      assert.throws(() => new Log(), /id is required/);
+    });
+    
+    it("should require key", () => {
+      assert.throws(() => new Log(id), /key is required/);
+    });
+  });
 });
