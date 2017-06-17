@@ -28,33 +28,33 @@ describe("Obj", () => {
       beforeEach(() => {
         store.log(id, key, dst);
       });
-      
+
       it("should return a obj of log's val", () => {
         assert.deepStrictEqual(obj.get(key), store.obj(dst));
       });
     });
-    
+
     context("with value val log", () => {
       beforeEach(() => {
         store.log(id, key, "value");
       });
-      
+
       it("should return a value", () => {
         assert.deepStrictEqual(obj.get(key), "value");
       });
     });
-    
+
     context("with the same key but different val logs", () => {
       beforeEach(() => {
         store.log(id, key, "val0");
         store.log(id, key, "val1");
       });
-      
+
       it("should return the last val", () => {
         assert.deepStrictEqual(obj.get(key), "val1");
       });
     });
-    
+
     context("with a invalidated log", () => {
       beforeEach(() => {
         const log = store.log(id, key, "val0");
@@ -64,22 +64,22 @@ describe("Obj", () => {
       it("should return undefined", () => {
         assert.deepStrictEqual(obj.get(key), undefined);
       });
-      
+
       context("add other positive log", () => {
         beforeEach(() => {
           store.log(id, key, "val1");
         });
-        
+
         it("should return the val", () => {
           assert.deepStrictEqual(obj.get(key), "val1");
         });
       });
-      
+
       context("add same old positive log", () => {
         beforeEach(() => {
           store.log(id, key, "val0");
         });
-        
+
         it("should return the val", () => {
           assert.deepStrictEqual(obj.get(key), "val0");
         });

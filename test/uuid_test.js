@@ -8,7 +8,7 @@ describe("UUID", () => {
       assert(new UUID().urn.match(/^urn:uuid:.*$/));
     });
   });
-  
+
   describe("#toJSON", () => {
     it("should return uuid urn", () => {
       const uuid = new UUID();

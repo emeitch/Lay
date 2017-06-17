@@ -5,16 +5,16 @@ export default class Obj {
     this.store = store;
     this.id = id;
   }
-  
+
   get(key) {
     const log = this.store.activeLog(this.id, key);
     if (!log) {
       return undefined;
     }
-    
+
     const val = log.val;
     if (val.constructor === UUID) {
-      return this.store.obj(val);  
+      return this.store.obj(val);
     } else {
       return val;
     }

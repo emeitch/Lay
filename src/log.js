@@ -5,7 +5,7 @@ export default class Log {
     if (!id) {
       throw "id is required";
     }
-    
+
     if (!key) {
       throw "key is required";
     }

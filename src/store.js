@@ -9,14 +9,14 @@ export default class Store {
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();
   }
-  
+
   getLog(logid) {
     return this.logs.get(logid);
   }
-    
+
   findLogs(cond) {
     const logs = [];
-    
+
     // todo: 線形探索になっているので高速化する
     for (const [, log] of this.logs) {
       const keys = Object.keys(cond);
@@ -24,14 +24,14 @@ export default class Store {
         logs.push(log);
       }
     }
-    
+
     return logs;
   }
-  
+
   cacheIndex(id, key) {
     return id + "__" + key;
   }
-  
+
   activeLogs(id, key, at=new Date()) {
     const i = this.cacheIndex(id, key);
     const alogs = new Map(this.activeLogsCache.get(i));
@@ -52,45 +52,45 @@ export default class Store {
       }
     });
   }
-  
+
   activeLog(id, key, at=new Date()) {
     const actives = this.activeLogs(id, key, at);
     return actives[actives.length-1];
   }
-  
+
   obj(id) {
     return new Obj(this, id);
   }
-  
+
   transactionObj(log) {
     const tlogs = this.findLogs({id: log.logid, key: transaction});
-    
+
     if (tlogs.length == 0) {
       return undefined;
     }
-    
+
     const tlog = tlogs[0];
     const tid = tlog.val;
     return this.obj(tid);
   }
-  
+
   ref(name) {
     const logs = this.findLogs({key: nameKey, val: name});
     const log = logs[logs.length-1];
     return log ? log.id : undefined;
   }
-  
+
   assign(name, id) {
     // todo: ユニーク制約をかけたい
     this.log(id, nameKey, name);
   }
-  
+
   syncCache(log) {
     const i = this.cacheIndex(log.id, log.key);
     const al = this.activeLogsCache.get(i) || new Map();
     al.set(log.logid, log);
     this.activeLogsCache.set(i, al);
-    
+
     if (log.key == invalidate) {
       const positive = this.getLog(log.id);
       const i = this.cacheIndex(positive.id, positive.key);
@@ -99,7 +99,7 @@ export default class Store {
       this.invalidationLogsCache.set(i, il);
     }
   }
-  
+
   doTransaction(block) {
     // todo: アトミックな操作に修正する
     const addLog = (log) => {
@@ -108,9 +108,9 @@ export default class Store {
     };
     const tid = new UUID();
     const ttlog = new Log(tid, transactionTime, new Date());
-    
+
     addLog(ttlog);
-    
+
     const logWithTransaction = (...args) => {
       const log = new Log(...args);
       addLog(log);
@@ -120,7 +120,7 @@ export default class Store {
     };
     return block(logWithTransaction);
   }
-  
+
   log(...attrs) {
     return this.doTransaction(logWithTransaction => {
       return logWithTransaction(...attrs);
