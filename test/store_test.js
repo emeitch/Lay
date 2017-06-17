@@ -76,7 +76,25 @@ describe("Store", () => {
     });
   });
   
+  describe("#transactionObj", () => {
+    let tobj;
+    beforeEach(() => {
+      const log = store.log(id, key, val);
+      tobj = store.transactionObj(log);
+    });
+    
+    it("should has no more transaction", () => {
+      assert(store.transactionObj(tobj.id) == undefined);
+    });
+  });
+  
   describe("#ref", () => {
+    context("name un assigned", () => {
+      it("should return undefined", () => {
+        assert(store.ref("unassigned") == undefined);
+      })
+    });
+    
     context("name assigned", () => {
       beforeEach(() => {
         store.assign("i", id);
@@ -214,6 +232,19 @@ describe("Store", () => {
         });
       });
     });
+    
+    context("contain a log with time and a log without time", () => {
+      beforeEach(() => {
+        store.log(id, key, "val0", new Date(2017, 2));
+        store.log(id, key, "val1");
+      });
+      
+      it("should return all logs order by applying time", () => {
+        const logs = store.activeLogs(id, key);
+        assert(logs[0].val == "val1");
+        assert(logs[1].val == "val0");
+      });
+    });
   });
     
   describe("#activeLog", () => {
@@ -292,7 +323,7 @@ describe("Store", () => {
           assert(log.val == "val1");
         });
       });
-    });
+    });    
   });
   
   describe("#obj", () => {
