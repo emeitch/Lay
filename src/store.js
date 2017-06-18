@@ -20,7 +20,7 @@ export default class Store {
     // todo: 線形探索になっているので高速化する
     for (const [, log] of this.logs) {
       const keys = Object.keys(cond);
-      if (keys.every((k) => JSON.stringify(log[k]) == JSON.stringify(cond[k]))) {
+      if (keys.every((k) => JSON.stringify(log[k]) === JSON.stringify(cond[k]))) {
         logs.push(log);
       }
     }
@@ -51,9 +51,9 @@ export default class Store {
     }
 
     return Array.from(alogs.values()).sort((a, b) => {
-      if (a.at == undefined) {
+      if (a.at === undefined) {
         return -1;
-      } else if (b.at == undefined) {
+      } else if (b.at === undefined) {
         return 1;
       } else {
         return a.at.getTime() - b.at.getTime();
@@ -73,7 +73,7 @@ export default class Store {
   transactionObj(log) {
     const tlogs = this.findLogs({id: log.logid, key: transaction});
 
-    if (tlogs.length == 0) {
+    if (tlogs.length === 0) {
       return undefined;
     }
 
@@ -99,7 +99,7 @@ export default class Store {
     al.set(log.logid, log);
     this.activeLogsCache.set(i, al);
 
-    if (log.key == invalidate) {
+    if (log.key === invalidate) {
       const positive = this.getLog(log.id);
       const i = this.cacheIndex(positive.id, positive.key);
       const il = this.invalidationLogsCache.get(i) || new Map();

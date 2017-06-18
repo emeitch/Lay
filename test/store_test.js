@@ -23,21 +23,21 @@ describe("Store", () => {
       });
 
       it("should append a log", () => {
-        assert(log.id == id);
-        assert(log.key == key);
-        assert(log.val == val);
-        assert(log.in == undefined);
-        assert(store.getLog(log.logid) == log);
+        assert(log.id === id);
+        assert(log.key === key);
+        assert(log.val === val);
+        assert(log.in === undefined);
+        assert(store.getLog(log.logid) === log);
       });
 
       it("should append a transaction log", () => {
         const tlogs = store.findLogs({id: log.logid, key: transaction});
-        assert(tlogs.length == 1);
+        assert(tlogs.length === 1);
       });
 
       it("should append a transaction data", () => {
         const tobj = store.transactionObj(log);
-        assert(tobj.get(transactionTime).constructor == Date);
+        assert(tobj.get(transactionTime).constructor === Date);
       });
     });
 
@@ -50,11 +50,11 @@ describe("Store", () => {
       });
 
       it("should append a log with location", () => {
-        assert(log.id == id);
-        assert(log.key == key);
-        assert(log.val == val);
-        assert(log.in == location);
-        assert(store.getLog(log.logid) == log);
+        assert(log.id === id);
+        assert(log.key === key);
+        assert(log.val === val);
+        assert(log.in === location);
+        assert(store.getLog(log.logid) === log);
       });
     });
 
@@ -67,11 +67,11 @@ describe("Store", () => {
       });
 
       it("should append a log with time", () => {
-        assert(log.id == id);
-        assert(log.key == key);
-        assert(log.val == val);
-        assert(log.at == time);
-        assert(store.getLog(log.logid) == log);
+        assert(log.id === id);
+        assert(log.key === key);
+        assert(log.val === val);
+        assert(log.at === time);
+        assert(store.getLog(log.logid) === log);
       });
     });
   });
@@ -84,14 +84,14 @@ describe("Store", () => {
     });
 
     it("should has no more transaction", () => {
-      assert(store.transactionObj(tobj.id) == undefined);
+      assert(store.transactionObj(tobj.id) === undefined);
     });
   });
 
   describe("#ref", () => {
     context("name un assigned", () => {
       it("should return undefined", () => {
-        assert(store.ref("unassigned") == undefined);
+        assert(store.ref("unassigned") === undefined);
       })
     });
 
@@ -103,9 +103,9 @@ describe("Store", () => {
       });
 
       it("should return a id by name", () => {
-        assert(store.ref("i") == id);
-        assert(store.ref("k") == key);
-        assert(store.ref("v") == val);
+        assert(store.ref("i") === id);
+        assert(store.ref("k") === key);
+        assert(store.ref("v") === val);
       });
 
       context("name re-assigned", () => {
@@ -116,7 +116,7 @@ describe("Store", () => {
         });
 
         it("should return a re-assigned id by name", () => {
-          assert(store.ref("r") == key2);
+          assert(store.ref("r") === key2);
         });
       });
     });
@@ -126,7 +126,7 @@ describe("Store", () => {
     context("no logs", () => {
       it("should return empty", () => {
         const logs = store.activeLogs(id, key);
-        assert(logs.length == 0);
+        assert(logs.length === 0);
       });
     });
 
@@ -138,8 +138,8 @@ describe("Store", () => {
 
       it("should return all logs", () => {
         const logs = store.activeLogs(id, key);
-        assert(logs[0].val == "val0");
-        assert(logs[1].val == "val1");
+        assert(logs[0].val === "val0");
+        assert(logs[1].val === "val1");
       });
 
       context("invalidate the last log", () => {
@@ -150,8 +150,8 @@ describe("Store", () => {
 
         it("should return only the first log", () => {
           const logs = store.activeLogs(id, key);
-          assert(logs[0].val == "val0");
-          assert(logs[1] == undefined);
+          assert(logs[0].val === "val0");
+          assert(logs[1] === undefined);
         });
       });
     });
@@ -164,14 +164,14 @@ describe("Store", () => {
 
       it("should return all logs", () => {
         const logs = store.activeLogs(id, key);
-        assert(logs[0].val == "val0");
-        assert(logs[1].val == "val1");
+        assert(logs[0].val === "val0");
+        assert(logs[1].val === "val1");
       });
 
       it("should return only the first log by specifying time before applied", () => {
         const logs = store.activeLogs(id, key, new Date(2017, 1));
-        assert(logs[0].val == "val0");
-        assert(logs[1] == undefined);
+        assert(logs[0].val === "val0");
+        assert(logs[1] === undefined);
       });
 
       context("invalidate the last log", () => {
@@ -182,8 +182,8 @@ describe("Store", () => {
 
         it("should return only the first log", () => {
           const logs = store.activeLogs(id, key);
-          assert(logs[0].val == "val0");
-          assert(logs[1] == undefined);
+          assert(logs[0].val === "val0");
+          assert(logs[1] === undefined);
         });
       });
 
@@ -195,20 +195,20 @@ describe("Store", () => {
 
         it("should return only the first log", () => {
           const logs = store.activeLogs(id, key, new Date(2017, 6));
-          assert(logs[0].val == "val0");
-          assert(logs[1] == undefined);
+          assert(logs[0].val === "val0");
+          assert(logs[1] === undefined);
         });
 
         it("should return only the first log by time specified just invalidation time", () => {
           const logs = store.activeLogs(id, key, new Date(2017, 4));
-          assert(logs[0].val == "val0");
-          assert(logs[1] == undefined);
+          assert(logs[0].val === "val0");
+          assert(logs[1] === undefined);
         });
 
         it("should return all logs by time specified before invalidation", () => {
           const logs = store.activeLogs(id, key, new Date(2017, 3));
-          assert(logs[0].val == "val0");
-          assert(logs[1].val == "val1");
+          assert(logs[0].val === "val0");
+          assert(logs[1].val === "val1");
         });
       });
     });
@@ -221,8 +221,8 @@ describe("Store", () => {
 
       it("should return all logs order by applying time", () => {
         const logs = store.activeLogs(id, key);
-        assert(logs[0].val == "val1");
-        assert(logs[1].val == "val0");
+        assert(logs[0].val === "val1");
+        assert(logs[1].val === "val0");
       });
 
       context("invalidate the last log", () => {
@@ -233,8 +233,8 @@ describe("Store", () => {
 
         it("should return only the first log", () => {
           const logs = store.activeLogs(id, key);
-          assert(logs[0].val == "val1");
-          assert(logs[1] == undefined);
+          assert(logs[0].val === "val1");
+          assert(logs[1] === undefined);
         });
       });
     });
@@ -247,8 +247,8 @@ describe("Store", () => {
 
       it("should return all logs order by applying time", () => {
         const logs = store.activeLogs(id, key);
-        assert(logs[0].val == "val1");
-        assert(logs[1].val == "val0");
+        assert(logs[0].val === "val1");
+        assert(logs[1].val === "val0");
       });
     });
   });
@@ -257,7 +257,7 @@ describe("Store", () => {
     context("no logs", () => {
       it("should return undefined", () => {
         const log = store.activeLog(id, key);
-        assert(log == undefined);
+        assert(log === undefined);
       });
     });
 
@@ -269,7 +269,7 @@ describe("Store", () => {
 
       it("should return the last log", () => {
         const log = store.activeLog(id, key);
-        assert(log.val == "val1");
+        assert(log.val === "val1");
       });
 
       context("invalidate the last log with applying time", () => {
@@ -280,7 +280,7 @@ describe("Store", () => {
 
         it("should return the first log", () => {
           const log = store.activeLog(id, key, new Date(2017, 3));
-          assert(log.val == "val0");
+          assert(log.val === "val0");
         });
       });
     });
@@ -293,7 +293,7 @@ describe("Store", () => {
 
     it("should return the object", () => {
       const o = store.obj(id);
-      assert(o.constructor == Obj);
+      assert(o.constructor === Obj);
     });
   });
 });
