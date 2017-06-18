@@ -264,7 +264,7 @@ describe("Store", () => {
     context("logs with applying time", () => {
       beforeEach(() => {
         store.log(id, key, "val0", new Date(2017, 0));
-        store.log(id, key, "val1", new Date(2017, 1));
+        store.log(id, key, "val1", new Date(2017, 2));
       });
 
       it("should return the last log", () => {
@@ -272,16 +272,9 @@ describe("Store", () => {
         assert(log.val === "val1");
       });
 
-      context("invalidate the last log with applying time", () => {
-        beforeEach(() => {
-          const log = store.activeLog(id, key);
-          store.log(log.logid, invalidate, undefined, new Date(2017, 2));
-        });
-
-        it("should return the first log by specifying time specified after invalidation", () => {
-          const log = store.activeLog(id, key, new Date(2017, 3));
-          assert(log.val === "val0");
-        });
+      it("should return the first log by specifying time", () => {
+        const log = store.activeLog(id, key, new Date(2017, 1));
+        assert(log.val === "val0");
       });
     });
   });
