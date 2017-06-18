@@ -255,30 +255,6 @@ describe("Store", () => {
       });
     });
 
-    context("log with same ids & keys but different vals", () => {
-      beforeEach(() => {
-        store.log(id, key, "val0");
-        store.log(id, key, "val1");
-      });
-
-      it("should return the last log", () => {
-        const log = store.activeLog(id, key);
-        assert(log.val == "val1");
-      });
-
-      context("invalidate the last log", () => {
-        beforeEach(() => {
-          const log = store.activeLog(id, key);
-          store.log(log.logid, invalidate);
-        });
-
-        it("should return the first log", () => {
-          const log = store.activeLog(id, key);
-          assert(log.val == "val0");
-        });
-      });
-    });
-
     context("logs with applying time", () => {
       beforeEach(() => {
         store.log(id, key, "val0", new Date(2017, 0));
@@ -290,18 +266,6 @@ describe("Store", () => {
         assert(log.val == "val1");
       });
 
-      context("invalidate the last log", () => {
-        beforeEach(() => {
-          const log = store.activeLog(id, key);
-          store.log(log.logid, invalidate);
-        });
-
-        it("should return the first log", () => {
-          const log = store.activeLog(id, key);
-          assert(log.val == "val0");
-        });
-      });
-
       context("invalidate the last log with applying time", () => {
         beforeEach(() => {
           const log = store.activeLog(id, key);
@@ -311,16 +275,6 @@ describe("Store", () => {
         it("should return the first log", () => {
           const log = store.activeLog(id, key, new Date(2017, 3));
           assert(log.val == "val0");
-        });
-
-        it("should return the first log by time specified just invalidation time", () => {
-          const log = store.activeLog(id, key, new Date(2017, 2));
-          assert(log.val == "val0");
-        });
-
-        it("should return the last log by time specified before invalidation", () => {
-          const log = store.activeLog(id, key, new Date(2017, 1));
-          assert(log.val == "val1");
         });
       });
     });
