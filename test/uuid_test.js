@@ -13,7 +13,7 @@ describe("UUID", () => {
     it("should return uuid urn", () => {
       const uuid = new UUID();
       assert(uuid.urn.match(/^urn:uuid:.*$/));
-      assert.deepStrictEqual(uuid.toJSON(), uuid.urn);
+      assert(uuid.toJSON() === uuid.urn);
     });
   });
 });

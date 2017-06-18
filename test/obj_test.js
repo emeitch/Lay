@@ -18,7 +18,7 @@ describe("Obj", () => {
   describe("#get", () => {
     context("without logs", () => {
       it("should return undefined", () => {
-        assert.deepStrictEqual(obj.get(key), undefined);
+        assert(obj.get(key) == undefined);
       });
     });
 
@@ -40,7 +40,7 @@ describe("Obj", () => {
       });
 
       it("should return a value", () => {
-        assert.deepStrictEqual(obj.get(key), "value");
+        assert(obj.get(key) == "value");
       });
     });
 
@@ -51,7 +51,7 @@ describe("Obj", () => {
       });
 
       it("should return the last val", () => {
-        assert.deepStrictEqual(obj.get(key), "val1");
+        assert(obj.get(key) == "val1");
       });
     });
 
@@ -62,7 +62,7 @@ describe("Obj", () => {
       });
 
       it("should return undefined", () => {
-        assert.deepStrictEqual(obj.get(key), undefined);
+        assert(obj.get(key) == undefined);
       });
 
       context("add other positive log", () => {
@@ -71,7 +71,7 @@ describe("Obj", () => {
         });
 
         it("should return the val", () => {
-          assert.deepStrictEqual(obj.get(key), "val1");
+          assert(obj.get(key) == "val1");
         });
       });
 
@@ -81,7 +81,7 @@ describe("Obj", () => {
         });
 
         it("should return the val", () => {
-          assert.deepStrictEqual(obj.get(key), "val0");
+          assert(obj.get(key) == "val0");
         });
       });
     });

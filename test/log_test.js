@@ -15,7 +15,7 @@ describe("Log", () => {
 
   describe("#logid", () => {
     it("should return a uuid", () => {
-      assert(log.logid.constructor == UUID);
+      assert(log.logid.constructor === UUID);
     });
   });
 
