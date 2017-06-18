@@ -22,7 +22,7 @@ describe("Obj", () => {
       });
     });
 
-    context("with UUID val log", () => {
+    context("with a log has UUID typed val", () => {
       const dst = new UUID();
 
       beforeEach(() => {
@@ -34,7 +34,7 @@ describe("Obj", () => {
       });
     });
 
-    context("with value val log", () => {
+    context("with a log has value typed val", () => {
       beforeEach(() => {
         store.log(id, key, "value");
       });
@@ -65,7 +65,7 @@ describe("Obj", () => {
         assert(obj.get(key) === undefined);
       });
 
-      context("add other positive log", () => {
+      context("add another log", () => {
         beforeEach(() => {
           store.log(id, key, "val1");
         });
@@ -75,7 +75,7 @@ describe("Obj", () => {
         });
       });
 
-      context("add same old positive log", () => {
+      context("add a log which same args for the invalidated log", () => {
         beforeEach(() => {
           store.log(id, key, "val0");
         });

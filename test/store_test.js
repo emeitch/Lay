@@ -130,7 +130,7 @@ describe("Store", () => {
       });
     });
 
-    context("log with same ids & keys but different vals", () => {
+    context("logs with same ids & keys but different vals", () => {
       beforeEach(() => {
         store.log(id, key, "val0");
         store.log(id, key, "val1");
@@ -278,7 +278,7 @@ describe("Store", () => {
           store.log(log.logid, invalidate, undefined, new Date(2017, 2));
         });
 
-        it("should return the first log", () => {
+        it("should return the first log by specifying time specified after invalidation", () => {
           const log = store.activeLog(id, key, new Date(2017, 3));
           assert(log.val === "val0");
         });
