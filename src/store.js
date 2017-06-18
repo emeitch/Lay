@@ -36,12 +36,20 @@ export default class Store {
     const i = this.cacheIndex(id, key);
     const alogs = new Map(this.activeLogsCache.get(i));
     const ilogs = new Map(this.invalidationLogsCache.get(i));
+
+    for (let [, log] of alogs) {
+      if (log.at && log.at > at) {
+        alogs.delete(log.logid);
+      }
+    }
+
     for (let [, ilog] of ilogs) {
       const log = alogs.get(ilog.id);
       if (log && (!ilog.at || ilog.at <= at)) {
-          alogs.delete(ilog.id);
+        alogs.delete(log.logid);
       }
     }
+
     return Array.from(alogs.values()).sort((a, b) => {
       if (a.at == undefined) {
         return -1;

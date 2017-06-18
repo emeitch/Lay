@@ -159,13 +159,19 @@ describe("Store", () => {
     context("logs with applying time", () => {
       beforeEach(() => {
         store.log(id, key, "val0", new Date(2017, 0));
-        store.log(id, key, "val1", new Date(2017, 1));
+        store.log(id, key, "val1", new Date(2017, 2));
       });
 
       it("should return all logs", () => {
         const logs = store.activeLogs(id, key);
         assert(logs[0].val == "val0");
         assert(logs[1].val == "val1");
+      });
+
+      it("should return only the first log by specifying time before applied", () => {
+        const logs = store.activeLogs(id, key, new Date(2017, 1));
+        assert(logs[0].val == "val0");
+        assert(logs[1] == undefined);
       });
 
       context("invalidate the last log", () => {
@@ -184,23 +190,23 @@ describe("Store", () => {
       context("invalidate the last log with applying time", () => {
         beforeEach(() => {
           const log = store.activeLog(id, key);
-          store.log(log.logid, invalidate, undefined, new Date(2017, 2));
+          store.log(log.logid, invalidate, undefined, new Date(2017, 4));
         });
 
         it("should return only the first log", () => {
-          const logs = store.activeLogs(id, key, new Date(2017, 3));
+          const logs = store.activeLogs(id, key, new Date(2017, 6));
           assert(logs[0].val == "val0");
           assert(logs[1] == undefined);
         });
 
         it("should return only the first log by time specified just invalidation time", () => {
-          const logs = store.activeLogs(id, key, new Date(2017, 2));
+          const logs = store.activeLogs(id, key, new Date(2017, 4));
           assert(logs[0].val == "val0");
           assert(logs[1] == undefined);
         });
 
         it("should return all logs by time specified before invalidation", () => {
-          const logs = store.activeLogs(id, key, new Date(2017, 1));
+          const logs = store.activeLogs(id, key, new Date(2017, 3));
           assert(logs[0].val == "val0");
           assert(logs[1].val == "val1");
         });
