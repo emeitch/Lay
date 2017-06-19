@@ -19,7 +19,7 @@ describe("Key", () => {
 
   describe("#props", () => {
     it("should return property id array", () => {
-      assert.deepStrictEqual(key.props, [prop1]);
+      assert.deepStrictEqual(key.path, [prop1]);
     });
   });
 });
