@@ -26,6 +26,8 @@ describe("Key", () => {
   });
 
   describe("#toString", () => {
-
+    it("should return joined property id string", () => {
+      assert(key.toString() === prop1+"/"+prop2+"/"+prop3);
+    });
   });
 });
