@@ -17,7 +17,7 @@ describe("Key", () => {
     });
   });
 
-  describe("#props", () => {
+  describe("#path", () => {
     it("should return property id array", () => {
       assert.deepStrictEqual(key.path, [prop1]);
     });
