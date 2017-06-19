@@ -10,7 +10,7 @@ describe("Key", () => {
 
   let key;
   beforeEach(() => {
-    key = new Key(prop1);
+    key = new Key(prop1, prop2, prop3);
   });
 
   describe("constructor", () => {
@@ -21,17 +21,11 @@ describe("Key", () => {
 
   describe("#path", () => {
     it("should return property id array", () => {
-      assert.deepStrictEqual(key.path, [prop1]);
+      assert.deepStrictEqual(key.path, [prop1, prop2, prop3]);
     });
+  });
 
-    context("many props", () => {
-      beforeEach(() => {
-        key = new Key(prop1, prop2, prop3);
-      });
+  describe("#toString", () => {
 
-      it("should return many property ids array", () => {
-        assert.deepStrictEqual(key.path, [prop1, prop2, prop3]);
-      });
-    });
   });
 });
