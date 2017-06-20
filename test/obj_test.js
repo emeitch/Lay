@@ -1,12 +1,13 @@
 import assert from 'assert';
 
 import UUID from '../src/uuid';
+import Key from '../src/key';
 import Store from '../src/store';
 import { invalidate } from '../src/ontology';
 
 describe("Obj", () => {
   const id = new UUID();
-  const key = new UUID();
+  const key = new Key(new UUID(), new UUID(), new UUID());
 
   let store;
   let obj;
