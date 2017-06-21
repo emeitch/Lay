@@ -3,17 +3,16 @@ import assert from 'assert';
 import UUID from '../src/uuid';
 
 describe("UUID", () => {
-  describe("#urn", () => {
+  describe("#toString", () => {
     it("should return uuid urn", () => {
-      assert(new UUID().urn.match(/^urn:uuid:.*$/));
+      assert(new UUID().toString().match(/^urn:uuid:.*$/));
     });
   });
 
   describe("#toJSON", () => {
     it("should return uuid urn", () => {
       const uuid = new UUID();
-      assert(uuid.urn.match(/^urn:uuid:.*$/));
-      assert(uuid.toJSON() === uuid.urn);
+      assert(uuid.toJSON() === uuid.toString());
     });
   });
 });

@@ -17,15 +17,11 @@ export default class UUID {
     this.origin = this.constructor.generateUUIDString();
   }
 
-  get urn() {
+  toString() {
     return "urn:uuid:" + this.origin;
   }
 
   toJSON() {
-    return this.urn;
-  }
-
-  toString() {
-    return this.urn;
+    return this.toString();
   }
 }
