@@ -1,12 +1,11 @@
 import assert from 'assert';
 
-import UUID from '../src/uuid';
-import Key from '../src/key';
+import UUID from '../src/uuid'
 import Log from '../src/log';
 
 describe("Log", () => {
   const id = new UUID();
-  const key = new Key(new UUID());
+  const key = new UUID();
   const val = new UUID();
 
   let log;

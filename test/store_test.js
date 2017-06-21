@@ -1,14 +1,13 @@
 import assert from 'assert';
 
 import UUID from '../src/uuid';
-import Key from '../src/key';
 import Store from '../src/store';
 import Obj from '../src/obj';
 import { transaction, transactionTime, invalidate } from '../src/ontology';
 
 describe("Store", () => {
   const id = new UUID();
-  const key = new Key(new UUID(), new UUID(), new UUID());
+  const key = new UUID();
   const val = new UUID();
 
   let store;
@@ -110,7 +109,7 @@ describe("Store", () => {
       });
 
       context("name re-assigned", () => {
-        const key2 = new Key(new UUID());
+        const key2 = new UUID();
 
         beforeEach(() => {
           store.assign("r", key2);
