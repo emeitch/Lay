@@ -1,6 +1,10 @@
-import UUID from 'uuid';
+import UUID from './uuid';
 
-export default class LID extends UUID {
+export default class LID {
+  constructor(origin = UUID.generateString()) {
+    this.origin = origin;
+  }
+
   toString() {
     return "_:" + this.origin;
   }

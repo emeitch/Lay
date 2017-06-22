@@ -4,8 +4,16 @@ import LID from '../src/lid';
 
 describe("LID", () => {
   describe("#toString", () => {
-    it("should return blank node style string", () => {
-      assert(new LID().toString().match(/^_:.*$/));
+    context("without origin", () => {
+      it("should return blank node style string", () => {
+        assert(new LID().toString().match(/^_:.*$/));
+      });
+    });
+
+    context("with origin", () => {
+      it("should return blank node style string with origin", () => {
+        assert(new LID("origin").toString().match(/^_:origin$/));
+      });
     });
   });
 
