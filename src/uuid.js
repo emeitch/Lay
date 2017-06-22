@@ -1,5 +1,5 @@
 export default class UUID {
-  static generateUUIDString() {
+  static generateString() {
     // UUID ver 4 / RFC 4122
     var uuid = "", i, random;
     for (i = 0; i < 32; i++) {
@@ -14,7 +14,7 @@ export default class UUID {
   }
 
   constructor() {
-    this.origin = this.constructor.generateUUIDString();
+    this.origin = this.constructor.generateString();
   }
 
   toString() {
