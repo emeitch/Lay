@@ -1,4 +1,6 @@
-export default class UUID {
+import ID from './id';
+
+export default class UUID extends ID {
   static generateString() {
     // UUID ver 4 / RFC 4122
     var uuid = "", i, random;
@@ -13,7 +15,9 @@ export default class UUID {
     return uuid;
   }
 
-  constructor() {
+
+  constructor() /* istanbul ignore next */ {
+    super();
     this.origin = this.constructor.generateString();
   }
 
