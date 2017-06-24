@@ -1,6 +1,6 @@
-import assert from "assert";
+import assert from 'assert';
 
-import Val from "../src/val";
+import Val from '../src/val';
 
 describe("Val", () => {
   context("number origin", () => {
