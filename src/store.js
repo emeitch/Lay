@@ -1,4 +1,4 @@
-import Val from './val';
+import { v } from './val';
 import UUID from './uuid';
 import Log from './log';
 import Obj from './obj';
@@ -84,14 +84,14 @@ export default class Store {
   }
 
   ref(name) {
-    const logs = this.findLogs({key: nameKey, val: new Val(name)});
+    const logs = this.findLogs({key: nameKey, val: v(name)});
     const log = logs[logs.length-1];
     return log ? log.id : undefined;
   }
 
   assign(name, id) {
     // todo: ユニーク制約をかけたい
-    this.log(id, nameKey, new Val(name));
+    this.log(id, nameKey, v(name));
   }
 
   syncCache(log) {
@@ -116,7 +116,7 @@ export default class Store {
       this.syncCache(log);
     };
     const tid = new UUID();
-    const ttlog = new Log(tid, transactionTime, new Val(new Date()));
+    const ttlog = new Log(tid, transactionTime, v(new Date()));
 
     addLog(ttlog);
 

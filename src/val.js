@@ -7,3 +7,7 @@ export default class Val {
     return JSON.stringify(this.origin);
   }
 }
+
+export function v(origin) {
+  return new Val(origin);
+}

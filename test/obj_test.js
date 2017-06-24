@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import Val from '../src/val';
+import { v } from '../src/val';
 import UUID from '../src/uuid';
 import Store from '../src/store';
 import { invalidate } from '../src/ontology';
@@ -37,28 +37,28 @@ describe("Obj", () => {
 
     context("with a log has Val typed val", () => {
       beforeEach(() => {
-        store.log(id, key, new Val("value"));
+        store.log(id, key, v("value"));
       });
 
       it("should return a value", () => {
-        assert.deepStrictEqual(obj.get(key), new Val("value"));
+        assert.deepStrictEqual(obj.get(key), v("value"));
       });
     });
 
     context("with the same key but different val logs", () => {
       beforeEach(() => {
-        store.log(id, key, new Val("val0"));
-        store.log(id, key, new Val("val1"));
+        store.log(id, key, v("val0"));
+        store.log(id, key, v("val1"));
       });
 
       it("should return the last val", () => {
-        assert.deepStrictEqual(obj.get(key), new Val("val1"));
+        assert.deepStrictEqual(obj.get(key), v("val1"));
       });
     });
 
     context("with a invalidated log", () => {
       beforeEach(() => {
-        const log = store.log(id, key, new Val("val0"));
+        const log = store.log(id, key, v("val0"));
         store.log(log.logid, invalidate);
       });
 
@@ -68,21 +68,21 @@ describe("Obj", () => {
 
       context("add another log", () => {
         beforeEach(() => {
-          store.log(id, key, new Val("val1"));
+          store.log(id, key, v("val1"));
         });
 
         it("should return the val", () => {
-          assert.deepStrictEqual(obj.get(key), new Val("val1"));
+          assert.deepStrictEqual(obj.get(key), v("val1"));
         });
       });
 
       context("add a log which same args for the invalidated log", () => {
         beforeEach(() => {
-          store.log(id, key, new Val("val0"));
+          store.log(id, key, v("val0"));
         });
 
         it("should return the val", () => {
-          assert.deepStrictEqual(obj.get(key), new Val("val0"));
+          assert.deepStrictEqual(obj.get(key), v("val0"));
         });
       });
     });

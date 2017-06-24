@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import Val from '../src/val';
+import { v } from '../src/val';
 import UUID from '../src/uuid';
 import Store from '../src/store';
 import Obj from '../src/obj';
@@ -133,14 +133,14 @@ describe("Store", () => {
 
     context("logs with same ids & keys but different vals", () => {
       beforeEach(() => {
-        store.log(id, key, new Val("val0"));
-        store.log(id, key, new Val("val1"));
+        store.log(id, key, v("val0"));
+        store.log(id, key, v("val1"));
       });
 
       it("should return all logs", () => {
         const logs = store.activeLogs(id, key);
-        assert.deepStrictEqual(logs[0].val, new Val("val0"));
-        assert.deepStrictEqual(logs[1].val, new Val("val1"));
+        assert.deepStrictEqual(logs[0].val, v("val0"));
+        assert.deepStrictEqual(logs[1].val, v("val1"));
       });
 
       context("invalidate the last log", () => {
@@ -151,7 +151,7 @@ describe("Store", () => {
 
         it("should return only the first log", () => {
           const logs = store.activeLogs(id, key);
-          assert.deepStrictEqual(logs[0].val, new Val("val0"));
+          assert.deepStrictEqual(logs[0].val, v("val0"));
           assert.deepStrictEqual(logs[1], undefined);
         });
       });
@@ -159,19 +159,19 @@ describe("Store", () => {
 
     context("logs with applying time", () => {
       beforeEach(() => {
-        store.log(id, key, new Val("val0"), new Date(2017, 0));
-        store.log(id, key, new Val("val1"), new Date(2017, 2));
+        store.log(id, key, v("val0"), new Date(2017, 0));
+        store.log(id, key, v("val1"), new Date(2017, 2));
       });
 
       it("should return all logs", () => {
         const logs = store.activeLogs(id, key);
-        assert.deepStrictEqual(logs[0].val, new Val("val0"));
-        assert.deepStrictEqual(logs[1].val, new Val("val1"));
+        assert.deepStrictEqual(logs[0].val, v("val0"));
+        assert.deepStrictEqual(logs[1].val, v("val1"));
       });
 
       it("should return only the first log by specifying time before applied", () => {
         const logs = store.activeLogs(id, key, new Date(2017, 1));
-        assert.deepStrictEqual(logs[0].val, new Val("val0"));
+        assert.deepStrictEqual(logs[0].val, v("val0"));
         assert.deepStrictEqual(logs[1], undefined);
       });
 
@@ -183,7 +183,7 @@ describe("Store", () => {
 
         it("should return only the first log", () => {
           const logs = store.activeLogs(id, key);
-          assert.deepStrictEqual(logs[0].val, new Val("val0"));
+          assert.deepStrictEqual(logs[0].val, v("val0"));
           assert.deepStrictEqual(logs[1], undefined);
         });
       });
@@ -196,34 +196,34 @@ describe("Store", () => {
 
         it("should return only the first log", () => {
           const logs = store.activeLogs(id, key, new Date(2017, 6));
-          assert.deepStrictEqual(logs[0].val, new Val("val0"));
+          assert.deepStrictEqual(logs[0].val, v("val0"));
           assert.deepStrictEqual(logs[1], undefined);
         });
 
         it("should return only the first log by time specified just invalidation time", () => {
           const logs = store.activeLogs(id, key, new Date(2017, 4));
-          assert.deepStrictEqual(logs[0].val, new Val("val0"));
+          assert.deepStrictEqual(logs[0].val, v("val0"));
           assert.deepStrictEqual(logs[1], undefined);
         });
 
         it("should return all logs by time specified before invalidation", () => {
           const logs = store.activeLogs(id, key, new Date(2017, 3));
-          assert.deepStrictEqual(logs[0].val, new Val("val0"));
-          assert.deepStrictEqual(logs[1].val, new Val("val1"));
+          assert.deepStrictEqual(logs[0].val, v("val0"));
+          assert.deepStrictEqual(logs[1].val, v("val1"));
         });
       });
     });
 
     context("log with old applying time", () => {
       beforeEach(() => {
-        store.log(id, key, new Val("val0"), new Date(2017, 1));
-        store.log(id, key, new Val("val1"), new Date(2017, 0));
+        store.log(id, key, v("val0"), new Date(2017, 1));
+        store.log(id, key, v("val1"), new Date(2017, 0));
       });
 
       it("should return all logs order by applying time", () => {
         const logs = store.activeLogs(id, key);
-        assert.deepStrictEqual(logs[0].val, new Val("val1"));
-        assert.deepStrictEqual(logs[1].val, new Val("val0"));
+        assert.deepStrictEqual(logs[0].val, v("val1"));
+        assert.deepStrictEqual(logs[1].val, v("val0"));
       });
 
       context("invalidate the last log", () => {
@@ -234,7 +234,7 @@ describe("Store", () => {
 
         it("should return only the first log", () => {
           const logs = store.activeLogs(id, key);
-          assert.deepStrictEqual(logs[0].val, new Val("val1"));
+          assert.deepStrictEqual(logs[0].val, v("val1"));
           assert.deepStrictEqual(logs[1], undefined);
         });
       });
@@ -242,14 +242,14 @@ describe("Store", () => {
 
     context("contain a log with time and a log without time", () => {
       beforeEach(() => {
-        store.log(id, key, new Val("val0"), new Date(2017, 2));
-        store.log(id, key, new Val("val1"));
+        store.log(id, key, v("val0"), new Date(2017, 2));
+        store.log(id, key, v("val1"));
       });
 
       it("should return all logs order by applying time", () => {
         const logs = store.activeLogs(id, key);
-        assert.deepStrictEqual(logs[0].val, new Val("val1"));
-        assert.deepStrictEqual(logs[1].val, new Val("val0"));
+        assert.deepStrictEqual(logs[0].val, v("val1"));
+        assert.deepStrictEqual(logs[1].val, v("val0"));
       });
     });
   });
@@ -264,18 +264,18 @@ describe("Store", () => {
 
     context("logs with applying time", () => {
       beforeEach(() => {
-        store.log(id, key, new Val("val0"), new Date(2017, 0));
-        store.log(id, key, new Val("val1"), new Date(2017, 2));
+        store.log(id, key, v("val0"), new Date(2017, 0));
+        store.log(id, key, v("val1"), new Date(2017, 2));
       });
 
       it("should return the last log", () => {
         const log = store.activeLog(id, key);
-        assert.deepStrictEqual(log.val, new Val("val1"));
+        assert.deepStrictEqual(log.val, v("val1"));
       });
 
       it("should return the first log by specifying time", () => {
         const log = store.activeLog(id, key, new Date(2017, 1));
-        assert.deepStrictEqual(log.val, new Val("val0"));
+        assert.deepStrictEqual(log.val, v("val0"));
       });
     });
   });

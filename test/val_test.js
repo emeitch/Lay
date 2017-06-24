@@ -1,12 +1,18 @@
 import assert from 'assert';
 
-import Val from '../src/val';
+import Val, { v } from '../src/val';
 
 describe("Val", () => {
   context("number origin", () => {
     let val;
     beforeEach(() => {
       val = new Val(0);
+    });
+
+    describe("v function", () => {
+      it("should suger for Val constructor", () => {
+        assert.deepStrictEqual(v(0), val);
+      });
     });
 
     describe("#origin", () => {
