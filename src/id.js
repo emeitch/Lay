@@ -1,8 +1,6 @@
-export default class ID {
-  constructor(origin) {
-    this.origin = origin;
-  }
+import Val from './val';
 
+export default class ID extends Val {
   toString() {
     return this.prefix() + this.origin;
   }
