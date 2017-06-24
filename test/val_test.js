@@ -9,7 +9,7 @@ describe("Val", () => {
       val = new Val(0);
     });
 
-    describe("origin", () => {
+    describe("#origin", () => {
       it("should return original value", () => {
         assert.deepStrictEqual(val.origin, 0);
       });
