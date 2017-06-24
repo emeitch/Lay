@@ -27,5 +27,9 @@ describe("Log", () => {
     it("should require key", () => {
       assert.throws(() => new Log(id), /key is required/);
     });
+
+    it("should constrain val to Val typed", () => {
+      assert.throws(() => new Log(id, key, "unval"), /val is not a Val/);
+    });
   });
 });

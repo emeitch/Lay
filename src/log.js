@@ -1,3 +1,4 @@
+import Val from './val';
 import UUID from './uuid';
 
 export default class Log {
@@ -8,6 +9,10 @@ export default class Log {
 
     if (!key) {
       throw "key is required";
+    }
+
+    if (val && !(val instanceof Val)) {
+      throw "val is not a Val";
     }
 
     this.logid = new UUID();
