@@ -15,17 +15,12 @@ export default class UUID extends ID {
     return uuid;
   }
 
-
-  constructor() /* istanbul ignore next */ {
-    super();
-    this.origin = this.constructor.generateString();
+  constructor() {
+    /* istanbul ignore next */
+    super(UUID.generateString());
   }
 
-  toString() {
-    return "urn:uuid:" + this.origin;
-  }
-
-  toJSON() {
-    return this.toString();
+  prefix() {
+    return "urn:uuid:";
   }
 }
