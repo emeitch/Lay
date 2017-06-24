@@ -14,5 +14,11 @@ describe("Val", () => {
         assert.deepStrictEqual(val.origin, 0);
       });
     });
+
+    describe("#toJSON", () => {
+      it("should return JSON stringified original value", () => {
+        assert.deepStrictEqual(val.toJSON(), "0");
+      });
+    });
   });
 });
