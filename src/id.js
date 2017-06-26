@@ -1,6 +1,6 @@
-import Val from './val';
+import Ref from './ref';
 
-export default class ID extends Val {
+export default class ID extends Ref {
   toString() {
     return this.prefix() + this.origin;
   }
