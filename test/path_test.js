@@ -13,4 +13,10 @@ describe("Path", () => {
       assert.deepStrictEqual(p.toString(),`${id1}/${id2}/${id3}`);
     });
   });
+
+  describe("constructor ", () => {
+    it("should require typed ID", () => {
+      assert.throws(() => new Path("strobj"), /is not a ID/);
+    });
+  });
 });
