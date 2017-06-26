@@ -93,7 +93,7 @@ describe("Store", () => {
     context("name un assigned", () => {
       it("should return undefined", () => {
         assert(store.ref("unassigned") === undefined);
-      })
+      });
     });
 
     context("name assigned", () => {
