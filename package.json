@@ -1,11 +1,17 @@
 {
   "scripts": {
     "start": "webpack --watch -d --devtool source-map & browser-sync start --server --files build/bundle.js",
-    "test": "npm run lint && nyc --reporter=html --reporter=text mocha",
+    "test": "npm run lint && cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha",
     "lint": "eslint src/*.js test/*.js"
   },
+  "nyc": {
+    "sourceMap": false,
+    "instrument": false
+  },
   "dependencies": {
+    "babel-plugin-istanbul": "^4.1.4",
     "bidirectional-map": "^1.0.3",
+    "cross-env": "^5.0.1",
     "jssha": "^2.3.0"
   },
   "devDependencies": {

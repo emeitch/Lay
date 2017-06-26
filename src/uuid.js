@@ -16,7 +16,6 @@ export default class UUID extends ID {
   }
 
   constructor() {
-    /* istanbul ignore next */
     super(UUID.generateString());
   }
 
