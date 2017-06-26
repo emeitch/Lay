@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import UUID from '../src/uuid'
+import UUID from '../src/uuid';
 import Log from '../src/log';
 
 describe("Log", () => {
