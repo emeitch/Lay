@@ -1,4 +1,5 @@
 import UUID from './uuid';
+import Path from './path';
 
 export default class Obj {
   constructor(store, id) {
@@ -13,8 +14,15 @@ export default class Obj {
     }
 
     const val = log.val;
-    if (val.constructor === UUID) {
+    if (val instanceof UUID) {
       return this.store.obj(val);
+    } else if (val instanceof Path) {
+      const [rcv, ...keys] = val.origin;
+      let obj = this.store.obj(rcv);
+      for (const key of keys) {
+        obj = obj.get(key);
+      }
+      return obj;
     } else {
       return val;
     }

@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import { v } from '../src/val';
 import UUID from '../src/uuid';
+import Path from '../src/path';
 import Store from '../src/store';
 import { invalidate } from '../src/ontology';
 
@@ -84,6 +85,22 @@ describe("Obj", () => {
         it("should return the val", () => {
           assert.deepStrictEqual(obj.get(key), v("val0"));
         });
+      });
+    });
+
+    context("path with val end", () => {
+      beforeEach(() => {
+        const id2 = new UUID();
+        const id3 = new UUID();
+        const key2 = new UUID();
+        const key3 = new UUID();
+        store.log(id2, key2, id3);
+        store.log(id3, key3, v("path end"));
+        store.log(id, key, new Path(id2, key2, key3));
+      });
+
+      it("should return the val", () => {
+        assert.deepStrictEqual(obj.get(key), v("path end"));
       });
     });
   });
