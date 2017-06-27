@@ -88,7 +88,7 @@ describe("Obj", () => {
       });
     });
 
-    context("path with val end", () => {
+    context("absolute path with val end", () => {
       beforeEach(() => {
         const id2 = new UUID();
         const id3 = new UUID();
@@ -101,6 +101,21 @@ describe("Obj", () => {
 
       it("should return the val", () => {
         assert.deepStrictEqual(obj.get(key), v("path end"));
+      });
+    });
+
+    context("absolute path with uuid end", () => {
+      let id3;
+      beforeEach(() => {
+        const id2 = new UUID();
+        id3 = new UUID();
+        const key2 = new UUID();
+        store.log(id2, key2, id3);
+        store.log(id, key, new Path(id2, key2));
+      });
+
+      it("should return the val", () => {
+        assert.deepStrictEqual(obj.get(key), store.obj(id3));
       });
     });
   });
