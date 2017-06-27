@@ -14,9 +14,12 @@ export default class Obj {
     }
 
     const val = log.val;
+
     if (val instanceof UUID) {
       return this.store.obj(val);
-    } else if (val instanceof Path) {
+    }
+
+    if (val instanceof Path) {
       const [rcv, ...keys] = val.origin;
       let obj = this.store.obj(rcv);
       for (const key of keys) {
@@ -26,8 +29,8 @@ export default class Obj {
         }
       }
       return obj;
-    } else {
-      return val;
     }
+
+    return val;
   }
 }
