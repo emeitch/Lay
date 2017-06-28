@@ -24,7 +24,7 @@ export default class Obj {
       let obj = this.store.obj(rcv);
       for (const key of keys) {
         obj = obj.get(key);
-        if (obj === undefined) {
+        if (!obj) {
           throw `specified key ${key} is unknown`;
         }
       }
