@@ -1,10 +1,23 @@
-import UUID from './uuid';
-import Path from './path';
-
 export default class Obj {
   constructor(store, id) {
     this.store = store;
     this.id = id;
+  }
+
+  getAsUUID(uuid) {
+    return this.store.obj(uuid);
+  }
+
+  getAsPath(path) {
+    const [rcv, ...keys] = path.origin;
+    let obj = this.store.obj(rcv);
+    for (const key of keys) {
+      obj = obj.get(key);
+      if (!obj) {
+        throw `specified key ${key} is unknown`;
+      }
+    }
+    return obj;
   }
 
   get(key) {
@@ -14,23 +27,8 @@ export default class Obj {
     }
 
     const val = log.val;
-
-    if (val instanceof UUID) {
-      return this.store.obj(val);
-    }
-
-    if (val instanceof Path) {
-      const [rcv, ...keys] = val.origin;
-      let obj = this.store.obj(rcv);
-      for (const key of keys) {
-        obj = obj.get(key);
-        if (!obj) {
-          throw `specified key ${key} is unknown`;
-        }
-      }
-      return obj;
-    }
-
-    return val;
+    const prop = "getAs" + val.constructor.name;
+    const method = this[prop];
+    return method ? method.bind(this)(val) : val;
   }
 }
