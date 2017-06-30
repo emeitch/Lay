@@ -29,6 +29,6 @@ export default class Obj {
     const val = log.val;
     const prop = "getAs" + val.constructor.name;
     const method = this[prop];
-    return method ? method.bind(this)(val) : val;
+    return method ? method.call(this, val) : val;
   }
 }
