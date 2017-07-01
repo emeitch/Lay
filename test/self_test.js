@@ -13,4 +13,10 @@ describe("self", () => {
       assert(self.toString() === "$:self");
     });
   });
+
+  describe("#toJSON", () => {
+    it("should return self", () => {
+      assert(self.toString() === "$:self");
+    });
+  });
 });
