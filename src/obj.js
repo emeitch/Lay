@@ -22,10 +22,11 @@ export default class Obj {
     const [receiver, ...keys] = path.origin;
     let obj = this.follow(receiver);
     for (const key of keys) {
-      obj = obj.get(key);
-      if (!obj) {
-        throw `specified key ${key} is unknown`;
+      const o = obj.get(key);
+      if (!o) {
+        throw `${obj} don't have the specified key ${key}`;
       }
+      obj = o;
     }
     return obj;
   }

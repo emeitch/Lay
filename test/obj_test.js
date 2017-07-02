@@ -144,7 +144,7 @@ describe("Obj", () => {
       });
 
       it("should raise exception", () => {
-        assert.throws(() => obj.get(key), /specified key .* is unknown/);
+        assert.throws(() => obj.get(key), /.* don't have the specified key .*/);
       });
     });
   });
