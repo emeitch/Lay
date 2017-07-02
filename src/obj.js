@@ -19,9 +19,8 @@ export default class Obj {
   }
 
   followPath(path) {
-    const [receiver, ...keys] = path.origin;
-    let obj = this.follow(receiver);
-    for (const key of keys) {
+    let obj = this.follow(path.receiver);
+    for (const key of path.keys) {
       const o = obj.get(key);
       if (!o) {
         throw `${obj} don't have the specified key ${key}`;
