@@ -4,13 +4,23 @@ export default class Obj {
     this.id = id;
   }
 
-  getAsUUID(uuid) {
+  follow(val) {
+    const prop = "follow" + val.constructor.name;
+    const method = this[prop];
+    return method ? method.call(this, val) : val;
+  }
+
+  followUUID(uuid) {
     return this.store.obj(uuid);
   }
 
-  getAsPath(path) {
-    const [rcv, ...keys] = path.origin;
-    let obj = this.store.obj(rcv);
+  followSelf() {
+    return this;
+  }
+
+  followPath(path) {
+    const [receiver, ...keys] = path.origin;
+    let obj = this.follow(receiver);
     for (const key of keys) {
       obj = obj.get(key);
       if (!obj) {
@@ -26,9 +36,6 @@ export default class Obj {
       return undefined;
     }
 
-    const val = log.val;
-    const prop = "getAs" + val.constructor.name;
-    const method = this[prop];
-    return method ? method.call(this, val) : val;
+    return this.follow(log.val);
   }
 }

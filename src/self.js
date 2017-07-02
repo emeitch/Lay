@@ -1,9 +1,9 @@
 import Ref from './ref';
 
-class Self extends Ref {
+export default class Self extends Ref {
   toString() {
     return "$:self";
   }
 }
 
-export default new Self();
+export const self = new Self();
