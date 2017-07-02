@@ -5,12 +5,12 @@ export default class Obj {
   }
 
   follow(val) {
-    const prop = "follow" + val.constructor.name;
-    const method = this[prop];
-    if (!method) {
+    const followFuncName = "follow" + val.constructor.name;
+    const followFunc = this[followFuncName];
+    if (!followFunc) {
       throw `class "${val.constructor.name}" is not followed`;
     }
-    return method.call(this, val);
+    return followFunc.call(this, val);
   }
 
   followVal(val) {
