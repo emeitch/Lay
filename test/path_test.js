@@ -16,12 +16,16 @@ describe("Path", () => {
   });
 
   describe("constructor ", () => {
-    it("should require typed ID", () => {
-      assert.throws(() => new Path("strobj"), /is not a ID/);
-    });
-
     it("should accept self", () => {
       assert.doesNotThrow(() => new Path(self));
+    });
+
+    it("should require the receiver is typed ID or Self", () => {
+      assert.throws(() => new Path("strobj"), / is not a ID or a Self/);
+    });
+
+    it("should require keys are typed ID", () => {
+      assert.throws(() => new Path(new UUID(), "strobj"), / is not a ID$/);
     });
   });
 });
