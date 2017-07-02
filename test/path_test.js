@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import Path from '../src/path';
 import UUID from '../src/uuid';
+import { self } from '../src/self';
 
 describe("Path", () => {
   describe("#toString", () => {
@@ -17,6 +18,10 @@ describe("Path", () => {
   describe("constructor ", () => {
     it("should require typed ID", () => {
       assert.throws(() => new Path("strobj"), /is not a ID/);
+    });
+
+    it("should accept self", () => {
+      assert.doesNotThrow(() => new Path(self));
     });
   });
 });
