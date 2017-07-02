@@ -7,7 +7,14 @@ export default class Obj {
   follow(val) {
     const prop = "follow" + val.constructor.name;
     const method = this[prop];
-    return method ? method.call(this, val) : val;
+    if (!method) {
+      throw `class "${val.constructor.name}" is not followed`;
+    }
+    return method.call(this, val);
+  }
+
+  followVal(val) {
+    return val;
   }
 
   followUUID(uuid) {

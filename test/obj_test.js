@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { v } from '../src/val';
+import Val, { v } from '../src/val';
 import { self } from '../src/self';
 import UUID from '../src/uuid';
 import Path from '../src/path';
@@ -131,6 +131,18 @@ describe("Obj", () => {
 
       it("should return the val", () => {
         assert.deepStrictEqual(obj.get(key), val2);
+      });
+    });
+
+    context("unfollowed val", () => {
+      beforeEach(() => {
+        class Unfollowed extends Val {
+        }
+        store.log(id, key, new Unfollowed("unfollowed"));
+      });
+
+      it("should raise exception", () => {
+        assert.throws(() => obj.get(key), /class "Unfollowed" is not followed/);
       });
     });
 
