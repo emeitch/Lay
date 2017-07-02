@@ -14,8 +14,16 @@ export default class Path extends Ref {
       }
     }
     super(ids);
-    this.receiver = receiver;
-    this.keys = keys;
+  }
+
+  get receiver() {
+    const [receiver,] = this.origin;
+    return receiver;
+  }
+
+  get keys() {
+    const [, ...keys] = this.origin;
+    return keys;
   }
 
   toString() {
