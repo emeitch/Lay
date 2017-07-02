@@ -19,12 +19,29 @@ describe("Path", () => {
     });
   });
 
+  let id1, id2, id3;
+  let p;
+  beforeEach(() => {
+    id1 = new UUID();
+    id2 = new UUID();
+    id3 = new UUID();
+    p = new Path(id1, id2, id3);
+  });
+
+  describe("#receiver", () => {
+    it("should return first ids", () => {
+      assert.deepStrictEqual(p.receiver, id1);
+    });
+  });
+
+  describe("#keys", () => {
+    it("should return first ids", () => {
+      assert.deepStrictEqual(p.keys, [id2, id3]);
+    });
+  });
+
   describe("#toString", () => {
     it("should return ids joined by slash", () => {
-      const id1 = new UUID();
-      const id2 = new UUID();
-      const id3 = new UUID();
-      const p = new Path(id1, id2, id3);
       assert.deepStrictEqual(p.toString(),`${id1}/${id2}/${id3}`);
     });
   });
