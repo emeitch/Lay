@@ -3,8 +3,8 @@ import assert from 'assert';
 import { v } from '../src/val';
 import UUID from '../src/uuid';
 import Path from '../src/path';
-import Exp, { Plus } from '../src/exp';
-
+import Exp from '../src/exp';
+import { Plus } from '../src/func';
 
 describe("Exp", () => {
   describe("#reduce", () => {
