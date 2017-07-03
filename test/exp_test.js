@@ -17,9 +17,7 @@ describe("Exp", () => {
 
     context("with ref arg", () => {
       it("should keep the expression", () => {
-        const id = new UUID();
-        const key = new UUID();
-        const pth = new Path(id, key);
+        const pth = new Path(new UUID(), new UUID());
         const pls = new Exp(new Plus(), pth, v(2));
         assert(pls.reduce() instanceof Exp);
       });
