@@ -63,10 +63,10 @@ describe("Path", () => {
       beforeEach(() => {
         store.log(id, key, id2);
         store.log(id2, key2, id3);
+        p = new Path(id, key, key2);
       });
 
       it("should return the val", () => {
-        const p = new Path(id, key, key2);
         assert.deepStrictEqual(p.reduce(store), id3);
       });
     });
@@ -75,13 +75,14 @@ describe("Path", () => {
       const id = new UUID();
       const key = new UUID();
       const val = v("val0");
+      let env;
       beforeEach(() => {
         store.log(id, key, val);
+        env = new Env(store, id);
+        p = new Path(self, key);
       });
 
       it("should return the val", () => {
-        const p = new Path(self, key);
-        const env = new Env(store, id);
         assert.deepStrictEqual(p.reduce(env), val);
       });
     });
@@ -90,9 +91,11 @@ describe("Path", () => {
       const id = new UUID();
       const unknownKey1 = new UUID();
       const unknownKey2 = new UUID();
+      beforeEach(() => {
+        p = new Path(id, unknownKey1, unknownKey2);
+      });
 
       it("should raise exception", () => {
-        const p = new Path(id, unknownKey1, unknownKey2);
         assert.throws(() => p.reduce(store), /.* don't have the specified key .*/);
       });
     });
