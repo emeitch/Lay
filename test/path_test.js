@@ -22,12 +22,11 @@ describe("Path", () => {
     });
   });
 
-  let id1, id2, id3;
+  const id1 = new UUID();
+  const id2 = new UUID();
+  const id3 = new UUID();
   let p;
   beforeEach(() => {
-    id1 = new UUID();
-    id2 = new UUID();
-    id3 = new UUID();
     p = new Path(id1, id2, id3);
   });
 
