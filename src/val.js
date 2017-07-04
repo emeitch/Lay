@@ -3,7 +3,7 @@ export default class Val {
     this.origin = origin;
   }
 
-  reduce() {
+  reduce(_env) {
     return this;
   }
 

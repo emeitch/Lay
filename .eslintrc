@@ -8,6 +8,11 @@
     "sourceType": "module"
   },
   "rules": {
-    "semi": "error"
+    "semi": "error",
+    "no-unused-vars": [
+      "error", {
+        "argsIgnorePattern": "^_"
+      }
+    ]
   }
 }
