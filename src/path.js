@@ -1,3 +1,6 @@
+/* eslint no-console: ["error", { allow: ["log"] }] */
+/* eslint-env browser */
+
 import Ref from './ref';
 import ID from './id';
 import { self } from './self';
@@ -31,14 +34,14 @@ export default class Path extends Ref {
   }
 
   reduce(env) {
-    let obj = env.obj(this.receiver);
+    let v = this.receiver.reduce(env);
     for (const key of this.keys) {
-      const o = obj.get(key);
-      if (!o) {
-        throw `${obj} don't have the specified key ${key}`;
+      const log = env.activeLog(v, key);
+      if (!log) {
+        throw `${v} don't have the specified key ${key}`;
       }
-      obj = o;
+      v = log.val;
     }
-    return obj.id;
+    return v;
   }
 }

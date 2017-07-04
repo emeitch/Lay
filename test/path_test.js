@@ -1,5 +1,6 @@
 import assert from 'assert';
 
+import { v } from '../src/val';
 import Path from '../src/path';
 import UUID from '../src/uuid';
 import { self } from '../src/self';
@@ -67,6 +68,25 @@ describe("Path", () => {
       it("should return the val", () => {
         const p = new Path(id, key, key2);
         assert.deepStrictEqual(p.reduce(store), id3);
+      });
+    });
+
+    context("relative path with uuid end", () => {
+      const id = new UUID();
+      const key = new UUID();
+      const val = v("val0");
+      beforeEach(() => {
+        store.log(id, key, val);
+      });
+
+      it("should return the val", () => {
+        const p = new Path(self, key);
+        const env = {
+          id,
+          parent: store,
+          activeLog: (...args) => store.activeLog(...args)
+        };
+        assert.deepStrictEqual(p.reduce(env), val);
       });
     });
 
