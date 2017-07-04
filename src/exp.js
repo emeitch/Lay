@@ -1,8 +1,12 @@
 import Val from './val';
 
-export default class Exp {
+export default class Exp extends Val {
   constructor(...terms) {
-    this.terms = terms;
+    super(terms);
+  }
+
+  get terms() {
+    return this.origin;
   }
 
   reduce() {
@@ -11,6 +15,6 @@ export default class Exp {
       return func.apply(...args);
     }
 
-    return this;
+    return super.reduce();
   }
 }

@@ -21,6 +21,12 @@ describe("Val", () => {
       });
     });
 
+    describe("#reduce", () => {
+      it("should return oneself", () => {
+        assert.deepStrictEqual(val.reduce(), val);
+      });
+    });
+
     describe("#toJSON", () => {
       it("should return JSON stringified original value", () => {
         assert.deepStrictEqual(val.toJSON(), "0");

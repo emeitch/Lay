@@ -3,6 +3,10 @@ export default class Val {
     this.origin = origin;
   }
 
+  reduce() {
+    return this;
+  }
+
   toJSON() {
     return JSON.stringify(this.origin);
   }
