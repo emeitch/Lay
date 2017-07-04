@@ -14,6 +14,10 @@ export default class Store extends Env {
     this.invalidationLogsCache = new Map();
   }
 
+  get store() {
+    return this;
+  }
+
   getLog(logid) {
     return this.logs.get(logid);
   }

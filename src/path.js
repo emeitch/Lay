@@ -36,7 +36,7 @@ export default class Path extends Ref {
   reduce(env) {
     let v = this.receiver.reduce(env);
     for (const key of this.keys) {
-      const log = env.activeLog(v, key);
+      const log = env.store.activeLog(v, key);
       if (!log) {
         throw `${v} don't have the specified key ${key}`;
       }

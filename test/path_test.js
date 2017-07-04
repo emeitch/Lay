@@ -82,7 +82,7 @@ describe("Path", () => {
 
       it("should return the val", () => {
         const p = new Path(self, key);
-        const env = new Env(id, store);
+        const env = new Env(store, id);
         assert.deepStrictEqual(p.reduce(env), val);
       });
     });

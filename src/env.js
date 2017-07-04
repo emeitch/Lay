@@ -1,10 +1,10 @@
 export default class Env {
-  constructor(id=undefined, parent=undefined) {
-    this.id = id;
+  constructor(parent=undefined, id=undefined) {
     this.parent = parent;
+    this.id = id;
   }
 
-  activeLog(...args) {
-    return this.parent.activeLog(...args);
+  get store() {
+    return this.parent.store;
   }
 }
