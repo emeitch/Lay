@@ -89,10 +89,10 @@ describe("Store", () => {
     });
   });
 
-  describe("#ref", () => {
+  describe("#resolve", () => {
     context("name un assigned", () => {
       it("should return undefined", () => {
-        assert(store.ref("unassigned") === undefined);
+        assert(store.resolve("unassigned") === undefined);
       });
     });
 
@@ -104,9 +104,9 @@ describe("Store", () => {
       });
 
       it("should return a id by name", () => {
-        assert(store.ref("i") === id);
-        assert(store.ref("k") === key);
-        assert(store.ref("v") === val);
+        assert(store.resolve("i") === id);
+        assert(store.resolve("k") === key);
+        assert(store.resolve("v") === val);
       });
 
       context("name re-assigned", () => {
@@ -117,7 +117,7 @@ describe("Store", () => {
         });
 
         it("should return a re-assigned id by name", () => {
-          assert(store.ref("r") === key2);
+          assert(store.resolve("r") === key2);
         });
       });
     });

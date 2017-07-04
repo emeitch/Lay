@@ -90,7 +90,7 @@ export default class Store extends Env {
     return this.obj(tid);
   }
 
-  ref(name) {
+  resolve(name) {
     const logs = this.findLogs({key: nameKey, val: v(name)});
     const log = logs[logs.length-1];
     return log ? log.id : undefined;
