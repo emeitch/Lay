@@ -1,11 +1,14 @@
+import Env from './env';
+
 import { v } from './val';
 import UUID from './uuid';
 import Log from './log';
 import Obj from './obj';
 import { nameKey, transaction, transactionTime, invalidate } from './ontology';
 
-export default class Store {
+export default class Store extends Env {
   constructor() {
+    super();
     this.logs = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();

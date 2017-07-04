@@ -4,6 +4,7 @@ import { v } from '../src/val';
 import Path from '../src/path';
 import UUID from '../src/uuid';
 import { self } from '../src/self';
+import Env from '../src/env';
 import Store from '../src/store';
 
 describe("Path", () => {
@@ -81,11 +82,7 @@ describe("Path", () => {
 
       it("should return the val", () => {
         const p = new Path(self, key);
-        const env = {
-          id,
-          parent: store,
-          activeLog: (...args) => store.activeLog(...args)
-        };
+        const env = new Env(id, store);
         assert.deepStrictEqual(p.reduce(env), val);
       });
     });
