@@ -11,7 +11,7 @@ export default class Exp extends Val {
 
   reduce(_env) {
     const [func, ...args] = this.terms;
-    if (args.every((arg) => arg.constructor === Val)) {
+    if (args.every(arg => arg.constructor === Val)) {
       return func.apply(...args);
     }
 
