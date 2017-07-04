@@ -6,7 +6,7 @@ export default class Self extends Ref {
   }
 
   reduce(env) {
-    return env.id;
+    return env.id ? env.id : this;
   }
 }
 
