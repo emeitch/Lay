@@ -3,6 +3,7 @@ import assert from 'assert';
 import Path from '../src/path';
 import UUID from '../src/uuid';
 import { self } from '../src/self';
+import Store from '../src/store';
 
 describe("Path", () => {
   describe("constructor ", () => {
@@ -43,6 +44,41 @@ describe("Path", () => {
   describe("#toString", () => {
     it("should return ids joined by slash", () => {
       assert.deepStrictEqual(p.toString(),`${id1}/${id2}/${id3}`);
+    });
+  });
+
+  describe("#reduce", () => {
+    let store;
+    beforeEach(() => {
+      store = new Store();
+    });
+
+    context("absolute path with uuid end", () => {
+      const id = new UUID();
+      const key = new UUID();
+      const id2 = new UUID();
+      const key2 = new UUID();
+      const id3 = new UUID();
+      beforeEach(() => {
+        store.log(id, key, id2);
+        store.log(id2, key2, id3);
+      });
+
+      it("should return the val", () => {
+        const p = new Path(id, key, key2);
+        assert.deepStrictEqual(p.reduce(store), id3);
+      });
+    });
+
+    context("malformed path", () => {
+      const id = new UUID();
+      const unknownKey1 = new UUID();
+      const unknownKey2 = new UUID();
+
+      it("should raise exception", () => {
+        const p = new Path(id, unknownKey1, unknownKey2);
+        assert.throws(() => p.reduce(store), /.* don't have the specified key .*/);
+      });
     });
   });
 });

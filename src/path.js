@@ -29,4 +29,16 @@ export default class Path extends Ref {
   toString() {
     return this.origin.join("/");
   }
+
+  reduce(env) {
+    let obj = env.obj(this.receiver);
+    for (const key of this.keys) {
+      const o = obj.get(key);
+      if (!o) {
+        throw `${obj} don't have the specified key ${key}`;
+      }
+      obj = o;
+    }
+    return obj.id;
+  }
 }
