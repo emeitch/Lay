@@ -108,7 +108,7 @@ describe("Path", () => {
       });
     });
 
-    context("malformed path", () => {
+    context("unknown path", () => {
       const id = new UUID();
       const unknownKey1 = new UUID();
       const unknownKey2 = new UUID();
@@ -117,7 +117,7 @@ describe("Path", () => {
       });
 
       it("should raise exception", () => {
-        assert.throws(() => p.reduce(store), /.* don't have the specified key .*/);
+        assert.deepStrictEqual(p.reduce(store), p);
       });
     });
   });

@@ -11,17 +11,11 @@ export default class Exp extends Val {
 
   reduce(env) {
     const [func, ...rest] = this.terms;
-    const args = rest.map(a => {
-      try {
-        return a.reduce(env);
-      } catch(e) {
-        return a;
-      }
-    });
+    const args = rest.map(a => a.reduce(env));
     if (args.every(arg => arg.constructor === Val)) {
       return func.apply(...args);
+    } else {
+      return super.reduce(env);
     }
-
-    return super.reduce(env);
   }
 }

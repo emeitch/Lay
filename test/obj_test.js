@@ -133,19 +133,5 @@ describe("Obj", () => {
         assert.deepStrictEqual(obj.get(key), val2);
       });
     });
-
-    context("malformed path", () => {
-      beforeEach(() => {
-        const id2 = new UUID();
-        const unknownKey1 = new UUID();
-        const unknownKey2 = new UUID();
-        const malformedPath = new Path(id2, unknownKey1, unknownKey2);
-        store.log(id, key, malformedPath);
-      });
-
-      it("should raise exception", () => {
-        assert.throws(() => obj.get(key), /.* don't have the specified key .*/);
-      });
-    });
   });
 });

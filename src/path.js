@@ -40,7 +40,7 @@ export default class Path extends Ref {
       const k = key.reduce(env);
       const log = env.store.activeLog(v, k);
       if (!log) {
-        throw `${v} don't have the specified key ${key}`;
+        return super.reduce(env);
       }
       v = log.val.reduce(new Env(env, log.id));
     }
