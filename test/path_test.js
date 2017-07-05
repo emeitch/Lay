@@ -87,6 +87,27 @@ describe("Path", () => {
       });
     });
 
+    context("relative path chain", () => {
+      const id = new UUID();
+      const key = new UUID();
+      const id2 = new UUID();
+      const key2 = new UUID();
+      const key3 = new UUID();
+      const val3 = v("val0");
+      let env;
+      beforeEach(() => {
+        store.log(id, key, id2);
+        store.log(id2, key2, new Path(self, key3));
+        store.log(id2, key3, val3);
+        env = new Env(store, id);
+        p = new Path(self, key, key2);
+      });
+
+      it("should return the val", () => {
+        assert.deepStrictEqual(p.reduce(env), val3);
+      });
+    });
+
     context("malformed path", () => {
       const id = new UUID();
       const unknownKey1 = new UUID();

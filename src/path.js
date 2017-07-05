@@ -4,6 +4,7 @@
 import Ref from './ref';
 import ID from './id';
 import { self } from './self';
+import Env from './env';
 
 export default class Path extends Ref {
   constructor(...ids) {
@@ -41,7 +42,7 @@ export default class Path extends Ref {
       if (!log) {
         throw `${v} don't have the specified key ${key}`;
       }
-      v = log.val;
+      v = log.val.reduce(new Env(env, log.id));
     }
     return v;
   }
