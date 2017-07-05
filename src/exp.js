@@ -9,11 +9,11 @@ export default class Exp extends Val {
     return this.origin;
   }
 
-  reduce(_env) {
+  reduce(env) {
     const [func, ...rest] = this.terms;
     const args = rest.map(a => {
       try {
-        return a.reduce(_env);
+        return a.reduce(env);
       } catch(e) {
         return a;
       }
@@ -22,6 +22,6 @@ export default class Exp extends Val {
       return func.apply(...args);
     }
 
-    return super.reduce(_env);
+    return super.reduce(env);
   }
 }
