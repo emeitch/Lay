@@ -1,9 +1,6 @@
-export default class Obj {
-  constructor(store, id) {
-    this.store = store;
-    this.id = id;
-  }
+import Env from './env';
 
+export default class Obj extends Env {
   follow(val) {
     const followFuncName = "follow" + val.constructor.name;
     const followFunc = this[followFuncName];
@@ -42,7 +39,7 @@ export default class Obj {
     if (!log) {
       return undefined;
     }
-
+    
     return this.follow(log.val);
   }
 }
