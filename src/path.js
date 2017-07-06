@@ -1,6 +1,3 @@
-/* eslint no-console: ["error", { allow: ["log"] }] */
-/* eslint-env browser */
-
 import Ref from './ref';
 import ID from './id';
 import { self } from './self';
