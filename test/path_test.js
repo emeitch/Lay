@@ -71,7 +71,7 @@ describe("Path", () => {
       });
     });
 
-    context("relative path with uuid end", () => {
+    context("relative path with val end", () => {
       const id = new UUID();
       const key = new UUID();
       const val = v("val0");
