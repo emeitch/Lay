@@ -89,7 +89,7 @@ describe("Obj", () => {
       });
     });
 
-    context("absolute path", () => {
+    context("with a absolute path", () => {
       beforeEach(() => {
         const id2 = new UUID();
         const id3 = new UUID();
@@ -105,7 +105,7 @@ describe("Obj", () => {
       });
     });
 
-    context("relative path", () => {
+    context("with a relative path", () => {
       let val2;
       beforeEach(() => {
         val2 = v("val0");
