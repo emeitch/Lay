@@ -25,7 +25,7 @@ describe("Obj", () => {
       });
     });
 
-    context("with a log has UUID typed val", () => {
+    context("with a log which has a val typed by UUID", () => {
       const dst = new UUID();
 
       beforeEach(() => {
@@ -37,7 +37,7 @@ describe("Obj", () => {
       });
     });
 
-    context("with a log has Val typed val", () => {
+    context("with a log which has a val typed by Val", () => {
       beforeEach(() => {
         store.log(id, key, v("value"));
       });
@@ -78,7 +78,7 @@ describe("Obj", () => {
         });
       });
 
-      context("add a log which same args for the invalidated log", () => {
+      context("add a log which has same args for the invalidated log", () => {
         beforeEach(() => {
           store.log(id, key, v("val0"));
         });
