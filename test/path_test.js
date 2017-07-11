@@ -17,7 +17,7 @@ describe("Path", () => {
       assert.throws(() => new Path("strobj"), / is not a ID or a Self/);
     });
 
-    it("should require keys are typed ID", () => {
+    it("should require keys which are typed ID", () => {
       assert.throws(() => new Path(new UUID(), "strobj"), / is not a ID$/);
     });
   });
@@ -54,7 +54,7 @@ describe("Path", () => {
       store = new Store();
     });
 
-    context("absolute path with uuid end", () => {
+    context("absolute path with end of uuid", () => {
       const id = new UUID();
       const key = new UUID();
       const id2 = new UUID();
