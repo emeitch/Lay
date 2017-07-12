@@ -26,23 +26,23 @@ describe("self", () => {
 
   describe("#reduce", () => {
     let env;
-    context("with id env", () => {
+    context("with env which has id", () => {
       const id = new UUID();
       beforeEach(() => {
         env = new Env(new Store(), id);
       });
 
-      it("should return env id", () => {
+      it("should return the env id", () => {
         assert.deepStrictEqual(self.reduce(env), id);
       });
     });
 
-    context("with id env", () => {
+    context("with env which has no id", () => {
       beforeEach(() => {
         env = new Env(new Store());
       });
 
-      it("should return env id", () => {
+      it("should return self", () => {
         assert.deepStrictEqual(self.reduce(env), self);
       });
     });
