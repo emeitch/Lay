@@ -2,63 +2,63 @@ import Env from './env';
 
 import { v } from './val';
 import UUID from './uuid';
-import Log from './log';
+import Note from './note';
 import Obj from './obj';
 import { nameKey, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Store extends Env {
   constructor() {
     super();
-    this.logs = new Map();
-    this.activeLogsCache = new Map();
-    this.invalidationLogsCache = new Map();
+    this.notes = new Map();
+    this.activeNotesCache = new Map();
+    this.invalidationNotesCache = new Map();
   }
 
   get store() {
     return this;
   }
 
-  getLog(logid) {
-    return this.logs.get(logid);
+  getNote(noteid) {
+    return this.notes.get(noteid);
   }
 
-  findLogs(cond) {
-    const logs = [];
+  findNotes(cond) {
+    const notes = [];
 
     // todo: 線形探索になっているので高速化する
-    for (const [, log] of this.logs) {
+    for (const [, note] of this.notes) {
       const keys = Object.keys(cond);
-      if (keys.every((k) => JSON.stringify(log[k]) === JSON.stringify(cond[k]))) {
-        logs.push(log);
+      if (keys.every((k) => JSON.stringify(note[k]) === JSON.stringify(cond[k]))) {
+        notes.push(note);
       }
     }
 
-    return logs;
+    return notes;
   }
 
   cacheIndex(id, key) {
     return id + "__" + key;
   }
 
-  activeLogs(id, key, at=new Date()) {
+  activeNotes(id, key, at=new Date()) {
     const i = this.cacheIndex(id, key);
-    const alogs = new Map(this.activeLogsCache.get(i));
-    const ilogs = new Map(this.invalidationLogsCache.get(i));
+    const anotes = new Map(this.activeNotesCache.get(i));
+    const inotes = new Map(this.invalidationNotesCache.get(i));
 
-    for (let [, log] of alogs) {
-      if (log.at && log.at > at) {
-        alogs.delete(log.logid);
+    for (let [, note] of anotes) {
+      if (note.at && note.at > at) {
+        anotes.delete(note.noteid);
       }
     }
 
-    for (let [, ilog] of ilogs) {
-      const log = alogs.get(ilog.id);
-      if (log && (!ilog.at || ilog.at <= at)) {
-        alogs.delete(log.logid);
+    for (let [, inote] of inotes) {
+      const note = anotes.get(inote.id);
+      if (note && (!inote.at || inote.at <= at)) {
+        anotes.delete(note.noteid);
       }
     }
 
-    return Array.from(alogs.values()).sort((a, b) => {
+    return Array.from(anotes.values()).sort((a, b) => {
       if (a.at === undefined) {
         return -1;
       } else if (b.at === undefined) {
@@ -69,8 +69,8 @@ export default class Store extends Env {
     });
   }
 
-  activeLog(id, key, at=new Date()) {
-    const actives = this.activeLogs(id, key, at);
+  activeNote(id, key, at=new Date()) {
+    const actives = this.activeNotes(id, key, at);
     return actives[actives.length-1];
   }
 
@@ -78,68 +78,68 @@ export default class Store extends Env {
     return new Obj(this, id);
   }
 
-  transactionObj(log) {
-    const tlogs = this.findLogs({id: log.logid, key: transaction});
+  transactionObj(note) {
+    const tnotes = this.findNotes({id: note.noteid, key: transaction});
 
-    if (tlogs.length === 0) {
+    if (tnotes.length === 0) {
       return undefined;
     }
 
-    const tlog = tlogs[0];
-    const tid = tlog.val;
+    const tnote = tnotes[0];
+    const tid = tnote.val;
     return this.obj(tid);
   }
 
   resolve(name) {
-    const logs = this.findLogs({key: nameKey, val: v(name)});
-    const log = logs[logs.length-1];
-    return log ? log.id : undefined;
+    const notes = this.findNotes({key: nameKey, val: v(name)});
+    const note = notes[notes.length-1];
+    return note ? note.id : undefined;
   }
 
   assign(name, id) {
     // todo: ユニーク制約をかけたい
-    this.log(id, nameKey, v(name));
+    this.note(id, nameKey, v(name));
   }
 
-  syncCache(log) {
-    const i = this.cacheIndex(log.id, log.key);
-    const al = this.activeLogsCache.get(i) || new Map();
-    al.set(log.logid, log);
-    this.activeLogsCache.set(i, al);
+  syncCache(note) {
+    const i = this.cacheIndex(note.id, note.key);
+    const al = this.activeNotesCache.get(i) || new Map();
+    al.set(note.noteid, note);
+    this.activeNotesCache.set(i, al);
 
-    if (log.key === invalidate) {
-      const positive = this.getLog(log.id);
+    if (note.key === invalidate) {
+      const positive = this.getNote(note.id);
       const i = this.cacheIndex(positive.id, positive.key);
-      const il = this.invalidationLogsCache.get(i) || new Map();
-      il.set(log.logid, log);
-      this.invalidationLogsCache.set(i, il);
+      const il = this.invalidationNotesCache.get(i) || new Map();
+      il.set(note.noteid, note);
+      this.invalidationNotesCache.set(i, il);
     }
   }
 
   doTransaction(block) {
     // todo: アトミックな操作に修正する
-    const addLog = (log) => {
-      this.logs.set(log.logid, log);
-      this.syncCache(log);
+    const addNote = (note) => {
+      this.notes.set(note.noteid, note);
+      this.syncCache(note);
     };
     const tid = new UUID();
-    const ttlog = new Log(tid, transactionTime, v(new Date()));
+    const ttnote = new Note(tid, transactionTime, v(new Date()));
 
-    addLog(ttlog);
+    addNote(ttnote);
 
-    const logWithTransaction = (...args) => {
-      const log = new Log(...args);
-      addLog(log);
-      const tlog = new Log(log.logid, transaction, tid);
-      addLog(tlog);
-      return log;
+    const noteWithTransaction = (...args) => {
+      const note = new Note(...args);
+      addNote(note);
+      const tnote = new Note(note.noteid, transaction, tid);
+      addNote(tnote);
+      return note;
     };
-    return block(logWithTransaction);
+    return block(noteWithTransaction);
   }
 
-  log(...attrs) {
-    return this.doTransaction(logWithTransaction => {
-      return logWithTransaction(...attrs);
+  note(...attrs) {
+    return this.doTransaction(noteWithTransaction => {
+      return noteWithTransaction(...attrs);
     });
   }
 }

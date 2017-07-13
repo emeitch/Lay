@@ -19,27 +19,27 @@ describe("Obj", () => {
   });
 
   describe("#get", () => {
-    context("without logs", () => {
+    context("without notes", () => {
       it("should return undefined", () => {
         assert(obj.get(key) === undefined);
       });
     });
 
-    context("with a log which has a val typed by UUID", () => {
+    context("with a note which has a val typed by UUID", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        store.log(id, key, dst);
+        store.note(id, key, dst);
       });
 
-      it("should return a obj of log's val", () => {
+      it("should return a obj of note's val", () => {
         assert.deepStrictEqual(obj.get(key), store.obj(dst));
       });
     });
 
-    context("with a log which has a val typed by Val", () => {
+    context("with a note which has a val typed by Val", () => {
       beforeEach(() => {
-        store.log(id, key, v("value"));
+        store.note(id, key, v("value"));
       });
 
       it("should return a value", () => {
@@ -47,10 +47,10 @@ describe("Obj", () => {
       });
     });
 
-    context("with the same key but different val logs", () => {
+    context("with the same key but different val notes", () => {
       beforeEach(() => {
-        store.log(id, key, v("val0"));
-        store.log(id, key, v("val1"));
+        store.note(id, key, v("val0"));
+        store.note(id, key, v("val1"));
       });
 
       it("should return the last val", () => {
@@ -58,19 +58,19 @@ describe("Obj", () => {
       });
     });
 
-    context("with a invalidated log", () => {
+    context("with a invalidated note", () => {
       beforeEach(() => {
-        const log = store.log(id, key, v("val0"));
-        store.log(log.logid, invalidate);
+        const note = store.note(id, key, v("val0"));
+        store.note(note.noteid, invalidate);
       });
 
       it("should return undefined", () => {
         assert.deepStrictEqual(obj.get(key), undefined);
       });
 
-      context("add another log", () => {
+      context("add another note", () => {
         beforeEach(() => {
-          store.log(id, key, v("val1"));
+          store.note(id, key, v("val1"));
         });
 
         it("should return the val", () => {
@@ -78,9 +78,9 @@ describe("Obj", () => {
         });
       });
 
-      context("add a log which has same args for the invalidated log", () => {
+      context("add a note which has same args for the invalidated note", () => {
         beforeEach(() => {
-          store.log(id, key, v("val0"));
+          store.note(id, key, v("val0"));
         });
 
         it("should return the val", () => {
@@ -95,9 +95,9 @@ describe("Obj", () => {
         const id3 = new UUID();
         const key2 = new UUID();
         const key3 = new UUID();
-        store.log(id2, key2, id3);
-        store.log(id3, key3, v("path end"));
-        store.log(id, key, new Path(id2, key2, key3));
+        store.note(id2, key2, id3);
+        store.note(id3, key3, v("path end"));
+        store.note(id, key, new Path(id2, key2, key3));
       });
 
       it("should return the val", () => {
@@ -110,8 +110,8 @@ describe("Obj", () => {
       beforeEach(() => {
         val2 = v("val0");
         const key2 = new UUID();
-        store.log(id, key2, val2);
-        store.log(id, key, new Path(self, key2));
+        store.note(id, key2, val2);
+        store.note(id, key, new Path(self, key2));
       });
 
       it("should return the val", () => {

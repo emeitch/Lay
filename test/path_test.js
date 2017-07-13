@@ -61,8 +61,8 @@ describe("Path", () => {
       const key2 = new UUID();
       const id3 = new UUID();
       beforeEach(() => {
-        store.log(id, key, id2);
-        store.log(id2, key2, id3);
+        store.note(id, key, id2);
+        store.note(id2, key2, id3);
         p = new Path(id, key, key2);
       });
 
@@ -77,7 +77,7 @@ describe("Path", () => {
       const val = v("val0");
       let env;
       beforeEach(() => {
-        store.log(id, key, val);
+        store.note(id, key, val);
         env = new Env(store, id);
         p = new Path(self, key);
       });
@@ -96,9 +96,9 @@ describe("Path", () => {
       const val3 = v("val0");
       let env;
       beforeEach(() => {
-        store.log(id, key, id2);
-        store.log(id2, key2, new Path(self, key3));
-        store.log(id2, key3, val3);
+        store.note(id, key, id2);
+        store.note(id2, key2, new Path(self, key3));
+        store.note(id2, key3, val3);
         env = new Env(store, id);
         p = new Path(self, key, key2);
       });

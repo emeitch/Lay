@@ -1,7 +1,7 @@
 import Val from './val';
 import UUID from './uuid';
 
-export default class Log {
+export default class Note {
   constructor(id, key, val, at_, in_) {
     if (!id) {
       throw "id is required";
@@ -15,7 +15,7 @@ export default class Log {
       throw "val is not a Val";
     }
 
-    this.logid = new UUID();
+    this.noteid = new UUID();
     this.id = id;
     this.key = key;
     this.val = val;

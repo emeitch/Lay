@@ -35,11 +35,11 @@ export default class Path extends Ref {
     let v = this.receiver.reduce(env);
     for (const key of this.keys) {
       const k = key.reduce(env);
-      const log = env.store.activeLog(v, k);
-      if (!log) {
+      const note = env.store.activeNote(v, k);
+      if (!note) {
         return super.reduce(env);
       }
-      v = log.val.reduce(new Env(env, log.id));
+      v = note.val.reduce(new Env(env, note.id));
     }
     return v;
   }
