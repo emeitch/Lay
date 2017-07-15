@@ -20,15 +20,15 @@ describe("Note", () => {
   });
 
   describe("constructor ", () => {
-    it("should require id", () => {
+    it("should require a id", () => {
       assert.throws(() => new Note(), /id is required/);
     });
 
-    it("should require key", () => {
+    it("should require a key", () => {
       assert.throws(() => new Note(id), /key is required/);
     });
 
-    it("should constrain val to Val typed", () => {
+    it("should constrain a val typed Val", () => {
       assert.throws(() => new Note(id, key, "unval"), /val is not a Val/);
     });
   });
