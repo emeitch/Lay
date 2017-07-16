@@ -98,7 +98,7 @@ export default class Store extends Env {
 
   assign(name, id) {
     // todo: ユニーク制約をかけたい
-    this.note(id, nameKey, v(name));
+    this.sendNote(id, nameKey, v(name));
   }
 
   syncCache(note) {
@@ -137,7 +137,7 @@ export default class Store extends Env {
     return block(noteWithTransaction);
   }
 
-  note(...attrs) {
+  sendNote(...attrs) {
     return this.doTransaction(noteWithTransaction => {
       return noteWithTransaction(...attrs);
     });

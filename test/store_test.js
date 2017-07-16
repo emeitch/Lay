@@ -20,7 +20,7 @@ describe("Store", () => {
     context("standard arguments", () => {
       let note;
       beforeEach(() => {
-        note = store.note(id, key, val);
+        note = store.sendNote(id, key, val);
       });
 
       it("should append a note", () => {
@@ -47,7 +47,7 @@ describe("Store", () => {
 
       let note;
       beforeEach(() => {
-        note = store.note(id, key, val, undefined, location);
+        note = store.sendNote(id, key, val, undefined, location);
       });
 
       it("should append a note with location", () => {
@@ -64,7 +64,7 @@ describe("Store", () => {
 
       let note;
       beforeEach(() => {
-        note = store.note(id, key, val, time);
+        note = store.sendNote(id, key, val, time);
       });
 
       it("should append a note with time", () => {
@@ -80,7 +80,7 @@ describe("Store", () => {
   describe("#transactionObj", () => {
     let tobj;
     beforeEach(() => {
-      const note = store.note(id, key, val);
+      const note = store.sendNote(id, key, val);
       tobj = store.transactionObj(note);
     });
 
@@ -133,8 +133,8 @@ describe("Store", () => {
 
     context("notes with same ids & keys but different vals", () => {
       beforeEach(() => {
-        store.note(id, key, v("val0"));
-        store.note(id, key, v("val1"));
+        store.sendNote(id, key, v("val0"));
+        store.sendNote(id, key, v("val1"));
       });
 
       it("should return all notes", () => {
@@ -146,7 +146,7 @@ describe("Store", () => {
       context("invalidate the last note", () => {
         beforeEach(() => {
           const note = store.activeNote(id, key);
-          store.note(note.noteid, invalidate);
+          store.sendNote(note.noteid, invalidate);
         });
 
         it("should return only the first note", () => {
@@ -159,8 +159,8 @@ describe("Store", () => {
 
     context("notes with applying time", () => {
       beforeEach(() => {
-        store.note(id, key, v("val0"), new Date(2017, 0));
-        store.note(id, key, v("val1"), new Date(2017, 2));
+        store.sendNote(id, key, v("val0"), new Date(2017, 0));
+        store.sendNote(id, key, v("val1"), new Date(2017, 2));
       });
 
       it("should return all notes", () => {
@@ -178,7 +178,7 @@ describe("Store", () => {
       context("invalidate the last note", () => {
         beforeEach(() => {
           const note = store.activeNote(id, key);
-          store.note(note.noteid, invalidate);
+          store.sendNote(note.noteid, invalidate);
         });
 
         it("should return only the first note", () => {
@@ -191,7 +191,7 @@ describe("Store", () => {
       context("invalidate the last note with applying time", () => {
         beforeEach(() => {
           const note = store.activeNote(id, key);
-          store.note(note.noteid, invalidate, undefined, new Date(2017, 4));
+          store.sendNote(note.noteid, invalidate, undefined, new Date(2017, 4));
         });
 
         it("should return only the first note", () => {
@@ -216,8 +216,8 @@ describe("Store", () => {
 
     context("note with old applying time", () => {
       beforeEach(() => {
-        store.note(id, key, v("val0"), new Date(2017, 1));
-        store.note(id, key, v("val1"), new Date(2017, 0));
+        store.sendNote(id, key, v("val0"), new Date(2017, 1));
+        store.sendNote(id, key, v("val1"), new Date(2017, 0));
       });
 
       it("should return all notes order by applying time", () => {
@@ -229,7 +229,7 @@ describe("Store", () => {
       context("invalidate the last note", () => {
         beforeEach(() => {
           const note = store.activeNote(id, key);
-          store.note(note.noteid, invalidate);
+          store.sendNote(note.noteid, invalidate);
         });
 
         it("should return only the first note", () => {
@@ -242,8 +242,8 @@ describe("Store", () => {
 
     context("contain a note with time and a note without time", () => {
       beforeEach(() => {
-        store.note(id, key, v("val0"), new Date(2017, 2));
-        store.note(id, key, v("val1"));
+        store.sendNote(id, key, v("val0"), new Date(2017, 2));
+        store.sendNote(id, key, v("val1"));
       });
 
       it("should return all notes order by applying time", () => {
@@ -264,8 +264,8 @@ describe("Store", () => {
 
     context("notes with applying time", () => {
       beforeEach(() => {
-        store.note(id, key, v("val0"), new Date(2017, 0));
-        store.note(id, key, v("val1"), new Date(2017, 2));
+        store.sendNote(id, key, v("val0"), new Date(2017, 0));
+        store.sendNote(id, key, v("val1"), new Date(2017, 2));
       });
 
       it("should return the last note", () => {
@@ -282,7 +282,7 @@ describe("Store", () => {
 
   describe("#obj", () => {
     beforeEach(() => {
-      store.note(id, key, val);
+      store.sendNote(id, key, val);
     });
 
     it("should return the object", () => {

@@ -1,3 +1,3 @@
 /* eslint-env browser */
 
-console.note("Lay: Hello, world!");
+console.sendNote("Lay: Hello, world!");

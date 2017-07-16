@@ -29,7 +29,7 @@ describe("Obj", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        store.note(id, key, dst);
+        store.sendNote(id, key, dst);
       });
 
       it("should return a obj of note's val", () => {
@@ -39,7 +39,7 @@ describe("Obj", () => {
 
     context("with a note which has a val typed by Val", () => {
       beforeEach(() => {
-        store.note(id, key, v("value"));
+        store.sendNote(id, key, v("value"));
       });
 
       it("should return a value", () => {
@@ -49,8 +49,8 @@ describe("Obj", () => {
 
     context("with the same key but different val notes", () => {
       beforeEach(() => {
-        store.note(id, key, v("val0"));
-        store.note(id, key, v("val1"));
+        store.sendNote(id, key, v("val0"));
+        store.sendNote(id, key, v("val1"));
       });
 
       it("should return the last val", () => {
@@ -60,8 +60,8 @@ describe("Obj", () => {
 
     context("with a invalidated note", () => {
       beforeEach(() => {
-        const note = store.note(id, key, v("val0"));
-        store.note(note.noteid, invalidate);
+        const note = store.sendNote(id, key, v("val0"));
+        store.sendNote(note.noteid, invalidate);
       });
 
       it("should return undefined", () => {
@@ -70,7 +70,7 @@ describe("Obj", () => {
 
       context("add another note", () => {
         beforeEach(() => {
-          store.note(id, key, v("val1"));
+          store.sendNote(id, key, v("val1"));
         });
 
         it("should return the val", () => {
@@ -80,7 +80,7 @@ describe("Obj", () => {
 
       context("add a note which has same args for the invalidated note", () => {
         beforeEach(() => {
-          store.note(id, key, v("val0"));
+          store.sendNote(id, key, v("val0"));
         });
 
         it("should return the val", () => {
@@ -95,9 +95,9 @@ describe("Obj", () => {
         const id3 = new UUID();
         const key2 = new UUID();
         const key3 = new UUID();
-        store.note(id2, key2, id3);
-        store.note(id3, key3, v("path end"));
-        store.note(id, key, new Path(id2, key2, key3));
+        store.sendNote(id2, key2, id3);
+        store.sendNote(id3, key3, v("path end"));
+        store.sendNote(id, key, new Path(id2, key2, key3));
       });
 
       it("should return the val", () => {
@@ -110,8 +110,8 @@ describe("Obj", () => {
       beforeEach(() => {
         val2 = v("val0");
         const key2 = new UUID();
-        store.note(id, key2, val2);
-        store.note(id, key, new Path(self, key2));
+        store.sendNote(id, key2, val2);
+        store.sendNote(id, key, new Path(self, key2));
       });
 
       it("should return the val", () => {
