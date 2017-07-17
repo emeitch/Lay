@@ -214,7 +214,7 @@ describe("Store", () => {
       });
     });
 
-    context("note with old applying time", () => {
+    context("contain notes with old applying time", () => {
       beforeEach(() => {
         store.sendNote(id, key, v("val0"), new Date(2017, 1));
         store.sendNote(id, key, v("val1"), new Date(2017, 0));
