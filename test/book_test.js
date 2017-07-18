@@ -28,7 +28,7 @@ describe("Book", () => {
         assert(note.key === key);
         assert(note.val === val);
         assert(note.in === undefined);
-        assert(book.getNote(note.noteid) === note);
+        assert(book.note(note.noteid) === note);
       });
 
       it("should append a transaction note", () => {
@@ -55,7 +55,7 @@ describe("Book", () => {
         assert(note.key === key);
         assert(note.val === val);
         assert(note.in === location);
-        assert(book.getNote(note.noteid) === note);
+        assert(book.note(note.noteid) === note);
       });
     });
 
@@ -72,7 +72,7 @@ describe("Book", () => {
         assert(note.key === key);
         assert(note.val === val);
         assert(note.at === time);
-        assert(book.getNote(note.noteid) === note);
+        assert(book.note(note.noteid) === note);
       });
     });
   });

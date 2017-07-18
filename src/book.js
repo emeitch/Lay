@@ -18,7 +18,7 @@ export default class Book extends Env {
     return this;
   }
 
-  getNote(noteid) {
+  note(noteid) {
     return this.notes.get(noteid);
   }
 
@@ -108,7 +108,7 @@ export default class Book extends Env {
     this.activeNotesCache.set(i, al);
 
     if (note.key === invalidate) {
-      const positive = this.getNote(note.id);
+      const positive = this.note(note.id);
       const i = this.cacheIndex(positive.id, positive.key);
       const il = this.invalidationNotesCache.get(i) || new Map();
       il.set(note.noteid, note);
