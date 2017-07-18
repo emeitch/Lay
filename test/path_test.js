@@ -5,7 +5,7 @@ import Path from '../src/path';
 import UUID from '../src/uuid';
 import { self } from '../src/self';
 import Env from '../src/env';
-import Store from '../src/store';
+import Book from '../src/book';
 
 describe("Path", () => {
   describe("constructor ", () => {
@@ -49,9 +49,9 @@ describe("Path", () => {
   });
 
   describe("#reduce", () => {
-    let store;
+    let book;
     beforeEach(() => {
-      store = new Store();
+      book = new Book();
     });
 
     context("absolute path with end of uuid", () => {
@@ -61,13 +61,13 @@ describe("Path", () => {
       const key2 = new UUID();
       const id3 = new UUID();
       beforeEach(() => {
-        store.sendNote(id, key, id2);
-        store.sendNote(id2, key2, id3);
+        book.sendNote(id, key, id2);
+        book.sendNote(id2, key2, id3);
         p = new Path(id, key, key2);
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(store), id3);
+        assert.deepStrictEqual(p.reduce(book), id3);
       });
     });
 
@@ -77,8 +77,8 @@ describe("Path", () => {
       const val = v("val0");
       let env;
       beforeEach(() => {
-        store.sendNote(id, key, val);
-        env = new Env(store, id);
+        book.sendNote(id, key, val);
+        env = new Env(book, id);
         p = new Path(self, key);
       });
 
@@ -96,10 +96,10 @@ describe("Path", () => {
       const val3 = v("val0");
       let env;
       beforeEach(() => {
-        store.sendNote(id, key, id2);
-        store.sendNote(id2, key2, new Path(self, key3));
-        store.sendNote(id2, key3, val3);
-        env = new Env(store, id);
+        book.sendNote(id, key, id2);
+        book.sendNote(id2, key2, new Path(self, key3));
+        book.sendNote(id2, key3, val3);
+        env = new Env(book, id);
         p = new Path(self, key, key2);
       });
 
@@ -117,7 +117,7 @@ describe("Path", () => {
       });
 
       it("should raise exception", () => {
-        assert.deepStrictEqual(p.reduce(store), p);
+        assert.deepStrictEqual(p.reduce(book), p);
       });
     });
   });

@@ -6,7 +6,7 @@ import Note from './note';
 import Obj from './obj';
 import { nameKey, transaction, transactionTime, invalidate } from './ontology';
 
-export default class Store extends Env {
+export default class Book extends Env {
   constructor() {
     super();
     this.notes = new Map();
@@ -14,7 +14,7 @@ export default class Store extends Env {
     this.invalidationNotesCache = new Map();
   }
 
-  get store() {
+  get book() {
     return this;
   }
 

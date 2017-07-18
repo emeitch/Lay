@@ -4,18 +4,18 @@ import { v } from '../src/val';
 import { self } from '../src/self';
 import UUID from '../src/uuid';
 import Path from '../src/path';
-import Store from '../src/store';
+import Book from '../src/book';
 import { invalidate } from '../src/ontology';
 
 describe("Obj", () => {
   const id = new UUID();
   const key = new UUID();
 
-  let store;
+  let book;
   let obj;
   beforeEach(() => {
-    store = new Store();
-    obj = store.obj(id);
+    book = new Book();
+    obj = book.obj(id);
   });
 
   describe("#get", () => {
@@ -29,17 +29,17 @@ describe("Obj", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        store.sendNote(id, key, dst);
+        book.sendNote(id, key, dst);
       });
 
       it("should return a obj of note's val", () => {
-        assert.deepStrictEqual(obj.get(key), store.obj(dst));
+        assert.deepStrictEqual(obj.get(key), book.obj(dst));
       });
     });
 
     context("with a note which has a val typed by Val", () => {
       beforeEach(() => {
-        store.sendNote(id, key, v("value"));
+        book.sendNote(id, key, v("value"));
       });
 
       it("should return a value", () => {
@@ -49,8 +49,8 @@ describe("Obj", () => {
 
     context("with the same key but different val notes", () => {
       beforeEach(() => {
-        store.sendNote(id, key, v("val0"));
-        store.sendNote(id, key, v("val1"));
+        book.sendNote(id, key, v("val0"));
+        book.sendNote(id, key, v("val1"));
       });
 
       it("should return the last val", () => {
@@ -60,8 +60,8 @@ describe("Obj", () => {
 
     context("with a invalidated note", () => {
       beforeEach(() => {
-        const note = store.sendNote(id, key, v("val0"));
-        store.sendNote(note.noteid, invalidate);
+        const note = book.sendNote(id, key, v("val0"));
+        book.sendNote(note.noteid, invalidate);
       });
 
       it("should return undefined", () => {
@@ -70,7 +70,7 @@ describe("Obj", () => {
 
       context("add another note", () => {
         beforeEach(() => {
-          store.sendNote(id, key, v("val1"));
+          book.sendNote(id, key, v("val1"));
         });
 
         it("should return the val", () => {
@@ -80,7 +80,7 @@ describe("Obj", () => {
 
       context("add a note which has same args for the invalidated note", () => {
         beforeEach(() => {
-          store.sendNote(id, key, v("val0"));
+          book.sendNote(id, key, v("val0"));
         });
 
         it("should return the val", () => {
@@ -95,9 +95,9 @@ describe("Obj", () => {
         const id3 = new UUID();
         const key2 = new UUID();
         const key3 = new UUID();
-        store.sendNote(id2, key2, id3);
-        store.sendNote(id3, key3, v("path end"));
-        store.sendNote(id, key, new Path(id2, key2, key3));
+        book.sendNote(id2, key2, id3);
+        book.sendNote(id3, key3, v("path end"));
+        book.sendNote(id, key, new Path(id2, key2, key3));
       });
 
       it("should return the val", () => {
@@ -110,8 +110,8 @@ describe("Obj", () => {
       beforeEach(() => {
         val2 = v("val0");
         const key2 = new UUID();
-        store.sendNote(id, key2, val2);
-        store.sendNote(id, key, new Path(self, key2));
+        book.sendNote(id, key2, val2);
+        book.sendNote(id, key, new Path(self, key2));
       });
 
       it("should return the val", () => {

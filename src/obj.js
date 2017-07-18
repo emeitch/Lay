@@ -7,7 +7,7 @@ export default class Obj extends Env {
     const path = new Path(this.id, key);
     const v = path.reduce(this);
     if (v instanceof UUID) {
-      return new Obj(this.store, v);
+      return new Obj(this.book, v);
     } else if (v === path){
       return undefined;
     } else {

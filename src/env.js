@@ -4,7 +4,7 @@ export default class Env {
     this.id = id;
   }
 
-  get store() {
-    return this.parent.store;
+  get book() {
+    return this.parent.book;
   }
 }
