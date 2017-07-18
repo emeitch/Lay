@@ -285,7 +285,7 @@ describe("Store", () => {
       store.sendNote(id, key, val);
     });
 
-    it("should return the object", () => {
+    it("should return the obj", () => {
       const o = store.obj(id);
       assert(o.constructor === Obj);
     });
