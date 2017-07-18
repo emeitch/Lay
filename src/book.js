@@ -127,19 +127,19 @@ export default class Book extends Env {
 
     addNote(ttnote);
 
-    const noteWithTransaction = (...args) => {
+    const putNoteWithTransaction = (...args) => {
       const note = new Note(...args);
       addNote(note);
       const tnote = new Note(note.noteid, transaction, tid);
       addNote(tnote);
       return note;
     };
-    return block(noteWithTransaction);
+    return block(putNoteWithTransaction);
   }
 
   putNote(...attrs) {
-    return this.doTransaction(noteWithTransaction => {
-      return noteWithTransaction(...attrs);
+    return this.doTransaction(putNoteWithTransaction => {
+      return putNoteWithTransaction(...attrs);
     });
   }
 }
