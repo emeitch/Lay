@@ -20,7 +20,7 @@ describe("Book", () => {
     context("standard arguments", () => {
       let note;
       beforeEach(() => {
-        note = book.sendNote(id, key, val);
+        note = book.putNote(id, key, val);
       });
 
       it("should append a note", () => {
@@ -47,7 +47,7 @@ describe("Book", () => {
 
       let note;
       beforeEach(() => {
-        note = book.sendNote(id, key, val, undefined, location);
+        note = book.putNote(id, key, val, undefined, location);
       });
 
       it("should append a note with location", () => {
@@ -64,7 +64,7 @@ describe("Book", () => {
 
       let note;
       beforeEach(() => {
-        note = book.sendNote(id, key, val, time);
+        note = book.putNote(id, key, val, time);
       });
 
       it("should append a note with time", () => {
@@ -80,7 +80,7 @@ describe("Book", () => {
   describe("#transactionObj", () => {
     let tobj;
     beforeEach(() => {
-      const note = book.sendNote(id, key, val);
+      const note = book.putNote(id, key, val);
       tobj = book.transactionObj(note);
     });
 
@@ -133,8 +133,8 @@ describe("Book", () => {
 
     context("notes with same ids & keys but different vals", () => {
       beforeEach(() => {
-        book.sendNote(id, key, v("val0"));
-        book.sendNote(id, key, v("val1"));
+        book.putNote(id, key, v("val0"));
+        book.putNote(id, key, v("val1"));
       });
 
       it("should return all notes", () => {
@@ -146,7 +146,7 @@ describe("Book", () => {
       context("invalidate the last note", () => {
         beforeEach(() => {
           const note = book.activeNote(id, key);
-          book.sendNote(note.noteid, invalidate);
+          book.putNote(note.noteid, invalidate);
         });
 
         it("should return only the first note", () => {
@@ -159,8 +159,8 @@ describe("Book", () => {
 
     context("notes with applying time", () => {
       beforeEach(() => {
-        book.sendNote(id, key, v("val0"), new Date(2017, 0));
-        book.sendNote(id, key, v("val1"), new Date(2017, 2));
+        book.putNote(id, key, v("val0"), new Date(2017, 0));
+        book.putNote(id, key, v("val1"), new Date(2017, 2));
       });
 
       it("should return all notes", () => {
@@ -178,7 +178,7 @@ describe("Book", () => {
       context("invalidate the last note", () => {
         beforeEach(() => {
           const note = book.activeNote(id, key);
-          book.sendNote(note.noteid, invalidate);
+          book.putNote(note.noteid, invalidate);
         });
 
         it("should return only the first note", () => {
@@ -191,7 +191,7 @@ describe("Book", () => {
       context("invalidate the last note with applying time", () => {
         beforeEach(() => {
           const note = book.activeNote(id, key);
-          book.sendNote(note.noteid, invalidate, undefined, new Date(2017, 4));
+          book.putNote(note.noteid, invalidate, undefined, new Date(2017, 4));
         });
 
         it("should return only the first note", () => {
@@ -216,8 +216,8 @@ describe("Book", () => {
 
     context("contain notes with old applying time", () => {
       beforeEach(() => {
-        book.sendNote(id, key, v("val0"), new Date(2017, 1));
-        book.sendNote(id, key, v("val1"), new Date(2017, 0));
+        book.putNote(id, key, v("val0"), new Date(2017, 1));
+        book.putNote(id, key, v("val1"), new Date(2017, 0));
       });
 
       it("should return all notes order by applying time", () => {
@@ -229,7 +229,7 @@ describe("Book", () => {
       context("invalidate the last note", () => {
         beforeEach(() => {
           const note = book.activeNote(id, key);
-          book.sendNote(note.noteid, invalidate);
+          book.putNote(note.noteid, invalidate);
         });
 
         it("should return only the first note", () => {
@@ -242,8 +242,8 @@ describe("Book", () => {
 
     context("contain a note with time and a note without time", () => {
       beforeEach(() => {
-        book.sendNote(id, key, v("val0"), new Date(2017, 2));
-        book.sendNote(id, key, v("val1"));
+        book.putNote(id, key, v("val0"), new Date(2017, 2));
+        book.putNote(id, key, v("val1"));
       });
 
       it("should return all notes order by applying time", () => {
@@ -264,8 +264,8 @@ describe("Book", () => {
 
     context("notes with applying time", () => {
       beforeEach(() => {
-        book.sendNote(id, key, v("val0"), new Date(2017, 0));
-        book.sendNote(id, key, v("val1"), new Date(2017, 2));
+        book.putNote(id, key, v("val0"), new Date(2017, 0));
+        book.putNote(id, key, v("val1"), new Date(2017, 2));
       });
 
       it("should return the last note", () => {
@@ -282,7 +282,7 @@ describe("Book", () => {
 
   describe("#obj", () => {
     beforeEach(() => {
-      book.sendNote(id, key, val);
+      book.putNote(id, key, val);
     });
 
     it("should return the obj", () => {

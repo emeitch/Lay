@@ -98,7 +98,7 @@ export default class Book extends Env {
 
   assign(name, id) {
     // todo: ユニーク制約をかけたい
-    this.sendNote(id, nameKey, v(name));
+    this.putNote(id, nameKey, v(name));
   }
 
   syncCache(note) {
@@ -137,7 +137,7 @@ export default class Book extends Env {
     return block(noteWithTransaction);
   }
 
-  sendNote(...attrs) {
+  putNote(...attrs) {
     return this.doTransaction(noteWithTransaction => {
       return noteWithTransaction(...attrs);
     });

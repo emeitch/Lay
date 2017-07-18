@@ -61,8 +61,8 @@ describe("Path", () => {
       const key2 = new UUID();
       const id3 = new UUID();
       beforeEach(() => {
-        book.sendNote(id, key, id2);
-        book.sendNote(id2, key2, id3);
+        book.putNote(id, key, id2);
+        book.putNote(id2, key2, id3);
         p = new Path(id, key, key2);
       });
 
@@ -77,7 +77,7 @@ describe("Path", () => {
       const val = v("val0");
       let env;
       beforeEach(() => {
-        book.sendNote(id, key, val);
+        book.putNote(id, key, val);
         env = new Env(book, id);
         p = new Path(self, key);
       });
@@ -96,9 +96,9 @@ describe("Path", () => {
       const val3 = v("val0");
       let env;
       beforeEach(() => {
-        book.sendNote(id, key, id2);
-        book.sendNote(id2, key2, new Path(self, key3));
-        book.sendNote(id2, key3, val3);
+        book.putNote(id, key, id2);
+        book.putNote(id2, key2, new Path(self, key3));
+        book.putNote(id2, key3, val3);
         env = new Env(book, id);
         p = new Path(self, key, key2);
       });
