@@ -118,28 +118,32 @@ export default class Book extends Env {
 
   doTransaction(block) {
     // todo: アトミックな操作に修正する
-    const addNote = (note) => {
+    const appendNote = (note) => {
       this.notes.set(note.noteid, note);
       this.syncCache(note);
     };
     const tid = new UUID();
     const ttnote = new Note(tid, transactionTime, v(new Date()));
 
-    addNote(ttnote);
+    appendNote(ttnote);
 
-    const putNoteWithTransaction = (...args) => {
-      const note = new Note(...args);
-      addNote(note);
+    const putWithTransaction = (note) => {
+      appendNote(note);
       const tnote = new Note(note.noteid, transaction, tid);
-      addNote(tnote);
+      appendNote(tnote);
       return note;
     };
-    return block(putNoteWithTransaction);
+    return block(putWithTransaction);
   }
 
-  putNote(...attrs) {
-    return this.doTransaction(putNoteWithTransaction => {
-      return putNoteWithTransaction(...attrs);
+  put(note) {
+    return this.doTransaction(putWithTransaction => {
+      return putWithTransaction(note);
     });
+  }
+
+  putNote(...noteAttrs) {
+    const note = new Note(...noteAttrs);
+    return this.put(note);
   }
 }
