@@ -98,7 +98,8 @@ export default class Book extends Env {
 
   assign(name, id) {
     // todo: ユニーク制約をかけたい
-    this.putNote(id, nameKey, v(name));
+    const note = new Note(id, nameKey, v(name));
+    this.put(note);
   }
 
   syncCache(note) {
@@ -140,10 +141,5 @@ export default class Book extends Env {
     return this.doTransaction(putWithTransaction => {
       return putWithTransaction(note);
     });
-  }
-
-  putNote(...noteAttrs) {
-    const note = new Note(...noteAttrs);
-    return this.put(note);
   }
 }

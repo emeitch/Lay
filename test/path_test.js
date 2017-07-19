@@ -4,6 +4,7 @@ import { v } from '../src/val';
 import Path from '../src/path';
 import UUID from '../src/uuid';
 import { self } from '../src/self';
+import Note from '../src/note';
 import Env from '../src/env';
 import Book from '../src/book';
 
@@ -61,8 +62,8 @@ describe("Path", () => {
       const key2 = new UUID();
       const id3 = new UUID();
       beforeEach(() => {
-        book.putNote(id, key, id2);
-        book.putNote(id2, key2, id3);
+        book.put(new Note(id, key, id2));
+        book.put(new Note(id2, key2, id3));
         p = new Path(id, key, key2);
       });
 
@@ -77,7 +78,7 @@ describe("Path", () => {
       const val = v("val0");
       let env;
       beforeEach(() => {
-        book.putNote(id, key, val);
+        book.put(new Note(id, key, val));
         env = new Env(book, id);
         p = new Path(self, key);
       });
@@ -96,9 +97,9 @@ describe("Path", () => {
       const val3 = v("val0");
       let env;
       beforeEach(() => {
-        book.putNote(id, key, id2);
-        book.putNote(id2, key2, new Path(self, key3));
-        book.putNote(id2, key3, val3);
+        book.put(new Note(id, key, id2));
+        book.put(new Note(id2, key2, new Path(self, key3)));
+        book.put(new Note(id2, key3, val3));
         env = new Env(book, id);
         p = new Path(self, key, key2);
       });
