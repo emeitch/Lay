@@ -6,7 +6,7 @@ import UUID from '../src/uuid';
 import { self } from '../src/self';
 import Note from '../src/note';
 import Ctx from '../src/ctx';
-import Book from '../src/book';
+import Env from '../src/env';
 
 describe("Path", () => {
   describe("constructor ", () => {
@@ -50,9 +50,9 @@ describe("Path", () => {
   });
 
   describe("#reduce", () => {
-    let book;
+    let env;
     beforeEach(() => {
-      book = new Book();
+      env = new Env();
     });
 
     context("absolute path with end of uuid", () => {
@@ -62,13 +62,13 @@ describe("Path", () => {
       const key2 = new UUID();
       const id3 = new UUID();
       beforeEach(() => {
-        book.put(new Note(id, key, id2));
-        book.put(new Note(id2, key2, id3));
+        env.put(new Note(id, key, id2));
+        env.put(new Note(id2, key2, id3));
         p = new Path(id, key, key2);
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(book), id3);
+        assert.deepStrictEqual(p.reduce(env), id3);
       });
     });
 
@@ -78,8 +78,8 @@ describe("Path", () => {
       const val = v("val0");
       let ctx;
       beforeEach(() => {
-        book.put(new Note(id, key, val));
-        ctx = new Ctx(book, id);
+        env.put(new Note(id, key, val));
+        ctx = new Ctx(env, id);
         p = new Path(self, key);
       });
 
@@ -97,10 +97,10 @@ describe("Path", () => {
       const val3 = v("val0");
       let ctx;
       beforeEach(() => {
-        book.put(new Note(id, key, id2));
-        book.put(new Note(id2, key2, new Path(self, key3)));
-        book.put(new Note(id2, key3, val3));
-        ctx = new Ctx(book, id);
+        env.put(new Note(id, key, id2));
+        env.put(new Note(id2, key2, new Path(self, key3)));
+        env.put(new Note(id2, key3, val3));
+        ctx = new Ctx(env, id);
         p = new Path(self, key, key2);
       });
 
@@ -118,7 +118,7 @@ describe("Path", () => {
       });
 
       it("should raise exception", () => {
-        assert.deepStrictEqual(p.reduce(book), p);
+        assert.deepStrictEqual(p.reduce(env), p);
       });
     });
   });

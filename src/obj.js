@@ -7,7 +7,7 @@ export default class Obj extends Ctx {
     const path = new Path(this.id, key);
     const v = path.reduce(this);
     if (v instanceof UUID) {
-      return new Obj(this.book, v);
+      return new Obj(this.env, v);
     } else if (v === path){
       return undefined;
     } else {

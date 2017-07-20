@@ -4,7 +4,7 @@ export default class Ctx {
     this.id = id;
   }
 
-  get book() {
-    return this.parent.book;
+  get env() {
+    return this.parent.env;
   }
 }

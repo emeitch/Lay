@@ -5,18 +5,18 @@ import { self } from '../src/self';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import Note from '../src/note';
-import Book from '../src/book';
+import Env from '../src/env';
 import { invalidate } from '../src/ontology';
 
 describe("Obj", () => {
   const id = new UUID();
   const key = new UUID();
 
-  let book;
+  let env;
   let obj;
   beforeEach(() => {
-    book = new Book();
-    obj = book.obj(id);
+    env = new Env();
+    obj = env.obj(id);
   });
 
   describe("#get", () => {
@@ -30,17 +30,17 @@ describe("Obj", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        book.put(new Note(id, key, dst));
+        env.put(new Note(id, key, dst));
       });
 
       it("should return a obj of note's val", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(dst));
+        assert.deepStrictEqual(obj.get(key), env.obj(dst));
       });
     });
 
     context("with a note which has a val typed by Val", () => {
       beforeEach(() => {
-        book.put(new Note(id, key, v("value")));
+        env.put(new Note(id, key, v("value")));
       });
 
       it("should return a value", () => {
@@ -50,8 +50,8 @@ describe("Obj", () => {
 
     context("with the same key but different val notes", () => {
       beforeEach(() => {
-        book.put(new Note(id, key, v("val0")));
-        book.put(new Note(id, key, v("val1")));
+        env.put(new Note(id, key, v("val0")));
+        env.put(new Note(id, key, v("val1")));
       });
 
       it("should return the last val", () => {
@@ -61,8 +61,8 @@ describe("Obj", () => {
 
     context("with a invalidated note", () => {
       beforeEach(() => {
-        const note = book.put(new Note(id, key, v("val0")));
-        book.put(new Note(note.noteid, invalidate));
+        const note = env.put(new Note(id, key, v("val0")));
+        env.put(new Note(note.noteid, invalidate));
       });
 
       it("should return undefined", () => {
@@ -71,7 +71,7 @@ describe("Obj", () => {
 
       context("add another note", () => {
         beforeEach(() => {
-          book.put(new Note(id, key, v("val1")));
+          env.put(new Note(id, key, v("val1")));
         });
 
         it("should return the val", () => {
@@ -81,7 +81,7 @@ describe("Obj", () => {
 
       context("add a note which has same args for the invalidated note", () => {
         beforeEach(() => {
-          book.put(new Note(id, key, v("val0")));
+          env.put(new Note(id, key, v("val0")));
         });
 
         it("should return the val", () => {
@@ -96,9 +96,9 @@ describe("Obj", () => {
         const id3 = new UUID();
         const key2 = new UUID();
         const key3 = new UUID();
-        book.put(new Note(id2, key2, id3));
-        book.put(new Note(id3, key3, v("path end")));
-        book.put(new Note(id, key, new Path(id2, key2, key3)));
+        env.put(new Note(id2, key2, id3));
+        env.put(new Note(id3, key3, v("path end")));
+        env.put(new Note(id, key, new Path(id2, key2, key3)));
       });
 
       it("should return the val", () => {
@@ -111,8 +111,8 @@ describe("Obj", () => {
       beforeEach(() => {
         val2 = v("val0");
         const key2 = new UUID();
-        book.put(new Note(id, key2, val2));
-        book.put(new Note(id, key, new Path(self, key2)));
+        env.put(new Note(id, key2, val2));
+        env.put(new Note(id, key, new Path(self, key2)));
       });
 
       it("should return the val", () => {
