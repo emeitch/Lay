@@ -1,7 +1,7 @@
 import Ref from './ref';
 import ID from './id';
 import { self } from './self';
-import Env from './env';
+import Ctx from './ctx';
 
 export default class Path extends Ref {
   constructor(...ids) {
@@ -31,15 +31,15 @@ export default class Path extends Ref {
     return this.origin.join("/");
   }
 
-  reduce(env) {
-    let v = this.receiver.reduce(env);
+  reduce(ctx) {
+    let v = this.receiver.reduce(ctx);
     for (const key of this.keys) {
-      const k = key.reduce(env);
-      const note = env.book.activeNote(v, k);
+      const k = key.reduce(ctx);
+      const note = ctx.book.activeNote(v, k);
       if (!note) {
-        return super.reduce(env);
+        return super.reduce(ctx);
       }
-      v = note.val.reduce(new Env(env, note.id));
+      v = note.val.reduce(new Ctx(ctx, note.id));
     }
     return v;
   }

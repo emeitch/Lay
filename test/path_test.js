@@ -5,7 +5,7 @@ import Path from '../src/path';
 import UUID from '../src/uuid';
 import { self } from '../src/self';
 import Note from '../src/note';
-import Env from '../src/env';
+import Ctx from '../src/ctx';
 import Book from '../src/book';
 
 describe("Path", () => {
@@ -76,15 +76,15 @@ describe("Path", () => {
       const id = new UUID();
       const key = new UUID();
       const val = v("val0");
-      let env;
+      let ctx;
       beforeEach(() => {
         book.put(new Note(id, key, val));
-        env = new Env(book, id);
+        ctx = new Ctx(book, id);
         p = new Path(self, key);
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(env), val);
+        assert.deepStrictEqual(p.reduce(ctx), val);
       });
     });
 
@@ -95,17 +95,17 @@ describe("Path", () => {
       const key2 = new UUID();
       const key3 = new UUID();
       const val3 = v("val0");
-      let env;
+      let ctx;
       beforeEach(() => {
         book.put(new Note(id, key, id2));
         book.put(new Note(id2, key2, new Path(self, key3)));
         book.put(new Note(id2, key3, val3));
-        env = new Env(book, id);
+        ctx = new Ctx(book, id);
         p = new Path(self, key, key2);
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(env), val3);
+        assert.deepStrictEqual(p.reduce(ctx), val3);
       });
     });
 

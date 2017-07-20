@@ -1,8 +1,8 @@
-import Env from './env';
+import Ctx from './ctx';
 import UUID from './uuid';
 import Path from './path';
 
-export default class Obj extends Env {
+export default class Obj extends Ctx {
   get(key) {
     const path = new Path(this.id, key);
     const v = path.reduce(this);

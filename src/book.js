@@ -1,4 +1,4 @@
-import Env from './env';
+import Ctx from './ctx';
 
 import { v } from './val';
 import UUID from './uuid';
@@ -6,7 +6,7 @@ import Note from './note';
 import Obj from './obj';
 import { nameKey, transaction, transactionTime, invalidate } from './ontology';
 
-export default class Book extends Env {
+export default class Book extends Ctx {
   constructor() {
     super();
     this.notes = new Map();

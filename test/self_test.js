@@ -4,7 +4,7 @@ import { self } from '../src/self';
 
 import Ref from '../src/ref';
 import UUID from '../src/uuid';
-import Env from '../src/env';
+import Ctx from '../src/ctx';
 import Book from '../src/book';
 
 describe("self", () => {
@@ -25,25 +25,25 @@ describe("self", () => {
   });
 
   describe("#reduce", () => {
-    let env;
-    context("with env which has id", () => {
+    let ctx;
+    context("with ctx which has id", () => {
       const id = new UUID();
       beforeEach(() => {
-        env = new Env(new Book(), id);
+        ctx = new Ctx(new Book(), id);
       });
 
-      it("should return the env id", () => {
-        assert.deepStrictEqual(self.reduce(env), id);
+      it("should return the ctx id", () => {
+        assert.deepStrictEqual(self.reduce(ctx), id);
       });
     });
 
-    context("with env which has no id", () => {
+    context("with ctx which has no id", () => {
       beforeEach(() => {
-        env = new Env(new Book());
+        ctx = new Ctx(new Book());
       });
 
       it("should return self", () => {
-        assert.deepStrictEqual(self.reduce(env), self);
+        assert.deepStrictEqual(self.reduce(ctx), self);
       });
     });
   });
