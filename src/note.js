@@ -23,3 +23,7 @@ export default class Note {
     this.in = in_;
   }
 }
+
+export const n = (...args) => {
+  return new Note(...args);
+};

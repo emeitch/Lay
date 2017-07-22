@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import UUID from '../src/uuid';
-import Note from '../src/note';
+import Note, { n } from '../src/note';
 
 describe("Note", () => {
   const id = new UUID();
@@ -10,7 +10,7 @@ describe("Note", () => {
 
   let note;
   beforeEach(() => {
-    note = new Note(id, key, val);
+    note = n(id, key, val);
   });
 
   describe("#noteid", () => {
