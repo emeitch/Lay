@@ -5,7 +5,7 @@ import { self } from '../src/self';
 import Ref from '../src/ref';
 import UUID from '../src/uuid';
 import Ctx from '../src/ctx';
-import Env from '../src/env';
+import Box from '../src/box';
 
 describe("self", () => {
   it("should be instance of Ref", () => {
@@ -29,7 +29,7 @@ describe("self", () => {
     context("with ctx which has id", () => {
       const id = new UUID();
       beforeEach(() => {
-        ctx = new Ctx(new Env(), id);
+        ctx = new Ctx(new Box(), id);
       });
 
       it("should return the ctx id", () => {
@@ -39,7 +39,7 @@ describe("self", () => {
 
     context("with ctx which has no id", () => {
       beforeEach(() => {
-        ctx = new Ctx(new Env());
+        ctx = new Ctx(new Box());
       });
 
       it("should return self", () => {

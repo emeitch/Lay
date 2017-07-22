@@ -4,7 +4,7 @@ export default class Ctx {
     this.id = id;
   }
 
-  get env() {
-    return this.parent.env;
+  get box() {
+    return this.parent.box;
   }
 }

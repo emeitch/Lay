@@ -35,7 +35,7 @@ export default class Path extends Ref {
     let v = this.receiver.reduce(ctx);
     for (const key of this.keys) {
       const k = key.reduce(ctx);
-      const note = ctx.env.activeNote(v, k);
+      const note = ctx.box.activeNote(v, k);
       if (!note) {
         return super.reduce(ctx);
       }
