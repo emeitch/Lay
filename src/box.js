@@ -1,4 +1,4 @@
-import Ctx from './ctx';
+import Env from './env';
 
 import { v } from './val';
 import UUID from './uuid';
@@ -6,7 +6,7 @@ import Note from './note';
 import Obj from './obj';
 import { nameKey, transaction, transactionTime, invalidate } from './ontology';
 
-export default class Box extends Ctx {
+export default class Box extends Env {
   constructor() {
     super();
     this.notes = new Map();

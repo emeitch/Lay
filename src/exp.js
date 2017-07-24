@@ -9,13 +9,13 @@ export default class Exp extends Val {
     return this.origin;
   }
 
-  reduce(ctx) {
+  reduce(env) {
     const [func, ...rest] = this.terms;
-    const args = rest.map(a => a.reduce(ctx));
+    const args = rest.map(a => a.reduce(env));
     if (args.every(arg => arg.constructor === Val)) {
       return func.apply(...args);
     } else {
-      return super.reduce(ctx);
+      return super.reduce(env);
     }
   }
 }

@@ -4,7 +4,7 @@ import { self } from '../src/self';
 
 import Ref from '../src/ref';
 import UUID from '../src/uuid';
-import Ctx from '../src/ctx';
+import Env from '../src/env';
 import Box from '../src/box';
 
 describe("self", () => {
@@ -25,25 +25,25 @@ describe("self", () => {
   });
 
   describe("#reduce", () => {
-    let ctx;
-    context("with ctx which has id", () => {
+    let env;
+    context("with env which has id", () => {
       const id = new UUID();
       beforeEach(() => {
-        ctx = new Ctx(new Box(), id);
+        env = new Env(new Box(), id);
       });
 
-      it("should return the ctx id", () => {
-        assert.deepStrictEqual(self.reduce(ctx), id);
+      it("should return the env id", () => {
+        assert.deepStrictEqual(self.reduce(env), id);
       });
     });
 
-    context("with ctx which has no id", () => {
+    context("with env which has no id", () => {
       beforeEach(() => {
-        ctx = new Ctx(new Box());
+        env = new Env(new Box());
       });
 
       it("should return self", () => {
-        assert.deepStrictEqual(self.reduce(ctx), self);
+        assert.deepStrictEqual(self.reduce(env), self);
       });
     });
   });

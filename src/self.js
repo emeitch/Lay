@@ -5,8 +5,8 @@ export default class Self extends Ref {
     return "$:self";
   }
 
-  reduce(ctx) {
-    return ctx.id ? ctx.id : this;
+  reduce(env) {
+    return env.id ? env.id : this;
   }
 }
 
