@@ -1,4 +1,5 @@
 import Val from './val';
+import Box from './box';
 
 export default class Exp extends Val {
   constructor(...terms) {
@@ -9,7 +10,7 @@ export default class Exp extends Val {
     return this.origin;
   }
 
-  reduce(env) {
+  reduce(env=new Box()) {
     const [func, ...rest] = this.terms;
     const args = rest.map(a => a.reduce(env));
     if (args.every(arg => arg.constructor === Val)) {
