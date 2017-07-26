@@ -17,7 +17,7 @@ describe("Box", () => {
     box = new Box();
   });
 
-  describe("#note", () => {
+  describe("#put", () => {
     context("standard arguments", () => {
       let note;
       beforeEach(() => {
