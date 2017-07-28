@@ -12,8 +12,8 @@ describe("Act", () => {
     });
   });
 
-  describe("#and", () => {
-    it("should chain first, second and third acts", () => {
+  describe("#chain", () => {
+    it("should chain next act", () => {
       let firstFinished = false;
       const first = new Act(() => { firstFinished = true; });
 
@@ -23,7 +23,7 @@ describe("Act", () => {
       let thirdFinished = false;
       const third = new Act(() => { thirdFinished = true; });
 
-      const acts = first.and(second).and(third);
+      const acts = first.chain(second).chain(third);
 
       acts.run();
       assert(firstFinished === true);
