@@ -12,8 +12,9 @@ describe("Act", () => {
 
     it("should execute the act", () => {
       assert(executed === false);
-      act.run(); // sync
-      assert(executed === true);
+      return act.run().then(() => {
+        assert(executed === true);
+      });
     });
   });
 
