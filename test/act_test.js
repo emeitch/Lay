@@ -4,14 +4,12 @@ import Act from '../src/act';
 
 describe("Act", () => {
   describe("#run", () => {
-    let act;
-    let executed = false;
-    before(() => {
-      act = new Act(() => { executed = true; });
-    });
+    it("should execute the act as async", () => {
+      let executed = false;
+      const act = new Act(() => { executed = true; });
 
-    it("should execute the act", () => {
       assert(executed === false);
+
       return act.run().then(() => {
         assert(executed === true);
       });
@@ -19,7 +17,7 @@ describe("Act", () => {
   });
 
   describe("#and", () => {
-    it("should execute first and second acts", () => {
+    it("should execute first, second and third acts", () => {
       let firstFinished = false;
       const first = new Act(() => { firstFinished = true; });
 
