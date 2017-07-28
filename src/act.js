@@ -14,7 +14,8 @@ export default class Act extends Val {
   }
 
   and(act) {
-    act.prev = this;
-    return act;
+    const a = new Act(act.origin);
+    a.prev = this;
+    return a;
   }
 }
