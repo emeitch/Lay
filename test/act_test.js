@@ -7,17 +7,13 @@ describe("Act", () => {
     it("should execute the act as async", () => {
       let executed = false;
       const act = new Act(() => { executed = true; });
-
-      assert(executed === false);
-
-      return act.run().then(() => {
-        assert(executed === true);
-      });
+      act.run();
+      assert(executed === true);
     });
   });
 
   describe("#and", () => {
-    it("should execute first, second and third acts", () => {
+    it("should chain first, second and third acts", () => {
       let firstFinished = false;
       const first = new Act(() => { firstFinished = true; });
 
@@ -27,11 +23,22 @@ describe("Act", () => {
       let thirdFinished = false;
       const third = new Act(() => { thirdFinished = true; });
 
-      return first.and(second).and(third).run().then(() => {
-        assert(firstFinished === true);
-        assert(secondFinished === true);
-        assert(thirdFinished === true);
-      });
+      const acts = first.and(second).and(third);
+
+      acts.run();
+      assert(firstFinished === true);
+      assert(secondFinished === false);
+      assert(thirdFinished === false);
+
+      acts.run();
+      assert(firstFinished === true);
+      assert(secondFinished === true);
+      assert(thirdFinished === false);
+
+      acts.run();
+      assert(firstFinished === true);
+      assert(secondFinished === true);
+      assert(thirdFinished === true);
     });
   });
 });

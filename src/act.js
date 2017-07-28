@@ -2,15 +2,16 @@ import Val from './val';
 
 export default class Act extends Val {
   run() {
-    let promise;
     if (this.prev) {
-      promise = this.prev.run();
+      const prevExecuted = this.prev.run();
+      if (prevExecuted) {
+        this.prev = undefined;
+      }
+      return false;
     } else {
-      promise = Promise.resolve();
+      this.origin();
+      return true;
     }
-
-    promise.then(this.origin);
-    return promise;
   }
 
   and(act) {
