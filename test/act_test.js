@@ -24,24 +24,22 @@ describe("Act", () => {
       const third = new Act(() => { thirdFinished = true; });
 
       let act = first.chain(second).chain(third);
-      act.run();
+      act = act.run();
       assert(firstFinished === true);
       assert(secondFinished === false);
       assert(thirdFinished === false);
 
-      act = act.next;
-      act.run();
+      act = act.run();
       assert(firstFinished === true);
       assert(secondFinished === true);
       assert(thirdFinished === false);
 
-      act = act.next;
-      act.run();
+      act = act.run();
       assert(firstFinished === true);
       assert(secondFinished === true);
       assert(thirdFinished === true);
 
-      assert(act.next === undefined);
+      assert(act === undefined);
     });
   });
 });
