@@ -38,7 +38,6 @@ describe("Act", () => {
       assert(secondFinished === false);
       assert(thirdFinished === false);
 
-      console.log(act);
       act = act.proceed();
       assert(firstFinished === true);
       assert(secondFinished === true);
