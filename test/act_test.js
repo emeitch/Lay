@@ -6,9 +6,15 @@ describe("Act", () => {
   describe("#run", () => {
     it("should execute the act as async", () => {
       let executed = false;
-      const act = new Act(() => { executed = true; });
-      act.run();
+      let act = new Act(() => {
+        executed = true;
+        return "finished";
+      });
+      act = act.run();
       assert(executed === true);
+      assert(act.fulfilled);
+      assert(act.val === "finished");
+      assert(act.settled);
     });
   });
 

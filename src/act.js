@@ -26,6 +26,10 @@ export default class Act extends Val {
     return this.status === "fulfilled";
   }
 
+  get settled() {
+    return !this.pending;
+  }
+
   resolve(val) {
     return this.clone({status: "fulfilled", val});
   }
