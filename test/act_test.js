@@ -77,6 +77,8 @@ describe("Act", () => {
 
       assert(act.fulfilled);
       assert(act.val === "all finished");
+
+      assert.throws(() => { act.proceed(); }, /next act not found error/);
     });
 
     context("with nested act", () => {

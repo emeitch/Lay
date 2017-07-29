@@ -64,6 +64,9 @@ export default class Act extends Val {
         return this.resolve(val);
       }
     } else if (this.fulfilled) {
+      if (!this.next) {
+        throw "next act not found error";
+      }
       return this.next._proceedWithArg(this.val);
     } else if (this.rejected) {
       if (!this.next) {
