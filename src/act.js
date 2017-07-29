@@ -2,7 +2,8 @@ import Val from './val';
 
 const ActStatus = {
   PENDING: Symbol(),
-  FULFILLED: Symbol()
+  FULFILLED: Symbol(),
+  REJECTED: Symbol(),
 };
 
 export default class Act extends Val {
@@ -31,6 +32,10 @@ export default class Act extends Val {
     return this.status === ActStatus.FULFILLED;
   }
 
+  get rejected() {
+    return this.status === ActStatus.REJECTED;
+  }
+
   get settled() {
     return !this.pending;
   }
@@ -39,17 +44,35 @@ export default class Act extends Val {
     return this.clone({status: ActStatus.FULFILLED, val});
   }
 
+  reject(val) {
+    return this.clone({status: ActStatus.REJECTED, val});
+  }
+
   _proceedWithArg(arg) {
     if (this.pending) {
-      const val = this.executor(arg);
+      let val;
+      try {
+        val = this.executor(arg);
+      } catch(err) {
+        return this.reject(err);
+      }
+
       if (val instanceof Act) {
         const act = val.clone();
-        return act.chain(this.next);
+        return act.then(this.next);
       } else {
         return this.resolve(val);
       }
-    } else {
+    } else if (this.fulfilled) {
       return this.next._proceedWithArg(this.val);
+    } else if (this.rejected) {
+      if (!this.next) {
+        throw "next act not found error";
+      }
+      return this.next.reject(this.val);
+    } else {
+      // todo: CANCELEDやINPROGRESSなど様々なステータスで拡張できるようにする
+      throw `can't proceed for unknown status: "${this.status}"`;
     }
   }
 
@@ -57,8 +80,8 @@ export default class Act extends Val {
     return this._proceedWithArg();
   }
 
-  chain(act) {
-    const next = this.next ? this.next.chain(act) : act;
+  then(act) {
+    const next = this.next ? this.next.then(act) : act;
     return this.clone({next});
   }
 }

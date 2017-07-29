@@ -10,16 +10,43 @@ describe("Act", () => {
         executed = true;
         return "finished";
       });
+
+      assert(act.pending);
+      assert(!act.settled);
+
       act = act.proceed();
+
       assert(executed === true);
       assert(act.fulfilled);
       assert(act.val === "finished");
       assert(act.settled);
     });
+
+    context("with exception", () => {
+      it("should move to rejected status", () => {
+        let executed = false;
+        let act = new Act(() => {
+          executed = true;
+          throw "an error";
+        });
+        act = act.proceed();
+        assert(executed === true);
+        assert(act.rejected);
+        assert(act.val === "an error");
+        assert(act.settled);
+      });
+    });
+
+    context("with unknown status", () => {
+      it("should throw error", () => {
+        const act = new Act(() => {}, "UNKNOWN_STATUS");
+        assert.throws(() => { act.proceed(); }, /can't proceed for unknown status:/);
+      });
+    });
   });
 
-  describe("#chain", () => {
-    it("should chain next act", () => {
+  describe("#then", () => {
+    it("should then next act", () => {
       let firstFinished = false;
       const first = new Act(() => { firstFinished = true; });
 
@@ -32,7 +59,7 @@ describe("Act", () => {
         return "all finished";
       });
 
-      let act = first.chain(second).chain(third);
+      let act = first.then(second).then(third);
       act = act.proceed();
       assert(firstFinished === true);
       assert(secondFinished === false);
@@ -53,7 +80,7 @@ describe("Act", () => {
     });
 
     context("with nested act", () => {
-      it("should chain nested act", () => {
+      it("should then nested act", () => {
         let nestedFirstFinished = false;
         const first = new Act(() => {
           nestedFirstFinished = true;
@@ -65,7 +92,7 @@ describe("Act", () => {
           nestedSecondFinished = true;
           return "nestedSecond";
         });
-        const nested = first.chain(second);
+        const nested = first.then(second);
 
         let parentFirstFinished = false;
         const parentFirst = new Act(() => {
@@ -79,7 +106,7 @@ describe("Act", () => {
           return "all finished";
         });
 
-        let act = parentFirst.chain(parentSecond);
+        let act = parentFirst.then(parentSecond);
         act = act.proceed();
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === false);
@@ -106,6 +133,26 @@ describe("Act", () => {
 
         assert(act.fulfilled);
         assert(act.val === "all finished");
+      });
+    });
+
+    context("with exception", () => {
+      it("should then nested act", () => {
+        const first = new Act(() => { throw "an error"; });
+        const second = new Act(() => { return "finished"; });
+
+        let act = first.then(second);
+        act = act.proceed();
+        assert(act.rejected);
+        assert(act.val === "an error");
+        assert(act.next !== undefined);
+
+        act = act.proceed();
+        assert(act.rejected);
+        assert(act.val === "an error");
+        assert(act.next === undefined);
+
+        assert.throws(() => { act.proceed(); }, /next act not found error/);
       });
     });
   });
