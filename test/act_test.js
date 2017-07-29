@@ -21,7 +21,10 @@ describe("Act", () => {
       const second = new Act(() => { secondFinished = true; });
 
       let thirdFinished = false;
-      const third = new Act(() => { thirdFinished = true; });
+      const third = new Act(() => {
+        thirdFinished = true;
+        return "all finished";
+      });
 
       let act = first.chain(second).chain(third);
       act = act.run();
@@ -39,7 +42,8 @@ describe("Act", () => {
       assert(secondFinished === true);
       assert(thirdFinished === true);
 
-      assert(act === undefined);
+      assert(act.fulfilled);
+      assert(act.val === "all finished");
     });
 
     context("with nested act", () => {
@@ -56,7 +60,10 @@ describe("Act", () => {
           return nested;
         });
         let parentSecondFinished = false;
-        const parentSecond = new Act(() => { parentSecondFinished = true; });
+        const parentSecond = new Act(() => {
+          parentSecondFinished = true;
+          return "all finished";
+        });
 
         let act = parentFirst.chain(parentSecond);
         act = act.run();
@@ -83,7 +90,8 @@ describe("Act", () => {
         assert(nestedSecondFinished === true);
         assert(parentSecondFinished === true);
 
-        assert(act === undefined);
+        assert(act.fulfilled);
+        assert(act.val === "all finished");
       });
     });
   });
