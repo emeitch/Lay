@@ -34,7 +34,7 @@ export default class Act extends Val {
     return this.clone({status: "fulfilled", val});
   }
 
-  _runWithArg(arg) {
+  _proceedWithArg(arg) {
     if (this.pending) {
       const val = this.executor(arg);
       if (val instanceof Act) {
@@ -44,12 +44,12 @@ export default class Act extends Val {
         return this.resolve(val);
       }
     } else {
-      return this.next._runWithArg(this.val);
+      return this.next._proceedWithArg(this.val);
     }
   }
 
-  run() {
-    return this._runWithArg();
+  proceed() {
+    return this._proceedWithArg();
   }
 
   chain(act) {

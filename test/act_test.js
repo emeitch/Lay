@@ -3,14 +3,14 @@ import assert from 'assert';
 import Act from '../src/act';
 
 describe("Act", () => {
-  describe("#run", () => {
+  describe("#proceed", () => {
     it("should execute the act as async", () => {
       let executed = false;
       let act = new Act(() => {
         executed = true;
         return "finished";
       });
-      act = act.run();
+      act = act.proceed();
       assert(executed === true);
       assert(act.fulfilled);
       assert(act.val === "finished");
@@ -33,18 +33,18 @@ describe("Act", () => {
       });
 
       let act = first.chain(second).chain(third);
-      act = act.run();
+      act = act.proceed();
       assert(firstFinished === true);
       assert(secondFinished === false);
       assert(thirdFinished === false);
 
       console.log(act);
-      act = act.run();
+      act = act.proceed();
       assert(firstFinished === true);
       assert(secondFinished === true);
       assert(thirdFinished === false);
 
-      act = act.run();
+      act = act.proceed();
       assert(firstFinished === true);
       assert(secondFinished === true);
       assert(thirdFinished === true);
@@ -81,25 +81,25 @@ describe("Act", () => {
         });
 
         let act = parentFirst.chain(parentSecond);
-        act = act.run();
+        act = act.proceed();
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === false);
         assert(nestedSecondFinished === false);
         assert(parentSecondFinished === false);
 
-        act = act.run();
+        act = act.proceed();
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === true);
         assert(nestedSecondFinished === false);
         assert(parentSecondFinished === false);
 
-        act = act.run();
+        act = act.proceed();
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === true);
         assert(nestedSecondFinished === true);
         assert(parentSecondFinished === false);
 
-        act = act.run();
+        act = act.proceed();
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === true);
         assert(nestedSecondFinished === true);
