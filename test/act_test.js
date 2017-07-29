@@ -49,9 +49,16 @@ describe("Act", () => {
     context("with nested act", () => {
       it("should chain nested act", () => {
         let nestedFirstFinished = false;
-        const first = new Act(() => { nestedFirstFinished = true; });
+        const first = new Act(() => {
+          nestedFirstFinished = true;
+          return "nestedFirst";
+        });
         let nestedSecondFinished = false;
-        const second = new Act(() => { nestedSecondFinished = true; });
+        const second = new Act((val) => {
+          assert(val === "nestedFirst");
+          nestedSecondFinished = true;
+          return "nestedSecond";
+        });
         const nested = first.chain(second);
 
         let parentFirstFinished = false;
@@ -60,7 +67,8 @@ describe("Act", () => {
           return nested;
         });
         let parentSecondFinished = false;
-        const parentSecond = new Act(() => {
+        const parentSecond = new Act((val) => {
+          assert(val === "nestedSecond");
           parentSecondFinished = true;
           return "all finished";
         });
