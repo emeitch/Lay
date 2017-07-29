@@ -2,8 +2,12 @@ import Val from './val';
 
 export default class Act extends Val {
   run() {
-    this.origin();
-    return this.next;
+    const nested = this.origin();
+    if (nested) {
+      return nested.chain(this.next);
+    } else {
+      return this.next;
+    }
   }
 
   chain(act) {

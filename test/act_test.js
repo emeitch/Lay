@@ -41,5 +41,50 @@ describe("Act", () => {
 
       assert(act === undefined);
     });
+
+    context("with nested act", () => {
+      it("should chain nested act", () => {
+        let nestedFirstFinished = false;
+        const first = new Act(() => { nestedFirstFinished = true; });
+        let nestedSecondFinished = false;
+        const second = new Act(() => { nestedSecondFinished = true; });
+        const nested = first.chain(second);
+
+        let parentFirstFinished = false;
+        const parentFirst = new Act(() => {
+          parentFirstFinished = true;
+          return nested;
+        });
+        let parentSecondFinished = false;
+        const parentSecond = new Act(() => { parentSecondFinished = true; });
+
+        let act = parentFirst.chain(parentSecond);
+        act = act.run();
+        assert(parentFirstFinished === true);
+        assert(nestedFirstFinished === false);
+        assert(nestedSecondFinished === false);
+        assert(parentSecondFinished === false);
+
+        act = act.run();
+        assert(parentFirstFinished === true);
+        assert(nestedFirstFinished === true);
+        assert(nestedSecondFinished === false);
+        assert(parentSecondFinished === false);
+
+        act = act.run();
+        assert(parentFirstFinished === true);
+        assert(nestedFirstFinished === true);
+        assert(nestedSecondFinished === true);
+        assert(parentSecondFinished === false);
+
+        act = act.run();
+        assert(parentFirstFinished === true);
+        assert(nestedFirstFinished === true);
+        assert(nestedSecondFinished === true);
+        assert(parentSecondFinished === true);
+
+        assert(act === undefined);
+      });
+    });
   });
 });
