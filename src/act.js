@@ -1,9 +1,14 @@
 import Val from './val';
 
+const ActStatus = {
+  PENDING: Symbol(),
+  FULFILLED: Symbol()
+};
+
 export default class Act extends Val {
   constructor(
     executor=undefined,
-    status="pending",
+    status=ActStatus.PENDING,
     val=undefined,
     next=undefined
   ) {
@@ -19,11 +24,11 @@ export default class Act extends Val {
   }
 
   get pending() {
-    return this.status === "pending";
+    return this.status === ActStatus.PENDING;
   }
 
   get fulfilled() {
-    return this.status === "fulfilled";
+    return this.status === ActStatus.FULFILLED;
   }
 
   get settled() {
@@ -31,7 +36,7 @@ export default class Act extends Val {
   }
 
   resolve(val) {
-    return this.clone({status: "fulfilled", val});
+    return this.clone({status: ActStatus.FULFILLED, val});
   }
 
   _proceedWithArg(arg) {
