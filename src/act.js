@@ -1,20 +1,21 @@
 import Val from './val';
 
 export default class Act extends Val {
-  static finish(status, val) {
-    const act = new Act();
-    act.status = status;
-    act.val = val;
-    return act;
+  constructor(
+    executor=undefined,
+    status="pending",
+    val=undefined,
+    next=undefined
+  ) {
+    super();
+    this.executor = executor;
+    this.status = status;
+    this.val = val;
+    this.next = next;
   }
 
-  static resolve(val) {
-    return this.finish("fulfilled", val);
-  }
-
-  constructor(...args) {
-    super(...args);
-    this.status = "pending";
+  clone(update) {
+    return Object.assign(new this.constructor(), this, update);
   }
 
   get pending() {
@@ -25,12 +26,19 @@ export default class Act extends Val {
     return this.status === "fulfilled";
   }
 
+  resolve(val) {
+    return this.clone({status: "fulfilled", val});
+  }
+
   _runWithArg(arg) {
     if (this.pending) {
-      const val = this.origin(arg);
-      const act = val instanceof Act ? val : Act.resolve(val);
-      act.chain(this.next);
-      return act;
+      const val = this.executor(arg);
+      if (val instanceof Act) {
+        const act = val.clone();
+        return act.chain(this.next);
+      } else {
+        return this.resolve(val);
+      }
     } else {
       return this.next._runWithArg(this.val);
     }
@@ -41,12 +49,7 @@ export default class Act extends Val {
   }
 
   chain(act) {
-    let last = this;
-    while(last.next) {
-      last = last.next;
-    }
-    last.next = act;
-
-    return this;
+    const next = this.next ? this.next.chain(act) : act;
+    return this.clone({next});
   }
 }
