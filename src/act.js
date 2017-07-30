@@ -11,13 +11,15 @@ export default class Act extends Val {
     executor=undefined,
     status=ActStatus.PENDING,
     val=undefined,
-    next=undefined
+    next=undefined,
+    recovery=undefined
   ) {
     super();
     this.executor = executor;
     this.status = status;
     this.val = val;
     this.next = next;
+    this.recovery = recovery;
   }
 
   clone(update) {
@@ -69,6 +71,11 @@ export default class Act extends Val {
       }
       return this.next._proceedWithArg(this.val);
     } else if (this.rejected) {
+      if (this.recovery) {
+        const act = this.recovery.then(this.next);
+        return act._proceedWithArg(this.val);
+      }
+
       if (!this.next) {
         throw "next act not found error";
       }
@@ -86,5 +93,9 @@ export default class Act extends Val {
   then(act) {
     const next = this.next ? this.next.then(act) : act;
     return this.clone({next});
+  }
+
+  catch(recovery) {
+    return this.clone({recovery});
   }
 }

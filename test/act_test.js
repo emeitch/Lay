@@ -158,4 +158,35 @@ describe("Act", () => {
       });
     });
   });
+
+  describe("#catch", () => {
+    it("should then nested act", () => {
+      const first = new Act(() => { throw "an error"; });
+      const second = new Act(() => { return "finished"; });
+      let catched = false;
+      const ctch = new Act((err) => {
+        catched = true;
+        assert(err === "an error");
+        return "recovered";
+      });
+
+      let act = first.catch(ctch).then(second);
+      act = act.proceed();
+      assert(catched === false);
+      assert(act.rejected);
+      assert(act.val === "an error");
+      assert(act.next !== undefined);
+
+      act = act.proceed();
+      assert(catched === true);
+      assert(act.fulfilled);
+      assert(act.val === "recovered");
+      assert(act.next !== undefined);
+
+      act = act.proceed();
+      assert(act.fulfilled);
+      assert(act.val === "finished");
+      assert(act.next === undefined);
+    });
+  });
 });
