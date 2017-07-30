@@ -64,8 +64,7 @@ export default class Act extends Val {
     }
 
     if (val instanceof Act) {
-      const act = val.clone();
-      return act.then(this.next);
+      return val.then(this.next);
     } else {
       return this.resolve(val);
     }
