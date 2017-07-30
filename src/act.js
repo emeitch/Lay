@@ -20,6 +20,11 @@ export default class Act extends Val {
     this.val = val;
     this.next = next;
     this.recovery = recovery;
+    this.proceedOn = {
+      [ActStatus.PENDING]: this._proceedOnPending,
+      [ActStatus.FULFILLED]: this._proceedOnFulFilled,
+      [ActStatus.REJECTED]: this._proceedOnRejected,
+    };
   }
 
   clone(update) {
@@ -50,40 +55,49 @@ export default class Act extends Val {
     return this.clone({status: ActStatus.REJECTED, val});
   }
 
-  _proceedWithArg(arg) {
-    if (this.pending) {
-      let val;
-      try {
-        val = this.executor(arg);
-      } catch(err) {
-        return this.reject(err);
-      }
+  _proceedOnPending(arg) {
+    let val;
+    try {
+      val = this.executor(arg);
+    } catch(err) {
+      return this.reject(err);
+    }
 
-      if (val instanceof Act) {
-        const act = val.clone();
-        return act.then(this.next);
-      } else {
-        return this.resolve(val);
-      }
-    } else if (this.fulfilled) {
-      if (!this.next) {
-        throw "next act not found error";
-      }
-      return this.next._proceedWithArg(this.val);
-    } else if (this.rejected) {
-      if (this.recovery) {
-        const act = this.recovery.then(this.next);
-        return act._proceedWithArg(this.val);
-      }
-
-      if (!this.next) {
-        throw "next act not found error";
-      }
-      return this.next.reject(this.val);
+    if (val instanceof Act) {
+      const act = val.clone();
+      return act.then(this.next);
     } else {
-      // todo: CANCELEDやINPROGRESSなど様々なステータスで拡張できるようにする
+      return this.resolve(val);
+    }
+  }
+
+  _proceedOnFulFilled(_arg) {
+    if (!this.next) {
+      throw "next act not found error";
+    }
+
+    return this.next._proceedWithArg(this.val);
+  }
+
+  _proceedOnRejected(_arg) {
+    if (this.recovery) {
+      const act = this.recovery.then(this.next);
+      return act._proceedWithArg(this.val);
+    }
+
+    if (!this.next) {
+      throw "next act not found error";
+    }
+
+    return this.next.reject(this.val);
+  }
+
+  _proceedWithArg(arg) {
+    const proc = this.proceedOn[this.status];
+    if (!proc) {
       throw `can't proceed for unknown status: "${this.status}"`;
     }
+    return proc.bind(this)(arg);
   }
 
   proceed() {
