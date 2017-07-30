@@ -48,7 +48,13 @@ export default class Act extends Val {
   }
 
   resolve(val) {
-    return this.clone({status: ActStatus.FULFILLED, val});
+    let next = this.next;
+    if (val instanceof Act) {
+      next = val.then(next);
+      val = undefined;
+    }
+
+    return this.clone({status: ActStatus.FULFILLED, val, next});
   }
 
   reject(val) {
@@ -63,11 +69,7 @@ export default class Act extends Val {
       return this.reject(err);
     }
 
-    if (val instanceof Act) {
-      return val.then(this.next);
-    } else {
-      return this.resolve(val);
-    }
+    return this.resolve(val);
   }
 
   _proceedOnFulFilled(_arg) {
