@@ -32,5 +32,16 @@ describe("Val", () => {
         assert.deepStrictEqual(val.toJSON(), "0");
       });
     });
+
+    describe("#match", () => {
+      it("should collate the original value equivalency", () => {
+        assert(v(0).match(val));
+        assert(!v(1).match(val));
+
+        const Inherited = class extends Val {};
+        // same origin but different constructor
+        assert(!new Inherited(0).match(val));
+      });
+    });
   });
 });

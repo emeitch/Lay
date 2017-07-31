@@ -7,6 +7,17 @@ export default class Val {
     return this;
   }
 
+  collate(val) {
+    return (
+      this.constructor === val.constructor
+      && this.origin === val.origin
+    );
+  }
+
+  match(pattern) {
+    return pattern.collate(this);
+  }
+
   toJSON() {
     return JSON.stringify(this.origin);
   }
