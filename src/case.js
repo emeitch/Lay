@@ -20,9 +20,10 @@ export default class Case extends Exp {
 
   reduce(env=new Box()) {
     const val = this.exp.reduce(env);
-    const alt = this.alts[0];
-    if (val.match(alt.pat)) {
-      return alt.exp.reduce(env);
+    for (const alt of this.alts) {
+      if (val.match(alt.pat)) {
+        return alt.exp.reduce(env);
+      }
     }
 
     throw "matched pattern not found";

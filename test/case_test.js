@@ -24,5 +24,16 @@ describe("Case", () => {
         assert.deepStrictEqual(kase.reduce(), v("result"));
       });
     });
+
+    context("multi patterns", () => {
+      it("should reduce the matched result exp", () => {
+        const kase = new Case(v(3),
+          alt(v(1), v("result1")),
+          alt(v(2), v("result2")),
+          alt(v(3), v("result3"))
+        );
+        assert.deepStrictEqual(kase.reduce(), v("result3"));
+      });
+    });
   });
 });
