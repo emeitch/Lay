@@ -25,4 +25,10 @@ describe("Sym", () => {
       });
     });
   });
+
+  describe("#collate", () => {
+    it("should match any val", () => {
+      assert(new Sym("sym").collate(v("any")));
+    });
+  });
 });
