@@ -42,7 +42,12 @@ describe("Case", () => {
     context("reference a matched pattern", () => {
       it("should reduce the matched result exp", () => {
         const kase = new Case(v(3),
-          alt(new Sym("x"), new Exp(new Plus(), new Sym("x"), new Sym("x")))
+          alt(
+            new Sym("x"),
+            new Exp(
+              new Plus(),
+              new Sym("x"),
+              new Sym("x")))
         );
         assert.deepStrictEqual(kase.reduce(), v(6));
       });
