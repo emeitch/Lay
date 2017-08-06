@@ -2,6 +2,9 @@ import assert from 'assert';
 
 import { v } from '../src/val';
 import Box from '../src/box';
+import Sym from '../src/sym';
+import Exp from '../src/exp';
+import { Plus } from '../src/func';
 import Case, { alt } from '../src/case';
 
 describe("Case", () => {
@@ -33,6 +36,15 @@ describe("Case", () => {
           alt(v(3), v("result3"))
         );
         assert.deepStrictEqual(kase.reduce(), v("result3"));
+      });
+    });
+
+    context("reference a matched pattern", () => {
+      it("should reduce the matched result exp", () => {
+        const kase = new Case(v(3),
+          alt(new Sym("x"), new Exp(new Plus(), new Sym("x"), new Sym("x")))
+        );
+        assert.deepStrictEqual(kase.reduce(), v(6));
       });
     });
   });

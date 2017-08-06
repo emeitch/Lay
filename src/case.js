@@ -1,5 +1,6 @@
 import Exp from './exp';
 import Box from './box';
+import Env from './env';
 
 class CaseAlt {
   constructor(pat, exp) {
@@ -21,8 +22,10 @@ export default class Case extends Exp {
   reduce(env=new Box()) {
     const val = this.exp.reduce(env);
     for (const alt of this.alts) {
-      if (val.match(alt.pat)) {
-        return alt.exp.reduce(env);
+      const bindings = val.match(alt.pat);
+      if (bindings) {
+        const e = new Env(env, undefined, bindings);
+        return alt.exp.reduce(e);
       }
     }
 
