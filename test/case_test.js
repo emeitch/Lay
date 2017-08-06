@@ -39,6 +39,20 @@ describe("Case", () => {
       });
     });
 
+    context("exp value", () => {
+      it("should reduce the exp value", () => {
+        const kase = new Case(v(3),
+          alt(
+            v(3),
+            new Exp(
+              new Plus(),
+              v(1),
+              v(3)))
+        );
+        assert.deepStrictEqual(kase.reduce(), v(4));
+      });
+    });
+
     context("reference a matched pattern", () => {
       it("should reduce the matched result exp", () => {
         const kase = new Case(v(3),
