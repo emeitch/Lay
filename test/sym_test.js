@@ -27,8 +27,11 @@ describe("Sym", () => {
   });
 
   describe("#collate", () => {
-    it("should match any val", () => {
-      assert(new Sym("sym").collate(v("any")));
+    it("should return a matching env", () => {
+      const env = new Sym("sym").collate(v("any"));
+      
+      assert(env instanceof Env);
+      assert.deepStrictEqual(env.resolve("sym"), v("any"));
     });
   });
 });
