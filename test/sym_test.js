@@ -28,10 +28,9 @@ describe("Sym", () => {
 
   describe("#collate", () => {
     it("should return a matching env", () => {
-      const env = new Sym("sym").collate(v("any"));
-      
-      assert(env instanceof Env);
-      assert.deepStrictEqual(env.resolve("sym"), v("any"));
+      const bindings = new Sym("sym").collate(v("any"));
+      assert.deepStrictEqual(bindings["it"], v("any"));
+      assert.deepStrictEqual(bindings["sym"], v("any"));
     });
   });
 });

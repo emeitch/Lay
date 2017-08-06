@@ -11,7 +11,7 @@ export default class Val {
     return (
       this.constructor === val.constructor
       && this.origin === val.origin
-    );
+    ) ? {it: val} : undefined;
   }
 
   match(pattern) {

@@ -35,8 +35,8 @@ describe("Val", () => {
 
     describe("#match", () => {
       it("should collate the original value equivalency", () => {
-        assert(v(0).match(val));
-        assert(!v(1).match(val));
+        assert.deepStrictEqual(v(0).match(val)["it"], v(0));
+        assert(v(1).match(val) === undefined);
 
         const Inherited = class extends Val {};
         // same origin but different constructor
