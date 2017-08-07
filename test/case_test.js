@@ -5,7 +5,7 @@ import Box from '../src/box';
 import Sym from '../src/sym';
 import Exp from '../src/exp';
 import { Plus } from '../src/func';
-import Case, { alt } from '../src/case';
+import Case, { alt, grd } from '../src/case';
 
 describe("Case", () => {
   describe("#reduce", () => {
@@ -64,6 +64,30 @@ describe("Case", () => {
               new Sym("x")))
         );
         assert.deepStrictEqual(kase.reduce(), v(6));
+      });
+    });
+
+    context("with guards", () => {
+      it("should reduce the matched guard result exp", () => {
+        const a = alt(
+          new Sym("x"),
+          grd(
+            new Exp(
+              x => x < 5,
+              new Sym("x")
+            ),
+            v(5)
+          ),
+          grd(
+            new Exp(
+              x => x >= 5 ,
+              new Sym("x")
+            ),
+            v(10)
+          )
+        );
+        assert.deepStrictEqual(new Case(v(3), a).reduce(), v(5));
+        assert.deepStrictEqual(new Case(v(8), a).reduce(), v(10));
       });
     });
   });
