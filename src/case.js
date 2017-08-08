@@ -1,6 +1,7 @@
 import Exp from './exp';
 import Box from './box';
 import Env from './env';
+import Val from './val';
 
 class CaseAlt {
   constructor(pat, ...grds) {
@@ -21,6 +22,13 @@ class CaseGrd {
 export function grd(cond, exp) {
   return new CaseGrd(cond, exp);
 }
+
+class CaseGrdOtherwise extends Val {
+  reduce(_) {
+    return new Val(true);
+  }
+}
+export const otherwise = new CaseGrdOtherwise();
 
 export default class Case extends Exp {
   constructor(exp, ...alts) {
