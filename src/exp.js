@@ -21,7 +21,6 @@ export default class Exp extends Val {
       } else {
         return func.apply(...args);
       }
-
     } else {
       return super.reduce(env);
     }
