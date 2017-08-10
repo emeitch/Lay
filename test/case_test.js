@@ -107,6 +107,7 @@ describe("Case", () => {
             v(10)
           )
         );
+        assert.deepStrictEqual(new Case(v(3), a).reduce(), v(5));
         assert.deepStrictEqual(new Case(v(8), a).reduce(), v(10));
       });
     });
