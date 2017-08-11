@@ -38,6 +38,5 @@ describe("Exp", () => {
         assert.deepStrictEqual(exp.reduce(), v(6));
       });
     });
-
   });
 });
