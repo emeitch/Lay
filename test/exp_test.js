@@ -40,7 +40,10 @@ describe("Exp", () => {
 
     context("native function", () => {
       it("should reduce the expression", () => {
-        const exp = new Exp((x, y) => x * y, v(2), v(3));
+        const exp = new Exp(
+          (x, y) => x * y,
+          v(2),
+          v(3));
         assert.deepStrictEqual(exp.reduce(), v(6));
       });
     });
