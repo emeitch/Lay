@@ -11,7 +11,10 @@ describe("Exp", () => {
   describe("#reduce", () => {
     context("val args", () => {
       it("should reduce the expression", () => {
-        const exp = new Exp(new Plus(), v(1), v(2));
+        const exp = new Exp(
+          new Plus(),
+          v(1),
+          v(2));
         const box = new Box();
         assert.deepStrictEqual(exp.reduce(box), v(3));
       });
