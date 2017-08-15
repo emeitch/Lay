@@ -23,7 +23,10 @@ describe("Exp", () => {
     context("with ref arg", () => {
       it("should keep the expression", () => {
         const path = new Path(new UUID(), new UUID());
-        const exp = new Exp(new Plus(), path, v(2));
+        const exp = new Exp(
+          new Plus(),
+          path,
+          v(2));
         assert(exp.reduce() instanceof Exp);
       });
     });
