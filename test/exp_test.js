@@ -14,7 +14,8 @@ describe("Exp", () => {
         const exp = new Exp(
           new Plus(),
           v(1),
-          v(2));
+          v(2)
+        );
         const box = new Box();
         assert.deepStrictEqual(exp.reduce(box), v(3));
       });
@@ -26,7 +27,8 @@ describe("Exp", () => {
         const exp = new Exp(
           new Plus(),
           path,
-          v(2));
+          v(2)
+        );
         assert(exp.reduce() instanceof Exp);
       });
     });
@@ -39,7 +41,9 @@ describe("Exp", () => {
           new Exp(
             new Plus(),
             v(2),
-            v(3)));
+            v(3)
+          )
+        );
         assert.deepStrictEqual(exp.reduce(), v(6));
       });
     });
@@ -49,7 +53,8 @@ describe("Exp", () => {
         const exp = new Exp(
           (x, y) => x * y,
           v(2),
-          v(3));
+          v(3)
+        );
         assert.deepStrictEqual(exp.reduce(), v(6));
       });
     });
