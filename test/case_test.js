@@ -47,7 +47,9 @@ describe("Case", () => {
             new Exp(
               new Plus(),
               v(1),
-              v(3)))
+              v(3)
+            )
+          )
         );
         assert.deepStrictEqual(kase.reduce(), v(4));
       });
@@ -61,7 +63,9 @@ describe("Case", () => {
             new Exp(
               new Plus(),
               new Sym("x"),
-              new Sym("x")))
+              new Sym("x")
+            )
+          )
         );
         assert.deepStrictEqual(kase.reduce(), v(6));
       });
