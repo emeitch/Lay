@@ -76,6 +76,7 @@ describe("Path", () => {
       const id = new UUID();
       const key = new UUID();
       const val = v("val0");
+      
       let env;
       beforeEach(() => {
         box.put(new Note(id, key, val));
@@ -95,7 +96,7 @@ describe("Path", () => {
       const key2 = new UUID();
       const key3 = new UUID();
       const val3 = v("val0");
-      
+
       let env;
       beforeEach(() => {
         box.put(new Note(id, key, id2));
