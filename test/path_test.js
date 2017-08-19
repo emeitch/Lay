@@ -95,6 +95,7 @@ describe("Path", () => {
       const key2 = new UUID();
       const key3 = new UUID();
       const val3 = v("val0");
+      
       let env;
       beforeEach(() => {
         box.put(new Note(id, key, id2));
