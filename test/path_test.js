@@ -26,6 +26,7 @@ describe("Path", () => {
   const id1 = new UUID();
   const id2 = new UUID();
   const id3 = new UUID();
+  
   let p;
   beforeEach(() => {
     p = new Path(id1, id2, id3);
