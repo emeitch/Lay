@@ -29,6 +29,7 @@ describe("Act", () => {
           executed = true;
           throw "an error";
         });
+
         act = act.proceed();
         assert(executed === true);
         assert(act.rejected);
