@@ -31,6 +31,7 @@ describe("Act", () => {
         });
 
         act = act.proceed();
+        
         assert(executed === true);
         assert(act.rejected);
         assert(act.val === "an error");
