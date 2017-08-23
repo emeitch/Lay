@@ -31,7 +31,7 @@ describe("Act", () => {
         });
 
         act = act.proceed();
-        
+
         assert(executed === true);
         assert(act.rejected);
         assert(act.val === "an error");
@@ -63,6 +63,7 @@ describe("Act", () => {
 
       let act = first.then(second).then(third);
       act = act.proceed();
+      
       assert(firstFinished === true);
       assert(secondFinished === false);
       assert(thirdFinished === false);
