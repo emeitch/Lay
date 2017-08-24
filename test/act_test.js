@@ -69,11 +69,13 @@ describe("Act", () => {
       assert(thirdFinished === false);
 
       act = act.proceed();
+      
       assert(firstFinished === true);
       assert(secondFinished === true);
       assert(thirdFinished === false);
 
       act = act.proceed();
+      
       assert(firstFinished === true);
       assert(secondFinished === true);
       assert(thirdFinished === true);
