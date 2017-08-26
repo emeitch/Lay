@@ -115,13 +115,14 @@ describe("Act", () => {
 
         let act = parentFirst.then(parentSecond);
         act = act.proceed();
-        
+
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === false);
         assert(nestedSecondFinished === false);
         assert(parentSecondFinished === false);
 
         act = act.proceed();
+        
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === true);
         assert(nestedSecondFinished === false);
