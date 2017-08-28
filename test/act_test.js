@@ -136,6 +136,7 @@ describe("Act", () => {
         assert(parentSecondFinished === false);
 
         act = act.proceed();
+        
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === true);
         assert(nestedSecondFinished === true);
