@@ -160,6 +160,7 @@ describe("Act", () => {
         assert(act.next !== undefined);
 
         act = act.proceed();
+        
         assert(act.rejected);
         assert(act.val === "an error");
         assert(act.next === undefined);
