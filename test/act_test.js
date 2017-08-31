@@ -183,6 +183,7 @@ describe("Act", () => {
 
       let act = first.catch(ctch).then(second);
       act = act.proceed();
+      
       assert(catched === false);
       assert(act.rejected);
       assert(act.val === "an error");
