@@ -122,21 +122,21 @@ describe("Act", () => {
         assert(parentSecondFinished === false);
 
         act = act.proceed();
-        
+
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === true);
         assert(nestedSecondFinished === false);
         assert(parentSecondFinished === false);
 
         act = act.proceed();
-        
+
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === true);
         assert(nestedSecondFinished === true);
         assert(parentSecondFinished === false);
 
         act = act.proceed();
-        
+
         assert(parentFirstFinished === true);
         assert(nestedFirstFinished === true);
         assert(nestedSecondFinished === true);
@@ -154,13 +154,13 @@ describe("Act", () => {
 
         let act = first.then(second);
         act = act.proceed();
-        
+
         assert(act.rejected);
         assert(act.val === "an error");
         assert(act.next !== undefined);
 
         act = act.proceed();
-        
+
         assert(act.rejected);
         assert(act.val === "an error");
         assert(act.next === undefined);
@@ -183,13 +183,14 @@ describe("Act", () => {
 
       let act = first.catch(ctch).then(second);
       act = act.proceed();
-      
+
       assert(catched === false);
       assert(act.rejected);
       assert(act.val === "an error");
       assert(act.next !== undefined);
 
       act = act.proceed();
+      
       assert(catched === true);
       assert(act.fulfilled);
       assert(act.val === "recovered");
