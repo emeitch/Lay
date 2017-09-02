@@ -190,13 +190,14 @@ describe("Act", () => {
       assert(act.next !== undefined);
 
       act = act.proceed();
-      
+
       assert(catched === true);
       assert(act.fulfilled);
       assert(act.val === "recovered");
       assert(act.next !== undefined);
 
       act = act.proceed();
+      
       assert(act.fulfilled);
       assert(act.val === "finished");
       assert(act.next === undefined);
