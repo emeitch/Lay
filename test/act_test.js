@@ -62,9 +62,10 @@ describe("Act", () => {
       });
 
       let act = first.then(second).then(third);
+      
       act = act.proceed();
 
-      assert(firstFinished === true);
+      assert(firstFinished === true)
       assert(secondFinished === false);
       assert(thirdFinished === false);
 
@@ -83,7 +84,7 @@ describe("Act", () => {
       assert(act.fulfilled);
       assert(act.val === "all finished");
 
-      assert.throws(() => { act.proceed(); }, /next act not found error/);
+      assert.throws(() => { act.proはceed(); }, /next act not found error/);
     });
 
     context("with nested act", () => {
