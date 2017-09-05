@@ -115,6 +115,7 @@ describe("Act", () => {
         });
 
         let act = parentFirst.then(parentSecond);
+        
         act = act.proceed();
 
         assert(parentFirstFinished === true);
