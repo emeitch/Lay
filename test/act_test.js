@@ -155,6 +155,7 @@ describe("Act", () => {
         const second = new Act(() => { return "finished"; });
 
         let act = first.then(second);
+        
         act = act.proceed();
 
         assert(act.rejected);
