@@ -62,10 +62,10 @@ describe("Act", () => {
       });
 
       let act = first.then(second).then(third);
-      
+
       act = act.proceed();
 
-      assert(firstFinished === true)
+      assert(firstFinished === true);
       assert(secondFinished === false);
       assert(thirdFinished === false);
 
@@ -84,7 +84,7 @@ describe("Act", () => {
       assert(act.fulfilled);
       assert(act.val === "all finished");
 
-      assert.throws(() => { act.proはceed(); }, /next act not found error/);
+      assert.throws(() => { act.proceed(); }, /next act not found error/);
     });
 
     context("with nested act", () => {
@@ -115,7 +115,7 @@ describe("Act", () => {
         });
 
         let act = parentFirst.then(parentSecond);
-        
+
         act = act.proceed();
 
         assert(parentFirstFinished === true);
@@ -155,7 +155,7 @@ describe("Act", () => {
         const second = new Act(() => { return "finished"; });
 
         let act = first.then(second);
-        
+
         act = act.proceed();
 
         assert(act.rejected);
@@ -200,7 +200,7 @@ describe("Act", () => {
       assert(act.next !== undefined);
 
       act = act.proceed();
-      
+
       assert(act.fulfilled);
       assert(act.val === "finished");
       assert(act.next === undefined);
