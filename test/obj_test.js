@@ -5,18 +5,18 @@ import { self } from '../src/self';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import Note from '../src/note';
-import Box from '../src/box';
+import World from '../src/world';
 import { invalidate } from '../src/ontology';
 
 describe("Obj", () => {
   const id = new UUID();
   const key = new UUID();
 
-  let box;
+  let world;
   let obj;
   beforeEach(() => {
-    box = new Box();
-    obj = box.obj(id);
+    world = new World();
+    obj = world.obj(id);
   });
 
   describe("#get", () => {
@@ -30,17 +30,17 @@ describe("Obj", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        box.put(new Note(id, key, dst));
+        world.put(new Note(id, key, dst));
       });
 
       it("should return a obj of note's val", () => {
-        assert.deepStrictEqual(obj.get(key), box.obj(dst));
+        assert.deepStrictEqual(obj.get(key), world.obj(dst));
       });
     });
 
     context("with a note which has a val typed by Val", () => {
       beforeEach(() => {
-        box.put(new Note(id, key, v("value")));
+        world.put(new Note(id, key, v("value")));
       });
 
       it("should return a value", () => {
@@ -50,8 +50,8 @@ describe("Obj", () => {
 
     context("with the same key but different val notes", () => {
       beforeEach(() => {
-        box.put(new Note(id, key, v("val0")));
-        box.put(new Note(id, key, v("val1")));
+        world.put(new Note(id, key, v("val0")));
+        world.put(new Note(id, key, v("val1")));
       });
 
       it("should return the last val", () => {
@@ -61,8 +61,8 @@ describe("Obj", () => {
 
     context("with a invalidated note", () => {
       beforeEach(() => {
-        const note = box.put(new Note(id, key, v("val0")));
-        box.put(new Note(note.noteid, invalidate));
+        const note = world.put(new Note(id, key, v("val0")));
+        world.put(new Note(note.noteid, invalidate));
       });
 
       it("should return undefined", () => {
@@ -71,7 +71,7 @@ describe("Obj", () => {
 
       context("add another note", () => {
         beforeEach(() => {
-          box.put(new Note(id, key, v("val1")));
+          world.put(new Note(id, key, v("val1")));
         });
 
         it("should return the val", () => {
@@ -81,7 +81,7 @@ describe("Obj", () => {
 
       context("add a note which has same args for the invalidated note", () => {
         beforeEach(() => {
-          box.put(new Note(id, key, v("val0")));
+          world.put(new Note(id, key, v("val0")));
         });
 
         it("should return the val", () => {
@@ -96,9 +96,9 @@ describe("Obj", () => {
         const id3 = new UUID();
         const key2 = new UUID();
         const key3 = new UUID();
-        box.put(new Note(id2, key2, id3));
-        box.put(new Note(id3, key3, v("path end")));
-        box.put(new Note(id, key, new Path(id2, key2, key3)));
+        world.put(new Note(id2, key2, id3));
+        world.put(new Note(id3, key3, v("path end")));
+        world.put(new Note(id, key, new Path(id2, key2, key3)));
       });
 
       it("should return the val", () => {
@@ -111,8 +111,8 @@ describe("Obj", () => {
       beforeEach(() => {
         val2 = v("val0");
         const key2 = new UUID();
-        box.put(new Note(id, key2, val2));
-        box.put(new Note(id, key, new Path(self, key2)));
+        world.put(new Note(id, key2, val2));
+        world.put(new Note(id, key, new Path(self, key2)));
       });
 
       it("should return the val", () => {

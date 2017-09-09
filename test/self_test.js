@@ -5,7 +5,7 @@ import { self } from '../src/self';
 import Ref from '../src/ref';
 import UUID from '../src/uuid';
 import Env from '../src/env';
-import Box from '../src/box';
+import World from '../src/world';
 
 describe("self", () => {
   it("should be instance of Ref", () => {
@@ -29,7 +29,7 @@ describe("self", () => {
     context("with env which has id", () => {
       const id = new UUID();
       beforeEach(() => {
-        env = new Env(new Box(), id);
+        env = new Env(new World(), id);
       });
 
       it("should return the env id", () => {
@@ -39,7 +39,7 @@ describe("self", () => {
 
     context("with env which has no id", () => {
       beforeEach(() => {
-        env = new Env(new Box());
+        env = new Env(new World());
       });
 
       it("should return self", () => {

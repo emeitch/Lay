@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import { v } from '../src/val';
-import Box from '../src/box';
+import World from '../src/world';
 import Sym from '../src/sym';
 import Exp from '../src/exp';
 import { Plus } from '../src/func';
@@ -14,7 +14,7 @@ describe("Case", () => {
         const kase = new Case(v(1),
           alt(v(0), v("result"))
         );
-        const env = new Box();
+        const env = new World();
         assert.throws(() => kase.reduce(env), /matched pattern not found/);
       });
     });

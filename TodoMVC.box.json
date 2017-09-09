@@ -24,7 +24,7 @@
         {
           "_type": "Ul",
           "_contents": {
-            "_type": "BoxMap",
+            "_type": "WorldMap",
             "_wires": [
               {
                 "_type": "Wire",
@@ -35,7 +35,7 @@
                 "_type": "Wire",
                 "to": "box",
                 "value": {
-                  "_type": "Box",
+                  "_type": "World",
                   "todo": {
                     "_type": "Jack<Todo>"
                   },
