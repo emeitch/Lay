@@ -4,7 +4,7 @@ import { v } from './val';
 import UUID from './uuid';
 import Note from './note';
 import Obj from './obj';
-import { nameKey, transaction, transactionTime, invalidate } from './ontology';
+import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class World extends Env {
   constructor() {
@@ -91,14 +91,14 @@ export default class World extends Env {
   }
 
   resolve(name) {
-    const notes = this.findNotes({key: nameKey, val: v(name)});
+    const notes = this.findNotes({id: v(name), key: assign});
     const note = notes[notes.length-1];
-    return note ? note.id : undefined;
+    return note ? note.val : undefined;
   }
 
   assign(name, id) {
     // todo: ユニーク制約をかけたい
-    const note = new Note(id, nameKey, v(name));
+    const note = new Note(v(name), assign, id);
     this.put(note);
   }
 
