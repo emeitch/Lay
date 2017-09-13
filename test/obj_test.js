@@ -96,6 +96,7 @@ describe("Obj", () => {
         const id3 = new UUID();
         const key2 = new UUID();
         const key3 = new UUID();
+        
         world.put(new Note(id2, key2, id3));
         world.put(new Note(id3, key3, v("path end")));
         world.put(new Note(id, key, new Path(id2, key2, key3)));
