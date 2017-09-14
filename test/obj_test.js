@@ -112,6 +112,7 @@ describe("Obj", () => {
       beforeEach(() => {
         val2 = v("val0");
         const key2 = new UUID();
+        
         world.put(new Note(id, key2, val2));
         world.put(new Note(id, key, new Path(self, key2)));
       });
