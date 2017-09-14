@@ -5,7 +5,7 @@ import UUID from '../src/uuid';
 import Path from '../src/path';
 import Exp from '../src/exp';
 import { Plus } from '../src/func';
-import World from '../src/world';
+import Book from '../src/book';
 
 describe("Exp", () => {
   describe("#reduce", () => {
@@ -16,8 +16,8 @@ describe("Exp", () => {
           v(1),
           v(2)
         );
-        const world = new World();
-        assert.deepStrictEqual(exp.reduce(world), v(3));
+        const book = new Book();
+        assert.deepStrictEqual(exp.reduce(book), v(3));
       });
     });
 

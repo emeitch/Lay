@@ -1,5 +1,5 @@
 import Exp from './exp';
-import World from './world';
+import Book from './book';
 import Env from './env';
 import Val from './val';
 
@@ -37,7 +37,7 @@ export default class Case extends Exp {
     this.alts = alts;
   }
 
-  reduce(env=new World()) {
+  reduce(env=new Book()) {
     const val = this.exp.reduce(env);
     for (const alt of this.alts) {
       const bindings = val.match(alt.pat);

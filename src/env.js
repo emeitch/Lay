@@ -5,8 +5,8 @@ export default class Env {
     this.bindings = bindings;
   }
 
-  get world() {
-    return this.parent.world;
+  get book() {
+    return this.parent.book;
   }
 
   resolve(name) {

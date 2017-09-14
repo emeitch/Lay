@@ -6,7 +6,7 @@ import UUID from '../src/uuid';
 import { self } from '../src/self';
 import Note from '../src/note';
 import Env from '../src/env';
-import World from '../src/world';
+import Book from '../src/book';
 
 describe("Path", () => {
   describe("constructor ", () => {
@@ -51,9 +51,9 @@ describe("Path", () => {
   });
 
   describe("#reduce", () => {
-    let world;
+    let book;
     beforeEach(() => {
-      world = new World();
+      book = new Book();
     });
 
     context("absolute path with end of uuid", () => {
@@ -64,13 +64,13 @@ describe("Path", () => {
       const id3 = new UUID();
 
       beforeEach(() => {
-        world.put(new Note(id, key, id2));
-        world.put(new Note(id2, key2, id3));
+        book.put(new Note(id, key, id2));
+        book.put(new Note(id2, key2, id3));
         p = new Path(id, key, key2);
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(world), id3);
+        assert.deepStrictEqual(p.reduce(book), id3);
       });
     });
 
@@ -81,8 +81,8 @@ describe("Path", () => {
 
       let env;
       beforeEach(() => {
-        world.put(new Note(id, key, val));
-        env = new Env(world, id);
+        book.put(new Note(id, key, val));
+        env = new Env(book, id);
         p = new Path(self, key);
       });
 
@@ -101,10 +101,10 @@ describe("Path", () => {
 
       let env;
       beforeEach(() => {
-        world.put(new Note(id, key, id2));
-        world.put(new Note(id2, key2, new Path(self, key3)));
-        world.put(new Note(id2, key3, val3));
-        env = new Env(world, id);
+        book.put(new Note(id, key, id2));
+        book.put(new Note(id2, key2, new Path(self, key3)));
+        book.put(new Note(id2, key3, val3));
+        env = new Env(book, id);
         p = new Path(self, key, key2);
       });
 
@@ -123,7 +123,7 @@ describe("Path", () => {
       });
 
       it("should raise exception", () => {
-        assert.deepStrictEqual(p.reduce(world), p);
+        assert.deepStrictEqual(p.reduce(book), p);
       });
     });
   });

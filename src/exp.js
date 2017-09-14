@@ -1,5 +1,5 @@
 import Val from './val';
-import World from './world';
+import Book from './book';
 
 export default class Exp extends Val {
   constructor(...terms) {
@@ -10,7 +10,7 @@ export default class Exp extends Val {
     return this.origin;
   }
 
-  reduce(env=new World()) {
+  reduce(env=new Book()) {
     const [func, ...rest] = this.terms;
     const args = rest.map(a => a.reduce(env));
     if (args.every(arg => arg.constructor === Val)) {
