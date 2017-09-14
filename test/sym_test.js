@@ -6,27 +6,27 @@ import Sym from '../src/sym';
 
 describe("Sym", () => {
   describe("#reduce", () => {
-    it("should return val of env", () => {
+    it("should return val of book", () => {
       const val = v("sym val");
-      const env = new Book();
-      env.assign("sym", val);
-      assert(new Sym("sym").reduce(env) === val);
+      const book = new Book();
+      book.assign("sym", val);
+      assert(new Sym("sym").reduce(book) === val);
     });
 
-    context("nested env", () => {
-      it("should return val of nested env", () => {
+    context("nested book", () => {
+      it("should return val of nested book", () => {
         const val = v("sym val");
-        const penv = new Book();
-        penv.assign("sym", val);
-        const env = new Book(penv);
+        const pbook = new Book();
+        pbook.assign("sym", val);
+        const book = new Book(pbook);
 
-        assert(new Sym("sym").reduce(env) === val);
+        assert(new Sym("sym").reduce(book) === val);
       });
     });
   });
 
   describe("#collate", () => {
-    it("should return a matching env", () => {
+    it("should return a matching book", () => {
       const bindings = new Sym("sym").collate(v("any"));
       assert.deepStrictEqual(bindings["it"], v("any"));
       assert.deepStrictEqual(bindings["sym"], v("any"));

@@ -20,15 +20,15 @@ export default class Path extends Ref {
     return this.origin.join("/");
   }
 
-  reduce(env) {
-    let v = this.receiver.reduce(env);
+  reduce(book) {
+    let v = this.receiver.reduce(book);
     for (const key of this.keys) {
-      const k = key.reduce(env);
-      const note = env.activeNote(v, k);
+      const k = key.reduce(book);
+      const note = book.activeNote(v, k);
       if (!note) {
-        return super.reduce(env);
+        return super.reduce(book);
       }
-      const e = new Book(env);
+      const e = new Book(book);
       e.assign("self", note.id);
       v = note.val.reduce(e);
     }

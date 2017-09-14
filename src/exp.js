@@ -10,9 +10,9 @@ export default class Exp extends Val {
     return this.origin;
   }
 
-  reduce(env=new Book()) {
+  reduce(book=new Book()) {
     const [func, ...rest] = this.terms;
-    const args = rest.map(a => a.reduce(env));
+    const args = rest.map(a => a.reduce(book));
     if (args.every(arg => arg.constructor === Val)) {
       if (func instanceof Function) {
         const oargs = args.map(a => a.origin);
@@ -22,7 +22,7 @@ export default class Exp extends Val {
         return func.apply(...args);
       }
     } else {
-      return super.reduce(env);
+      return super.reduce(book);
     }
   }
 }

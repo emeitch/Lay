@@ -14,8 +14,8 @@ describe("Case", () => {
         const kase = new Case(v(1),
           alt(v(0), v("result"))
         );
-        const env = new Book();
-        assert.throws(() => kase.reduce(env), /matched pattern not found/);
+        const book = new Book();
+        assert.throws(() => kase.reduce(book), /matched pattern not found/);
       });
     });
 

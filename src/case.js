@@ -36,12 +36,12 @@ export default class Case extends Exp {
     this.alts = alts;
   }
 
-  reduce(env=new Book()) {
-    const val = this.exp.reduce(env);
+  reduce(book=new Book()) {
+    const val = this.exp.reduce(book);
     for (const alt of this.alts) {
       const bindings = val.match(alt.pat);
       if (bindings) {
-        const e = new Book(env);
+        const e = new Book(book);
         for (const k of Object.keys(bindings)) {
           e.assign(k, bindings[k]);
         }
