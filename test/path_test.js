@@ -75,7 +75,7 @@ describe("Path", () => {
       });
     });
 
-    context("assigned sym path chain", () => {
+    context("assigned sym path chain with self", () => {
       const id = new UUID();
       const key = new UUID();
       const id2 = new UUID();
