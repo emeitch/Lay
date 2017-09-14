@@ -1,6 +1,5 @@
 import Exp from './exp';
 import Book from './book';
-import Env from './env';
 import Val from './val';
 
 class CaseAlt {
@@ -42,7 +41,10 @@ export default class Case extends Exp {
     for (const alt of this.alts) {
       const bindings = val.match(alt.pat);
       if (bindings) {
-        const e = new Env(env, undefined, bindings);
+        const e = new Book(env);
+        for (const k of Object.keys(bindings)) {
+          e.assign(k, bindings[k]);
+        }
         for (const grd of alt.grds) {
           if (grd instanceof CaseGrd) {
             if (grd.cond.reduce(e).origin) {

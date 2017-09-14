@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import { v } from '../src/val';
-import { self } from '../src/self';
+import Sym from '../src/sym';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import Note from '../src/note';
@@ -114,7 +114,7 @@ describe("Obj", () => {
         const key2 = new UUID();
 
         book.put(new Note(id, key2, val2));
-        book.put(new Note(id, key, new Path(self, key2)));
+        book.put(new Note(id, key, new Path(new Sym("self"), key2)));
       });
 
       it("should return the val", () => {

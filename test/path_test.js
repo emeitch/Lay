@@ -3,26 +3,11 @@ import assert from 'assert';
 import { v } from '../src/val';
 import Path from '../src/path';
 import UUID from '../src/uuid';
-import { self } from '../src/self';
+import Sym from '../src/sym';
 import Note from '../src/note';
-import Env from '../src/env';
 import Book from '../src/book';
 
 describe("Path", () => {
-  describe("constructor ", () => {
-    it("should accept self", () => {
-      assert.doesNotThrow(() => new Path(self));
-    });
-
-    it("should require the receiver is typed ID or Self", () => {
-      assert.throws(() => new Path("strobj"), / is not a ID or a Self/);
-    });
-
-    it("should require keys which are typed ID", () => {
-      assert.throws(() => new Path(new UUID(), "strobj"), / is not a ID$/);
-    });
-  });
-
   const id1 = new UUID();
   const id2 = new UUID();
   const id3 = new UUID();
@@ -74,24 +59,23 @@ describe("Path", () => {
       });
     });
 
-    context("relative path with val end", () => {
+    context("assigned sym path with val end", () => {
       const id = new UUID();
       const key = new UUID();
       const val = v("val0");
 
-      let env;
       beforeEach(() => {
         book.put(new Note(id, key, val));
-        env = new Env(book, id);
-        p = new Path(self, key);
+        book.assign("a", id);
+        p = new Path(new Sym("a"), key);
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(env), val);
+        assert.deepStrictEqual(p.reduce(book), val);
       });
     });
 
-    context("relative path chain", () => {
+    context("assigned sym path chain", () => {
       const id = new UUID();
       const key = new UUID();
       const id2 = new UUID();
@@ -99,17 +83,16 @@ describe("Path", () => {
       const key3 = new UUID();
       const val3 = v("val0");
 
-      let env;
       beforeEach(() => {
         book.put(new Note(id, key, id2));
-        book.put(new Note(id2, key2, new Path(self, key3)));
+        book.put(new Note(id2, key2, new Path(new Sym("self"), key3)));
         book.put(new Note(id2, key3, val3));
-        env = new Env(book, id);
-        p = new Path(self, key, key2);
+        book.assign("a", id);
+        p = new Path(new Sym("a"), key, key2);
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(env), val3);
+        assert.deepStrictEqual(p.reduce(book), val3);
       });
     });
 
@@ -117,7 +100,7 @@ describe("Path", () => {
       const id = new UUID();
       const unknownKey1 = new UUID();
       const unknownKey2 = new UUID();
-      
+
       beforeEach(() => {
         p = new Path(id, unknownKey1, unknownKey2);
       });

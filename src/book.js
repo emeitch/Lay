@@ -1,21 +1,15 @@
-import Env from './env';
-
 import { v } from './val';
 import UUID from './uuid';
 import Note from './note';
 import Obj from './obj';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
-export default class Book extends Env {
-  constructor() {
-    super();
+export default class Book {
+  constructor(parent=undefined) {
+    this.parent = parent;
     this.notes = new Map();
     this.activeNotesCache = new Map();
     this.invalidationNotesCache = new Map();
-  }
-
-  get book() {
-    return this;
   }
 
   note(noteid) {
@@ -58,7 +52,7 @@ export default class Book extends Env {
       }
     }
 
-    return Array.from(anotes.values()).sort((a, b) => {
+    const actives = Array.from(anotes.values()).sort((a, b) => {
       if (a.at === undefined) {
         return -1;
       } else if (b.at === undefined) {
@@ -67,6 +61,16 @@ export default class Book extends Env {
         return a.at.getTime() - b.at.getTime();
       }
     });
+
+    if (actives.length > 0) {
+      return actives;
+    }
+
+    if (this.parent) {
+      return this.parent.activeNotes(id, key, at);
+    }
+
+    return [];
   }
 
   activeNote(id, key, at=new Date()) {
@@ -93,7 +97,15 @@ export default class Book extends Env {
   resolve(name) {
     const notes = this.findNotes({id: v(name), key: assign});
     const note = notes[notes.length-1];
-    return note ? note.val : undefined;
+    if (note) {
+      return note.val;
+    }
+
+    if (this.parent) {
+      return this.parent.resolve(name);
+    }
+
+    return undefined;
   }
 
   assign(name, id) {

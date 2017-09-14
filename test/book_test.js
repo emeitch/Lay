@@ -125,6 +125,13 @@ describe("Book", () => {
           assert(book.resolve("r") === key2);
         });
       });
+
+      context("parent-child", () => {
+        it("should return a parent assigned value", () => {
+          const cbook = new Book(book);
+          assert(cbook.resolve("i") === id);
+        });
+      });
     });
   });
 
