@@ -4,7 +4,7 @@ import { v } from '../src/val';
 import Path from '../src/path';
 import UUID from '../src/uuid';
 import Sym from '../src/sym';
-import Note from '../src/note';
+import Log from '../src/log';
 import Book from '../src/book';
 
 describe("Path", () => {
@@ -49,8 +49,8 @@ describe("Path", () => {
       const id3 = new UUID();
 
       beforeEach(() => {
-        book.put(new Note(id, key, id2));
-        book.put(new Note(id2, key2, id3));
+        book.put(new Log(id, key, id2));
+        book.put(new Log(id2, key2, id3));
         p = new Path(id, key, key2);
       });
 
@@ -65,7 +65,7 @@ describe("Path", () => {
       const val = v("val0");
 
       beforeEach(() => {
-        book.put(new Note(id, key, val));
+        book.put(new Log(id, key, val));
         book.assign("a", id);
         p = new Path(new Sym("a"), key);
       });
@@ -84,9 +84,9 @@ describe("Path", () => {
       const val3 = v("val0");
 
       beforeEach(() => {
-        book.put(new Note(id, key, id2));
-        book.put(new Note(id2, key2, new Path(new Sym("self"), key3)));
-        book.put(new Note(id2, key3, val3));
+        book.put(new Log(id, key, id2));
+        book.put(new Log(id2, key2, new Path(new Sym("self"), key3)));
+        book.put(new Log(id2, key3, val3));
         book.assign("a", id);
         p = new Path(new Sym("a"), key, key2);
       });

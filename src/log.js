@@ -1,7 +1,7 @@
 import Val from './val';
 import UUID from './uuid';
 
-export default class Note {
+export default class Log {
   constructor(id, key, val, at_, in_) {
     if (!id) {
       throw "id is required";
@@ -15,7 +15,7 @@ export default class Note {
       throw "val is not a Val";
     }
 
-    this.noteid = new UUID();
+    this.logid = new UUID();
     this.id = id;
     this.key = key;
     this.val = val;
@@ -25,5 +25,5 @@ export default class Note {
 }
 
 export const n = (...args) => {
-  return new Note(...args);
+  return new Log(...args);
 };

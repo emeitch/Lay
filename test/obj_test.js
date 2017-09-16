@@ -4,7 +4,7 @@ import { v } from '../src/val';
 import Sym from '../src/sym';
 import UUID from '../src/uuid';
 import Path from '../src/path';
-import Note from '../src/note';
+import Log from '../src/log';
 import Book from '../src/book';
 import { invalidate } from '../src/ontology';
 
@@ -20,27 +20,27 @@ describe("Obj", () => {
   });
 
   describe("#get", () => {
-    context("without notes", () => {
+    context("without logs", () => {
       it("should return undefined", () => {
         assert(obj.get(key) === undefined);
       });
     });
 
-    context("with a note which has a val typed by UUID", () => {
+    context("with a log which has a val typed by UUID", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        book.put(new Note(id, key, dst));
+        book.put(new Log(id, key, dst));
       });
 
-      it("should return a obj of note's val", () => {
+      it("should return a obj of log's val", () => {
         assert.deepStrictEqual(obj.get(key), book.obj(dst));
       });
     });
 
-    context("with a note which has a val typed by Val", () => {
+    context("with a log which has a val typed by Val", () => {
       beforeEach(() => {
-        book.put(new Note(id, key, v("value")));
+        book.put(new Log(id, key, v("value")));
       });
 
       it("should return a value", () => {
@@ -48,10 +48,10 @@ describe("Obj", () => {
       });
     });
 
-    context("with the same key but different val notes", () => {
+    context("with the same key but different val logs", () => {
       beforeEach(() => {
-        book.put(new Note(id, key, v("val0")));
-        book.put(new Note(id, key, v("val1")));
+        book.put(new Log(id, key, v("val0")));
+        book.put(new Log(id, key, v("val1")));
       });
 
       it("should return the last val", () => {
@@ -59,19 +59,19 @@ describe("Obj", () => {
       });
     });
 
-    context("with a invalidated note", () => {
+    context("with a invalidated log", () => {
       beforeEach(() => {
-        const note = book.put(new Note(id, key, v("val0")));
-        book.put(new Note(note.noteid, invalidate));
+        const log = book.put(new Log(id, key, v("val0")));
+        book.put(new Log(log.logid, invalidate));
       });
 
       it("should return undefined", () => {
         assert.deepStrictEqual(obj.get(key), undefined);
       });
 
-      context("add another note", () => {
+      context("add another log", () => {
         beforeEach(() => {
-          book.put(new Note(id, key, v("val1")));
+          book.put(new Log(id, key, v("val1")));
         });
 
         it("should return the val", () => {
@@ -79,9 +79,9 @@ describe("Obj", () => {
         });
       });
 
-      context("add a note which has same args for the invalidated note", () => {
+      context("add a log which has same args for the invalidated log", () => {
         beforeEach(() => {
-          book.put(new Note(id, key, v("val0")));
+          book.put(new Log(id, key, v("val0")));
         });
 
         it("should return the val", () => {
@@ -97,9 +97,9 @@ describe("Obj", () => {
         const key2 = new UUID();
         const key3 = new UUID();
 
-        book.put(new Note(id2, key2, id3));
-        book.put(new Note(id3, key3, v("path end")));
-        book.put(new Note(id, key, new Path(id2, key2, key3)));
+        book.put(new Log(id2, key2, id3));
+        book.put(new Log(id3, key3, v("path end")));
+        book.put(new Log(id, key, new Path(id2, key2, key3)));
       });
 
       it("should return the val", () => {
@@ -113,8 +113,8 @@ describe("Obj", () => {
         val2 = v("val0");
         const key2 = new UUID();
 
-        book.put(new Note(id, key2, val2));
-        book.put(new Note(id, key, new Path(new Sym("self"), key2)));
+        book.put(new Log(id, key2, val2));
+        book.put(new Log(id, key, new Path(new Sym("self"), key2)));
       });
 
       it("should return the val", () => {
