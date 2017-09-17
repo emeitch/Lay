@@ -4,6 +4,7 @@ import { v } from '../src/val';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import Exp from '../src/exp';
+import Func from '../src/func';
 import { Plus } from '../src/func';
 import Book from '../src/book';
 
@@ -56,6 +57,24 @@ describe("Exp", () => {
           v(3)
         );
         assert.deepStrictEqual(exp.reduce(), v(6));
+      });
+    });
+
+    context("partial evaluation", () => {
+      it("should reduce the expression", () => {
+        const exp = new Exp(
+          new Plus(),
+          v(2)
+        );
+
+        const reduced = exp.reduce();
+        assert(reduced instanceof Func);
+
+        const exp2 = new Exp(
+          reduced,
+          v(3)
+        );
+        assert.deepStrictEqual(exp2.reduce(), v(5));
       });
     });
   });
