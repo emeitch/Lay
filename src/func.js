@@ -1,7 +1,18 @@
 import Val from './val';
 
 export default class Func {
-  constructor(base=undefined, args=[]) {
+  apply(...args) {
+    if (args.length < this.arity) {
+      return new PartialFunc(this, args);
+    }
+
+    return this._apply(...args);
+  }
+}
+
+class PartialFunc extends Func {
+  constructor(base, args) {
+    super();
     this.base = base;
     this.args = args;
   }
@@ -12,15 +23,11 @@ export default class Func {
 
   apply(...args) {
     const allArgs = this.args.concat(args);
-    if (allArgs.length < this.arity) {
-      return new Func(this, allArgs);
-    }
-
-    return this._apply(...allArgs);
+    return super.apply(...allArgs);
   }
 
   _apply(...args) {
-    return this.base.apply(...args);
+    return this.base._apply(...args);
   }
 }
 
