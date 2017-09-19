@@ -5,7 +5,7 @@ import UUID from '../src/uuid';
 import Path from '../src/path';
 import Exp from '../src/exp';
 import Func from '../src/func';
-// import Sym from '../src/sym';
+import Sym from '../src/sym';
 import { Plus } from '../src/func';
 import Book from '../src/book';
 
@@ -79,23 +79,23 @@ describe("Exp", () => {
       });
     });
 
-    // context("func literal expression", () => {
-    //   it("should reduce the expression", () => {
-    //     const exp = new Exp(
-    //       new Func(
-    //         new Sym("x"),
-    //         new Sym("y"),
-    //         new Exp(
-    //           new Plus(),
-    //           new Sym("x"),
-    //           new Sym("y")
-    //         )
-    //       ),
-    //       v(2),
-    //       v(3)
-    //     );
-    //     assert.deepStrictEqual(exp.reduce(), v(5));
-    //   });
-    // });
+    context("func literal expression", () => {
+      it("should reduce the expression", () => {
+        const exp = new Exp(
+          new Func(
+            new Sym("x"),
+            new Sym("y"),
+            new Exp(
+              new Plus(),
+              new Sym("x"),
+              new Sym("y")
+            )
+          ),
+          v(2),
+          v(3)
+        );
+        assert.deepStrictEqual(exp.reduce(), v(5));
+      });
+    });
   });
 });
