@@ -11,15 +11,15 @@ export default class Exp extends Val {
   }
 
   reduce(book=new Book()) {
-    const [func, ...rest] = this.terms;
+    const [op, ...rest] = this.terms;
     const args = rest.map(a => a.reduce(book));
     if (args.every(arg => arg.constructor === Val)) {
-      if (func instanceof Function) {
+      if (op instanceof Function) {
         const oargs = args.map(a => a.origin);
-        const orig = func.apply(undefined, oargs);
+        const orig = op.apply(undefined, oargs);
         return new Val(orig);
       } else {
-        return func.apply(book, ...args);
+        return op.reduce(book).apply(book, ...args);
       }
     } else {
       return super.reduce(book);

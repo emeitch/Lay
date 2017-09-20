@@ -3,6 +3,10 @@ export default class Val {
     this.origin = origin;
   }
 
+  equals(other) {
+    return this.constructor === other.constructor && this.origin === other.origin;
+  }
+
   reduce(_book) {
     return this;
   }

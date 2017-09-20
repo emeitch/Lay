@@ -1,62 +1,42 @@
 import Val from './val';
-import Book from './book';
+import Sym from './sym';
+import Exp from './exp';
 
-export default class Func {
+export default class Func extends Val {
   constructor(...args) {
+    super(args);
     this.exp = args.pop();
     this.syms = args;
   }
 
-  get arity() {
-    return this.syms.length;
-  }
-
   apply(book, ...args) {
-    if (args.length < this.arity) {
-      return new PartialFunc(this, args);
+    const syms = this.syms.concat();
+    let terms = this.exp.terms;
+    for (const arg of args) {
+      const sym = syms.shift();
+      terms = terms.map(t => sym.equals(t) ? arg : t);
     }
 
-    return this._apply(book, ...args);
-  }
-
-  _apply(book, ...args) {
-    const b = new Book(book);
-    for (var i = 0; i < args.length; i++) {
-      b.assign(this.syms[i].origin, args[i]);
+    const exp = new Exp(...terms);
+    if (syms.length > 0) {
+      const args = [...syms, exp];
+      return new Func(...args);
     }
 
-    return this.exp.reduce(b);
-  }
-}
-
-class PartialFunc extends Func {
-  constructor(base, args) {
-    super();
-    this.base = base;
-    this.args = args;
-  }
-
-  get arity() {
-    return this.base.arity;
-  }
-
-  apply(book, ...args) {
-    const allArgs = this.args.concat(args);
-    return super.apply(book, ...allArgs);
-  }
-
-  _apply(book, ...args) {
-    return this.base._apply(book, ...args);
+    return exp.reduce(book);
   }
 }
 
 export class Plus extends Func {
-  get arity() {
-    return 2;
-  }
-
-  _apply(book, ...args) {
-    const [fst, snd] = args;
-    return new Val(fst.origin + snd.origin);
+  constructor() {
+    super(
+      new Sym("x"),
+      new Sym("y"),
+      new Exp(
+        (x, y) => x + y,
+        new Sym("x"),
+        new Sym("y")
+      )
+    );
   }
 }

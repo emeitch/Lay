@@ -97,5 +97,26 @@ describe("Exp", () => {
         assert.deepStrictEqual(exp.reduce(), v(5));
       });
     });
+
+    context("partial reducing func", () => {
+      it("should reduce the expression", () => {
+        const exp = new Exp(
+          new Exp(
+            new Func(
+              new Sym("x"),
+              new Sym("y"),
+              new Exp(
+                new Plus(),
+                new Sym("x"),
+                new Sym("y")
+              )
+            ),
+            v(2)
+          ),
+          v(3)
+        );
+        assert.deepStrictEqual(exp.reduce(), v(5));
+      });
+    });
   });
 });
