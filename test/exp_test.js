@@ -118,5 +118,25 @@ describe("Exp", () => {
         assert.deepStrictEqual(exp.reduce(), v(5));
       });
     });
+
+    context("defined function", () => {
+      it("should reduce the expression", () => {
+        const book = new Book();
+        book.assign("f", new Func(
+          new Sym("y"),
+          new Exp(
+            new Plus(),
+            v(3),
+            new Sym("y")
+          )
+        ));
+
+        const exp = new Exp(
+          new Sym("f"),
+          v(2)
+        );
+        assert.deepStrictEqual(exp.reduce(book), v(5));
+      });
+    });
   });
 });
