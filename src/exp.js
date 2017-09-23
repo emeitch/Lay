@@ -19,7 +19,8 @@ export default class Exp extends Val {
         const orig = op.apply(undefined, oargs);
         return new Val(orig);
       } else {
-        return op.reduce(book).apply(book, ...args);
+        const func = op.reduce(book);
+        return func.apply(book, ...args);
       }
     } else {
       return super.reduce(book);

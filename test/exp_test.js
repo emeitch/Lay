@@ -7,6 +7,7 @@ import Exp from '../src/exp';
 import Func from '../src/func';
 import Sym from '../src/sym';
 import { Plus } from '../src/func';
+import Case, { alt, grd, otherwise } from '../src/case';
 import Book from '../src/book';
 
 describe("Exp", () => {
@@ -136,6 +137,48 @@ describe("Exp", () => {
           v(2)
         );
         assert.deepStrictEqual(exp.reduce(book), v(5));
+      });
+    });
+
+    context("recursive function", () => {
+      it("should reduce the expression", () => {
+        const book = new Book();
+        book.assign("f", new Func(
+          new Sym("x"),
+          new Case(new Sym("x"),
+            alt(
+              new Sym("y"),
+              grd(
+                new Exp(
+                  x => x == 0,
+                  new Sym("y")
+                ),
+                new Sym("y")
+              ),
+              grd(
+                otherwise,
+                new Exp(
+                  new Plus(),
+                  v(2),
+                  new Exp(
+                    new Sym("f"),
+                    new Exp(
+                      new Plus(),
+                      new Sym("y"),
+                      v(-1)
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ));
+
+        const exp = new Exp(
+          new Sym("f"),
+          v(4)
+        );
+        assert.deepStrictEqual(exp.reduce(book), v(8));
       });
     });
   });

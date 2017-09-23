@@ -1,6 +1,7 @@
 import Val from './val';
 import Sym from './sym';
 import Exp from './exp';
+import Book from './book';
 
 export default class Func extends Val {
   constructor(...args) {
@@ -10,6 +11,15 @@ export default class Func extends Val {
   }
 
   apply(book, ...args) {
+    if (this.exp.constructor !== Exp) {
+      // todo: 本当は実行文脈を作るのではなくExpと同様に値の置き換えをしたい
+      const b = new Book(book);
+      for (let i = 0; i < args.length; i++) {
+        b.assign(this.syms[i].origin, args[i]);
+      }
+      return this.exp.reduce(b);
+    }
+
     const syms = this.syms.concat();
     let terms = this.exp.terms;
     for (const arg of args) {
