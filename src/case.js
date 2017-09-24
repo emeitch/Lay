@@ -1,4 +1,4 @@
-import Exp from './exp';
+import Func from './func';
 import Book from './book';
 import Val from './val';
 
@@ -29,7 +29,7 @@ class CaseGrdOtherwise extends Val {
 }
 export const otherwise = new CaseGrdOtherwise();
 
-export default class Case extends Exp {
+export default class Case extends Func {
   constructor(exp, ...alts) {
     super();
     this.exp = exp;
