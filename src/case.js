@@ -30,14 +30,13 @@ class CaseGrdOtherwise extends Val {
 export const otherwise = new CaseGrdOtherwise();
 
 export default class Case extends Func {
-  constructor(exp, ...alts) {
+  constructor(...alts) {
     super();
-    this.exp = exp;
     this.alts = alts;
   }
 
-  reduce(book=new Book()) {
-    const val = this.exp.reduce(book);
+  apply(book, ...args) {
+    const val = args[0];
     for (const alt of this.alts) {
       const bindings = val.match(alt.pat);
       if (bindings) {
