@@ -10,6 +10,11 @@ export default class Exp extends Val {
     return this.origin;
   }
 
+  replace(sym, val) {
+    const terms = this.terms.map(t => sym.equals(t) ? val : t);
+    return new Exp(...terms);
+  }
+
   reduce(book=new Book()) {
     const [op, ...rest] = this.terms;
     const args = rest.map(a => a.reduce(book));

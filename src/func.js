@@ -9,15 +9,20 @@ export default class Func extends Val {
     this.syms = args;
   }
 
+  replace(sym, val) {
+    const exp = this.exp.replace(sym, val);
+    const args = [...this.syms, exp];
+    return new Func(...args);
+  }
+
   apply(book, ...args) {
     const syms = this.syms.concat();
-    let terms = this.exp.terms;
+    let exp = this.exp;
     for (const arg of args) {
       const sym = syms.shift();
-      terms = terms.map(t => sym.equals(t) ? arg : t);
+      exp = exp.replace(sym, arg);
     }
 
-    const exp = new Exp(...terms);
     if (syms.length > 0) {
       const args = [...syms, exp];
       return new Func(...args);
