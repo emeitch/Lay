@@ -3,13 +3,13 @@ import Book from './book';
 import Val from './val';
 
 class CaseAlt {
-  constructor(pat, ...grds) {
-    this.pat = pat;
-    this.grds = grds;
+  constructor(...args) {
+    this.pats = args.slice(0, -1);
+    this.grds = args[args.length-1];
   }
 }
-export function alt(pat, ...grds) {
-  return new CaseAlt(pat, ...grds);
+export function alt(...args) {
+  return new CaseAlt(...args);
 }
 
 class CaseGrd {
@@ -36,23 +36,24 @@ export default class Case extends Func {
   }
 
   apply(book, ...args) {
-    const val = args[0];
     for (const alt of this.alts) {
-      const bindings = val.match(alt.pat);
-      if (bindings) {
+      const matches = args.map((v, i) => v.match(alt.pats[i]));
+      if (matches.every(v => v !== undefined)) {
         const e = new Book(book);
-        for (const k of Object.keys(bindings)) {
-          e.assign(k, bindings[k]);
+        for (const match of matches) {
+          for (const key of Object.keys(match)) {
+            e.assign(key, match[key]);
+          }
         }
-        for (const grd of alt.grds) {
-          if (grd instanceof CaseGrd) {
+        if (Array.isArray(alt.grds)) {
+          for (const grd of alt.grds) {
             if (grd.cond.reduce(e).origin) {
               return grd.exp.reduce(e);
             }
-          } else {
-            const exp = grd;
-            return exp.reduce(e);
           }
+        } else {
+          const exp = alt.grds;
+          return exp.reduce(e);
         }
       }
     }

@@ -90,20 +90,22 @@ describe("Case", () => {
       it("should reduce the matched guard result exp", () => {
         const a = alt(
           new Sym("x"),
-          grd(
-            new Exp(
-              x => x < 5,
-              new Sym("x")
+          [
+            grd(
+              new Exp(
+                x => x < 5,
+                new Sym("x")
+              ),
+              v(5)
             ),
-            v(5)
-          ),
-          grd(
-            new Exp(
-              x => x >= 5 ,
-              new Sym("x")
-            ),
-            v(10)
-          )
+            grd(
+              new Exp(
+                x => x >= 5 ,
+                new Sym("x")
+              ),
+              v(10)
+            )
+          ]
         );
         assert.deepStrictEqual(
           new Exp(
@@ -126,17 +128,19 @@ describe("Case", () => {
       it("should reduce the otherwise guard result exp", () => {
         const a = alt(
           new Sym("x"),
-          grd(
-            new Exp(
-              x => x < 5,
-              new Sym("x")
+          [
+            grd(
+              new Exp(
+                x => x < 5,
+                new Sym("x")
+              ),
+              v(5)
             ),
-            v(5)
-          ),
-          grd(
-            otherwise,
-            v(10)
-          )
+            grd(
+              otherwise,
+              v(10)
+            )
+          ]
         );
         assert.deepStrictEqual(
           new Exp(
@@ -149,6 +153,50 @@ describe("Case", () => {
           new Exp(
             new Case(a),
             v(8)
+          ).reduce(),
+          v(10)
+        );
+      });
+    });
+
+    context("multiple patterns", () => {
+      it("should reduce the matched result exp", () => {
+        const a = alt(
+          new Sym("x"),
+          new Sym("y"),
+          new Sym("z"),
+          [
+            grd(
+              new Exp(
+                (x, y, z) => x == y && y == z,
+                new Sym("x"),
+                new Sym("y"),
+                new Sym("z")
+              ),
+              v(5)
+            ),
+            grd(
+              otherwise,
+              v(10)
+            )
+          ]
+        );
+
+        assert.deepStrictEqual(
+          new Exp(
+            new Case(a),
+            v(3),
+            v(3),
+            v(3)
+          ).reduce(),
+          v(5)
+        );
+        assert.deepStrictEqual(
+          new Exp(
+            new Case(a),
+            v(3),
+            v(4),
+            v(5)
           ).reduce(),
           v(10)
         );

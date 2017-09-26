@@ -149,28 +149,30 @@ describe("Exp", () => {
             new Case(
               alt(
                 new Sym("y"),
-                grd(
-                  new Exp(
-                    x => x == 0,
+                [
+                  grd(
+                    new Exp(
+                      x => x == 0,
+                      new Sym("y")
+                    ),
                     new Sym("y")
                   ),
-                  new Sym("y")
-                ),
-                grd(
-                  otherwise,
-                  new Exp(
-                    new Plus(),
-                    v(2),
+                  grd(
+                    otherwise,
                     new Exp(
-                      new Sym("f"),
+                      new Plus(),
+                      v(2),
                       new Exp(
-                        new Plus(),
-                        new Sym("y"),
-                        v(-1)
+                        new Sym("f"),
+                        new Exp(
+                          new Plus(),
+                          new Sym("y"),
+                          v(-1)
+                        )
                       )
                     )
                   )
-                )
+                ]
               )
             ),
             new Sym("x")
