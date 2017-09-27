@@ -11,4 +11,8 @@ export default class Sym extends Val {
       [this.origin]: val
     };
   }
+
+  replace(sym, val) {
+    return this.equals(sym) ? val : this;
+  }
 }

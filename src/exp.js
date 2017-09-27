@@ -11,7 +11,9 @@ export default class Exp extends Val {
   }
 
   replace(sym, val) {
-    const terms = this.terms.map(t => sym.equals(t) ? val : t);
+    const terms = this.terms.map(
+      t => t instanceof Val ? t.replace(sym, val) : t
+    );
     return new Exp(...terms);
   }
 

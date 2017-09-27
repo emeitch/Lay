@@ -70,7 +70,7 @@ describe("Exp", () => {
         );
 
         const reduced = exp.reduce();
-        assert(reduced instanceof Func);
+        assert(reduced instanceof Case);
 
         const exp2 = new Exp(
           reduced,
