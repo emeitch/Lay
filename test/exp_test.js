@@ -1,12 +1,11 @@
 import assert from 'assert';
 
 import { v } from '../src/val';
+import Func, { func, plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import Exp from '../src/exp';
-import Func from '../src/func';
 import Sym from '../src/sym';
-import { Plus } from '../src/func';
 import Case, { alt, grd, otherwise } from '../src/case';
 import Book from '../src/book';
 
@@ -15,7 +14,7 @@ describe("Exp", () => {
     context("val args", () => {
       it("should reduce the expression", () => {
         const exp = new Exp(
-          new Plus(),
+          plus,
           v(1),
           v(2)
         );
@@ -28,7 +27,7 @@ describe("Exp", () => {
       it("should keep the expression", () => {
         const path = new Path(new UUID(), new UUID());
         const exp = new Exp(
-          new Plus(),
+          plus,
           path,
           v(2)
         );
@@ -39,10 +38,10 @@ describe("Exp", () => {
     context("nested", () => {
       it("should reduce the nested expression", () => {
         const exp = new Exp(
-          new Plus(),
+          plus,
           v(1),
           new Exp(
-            new Plus(),
+            plus,
             v(2),
             v(3)
           )
@@ -51,7 +50,7 @@ describe("Exp", () => {
       });
     });
 
-    context("native function", () => {
+    context("native ftion", () => {
       it("should reduce the expression", () => {
         const exp = new Exp(
           (x, y) => x * y,
@@ -65,12 +64,12 @@ describe("Exp", () => {
     context("partial evaluation", () => {
       it("should reduce the expression", () => {
         const exp = new Exp(
-          new Plus(),
+          plus,
           v(2)
         );
 
         const reduced = exp.reduce();
-        assert(reduced instanceof Case);
+        assert(reduced instanceof Func);
 
         const exp2 = new Exp(
           reduced,
@@ -80,14 +79,14 @@ describe("Exp", () => {
       });
     });
 
-    context("func literal expression", () => {
+    context("f literal expression", () => {
       it("should reduce the expression", () => {
         const exp = new Exp(
-          new Func(
+          func(
             new Sym("x"),
             new Sym("y"),
             new Exp(
-              new Plus(),
+              plus,
               new Sym("x"),
               new Sym("y")
             )
@@ -99,15 +98,15 @@ describe("Exp", () => {
       });
     });
 
-    context("partial reducing func", () => {
+    context("partial reducing f", () => {
       it("should reduce the expression", () => {
         const exp = new Exp(
           new Exp(
-            new Func(
+            func(
               new Sym("x"),
               new Sym("y"),
               new Exp(
-                new Plus(),
+                plus,
                 new Sym("x"),
                 new Sym("y")
               )
@@ -120,13 +119,13 @@ describe("Exp", () => {
       });
     });
 
-    context("defined function", () => {
+    context("defined ftion", () => {
       it("should reduce the expression", () => {
         const book = new Book();
-        book.assign("f", new Func(
+        book.assign("f", func(
           new Sym("y"),
           new Exp(
-            new Plus(),
+            plus,
             v(3),
             new Sym("y")
           )
@@ -140,10 +139,10 @@ describe("Exp", () => {
       });
     });
 
-    context("recursive function", () => {
+    context("recursive ftion", () => {
       it("should reduce the expression", () => {
         const book = new Book();
-        book.assign("f", new Func(
+        book.assign("f", func(
           new Sym("x"),
           new Exp(
             new Case(
@@ -160,12 +159,12 @@ describe("Exp", () => {
                   grd(
                     otherwise,
                     new Exp(
-                      new Plus(),
+                      plus,
                       v(2),
                       new Exp(
                         new Sym("f"),
                         new Exp(
-                          new Plus(),
+                          plus,
                           new Sym("y"),
                           v(-1)
                         )
@@ -187,16 +186,16 @@ describe("Exp", () => {
       });
     });
 
-    context("currying function", () => {
+    context("currying ftion", () => {
       it("should reduce the expression", () => {
         const exp = new Exp(
           new Exp(
-            new Func(
+            func(
               new Sym("x"),
-              new Func(
+              func(
                 new Sym("y"),
                 new Exp(
-                  new Plus(),
+                  plus,
                   new Sym("x"),
                   new Sym("y")
                 )

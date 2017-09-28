@@ -3,21 +3,20 @@ import Sym from './sym';
 import Exp from './exp';
 
 export default class Func extends Case {
-  constructor(...args) {
-    super(alt(...args));
+  static create(...args) {
+    return new this(alt(...args));
   }
+}
+export function func(...args) {
+  return Func.create(...args);
 }
 
-export class Plus extends Func {
-  constructor() {
-    super(
-      new Sym("x"),
-      new Sym("y"),
-      new Exp(
-        (x, y) => x + y,
-        new Sym("x"),
-        new Sym("y")
-      )
-    );
-  }
-}
+export const plus = func(
+  new Sym("x"),
+  new Sym("y"),
+  new Exp(
+    (x, y) => x + y,
+    new Sym("x"),
+    new Sym("y")
+  )
+);

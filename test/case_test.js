@@ -4,7 +4,6 @@ import { v } from '../src/val';
 import Book from '../src/book';
 import Sym from '../src/sym';
 import Exp from '../src/exp';
-import { Plus } from '../src/func';
 import Case, { alt, grd, otherwise } from '../src/case';
 
 describe("Case", () => {
@@ -55,15 +54,15 @@ describe("Case", () => {
             alt(
               v(3),
               new Exp(
-                new Plus(),
-                v(1),
-                v(3)
+                (x, y) => x * y,
+                v(4),
+                v(5)
               )
             )
           ),
           v(3)
         );
-        assert.deepStrictEqual(exp.reduce(), v(4));
+        assert.deepStrictEqual(exp.reduce(), v(20));
       });
     });
 
@@ -74,7 +73,7 @@ describe("Case", () => {
             alt(
               new Sym("x"),
               new Exp(
-                new Plus(),
+                (x, y) => x * y,
                 new Sym("x"),
                 new Sym("x")
               )
@@ -82,7 +81,7 @@ describe("Case", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(exp.reduce(), v(6));
+        assert.deepStrictEqual(exp.reduce(), v(9));
       });
     });
 
