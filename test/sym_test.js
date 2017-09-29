@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import { v } from '../src/val';
 import Book from '../src/book';
-import Sym from '../src/sym';
+import {sym} from '../src/sym';
 
 describe("Sym", () => {
   describe("#reduce", () => {
@@ -10,7 +10,7 @@ describe("Sym", () => {
       const val = v("sym val");
       const book = new Book();
       book.assign("sym", val);
-      assert(new Sym("sym").reduce(book) === val);
+      assert(sym("sym").reduce(book) === val);
     });
 
     context("nested book", () => {
@@ -20,14 +20,14 @@ describe("Sym", () => {
         pbook.assign("sym", val);
         const book = new Book(pbook);
 
-        assert(new Sym("sym").reduce(book) === val);
+        assert(sym("sym").reduce(book) === val);
       });
     });
   });
 
   describe("#collate", () => {
     it("should return a matching book", () => {
-      const bindings = new Sym("sym").collate(v("any"));
+      const bindings = sym("sym").collate(v("any"));
       assert.deepStrictEqual(bindings["it"], v("any"));
       assert.deepStrictEqual(bindings["sym"], v("any"));
     });

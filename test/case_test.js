@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import { v } from '../src/val';
 import Book from '../src/book';
-import Sym from '../src/sym';
+import {sym} from '../src/sym';
 import Exp from '../src/exp';
 import Case, { alt, grd, otherwise } from '../src/case';
 
@@ -71,11 +71,11 @@ describe("Case", () => {
         const exp = new Exp(
           new Case(
             alt(
-              new Sym("x"),
+              sym("x"),
               new Exp(
                 (x, y) => x * y,
-                new Sym("x"),
-                new Sym("x")
+                sym("x"),
+                sym("x")
               )
             )
           ),
@@ -88,19 +88,19 @@ describe("Case", () => {
     context("with guards", () => {
       it("should reduce the matched guard result exp", () => {
         const a = alt(
-          new Sym("x"),
+          sym("x"),
           [
             grd(
               new Exp(
                 x => x < 5,
-                new Sym("x")
+                sym("x")
               ),
               v(5)
             ),
             grd(
               new Exp(
                 x => x >= 5 ,
-                new Sym("x")
+                sym("x")
               ),
               v(10)
             )
@@ -126,12 +126,12 @@ describe("Case", () => {
     context("with otherwise", () => {
       it("should reduce the otherwise guard result exp", () => {
         const a = alt(
-          new Sym("x"),
+          sym("x"),
           [
             grd(
               new Exp(
                 x => x < 5,
-                new Sym("x")
+                sym("x")
               ),
               v(5)
             ),
@@ -161,16 +161,16 @@ describe("Case", () => {
     context("multiple patterns", () => {
       it("should reduce the matched result exp", () => {
         const a = alt(
-          new Sym("x"),
-          new Sym("y"),
-          new Sym("z"),
+          sym("x"),
+          sym("y"),
+          sym("z"),
           [
             grd(
               new Exp(
                 (x, y, z) => x == y && y == z,
-                new Sym("x"),
-                new Sym("y"),
-                new Sym("z")
+                sym("x"),
+                sym("y"),
+                sym("z")
               ),
               v(5)
             ),

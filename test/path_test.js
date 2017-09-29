@@ -3,7 +3,7 @@ import assert from 'assert';
 import { v } from '../src/val';
 import Path from '../src/path';
 import UUID from '../src/uuid';
-import Sym from '../src/sym';
+import {sym} from '../src/sym';
 import Log from '../src/log';
 import Book from '../src/book';
 
@@ -67,7 +67,7 @@ describe("Path", () => {
       beforeEach(() => {
         book.put(new Log(id, key, val));
         book.assign("a", id);
-        p = new Path(new Sym("a"), key);
+        p = new Path(sym("a"), key);
       });
 
       it("should return the val", () => {
@@ -85,10 +85,10 @@ describe("Path", () => {
 
       beforeEach(() => {
         book.put(new Log(id, key, id2));
-        book.put(new Log(id2, key2, new Path(new Sym("self"), key3)));
+        book.put(new Log(id2, key2, new Path(sym("self"), key3)));
         book.put(new Log(id2, key3, val3));
         book.assign("a", id);
-        p = new Path(new Sym("a"), key, key2);
+        p = new Path(sym("a"), key, key2);
       });
 
       it("should return the val", () => {

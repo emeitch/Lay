@@ -1,4 +1,4 @@
-import Sym from './sym';
+import { sym } from './sym';
 import Val from './val';
 
 class CaseAlt {
@@ -74,7 +74,7 @@ export default class Case extends Val {
         let kase = new this.constructor(alt);
         for (const match of matches) {
           for (const key of Object.keys(match)) {
-            kase = kase.replaceWithPats(new Sym(key), match[key]);
+            kase = kase.replaceWithPats(sym(key), match[key]);
           }
         }
 

@@ -1,5 +1,5 @@
 import Case, { alt } from './case';
-import Sym from './sym';
+import { sym } from './sym';
 import Exp from './exp';
 
 export default class Func extends Case {
@@ -12,11 +12,11 @@ export function func(...args) {
 }
 
 export const plus = func(
-  new Sym("x"),
-  new Sym("y"),
+  sym("x"),
+  sym("y"),
   new Exp(
     (x, y) => x + y,
-    new Sym("x"),
-    new Sym("y")
+    sym("x"),
+    sym("y")
   )
 );

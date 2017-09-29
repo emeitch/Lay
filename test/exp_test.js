@@ -5,7 +5,7 @@ import Func, { func, plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import Exp from '../src/exp';
-import Sym from '../src/sym';
+import {sym} from '../src/sym';
 import Case, { alt, grd, otherwise } from '../src/case';
 import Book from '../src/book';
 
@@ -83,12 +83,12 @@ describe("Exp", () => {
       it("should reduce the expression", () => {
         const exp = new Exp(
           func(
-            new Sym("x"),
-            new Sym("y"),
+            sym("x"),
+            sym("y"),
             new Exp(
               plus,
-              new Sym("x"),
-              new Sym("y")
+              sym("x"),
+              sym("y")
             )
           ),
           v(2),
@@ -103,12 +103,12 @@ describe("Exp", () => {
         const exp = new Exp(
           new Exp(
             func(
-              new Sym("x"),
-              new Sym("y"),
+              sym("x"),
+              sym("y"),
               new Exp(
                 plus,
-                new Sym("x"),
-                new Sym("y")
+                sym("x"),
+                sym("y")
               )
             ),
             v(2)
@@ -123,16 +123,16 @@ describe("Exp", () => {
       it("should reduce the expression", () => {
         const book = new Book();
         book.assign("f", func(
-          new Sym("y"),
+          sym("y"),
           new Exp(
             plus,
             v(3),
-            new Sym("y")
+            sym("y")
           )
         ));
 
         const exp = new Exp(
-          new Sym("f"),
+          sym("f"),
           v(2)
         );
         assert.deepStrictEqual(exp.reduce(book), v(5));
@@ -143,18 +143,18 @@ describe("Exp", () => {
       it("should reduce the expression", () => {
         const book = new Book();
         book.assign("f", func(
-          new Sym("x"),
+          sym("x"),
           new Exp(
             new Case(
               alt(
-                new Sym("y"),
+                sym("y"),
                 [
                   grd(
                     new Exp(
                       x => x == 0,
-                      new Sym("y")
+                      sym("y")
                     ),
-                    new Sym("y")
+                    sym("y")
                   ),
                   grd(
                     otherwise,
@@ -162,10 +162,10 @@ describe("Exp", () => {
                       plus,
                       v(2),
                       new Exp(
-                        new Sym("f"),
+                        sym("f"),
                         new Exp(
                           plus,
-                          new Sym("y"),
+                          sym("y"),
                           v(-1)
                         )
                       )
@@ -174,12 +174,12 @@ describe("Exp", () => {
                 ]
               )
             ),
-            new Sym("x")
+            sym("x")
           )
         ));
 
         const exp = new Exp(
-          new Sym("f"),
+          sym("f"),
           v(4)
         );
         assert.deepStrictEqual(exp.reduce(book), v(8));
@@ -191,13 +191,13 @@ describe("Exp", () => {
         const exp = new Exp(
           new Exp(
             func(
-              new Sym("x"),
+              sym("x"),
               func(
-                new Sym("y"),
+                sym("y"),
                 new Exp(
                   plus,
-                  new Sym("x"),
-                  new Sym("y")
+                  sym("x"),
+                  sym("y")
                 )
               )
             ),

@@ -16,3 +16,7 @@ export default class Sym extends Val {
     return this.equals(sym) ? val : this;
   }
 }
+
+export function sym(origin) {
+  return new Sym(origin);
+}
