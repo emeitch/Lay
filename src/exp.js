@@ -34,3 +34,7 @@ export default class Exp extends Val {
     }
   }
 }
+
+export function exp(...args) {
+  return new Exp(...args);
+}

@@ -3,39 +3,39 @@ import assert from 'assert';
 import { v } from '../src/val';
 import Book from '../src/book';
 import {sym} from '../src/sym';
-import Exp from '../src/exp';
+import { exp } from '../src/exp';
 import Case, { alt, grd, otherwise } from '../src/case';
 
 describe("Case", () => {
   describe("#reduce", () => {
     context("unmatching", () => {
       it("should reduce the case", () => {
-        const exp = new Exp(
+        const e = exp(
           new Case(
             alt(v(0), v("result"))
           ),
           v(1)
         );
         const book = new Book();
-        assert.throws(() => exp.reduce(book), /matched pattern not found/);
+        assert.throws(() => e.reduce(book), /matched pattern not found/);
       });
     });
 
     context("matching val pattern", () => {
       it("should reduce the matched result exp", () => {
-        const exp = new Exp(
+        const e = exp(
           new Case(
             alt(v(1), v("result"))
           ),
           v(1)
         );
-        assert.deepStrictEqual(exp.reduce(), v("result"));
+        assert.deepStrictEqual(e.reduce(), v("result"));
       });
     });
 
     context("multi patterns", () => {
       it("should reduce the matched result exp", () => {
-        const exp = new Exp(
+        const e = exp(
           new Case(
             alt(v(1), v("result1")),
             alt(v(2), v("result2")),
@@ -43,17 +43,17 @@ describe("Case", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(exp.reduce(), v("result3"));
+        assert.deepStrictEqual(e.reduce(), v("result3"));
       });
     });
 
     context("exp value", () => {
       it("should reduce the exp value", () => {
-        const exp = new Exp(
+        const e = exp(
           new Case(
             alt(
               v(3),
-              new Exp(
+              exp(
                 (x, y) => x * y,
                 v(4),
                 v(5)
@@ -62,17 +62,17 @@ describe("Case", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(exp.reduce(), v(20));
+        assert.deepStrictEqual(e.reduce(), v(20));
       });
     });
 
     context("reference a matched pattern", () => {
       it("should reduce the matched result exp", () => {
-        const exp = new Exp(
+        const e = exp(
           new Case(
             alt(
               sym("x"),
-              new Exp(
+              exp(
                 (x, y) => x * y,
                 sym("x"),
                 sym("x")
@@ -81,7 +81,7 @@ describe("Case", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(exp.reduce(), v(9));
+        assert.deepStrictEqual(e.reduce(), v(9));
       });
     });
 
@@ -91,14 +91,14 @@ describe("Case", () => {
           sym("x"),
           [
             grd(
-              new Exp(
+              exp(
                 x => x < 5,
                 sym("x")
               ),
               v(5)
             ),
             grd(
-              new Exp(
+              exp(
                 x => x >= 5 ,
                 sym("x")
               ),
@@ -107,14 +107,14 @@ describe("Case", () => {
           ]
         );
         assert.deepStrictEqual(
-          new Exp(
+          exp(
             new Case(a),
             v(3)
           ).reduce(),
           v(5)
         );
         assert.deepStrictEqual(
-          new Exp(
+          exp(
             new Case(a),
             v(8)
           ).reduce(),
@@ -129,7 +129,7 @@ describe("Case", () => {
           sym("x"),
           [
             grd(
-              new Exp(
+              exp(
                 x => x < 5,
                 sym("x")
               ),
@@ -142,14 +142,14 @@ describe("Case", () => {
           ]
         );
         assert.deepStrictEqual(
-          new Exp(
+          exp(
             new Case(a),
             v(3)
           ).reduce(),
           v(5)
         );
         assert.deepStrictEqual(
-          new Exp(
+          exp(
             new Case(a),
             v(8)
           ).reduce(),
@@ -166,7 +166,7 @@ describe("Case", () => {
           sym("z"),
           [
             grd(
-              new Exp(
+              exp(
                 (x, y, z) => x == y && y == z,
                 sym("x"),
                 sym("y"),
@@ -182,7 +182,7 @@ describe("Case", () => {
         );
 
         assert.deepStrictEqual(
-          new Exp(
+          exp(
             new Case(a),
             v(3),
             v(3),
@@ -191,7 +191,7 @@ describe("Case", () => {
           v(5)
         );
         assert.deepStrictEqual(
-          new Exp(
+          exp(
             new Case(a),
             v(3),
             v(4),

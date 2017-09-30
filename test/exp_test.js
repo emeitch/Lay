@@ -4,7 +4,7 @@ import { v } from '../src/val';
 import Func, { func, plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';
-import Exp from '../src/exp';
+import Exp, { exp } from '../src/exp';
 import {sym} from '../src/sym';
 import Case, { alt, grd, otherwise } from '../src/case';
 import Book from '../src/book';
@@ -13,79 +13,79 @@ describe("Exp", () => {
   describe("#reduce", () => {
     context("val args", () => {
       it("should reduce the expression", () => {
-        const exp = new Exp(
+        const e = exp(
           plus,
           v(1),
           v(2)
         );
         const book = new Book();
-        assert.deepStrictEqual(exp.reduce(book), v(3));
+        assert.deepStrictEqual(e.reduce(book), v(3));
       });
     });
 
     context("with ref arg", () => {
       it("should keep the expression", () => {
         const path = new Path(new UUID(), new UUID());
-        const exp = new Exp(
+        const e = exp(
           plus,
           path,
           v(2)
         );
-        assert(exp.reduce() instanceof Exp);
+        assert(e.reduce() instanceof Exp);
       });
     });
 
     context("nested", () => {
       it("should reduce the nested expression", () => {
-        const exp = new Exp(
+        const e = exp(
           plus,
           v(1),
-          new Exp(
+          exp(
             plus,
             v(2),
             v(3)
           )
         );
-        assert.deepStrictEqual(exp.reduce(), v(6));
+        assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
 
     context("native ftion", () => {
       it("should reduce the expression", () => {
-        const exp = new Exp(
+        const e = exp(
           (x, y) => x * y,
           v(2),
           v(3)
         );
-        assert.deepStrictEqual(exp.reduce(), v(6));
+        assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
 
     context("partial evaluation", () => {
       it("should reduce the expression", () => {
-        const exp = new Exp(
+        const e = exp(
           plus,
           v(2)
         );
 
-        const reduced = exp.reduce();
+        const reduced = e.reduce();
         assert(reduced instanceof Func);
 
-        const exp2 = new Exp(
+        const e2 = exp(
           reduced,
           v(3)
         );
-        assert.deepStrictEqual(exp2.reduce(), v(5));
+        assert.deepStrictEqual(e2.reduce(), v(5));
       });
     });
 
     context("f literal expression", () => {
       it("should reduce the expression", () => {
-        const exp = new Exp(
+        const e = exp(
           func(
             sym("x"),
             sym("y"),
-            new Exp(
+            exp(
               plus,
               sym("x"),
               sym("y")
@@ -94,18 +94,18 @@ describe("Exp", () => {
           v(2),
           v(3)
         );
-        assert.deepStrictEqual(exp.reduce(), v(5));
+        assert.deepStrictEqual(e.reduce(), v(5));
       });
     });
 
     context("partial reducing f", () => {
       it("should reduce the expression", () => {
-        const exp = new Exp(
-          new Exp(
+        const e = exp(
+          exp(
             func(
               sym("x"),
               sym("y"),
-              new Exp(
+              exp(
                 plus,
                 sym("x"),
                 sym("y")
@@ -115,7 +115,7 @@ describe("Exp", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(exp.reduce(), v(5));
+        assert.deepStrictEqual(e.reduce(), v(5));
       });
     });
 
@@ -124,18 +124,18 @@ describe("Exp", () => {
         const book = new Book();
         book.assign("f", func(
           sym("y"),
-          new Exp(
+          exp(
             plus,
             v(3),
             sym("y")
           )
         ));
 
-        const exp = new Exp(
+        const e = exp(
           sym("f"),
           v(2)
         );
-        assert.deepStrictEqual(exp.reduce(book), v(5));
+        assert.deepStrictEqual(e.reduce(book), v(5));
       });
     });
 
@@ -144,13 +144,13 @@ describe("Exp", () => {
         const book = new Book();
         book.assign("f", func(
           sym("x"),
-          new Exp(
+          exp(
             new Case(
               alt(
                 sym("y"),
                 [
                   grd(
-                    new Exp(
+                    exp(
                       x => x == 0,
                       sym("y")
                     ),
@@ -158,12 +158,12 @@ describe("Exp", () => {
                   ),
                   grd(
                     otherwise,
-                    new Exp(
+                    exp(
                       plus,
                       v(2),
-                      new Exp(
+                      exp(
                         sym("f"),
-                        new Exp(
+                        exp(
                           plus,
                           sym("y"),
                           v(-1)
@@ -178,23 +178,23 @@ describe("Exp", () => {
           )
         ));
 
-        const exp = new Exp(
+        const e = exp(
           sym("f"),
           v(4)
         );
-        assert.deepStrictEqual(exp.reduce(book), v(8));
+        assert.deepStrictEqual(e.reduce(book), v(8));
       });
     });
 
     context("currying ftion", () => {
       it("should reduce the expression", () => {
-        const exp = new Exp(
-          new Exp(
+        const e = exp(
+          exp(
             func(
               sym("x"),
               func(
                 sym("y"),
-                new Exp(
+                exp(
                   plus,
                   sym("x"),
                   sym("y")
@@ -205,7 +205,7 @@ describe("Exp", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(exp.reduce(), v(5));
+        assert.deepStrictEqual(e.reduce(), v(5));
       });
     });
   });
