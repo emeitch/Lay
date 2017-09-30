@@ -5,7 +5,7 @@ import Func, { func, plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import Exp, { exp } from '../src/exp';
-import {sym} from '../src/sym';
+import { sym } from '../src/sym';
 import Case, { alt, grd, otherwise } from '../src/case';
 import Book from '../src/book';
 

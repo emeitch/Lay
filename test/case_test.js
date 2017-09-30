@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import { v } from '../src/val';
 import Book from '../src/book';
-import {sym} from '../src/sym';
+import { sym } from '../src/sym';
 import { exp } from '../src/exp';
 import Case, { alt, grd, otherwise } from '../src/case';
 

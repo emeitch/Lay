@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import { v } from '../src/val';
-import {sym} from '../src/sym';
+import { sym } from '../src/sym';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import Log from '../src/log';

@@ -3,7 +3,7 @@ import assert from 'assert';
 import { v } from '../src/val';
 import Path from '../src/path';
 import UUID from '../src/uuid';
-import {sym} from '../src/sym';
+import { sym } from '../src/sym';
 import Log from '../src/log';
 import Book from '../src/book';
 

@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import { v } from '../src/val';
 import Book from '../src/book';
-import {sym} from '../src/sym';
+import { sym } from '../src/sym';
 
 describe("Sym", () => {
   describe("#reduce", () => {
