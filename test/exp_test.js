@@ -79,7 +79,7 @@ describe("Exp", () => {
       });
     });
 
-    context("f literal expression", () => {
+    context("func literal expression", () => {
       it("should reduce the expression", () => {
         const e = exp(
           func(
@@ -98,7 +98,7 @@ describe("Exp", () => {
       });
     });
 
-    context("partial reducing f", () => {
+    context("partial reducing func", () => {
       it("should reduce the expression", () => {
         const e = exp(
           exp(
