@@ -99,3 +99,7 @@ export default class Case extends Val {
     throw "matched pattern not found";
   }
 }
+
+export function kase(...args) {
+    return new Case(...args);
+}

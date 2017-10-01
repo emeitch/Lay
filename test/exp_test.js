@@ -6,7 +6,7 @@ import UUID from '../src/uuid';
 import Path from '../src/path';
 import Exp, { exp } from '../src/exp';
 import { sym } from '../src/sym';
-import Case, { alt, grd, otherwise } from '../src/case';
+import { kase, alt, grd, otherwise } from '../src/case';
 import Book from '../src/book';
 
 describe("Exp", () => {
@@ -145,7 +145,7 @@ describe("Exp", () => {
         book.assign("f", func(
           sym("x"),
           exp(
-            new Case(
+            kase(
               alt(
                 sym("y"),
                 [
