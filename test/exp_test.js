@@ -50,7 +50,7 @@ describe("Exp", () => {
       });
     });
 
-    context("native ftion", () => {
+    context("native function", () => {
       it("should reduce the expression", () => {
         const e = exp(
           (x, y) => x * y,
@@ -119,7 +119,7 @@ describe("Exp", () => {
       });
     });
 
-    context("defined ftion", () => {
+    context("defined function", () => {
       it("should reduce the expression", () => {
         const book = new Book();
         book.assign("f", func(
@@ -139,7 +139,7 @@ describe("Exp", () => {
       });
     });
 
-    context("recursive ftion", () => {
+    context("recursive function", () => {
       it("should reduce the expression", () => {
         const book = new Book();
         book.assign("f", func(
@@ -186,7 +186,7 @@ describe("Exp", () => {
       });
     });
 
-    context("currying ftion", () => {
+    context("currying function", () => {
       it("should reduce the expression", () => {
         const e = exp(
           exp(
