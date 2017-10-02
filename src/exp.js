@@ -1,9 +1,10 @@
 import Val from './val';
 import Book from './book';
+import { sym } from './sym';
 
 export default class Exp extends Val {
   constructor(...terms) {
-    super(terms);
+    super(terms.map(t => typeof(t) == "string" ? sym(t) : t));
   }
 
   get terms() {

@@ -13,11 +13,7 @@ describe("Exp", () => {
   describe("#reduce", () => {
     context("val args", () => {
       it("should reduce the expression", () => {
-        const e = exp(
-          plus,
-          v(1),
-          v(2)
-        );
+        const e = exp(plus, v(1), v(2));
         const book = new Book();
         assert.deepStrictEqual(e.reduce(book), v(3));
       });
@@ -26,55 +22,33 @@ describe("Exp", () => {
     context("with ref arg", () => {
       it("should keep the expression", () => {
         const path = new Path(new UUID(), new UUID());
-        const e = exp(
-          plus,
-          path,
-          v(2)
-        );
+        const e = exp(plus, path, v(2));
         assert(e.reduce() instanceof Exp);
       });
     });
 
     context("nested", () => {
       it("should reduce the nested expression", () => {
-        const e = exp(
-          plus,
-          v(1),
-          exp(
-            plus,
-            v(2),
-            v(3)
-          )
-        );
+        const e = exp(plus, v(1), exp(plus, v(2), v(3)));
         assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
 
     context("native function", () => {
       it("should reduce the expression", () => {
-        const e = exp(
-          (x, y) => x * y,
-          v(2),
-          v(3)
-        );
+        const e = exp((x, y) => x * y, v(2), v(3));
         assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
 
     context("partial evaluation", () => {
       it("should reduce the expression", () => {
-        const e = exp(
-          plus,
-          v(2)
-        );
+        const e = exp(plus, v(2));
 
         const reduced = e.reduce();
         assert(reduced instanceof Func);
 
-        const e2 = exp(
-          reduced,
-          v(3)
-        );
+        const e2 = exp(reduced, v(3));
         assert.deepStrictEqual(e2.reduce(), v(5));
       });
     });
@@ -82,15 +56,7 @@ describe("Exp", () => {
     context("func literal expression", () => {
       it("should reduce the expression", () => {
         const e = exp(
-          func(
-            sym("x"),
-            sym("y"),
-            exp(
-              plus,
-              sym("x"),
-              sym("y")
-            )
-          ),
+          func(sym("x"), sym("y"), exp(plus, "x", "y")),
           v(2),
           v(3)
         );
@@ -102,15 +68,7 @@ describe("Exp", () => {
       it("should reduce the expression", () => {
         const e = exp(
           exp(
-            func(
-              sym("x"),
-              sym("y"),
-              exp(
-                plus,
-                sym("x"),
-                sym("y")
-              )
-            ),
+            func(sym("x"), sym("y"), exp(plus, "x", "y")),
             v(2)
           ),
           v(3)
@@ -122,19 +80,9 @@ describe("Exp", () => {
     context("defined function", () => {
       it("should reduce the expression", () => {
         const book = new Book();
-        book.assign("f", func(
-          sym("y"),
-          exp(
-            plus,
-            v(3),
-            sym("y")
-          )
-        ));
+        book.assign("f", func(sym("y"), exp(plus, v(3), "y")));
 
-        const e = exp(
-          sym("f"),
-          v(2)
-        );
+        const e = exp("f", v(2));
         assert.deepStrictEqual(e.reduce(book), v(5));
       });
     });
@@ -150,10 +98,7 @@ describe("Exp", () => {
                 sym("y"),
                 [
                   grd(
-                    exp(
-                      x => x == 0,
-                      sym("y")
-                    ),
+                    exp(x => x == 0, "y"),
                     sym("y")
                   ),
                   grd(
@@ -162,10 +107,10 @@ describe("Exp", () => {
                       plus,
                       v(2),
                       exp(
-                        sym("f"),
+                        "f",
                         exp(
                           plus,
-                          sym("y"),
+                          "y",
                           v(-1)
                         )
                       )
@@ -174,12 +119,12 @@ describe("Exp", () => {
                 ]
               )
             ),
-            sym("x")
+            "x"
           )
         ));
 
         const e = exp(
-          sym("f"),
+          "f",
           v(4)
         );
         assert.deepStrictEqual(e.reduce(book), v(8));
@@ -194,11 +139,7 @@ describe("Exp", () => {
               sym("x"),
               func(
                 sym("y"),
-                exp(
-                  plus,
-                  sym("x"),
-                  sym("y")
-                )
+                exp(plus, "x", "y")
               )
             ),
             v(2)
