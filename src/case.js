@@ -3,7 +3,8 @@ import Val from './val';
 
 class CaseAlt {
   constructor(...args) {
-    this.pats = args.slice(0, -1);
+    const pats = args.slice(0, -1);
+    this.pats = pats.map(p => typeof(p) == "string" ? sym(p) : p);
     this.grds = args[args.length-1];
   }
 

@@ -56,7 +56,7 @@ describe("Exp", () => {
     context("func literal expression", () => {
       it("should reduce the expression", () => {
         const e = exp(
-          func(sym("x"), sym("y"), exp(plus, "x", "y")),
+          func("x", "y", exp(plus, "x", "y")),
           v(2),
           v(3)
         );
@@ -68,7 +68,7 @@ describe("Exp", () => {
       it("should reduce the expression", () => {
         const e = exp(
           exp(
-            func(sym("x"), sym("y"), exp(plus, "x", "y")),
+            func("x", "y", exp(plus, "x", "y")),
             v(2)
           ),
           v(3)
@@ -80,7 +80,7 @@ describe("Exp", () => {
     context("defined function", () => {
       it("should reduce the expression", () => {
         const book = new Book();
-        book.assign("f", func(sym("y"), exp(plus, v(3), "y")));
+        book.assign("f", func("y", exp(plus, v(3), "y")));
 
         const e = exp("f", v(2));
         assert.deepStrictEqual(e.reduce(book), v(5));
@@ -91,11 +91,11 @@ describe("Exp", () => {
       it("should reduce the expression", () => {
         const book = new Book();
         book.assign("f", func(
-          sym("x"),
+          "x",
           exp(
             kase(
               alt(
-                sym("y"),
+                "y",
                 [
                   grd(
                     exp(x => x == 0, "y"),
@@ -136,9 +136,9 @@ describe("Exp", () => {
         const e = exp(
           exp(
             func(
-              sym("x"),
+              "x",
               func(
-                sym("y"),
+                "y",
                 exp(plus, "x", "y")
               )
             ),

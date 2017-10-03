@@ -2,7 +2,6 @@ import assert from 'assert';
 
 import { v } from '../src/val';
 import Book from '../src/book';
-import { sym } from '../src/sym';
 import { exp } from '../src/exp';
 import { kase, alt, grd, otherwise } from '../src/case';
 
@@ -71,11 +70,11 @@ describe("Case", () => {
         const e = exp(
           kase(
             alt(
-              sym("x"),
+              "x",
               exp(
                 (x, y) => x * y,
-                sym("x"),
-                sym("x")
+                "x",
+                "x"
               )
             )
           ),
@@ -88,19 +87,19 @@ describe("Case", () => {
     context("with guards", () => {
       it("should reduce the matched guard result exp", () => {
         const a = alt(
-          sym("x"),
+          "x",
           [
             grd(
               exp(
                 x => x < 5,
-                sym("x")
+                "x"
               ),
               v(5)
             ),
             grd(
               exp(
                 x => x >= 5 ,
-                sym("x")
+                "x"
               ),
               v(10)
             )
@@ -126,12 +125,12 @@ describe("Case", () => {
     context("with otherwise", () => {
       it("should reduce the otherwise guard result exp", () => {
         const a = alt(
-          sym("x"),
+          "x",
           [
             grd(
               exp(
                 x => x < 5,
-                sym("x")
+                "x"
               ),
               v(5)
             ),
@@ -161,16 +160,16 @@ describe("Case", () => {
     context("multiple patterns", () => {
       it("should reduce the matched result exp", () => {
         const a = alt(
-          sym("x"),
-          sym("y"),
-          sym("z"),
+          "x",
+          "y",
+          "z",
           [
             grd(
               exp(
                 (x, y, z) => x == y && y == z,
-                sym("x"),
-                sym("y"),
-                sym("z")
+                "x",
+                "y",
+                "z"
               ),
               v(5)
             ),
