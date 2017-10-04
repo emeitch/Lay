@@ -5,7 +5,6 @@ import Func, { func, plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import Exp, { exp } from '../src/exp';
-import { sym } from '../src/sym';
 import { kase, alt, grd, otherwise } from '../src/case';
 import Book from '../src/book';
 
@@ -99,7 +98,7 @@ describe("Exp", () => {
                 [
                   grd(
                     exp(x => x == 0, "y"),
-                    sym("y")
+                    "y"
                   ),
                   grd(
                     otherwise,

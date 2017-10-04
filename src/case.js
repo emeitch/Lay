@@ -31,7 +31,7 @@ export function alt(...args) {
 class CaseGrd {
   constructor(cond, exp) {
     this.cond = cond;
-    this.exp = exp;
+    this.exp = typeof(exp) == "string" ? sym(exp) : exp;
   }
 
   replace(sym, val) {
