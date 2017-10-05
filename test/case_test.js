@@ -105,20 +105,8 @@ describe("Case", () => {
             )
           ]
         );
-        assert.deepStrictEqual(
-          exp(
-            kase(a),
-            v(3)
-          ).reduce(),
-          v(5)
-        );
-        assert.deepStrictEqual(
-          exp(
-            kase(a),
-            v(8)
-          ).reduce(),
-          v(10)
-        );
+        assert.deepStrictEqual(exp(kase(a), v(3)).reduce(), v(5));
+        assert.deepStrictEqual(exp(kase(a), v(8)).reduce(), v(10));
       });
     });
 
@@ -140,20 +128,8 @@ describe("Case", () => {
             )
           ]
         );
-        assert.deepStrictEqual(
-          exp(
-            kase(a),
-            v(3)
-          ).reduce(),
-          v(5)
-        );
-        assert.deepStrictEqual(
-          exp(
-            kase(a),
-            v(8)
-          ).reduce(),
-          v(10)
-        );
+        assert.deepStrictEqual(exp(kase(a), v(3)).reduce(), v(5));
+        assert.deepStrictEqual(exp(kase(a), v(8)).reduce(), v(10));
       });
     });
 
@@ -180,24 +156,8 @@ describe("Case", () => {
           ]
         );
 
-        assert.deepStrictEqual(
-          exp(
-            kase(a),
-            v(3),
-            v(3),
-            v(3)
-          ).reduce(),
-          v(5)
-        );
-        assert.deepStrictEqual(
-          exp(
-            kase(a),
-            v(3),
-            v(4),
-            v(5)
-          ).reduce(),
-          v(10)
-        );
+        assert.deepStrictEqual(exp(kase(a), v(3), v(3), v(3)).reduce(), v(5));
+        assert.deepStrictEqual(exp(kase(a), v(3), v(4), v(5)).reduce(), v(10));
       });
     });
   });

@@ -80,9 +80,8 @@ describe("Exp", () => {
       it("should reduce the expression", () => {
         const book = new Book();
         book.assign("f", func("y", exp(plus, v(3), "y")));
-
-        const e = exp("f", v(2));
-        assert.deepStrictEqual(e.reduce(book), v(5));
+        
+        assert.deepStrictEqual(exp("f", v(2)).reduce(book), v(5));
       });
     });
 
@@ -122,11 +121,7 @@ describe("Exp", () => {
           )
         ));
 
-        const e = exp(
-          "f",
-          v(4)
-        );
-        assert.deepStrictEqual(e.reduce(book), v(8));
+        assert.deepStrictEqual(exp("f", v(4)).reduce(book), v(8));
       });
     });
 
