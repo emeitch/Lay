@@ -8,20 +8,22 @@ class CaseAlt {
     this.grds = args[args.length-1];
   }
 
-  replaceWithPats(sym, val) {
-    const pats = this.pats.filter(pat => !sym.equals(pat));
+  _replace(sym, val, pats) {
     const grds = Array.isArray(this.grds) ? this.grds.map(grd => grd.replace(sym, val)) : this.grds.replace(sym, val);
     const args = pats.concat([grds]);
     return new this.constructor(...args);
+  }
+
+  replaceWithPats(sym, val) {
+    const pats = this.pats.filter(pat => !sym.equals(pat));
+    return this._replace(sym, val, pats);
   }
 
   replace(sym, val) {
     if (this.pats.some(pat => sym.equals(pat))) {
       return this;
     }
-    const grds = Array.isArray(this.grds) ? this.grds.map(grd => grd.replace(sym, val)) : this.grds.replace(sym, val);
-    const args = this.pats.concat([grds]);
-    return new this.constructor(...args);
+    return this._replace(sym, val, this.pats);
   }
 }
 export function alt(...args) {
