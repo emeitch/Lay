@@ -9,7 +9,14 @@ class CaseAlt {
   }
 
   _replace(sym, val, pats) {
-    const grds = Array.isArray(this.grds) ? this.grds.map(grd => grd.replace(sym, val)) : this.grds.replace(sym, val);
+    let grds;
+    if (this.grds instanceof Function) {
+      return this;
+    } else if (Array.isArray(this.grds)) {
+      grds = this.grds.map(grd => grd.replace(sym, val));
+    } else {
+      grds = this.grds.replace(sym, val);
+    }
     const args = pats.concat([grds]);
     return new this.constructor(...args);
   }
@@ -86,7 +93,12 @@ export default class Case extends Val {
         }
 
         const grds = kase.alts[0].grds;
-        if (Array.isArray(grds)) {
+        if (grds instanceof Function) {
+          const f = grds;
+          const oargs = args.map(a => a.origin);
+          const orig = f.apply(undefined, oargs);
+          return new Val(orig);
+        } else if (Array.isArray(grds)) {
           for (const grd of grds) {
             if (grd.cond.reduce(book).origin) {
               return grd.exp.reduce(book);
