@@ -1,22 +1,9 @@
-import Case, { alt } from './case';
-import { sym } from './sym';
-import { exp } from './exp';
+import Case from './case';
 
-export default class Func extends Case {
-  static create(...args) {
-    return new this(alt(...args));
-  }
-}
+export default class Func extends Case {}
+
 export function func(...args) {
-  return Func.create(...args);
+  return Func.func(...args);
 }
 
-export const plus = func(
-  sym("x"),
-  sym("y"),
-  exp(
-    (x, y) => x + y,
-    sym("x"),
-    sym("y")
-  )
-);
+export const plus = func("x", "y", (x, y) => x + y);

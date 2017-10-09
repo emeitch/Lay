@@ -12,9 +12,7 @@ export default class Exp extends Val {
   }
 
   replace(sym, val) {
-    const terms = this.terms.map(
-      t => t instanceof Val ? t.replace(sym, val) : t
-    );
+    const terms = this.terms.map(t => t.replace(sym, val));
     return new Exp(...terms);
   }
 
@@ -22,14 +20,8 @@ export default class Exp extends Val {
     const [op, ...rest] = this.terms;
     const args = rest.map(a => a.reduce(book));
     if (args.every(arg => arg.constructor === Val)) {
-      if (op instanceof Function) {
-        const oargs = args.map(a => a.origin);
-        const orig = op.apply(undefined, oargs);
-        return new Val(orig);
-      } else {
-        const func = op.reduce(book);
-        return func.apply(book, ...args);
-      }
+      const func = op.reduce(book);
+      return func.apply(book, ...args);
     } else {
       return super.reduce(book);
     }

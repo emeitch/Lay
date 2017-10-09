@@ -64,7 +64,10 @@ describe("Func", () => {
                 "y",
                 [
                   grd(
-                    exp(x => x == 0, "y"),
+                    exp(
+                      func("x", x => x == 0),
+                      "y"
+                    ),
                     "y"
                   ),
                   grd(

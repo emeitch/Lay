@@ -70,6 +70,10 @@ class CaseGrdOtherwise extends Val {
 export const otherwise = new CaseGrdOtherwise();
 
 export default class Case extends Val {
+  static func(...args) {
+    return new this(alt(...args));
+  }
+
   constructor(...alts) {
     super();
     this.alts = alts;
@@ -125,4 +129,8 @@ export default class Case extends Val {
 
 export function kase(...args) {
     return new Case(...args);
+}
+
+export function kfunc(...args) {
+  return Case.func(...args);
 }

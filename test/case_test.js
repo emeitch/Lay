@@ -3,7 +3,7 @@ import assert from 'assert';
 import { v } from '../src/val';
 import Book from '../src/book';
 import { exp } from '../src/exp';
-import { kase, alt, grd, otherwise } from '../src/case';
+import { kase, alt, grd, otherwise, kfunc } from '../src/case';
 
 describe("Case", () => {
   describe("#reduce", () => {
@@ -53,7 +53,7 @@ describe("Case", () => {
             alt(
               v(3),
               exp(
-                (x, y) => x * y,
+                kfunc("x", "y", (x, y) => x * y),
                 v(4),
                 v(5)
               )
@@ -72,7 +72,7 @@ describe("Case", () => {
             alt(
               "x",
               exp(
-                (x, y) => x * y,
+                kfunc("x", "y", (x, y) => x * y),
                 "x",
                 "x"
               )
@@ -91,14 +91,14 @@ describe("Case", () => {
           [
             grd(
               exp(
-                x => x < 5,
+                kfunc("y", y => y < 5),
                 "x"
               ),
               v(5)
             ),
             grd(
               exp(
-                x => x >= 5 ,
+                kfunc("y", y => y >= 5),
                 "x"
               ),
               v(10)
@@ -117,7 +117,7 @@ describe("Case", () => {
           [
             grd(
               exp(
-                x => x < 5,
+                kfunc("y", y => y < 5),
                 "x"
               ),
               v(5)
@@ -142,7 +142,7 @@ describe("Case", () => {
           [
             grd(
               exp(
-                (x, y, z) => x == y && y == z,
+                kfunc("x", "y", "z", (x, y, z) => x == y && y == z),
                 "x",
                 "y",
                 "z"
