@@ -6,6 +6,12 @@ class CaseAlt {
     const pats = args.slice(0, -1);
     this.pats = pats.map(p => typeof(p) == "string" ? sym(p) : p);
     this.grds = args[args.length-1];
+
+    if (this.grds instanceof Function
+      && this.grds.length > 0
+      && this.pats.length != this.grds.length) {
+        throw "arity mismatched for native function";
+      }
   }
 
   _replace(sym, val, pats) {

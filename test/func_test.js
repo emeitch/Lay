@@ -7,6 +7,21 @@ import { kase, alt, grd, otherwise } from '../src/case';
 import Func, { func, plus } from '../src/func';
 
 describe("Func", () => {
+  describe("func", () => {
+    context("arity mismatched for native function", () => {
+      it("should throw error", () => {
+        assert.throws(
+          () => func("x", (x, y) => x + y),
+          /arity mismatched for native function/
+        );
+
+        assert.throws(
+          () => func("x", "y", x => 3 * x),
+          /arity mismatched for native function/
+        );
+      });
+    });
+  });
   describe("#apply", () => {
     context("func literal expression", () => {
       it("should reduce the expression", () => {
