@@ -11,7 +11,15 @@ class CaseAlt {
   _replace(sym, val, pats) {
     let grds;
     if (this.grds instanceof Function) {
-      return this;
+      const i = this.pats.map(p => p.origin).indexOf(sym.origin);
+      if (i >= 0) {
+        grds = (...args) => {
+          args.splice(i, 0, val.origin);
+          return this.grds.apply(undefined, args);
+        };
+      } else {
+        grds = this.grds;
+      }
     } else if (Array.isArray(this.grds)) {
       grds = this.grds.map(grd => grd.replace(sym, val));
     } else {
