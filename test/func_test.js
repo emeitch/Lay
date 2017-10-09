@@ -31,5 +31,19 @@ describe("Func", () => {
         assert.deepStrictEqual(e2.reduce(), v(6));
       });
     });
+
+    context("partial reduction for nested native function exp", () => {
+      it("should reduce the expression", () => {
+        const e = exp(
+          exp(
+            func("x", "y", (x, y) => x * y),
+            v(2)
+          ),
+          v(3)
+        );
+
+        assert.deepStrictEqual(e.reduce(), v(6));
+      });
+    });
   });
 });
