@@ -22,6 +22,7 @@ describe("Func", () => {
       });
     });
   });
+  
   describe("#apply", () => {
     context("func literal expression", () => {
       it("should reduce the expression", () => {
