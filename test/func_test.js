@@ -22,7 +22,7 @@ describe("Func", () => {
       });
     });
   });
-  
+
   describe("#apply", () => {
     context("func literal expression", () => {
       it("should reduce the expression", () => {
@@ -168,6 +168,27 @@ describe("Func", () => {
         );
 
         assert.deepStrictEqual(e.reduce(), v(6));
+      });
+    });
+
+    context("lexical scoping", () => {
+      it("should reduce the expression", () => {
+        const f = func(
+          "x",
+          func(
+            "y",
+            exp(
+              plus,
+              "x",
+              "y"
+            )
+          )
+        );
+
+        const reduced = exp(f, v(3)).reduce();
+        assert(reduced instanceof Func);
+
+        assert.deepStrictEqual(exp(reduced, v(2)).reduce(), v(5));
       });
     });
   });
