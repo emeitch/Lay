@@ -177,5 +177,48 @@ describe("Func", () => {
         assert.deepStrictEqual(e2.reduce(), v(6));
       });
     });
+
+    context("with infinite recursive exp", () => {
+      it("should not reduce the infinite recursive exp", () => {
+        const book = new Book();
+        book.assign("f", func(
+          "x",
+          exp("f", "x")
+        ));
+        book.assign("if", func(
+          "cond",
+          "then",
+          "else",
+          exp(
+            kase(
+              alt(
+                "x",
+                [
+                  grd(
+                    exp(func("x", x => x), "x"),
+                    "then"
+                  ),
+                  grd(
+                    otherwise,
+                    "else"
+                  )
+                ]
+              )
+            ),
+            "cond"
+          )
+        ));
+
+        const e = exp(
+          "if",
+          v(false),
+          // exp("f", v(0)), // infinite recursive
+          v("true"),
+          v("else")
+        );
+
+        assert.deepStrictEqual(e.reduce(book), v("else"));
+      });
+    });
   });
 });
