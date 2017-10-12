@@ -7,7 +7,7 @@ export default class Val {
     return this.constructor === other.constructor && this.origin === other.origin;
   }
 
-  replace(_sym, _val) {
+  replace(_book, _sym, _val) {
     return this;
   }
 

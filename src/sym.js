@@ -12,7 +12,7 @@ export default class Sym extends Val {
     };
   }
 
-  replace(sym, val) {
+  replace(book, sym, val) {
     return this.equals(sym) ? val : this;
   }
 }

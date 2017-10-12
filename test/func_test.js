@@ -212,8 +212,7 @@ describe("Func", () => {
         const e = exp(
           "if",
           v(false),
-          // exp("f", v(0)), // infinite recursive
-          v("true"),
+          exp("f", v(0)), // infinite recursive
           v("else")
         );
 

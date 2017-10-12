@@ -1,4 +1,5 @@
 import { sym } from './sym';
+import { exp } from './exp';
 import Val from './val';
 
 class CaseAlt {
@@ -14,37 +15,37 @@ class CaseAlt {
       }
   }
 
-  _replace(sym, val, pats) {
+  _replace(book, sym, val, pats) {
     let grds;
     if (this.grds instanceof Function) {
       const i = this.pats.map(p => p.origin).indexOf(sym.origin);
       if (i >= 0) {
         grds = (...args) => {
-          args.splice(i, 0, val.origin);
+          args.splice(i, 0, val.reduce(book).origin);
           return this.grds.apply(undefined, args);
         };
       } else {
         grds = this.grds;
       }
     } else if (Array.isArray(this.grds)) {
-      grds = this.grds.map(grd => grd.replace(sym, val));
+      grds = this.grds.map(grd => grd.replace(book, sym, val));
     } else {
-      grds = this.grds.replace(sym, val);
+      grds = this.grds.replace(book, sym, val);
     }
     const args = pats.concat([grds]);
     return new this.constructor(...args);
   }
 
-  replaceWithPats(sym, val) {
+  replaceWithPats(book, sym, val) {
     const pats = this.pats.filter(pat => !sym.equals(pat));
-    return this._replace(sym, val, pats);
+    return this._replace(book, sym, val, pats);
   }
 
-  replace(sym, val) {
+  replace(book, sym, val) {
     if (this.pats.some(pat => sym.equals(pat))) {
       return this;
     }
-    return this._replace(sym, val, this.pats);
+    return this._replace(book, sym, val, this.pats);
   }
 }
 export function alt(...args) {
@@ -57,10 +58,10 @@ class CaseGrd {
     this.exp = typeof(exp) == "string" ? sym(exp) : exp;
   }
 
-  replace(sym, val) {
+  replace(book, sym, val) {
     return new this.constructor(
-      this.cond.replace(sym, val),
-      this.exp.replace(sym, val)
+      this.cond.replace(book, sym, val),
+      this.exp.replace(book, sym, val)
     );
   }
 }
@@ -85,13 +86,13 @@ export default class Case extends Val {
     this.alts = alts;
   }
 
-  replaceWithPats(sym, val) {
-    const alts = this.alts.map(alt => alt.replaceWithPats(sym, val));
+  replaceWithPats(book, sym, val) {
+    const alts = this.alts.map(alt => alt.replaceWithPats(book, sym, val));
     return new this.constructor(...alts);
   }
 
-  replace(sym, val) {
-    const alts = this.alts.map(alt => alt.replace(sym, val));
+  replace(book, sym, val) {
+    const alts = this.alts.map(alt => alt.replace(book, sym, val));
     return new this.constructor(...alts);
   }
 
@@ -102,7 +103,7 @@ export default class Case extends Val {
         let kase = new this.constructor(alt);
         for (const match of matches) {
           for (const key of Object.keys(match)) {
-            kase = kase.replaceWithPats(sym(key), match[key]);
+            kase = kase.replaceWithPats(book, sym(key), match[key]);
           }
         }
 
@@ -113,9 +114,14 @@ export default class Case extends Val {
         const grds = kase.alts[0].grds;
         if (grds instanceof Function) {
           const f = grds;
-          const oargs = args.map(a => a.origin);
-          const orig = f.apply(undefined, oargs);
-          return new Val(orig);
+          const rargs = args.map(a => a.reduce(book));
+          if (rargs.every(rarg => rarg.constructor === Val)) {
+            const oargs = rargs.map(a => a.origin);
+            const orig = f.apply(undefined, oargs);
+            return new Val(orig);
+          } else {
+            return exp(this, ...rargs);
+          }
         } else if (Array.isArray(grds)) {
           for (const grd of grds) {
             if (grd.cond.reduce(book).origin) {
