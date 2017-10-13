@@ -1,6 +1,27 @@
 import { sym } from './sym';
-import { exp } from './exp';
 import Val from './val';
+
+export class Thunk {
+  constructor(f, ...args) {
+    this.f = f;
+    this.args = args;
+  }
+
+  apply(book, args) {
+    this.args.forEach((arg, i) => {
+      args.splice(i, 0, arg);
+    });
+    const rargs = args.map(a => a.reduce(book));
+    if ((this.f.length == 0 || this.f.length == rargs.length)
+    && rargs.every(rarg => rarg.constructor === Val)) {
+      const oargs = rargs.map(a => a.origin);
+      const orig = this.f.apply(undefined, oargs);
+      return new Val(orig);
+    } else {
+      return new this.constructor(this.f, ...args);
+    }
+  }
+}
 
 class CaseAlt {
   constructor(...args) {
@@ -8,22 +29,23 @@ class CaseAlt {
     this.pats = pats.map(p => typeof(p) == "string" ? sym(p) : p);
     this.grds = args[args.length-1];
 
-    if (this.grds instanceof Function
-      && this.grds.length > 0
-      && this.pats.length != this.grds.length) {
+    if (this.grds instanceof Function) {
+      if(this.grds.length > 0 && this.pats.length != this.grds.length) {
         throw "arity mismatched for native function";
       }
+
+      this.grds = new Thunk(this.grds);
+    }
   }
 
   _replace(book, sym, val, pats) {
     let grds;
-    if (this.grds instanceof Function) {
+    if (this.grds instanceof Thunk) {
       const i = this.pats.map(p => p.origin).indexOf(sym.origin);
       if (i >= 0) {
-        grds = (...args) => {
-          args.splice(i, 0, val.reduce(book).origin);
-          return this.grds.apply(undefined, args);
-        };
+        const args = [];
+        args[i] = val;
+        grds = this.grds.apply(book, args);
       } else {
         grds = this.grds;
       }
@@ -112,16 +134,8 @@ export default class Case extends Val {
         }
 
         const grds = kase.alts[0].grds;
-        if (grds instanceof Function) {
-          const f = grds;
-          const rargs = args.map(a => a.reduce(book));
-          if (rargs.every(rarg => rarg.constructor === Val)) {
-            const oargs = rargs.map(a => a.origin);
-            const orig = f.apply(undefined, oargs);
-            return new Val(orig);
-          } else {
-            return exp(this, ...rargs);
-          }
+        if (grds instanceof Thunk) {
+          return grds.apply(book, args);
         } else if (Array.isArray(grds)) {
           for (const grd of grds) {
             if (grd.cond.reduce(book).origin) {

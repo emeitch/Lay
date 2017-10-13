@@ -1,10 +1,11 @@
 import assert from 'assert';
 
+import { Thunk } from '../src/case';
 import { v } from '../src/val';
 import { plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';
-import Exp, { exp } from '../src/exp';
+import { exp } from '../src/exp';
 import Book from '../src/book';
 
 describe("Exp", () => {
@@ -21,7 +22,7 @@ describe("Exp", () => {
       it("should keep the expression", () => {
         const path = new Path(new UUID(), new UUID());
         const e = exp(plus, path, v(2));
-        assert(e.reduce() instanceof Exp);
+        assert(e.reduce() instanceof Thunk);
       });
     });
 
