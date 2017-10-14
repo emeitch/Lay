@@ -1,12 +1,12 @@
 import assert from 'assert';
 
-import { Thunk } from '../src/case';
 import { v } from '../src/val';
 import { plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import { exp } from '../src/exp';
 import Book from '../src/book';
+import Thunk from '../src/thunk';
 
 describe("Exp", () => {
   describe("#reduce", () => {
