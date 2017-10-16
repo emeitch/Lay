@@ -13,7 +13,7 @@ export default class Exp extends Val {
 
   replace(book, sym, val) {
     const terms = this.terms.map(t => t.replace(book, sym, val));
-    return new Exp(...terms);
+    return new this.constructor(...terms);
   }
 
   reduce(book=new Book()) {
