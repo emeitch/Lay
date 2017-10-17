@@ -1,6 +1,7 @@
 import { sym } from './sym';
 import Val from './val';
-import Thunk, { nativeFunc, NativeFunc } from './thunk';
+import Thunk from './thunk';
+import Native, { native } from './native';
 
 class CaseAlt {
   constructor(...args) {
@@ -12,14 +13,13 @@ class CaseAlt {
       if(this.grds.length > 0 && this.pats.length != this.grds.length) {
         throw "arity mismatched for native function";
       }
-
-      this.grds = nativeFunc(this.grds);
+      this.grds = native(this.grds);
     }
   }
 
   _replace(book, sym, val, pats) {
     let grds;
-    if (this.grds instanceof NativeFunc || this.grds instanceof Thunk) {
+    if (this.grds instanceof Native || this.grds instanceof Thunk) {
       const i = this.pats.map(p => p.origin).indexOf(sym.origin);
       if (i >= 0) {
         const args = [];
@@ -113,7 +113,7 @@ export default class Case extends Val {
         }
 
         const grds = kase.alts[0].grds;
-        if (grds instanceof NativeFunc || grds instanceof Thunk) {
+        if (grds instanceof Native || grds instanceof Thunk) {
           return grds.apply(book, ...args);
         } else if (Array.isArray(grds)) {
           for (const grd of grds) {
