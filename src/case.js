@@ -18,15 +18,13 @@ class CaseAlt {
   }
 
   _replace(book, sym, val, pats) {
-    let grds;
+    let grds = this.grds;
     if (this.grds instanceof Native || this.grds instanceof Thunk) {
       const i = this.pats.map(p => p.origin).indexOf(sym.origin);
       if (i >= 0) {
         const args = [];
         args[i] = val;
         grds = this.grds.apply(book, ...args);
-      } else {
-        grds = this.grds;
       }
     } else if (Array.isArray(this.grds)) {
       grds = this.grds.map(grd => grd.replace(book, sym, val));
