@@ -15,22 +15,26 @@ class CaseAlt {
       }
       this.grds = native(this.grds);
     }
+
+    if (!Array.isArray(this.grds)) {
+      this.grds = [this.grds];
+    }
   }
 
   _replace(book, sym, val, pats) {
-    let grds = this.grds;
-    if (this.grds instanceof Native || this.grds instanceof Thunk) {
-      const i = this.pats.map(p => p.origin).indexOf(sym.origin);
-      if (i >= 0) {
-        const args = [];
-        args[i] = val;
-        grds = this.grds.apply(book, ...args);
+    const i = this.pats.map(p => p.origin).indexOf(sym.origin);
+    const grds = this.grds.map(grd => {
+      if (grd instanceof Native || grd instanceof Thunk) {
+        if (i >= 0) {
+          const args = [];
+          args[i] = val;
+          return grd.apply(book, ...args);
+        }
+        return grd;
+      } else {
+        return grd.replace(book, sym, val);
       }
-    } else if (Array.isArray(this.grds)) {
-      grds = this.grds.map(grd => grd.replace(book, sym, val));
-    } else {
-      grds = this.grds.replace(book, sym, val);
-    }
+    });
     const args = pats.concat([grds]);
     return new this.constructor(...args);
   }
@@ -62,6 +66,10 @@ class CaseGrd {
       this.cond.replace(book, sym, val),
       this.exp.replace(book, sym, val)
     );
+  }
+
+  reduce(book) {
+    return this.exp.reduce(book);
   }
 }
 export function grd(cond, exp) {
@@ -111,17 +119,14 @@ export default class Case extends Val {
         }
 
         const grds = kase.alts[0].grds;
-        if (grds instanceof Native || grds instanceof Thunk) {
-          return grds.apply(book, ...args);
-        } else if (Array.isArray(grds)) {
-          for (const grd of grds) {
-            if (grd.cond.reduce(book).origin) {
-              return grd.exp.reduce(book);
+        for (const grd of grds) {
+          if (grd instanceof Native || grd instanceof Thunk) {
+            return grd.apply(book, ...args);
+          } else {
+            if (!grd.cond || grd.cond.reduce(book).origin) {
+              return grd.reduce(book);
             }
           }
-        } else {
-          const exp = grds;
-          return exp.reduce(book);
         }
       }
     }
