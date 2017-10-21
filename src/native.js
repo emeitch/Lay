@@ -8,7 +8,7 @@ export default class Native {
 
   apply(book, ...args) {
     const rargs = args.map(a => a.reduce(book));
-    if ((this.f.length == 0 || this.f.length == rargs.length)
+    if ((this.f.length === 0 || this.f.length === rargs.length)
     && rargs.every(rarg => rarg.constructor === Val)) {
       const oargs = rargs.map(a => a.origin);
       const orig = this.f.apply(undefined, oargs);

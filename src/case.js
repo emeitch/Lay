@@ -6,7 +6,7 @@ import Native, { native } from './native';
 class CaseAlt {
   constructor(...args) {
     const pats = args.slice(0, -1);
-    this.pats = pats.map(p => typeof(p) == "string" ? sym(p) : p);
+    this.pats = pats.map(p => typeof(p) === "string" ? sym(p) : p);
     this.grds = args[args.length-1];
 
     if (this.grds instanceof Function) {
@@ -58,7 +58,7 @@ export function alt(...args) {
 class CaseGrd {
   constructor(cond, exp) {
     this.cond = cond;
-    this.exp = typeof(exp) == "string" ? sym(exp) : exp;
+    this.exp = typeof(exp) === "string" ? sym(exp) : exp;
   }
 
   replace(book, sym, val) {
