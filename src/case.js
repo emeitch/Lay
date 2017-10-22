@@ -1,7 +1,6 @@
 import { sym } from './sym';
 import Val from './val';
-import Thunk from './thunk';
-import Native, { native } from './native';
+import { native } from './native';
 
 class CaseAlt {
   constructor(...args) {
@@ -24,7 +23,8 @@ class CaseAlt {
   _replace(book, sym, val, pats) {
     const i = this.pats.map(p => p.origin).indexOf(sym.origin);
     const grds = this.grds.map(grd => {
-      if (grd instanceof Native || grd instanceof Thunk) {
+      if (grd.apply && !(grd instanceof Case)) {
+        // NativeやThunkを部分適用させる
         if (i >= 0) {
           const args = [];
           args[i] = val;
@@ -120,7 +120,8 @@ export default class Case extends Val {
 
         const grds = kase.alts[0].grds;
         for (const grd of grds) {
-          if (grd instanceof Native || grd instanceof Thunk) {
+          if (grd.apply && !(grd instanceof Case)) {
+            // NativeやThunkを部分適用させる
             return grd.apply(book, ...args);
           } else {
             if (!grd.cond || grd.cond.reduce(book).origin) {
