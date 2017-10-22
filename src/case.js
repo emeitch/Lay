@@ -120,13 +120,8 @@ export default class Case extends Val {
 
         const grds = kase.alts[0].grds;
         for (const grd of grds) {
-          if (grd.apply && !(grd instanceof Case)) {
-            // NativeやThunkを部分適用させる
-            return grd.apply(book, ...args);
-          } else {
-            if (!grd.cond || grd.cond.reduce(book).origin) {
-              return grd.reduce(book);
-            }
+          if (!grd.cond || grd.cond.reduce(book).origin) {
+            return grd.reduce ? grd.reduce(book) : grd;
           }
         }
       }
