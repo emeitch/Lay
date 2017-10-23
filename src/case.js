@@ -21,22 +21,20 @@ class CaseAlt {
   }
 
   _replace(book, sym, val, pats) {
+    const args = [];
     const i = this.pats.map(p => p.origin).indexOf(sym.origin);
+    if (i !== -1) {
+      args[i] = val;
+    }
     const grds = this.grds.map(grd => {
-      if (grd.apply && !(grd instanceof Case)) {
-        // NativeやThunkを部分適用させる
-        if (i >= 0) {
-          const args = [];
-          args[i] = val;
-          return grd.apply(book, ...args);
-        }
-        return grd;
+      if (grd.apply && !grd.replace) {
+        return grd.apply(book, ...args);
       } else {
         return grd.replace(book, sym, val);
       }
     });
-    const args = pats.concat([grds]);
-    return new this.constructor(...args);
+
+    return new this.constructor(...pats.concat([grds]));
   }
 
   replaceWithPats(book, sym, val) {

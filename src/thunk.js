@@ -5,6 +5,10 @@ export default class Thunk {
   }
 
   apply(book, ...args) {
+    if (args.length === 0) {
+      return this;
+    }
+
     this.args.forEach((arg, i) => {
       args.splice(i, 0, arg);
     });
