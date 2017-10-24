@@ -21,14 +21,15 @@ class CaseAlt {
   }
 
   _replace(book, sym, val, pats) {
-    const args = [];
-    const i = this.pats.map(p => p.origin).indexOf(sym.origin);
-    if (i !== -1) {
-      args[i] = val;
-    }
     const grds = this.grds.map(grd => {
       if (grd instanceof Native) {
-        return grd.apply(book, ...args);
+        const i = this.pats.map(p => p.origin).indexOf(sym.origin);
+        if (i === -1) {
+          return grd;
+        }
+        const args = [];
+        args[i] = val;
+        return grd.partialApply(book, ...args);
       } else {
         return grd.replace(book, sym, val);
       }
