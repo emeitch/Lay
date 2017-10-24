@@ -6,7 +6,7 @@ import UUID from '../src/uuid';
 import Path from '../src/path';
 import { exp } from '../src/exp';
 import Book from '../src/book';
-import Thunk from '../src/thunk';
+import Native from '../src/native';
 
 describe("Exp", () => {
   describe("#reduce", () => {
@@ -22,7 +22,7 @@ describe("Exp", () => {
       it("should keep the expression", () => {
         const path = new Path(new UUID(), new UUID());
         const e = exp(plus, path, v(2));
-        assert(e.reduce() instanceof Thunk);
+        assert(e.reduce() instanceof Native);
       });
     });
 

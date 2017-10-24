@@ -1,12 +1,20 @@
 import Val, { v } from './val';
-import { thunk } from './thunk';
 
 export default class Native {
-  constructor(f) {
+  constructor(f, ...args) {
     this.f = f;
+    this.args = args; // partial applicated args
   }
 
   apply(book, ...args) {
+    if (args.length === 0) {
+      return this;
+    }
+
+    this.args.forEach((arg, i) => {
+      args.splice(i, 0, arg);
+    });
+
     const rargs = args.map(a => a.reduce(book));
     if ((this.f.length === 0 || this.f.length === rargs.length)
     && rargs.every(rarg => rarg.constructor === Val)) {
@@ -14,7 +22,7 @@ export default class Native {
       const orig = this.f.apply(undefined, oargs);
       return v(orig);
     } else {
-      return thunk(this, ...args);
+      return new this.constructor(this.f, ...args);
     }
   }
 }
