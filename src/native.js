@@ -1,8 +1,8 @@
 import Val, { v } from './val';
 
-export default class Native {
+export default class Native extends Val {
   constructor(f, ...args) {
-    this.f = f;
+    super(f);
     this.args = args; // partial applicated args
   }
 
@@ -16,13 +16,13 @@ export default class Native {
     });
 
     const rargs = args.map(a => a.reduce(book));
-    if ((this.f.length === 0 || this.f.length === rargs.length)
+    if ((this.origin.length === 0 || this.origin.length === rargs.length)
     && rargs.every(rarg => rarg.constructor === Val)) {
       const oargs = rargs.map(a => a.origin);
-      const orig = this.f.apply(undefined, oargs);
+      const orig = this.origin.apply(undefined, oargs);
       return v(orig);
     } else {
-      return new this.constructor(this.f, ...args);
+      return new this.constructor(this.origin, ...args);
     }
   }
 }

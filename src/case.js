@@ -1,6 +1,6 @@
 import { sym } from './sym';
 import Val from './val';
-import { native } from './native';
+import Native, { native } from './native';
 
 class CaseAlt {
   constructor(...args) {
@@ -27,7 +27,7 @@ class CaseAlt {
       args[i] = val;
     }
     const grds = this.grds.map(grd => {
-      if (grd.apply && !grd.replace) {
+      if (grd instanceof Native) {
         return grd.apply(book, ...args);
       } else {
         return grd.replace(book, sym, val);
@@ -118,7 +118,7 @@ export default class Case extends Val {
 
         for (const grd of kase.alts[0].grds) {
           if (!grd.cond || grd.cond.reduce(book).origin) {
-            return grd.reduce ? grd.reduce(book) : grd;
+            return grd.reduce(book);
           }
         }
       }
