@@ -116,8 +116,7 @@ export default class Case extends Val {
           return kase;
         }
 
-        const grds = kase.alts[0].grds;
-        for (const grd of grds) {
+        for (const grd of kase.alts[0].grds) {
           if (!grd.cond || grd.cond.reduce(book).origin) {
             return grd.reduce ? grd.reduce(book) : grd;
           }
