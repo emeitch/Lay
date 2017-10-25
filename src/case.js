@@ -24,12 +24,7 @@ class CaseAlt {
     const grds = this.grds.map(grd => {
       if (grd instanceof Native) {
         const i = this.pats.map(p => p.origin).indexOf(sym.origin);
-        if (i === -1) {
-          return grd;
-        }
-        const args = [];
-        args[i] = val;
-        return grd.partialApply(book, ...args);
+        return grd.bind(i, val);
       } else {
         return grd.replace(book, sym, val);
       }

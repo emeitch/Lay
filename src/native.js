@@ -1,16 +1,22 @@
 import Val, { v } from './val';
 
 export default class Native extends Val {
-  constructor(f, ...args) {
+  constructor(f, args=[]) {
     super(f);
-    this.args = args; // partial applicated args
+    this.args = args; // bound args
   }
 
-  partialApply(book, ...args) {
+  bind(i, val) {
+    if (i === -1) {
+      return this;
+    }
+
+    const args = [];
+    args[i] = val;
     this.args.forEach((arg, i) => {
       args.splice(i, 0, arg);
     });
-    return new this.constructor(this.origin, ...args);
+    return new this.constructor(this.origin, args);
   }
 
   reduce(book) {
