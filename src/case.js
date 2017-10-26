@@ -6,18 +6,22 @@ class CaseAlt {
   constructor(...args) {
     const pats = args.slice(0, -1);
     this.pats = pats.map(p => typeof(p) === "string" ? sym(p) : p);
-    this.grds = args[args.length-1];
+    this.grds = this.parseGuards(args[args.length-1]);
+  }
 
-    if (this.grds instanceof Function) {
-      if(this.grds.length > 0 && this.pats.length != this.grds.length) {
+  parseGuards(grds) {
+    if (grds instanceof Function) {
+      if(grds.length > 0 && grds.length != this.pats.length) {
         throw "arity mismatched for native function";
       }
-      this.grds = native(this.grds);
+      grds = native(grds);
     }
 
-    if (!Array.isArray(this.grds)) {
-      this.grds = [this.grds];
+    if (!Array.isArray(grds)) {
+      grds = [grds];
     }
+
+    return grds;
   }
 
   _replace(book, sym, val, pats) {
