@@ -105,12 +105,11 @@ export default class Case extends Val {
     for (const alt of this.alts) {
       const matches = args.map((v, i) => v.match(alt.pats[i]));
       if (matches.every(v => v !== undefined)) {
-        let kase = new this.constructor(alt);
-        for (const match of matches) {
-          for (const key of Object.keys(match)) {
-            kase = kase.replaceWithPats(book, sym(key), match[key]);
-          }
-        }
+        const kase = matches.reduce(
+          (cs, match) => Object.keys(match).reduce(
+            (c, key) => c.replaceWithPats(book, sym(key), match[key]),
+            cs),
+          new this.constructor(alt));
 
         if (args.length < alt.pats.length) {
           return kase;
