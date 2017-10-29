@@ -10,11 +10,28 @@ import Native from '../src/native';
 
 describe("Exp", () => {
   describe("#seq", () => {
+    context("simple", () => {
+      it("should evalutate one step the expression", () => {
+        const e = exp(plus, v(1), v(2));
+        const book = new Book();
+
+        const e2 = e.seq(book);
+        assert(e2 instanceof Native);
+
+        const e3 = e2.seq(book);
+        assert.deepStrictEqual(e3, v(3));
+      });
+    });
+
     context("nested", () => {
       it("should evalutate one step the expression", () => {
         const e = exp(plus, v(1), exp(plus, v(2), v(3)));
-        const book = new Book();
-        assert(e.seq(book) instanceof Native);
+
+        const e2 = e.seq();
+        assert(e2 instanceof Native);
+
+        const e3 = e2.seq();
+        assert.deepStrictEqual(e3, v(6));
       });
     });
   });
