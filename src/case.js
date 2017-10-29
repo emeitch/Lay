@@ -11,14 +11,14 @@ class CaseAlt {
 
   parseGuards(grds) {
     if (grds instanceof Function) {
-      if(grds.length > 0 && grds.length != this.pats.length) {
+      if (grds.length > 0 && grds.length != this.pats.length) {
         throw "arity mismatched for native function";
       }
       grds = native(grds);
     }
 
     if (!Array.isArray(grds)) {
-      grds = [grds];
+      grds = [grd(new Val(true), grds)];
     }
 
     return grds;
@@ -26,12 +26,7 @@ class CaseAlt {
 
   _replace(book, sym, val, pats) {
     const grds = this.grds.map(grd => {
-      if (grd instanceof Native) {
-        const i = this.pats.map(p => p.origin).indexOf(sym.origin);
-        return grd.bind(i, val);
-      } else {
-        return grd.replace(book, sym, val);
-      }
+      return grd.replace(book, sym, val, this.pats);
     });
 
     return new this.constructor(...pats.concat([grds]));
@@ -56,13 +51,21 @@ export function alt(...args) {
 class CaseGrd {
   constructor(cond, exp) {
     this.cond = cond;
-    this.exp = typeof(exp) === "string" ? sym(exp) : exp;
+    if (typeof(exp) === "string") {
+      this.exp = sym(exp);
+    } else {
+      this.exp = exp;
+    }
   }
 
-  replace(book, sym, val) {
+  replace(book, sym, val, pats) {
+    const exp = this.exp instanceof Native ?
+      this.exp.bind(pats.map(p => p.origin).indexOf(sym.origin), val) :
+      this.exp.replace(book, sym, val);
+
     return new this.constructor(
       this.cond.replace(book, sym, val),
-      this.exp.replace(book, sym, val)
+      exp
     );
   }
 }
@@ -107,8 +110,8 @@ export default class Case extends Val {
         }
 
         for (const grd of kase.alts[0].grds) {
-          if (!grd.cond || grd.cond.reduce(book).origin) {
-            return grd.exp ? grd.exp : grd;
+          if (grd.cond.reduce(book).origin) {
+            return grd.exp;
           }
         }
       }
