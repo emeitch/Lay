@@ -56,7 +56,7 @@ describe("Exp", () => {
     context("nested", () => {
       it("should reduce the nested expression", () => {
         const e = exp(plus, v(1), exp(plus, v(2), v(3)));
-        assert.deepStrictEqual(e.reduce().reduce(), v(6));
+        assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
   });
