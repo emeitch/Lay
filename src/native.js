@@ -19,7 +19,7 @@ export default class Native extends Val {
     return new this.constructor(this.origin, args);
   }
 
-  reduce(book) {
+  seq(book) {
     const rargs = this.args.map(a => a.reduce(book));
     const arity = this.origin.length;
     if ((arity === 0 || arity === rargs.length)

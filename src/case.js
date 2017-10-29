@@ -65,21 +65,12 @@ class CaseGrd {
       this.exp.replace(book, sym, val)
     );
   }
-
-  reduce(book) {
-    return this.exp.reduce(book);
-  }
 }
 export function grd(cond, exp) {
   return new CaseGrd(cond, exp);
 }
 
-class CaseGrdOtherwise extends Val {
-  reduce(_) {
-    return new Val(true);
-  }
-}
-export const otherwise = new CaseGrdOtherwise();
+export const otherwise = new Val(true);
 
 export default class Case extends Val {
   static func(...args) {
@@ -117,7 +108,7 @@ export default class Case extends Val {
 
         for (const grd of kase.alts[0].grds) {
           if (!grd.cond || grd.cond.reduce(book).origin) {
-            return grd.reduce(book);
+            return grd.exp ? grd.exp : grd;
           }
         }
       }

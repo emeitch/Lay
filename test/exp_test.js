@@ -9,6 +9,16 @@ import Book from '../src/book';
 import Native from '../src/native';
 
 describe("Exp", () => {
+  describe("#seq", () => {
+    context("nested", () => {
+      it("should evalutate one step the expression", () => {
+        const e = exp(plus, v(1), exp(plus, v(2), v(3)));
+        const book = new Book();
+        assert(e.seq(book) instanceof Native);
+      });
+    });
+  });
+
   describe("#reduce", () => {
     context("val args", () => {
       it("should reduce the expression", () => {
@@ -29,7 +39,7 @@ describe("Exp", () => {
     context("nested", () => {
       it("should reduce the nested expression", () => {
         const e = exp(plus, v(1), exp(plus, v(2), v(3)));
-        assert.deepStrictEqual(e.reduce(), v(6));
+        assert.deepStrictEqual(e.reduce().reduce(), v(6));
       });
     });
   });

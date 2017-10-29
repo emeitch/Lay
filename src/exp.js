@@ -16,10 +16,20 @@ export default class Exp extends Val {
     return new this.constructor(...terms);
   }
 
-  reduce(book=new Book()) {
+  seq(book) {
     const [op, ...args] = this.terms;
     const func = op.reduce(book);
     return func.apply(book, ...args);
+  }
+
+  reduce(book=new Book()) {
+    let prev = this;
+    let e = this.seq(book);
+    while(!e.equals(prev)) {
+      prev = e;
+      e = e.seq(book);
+    }
+    return e;
   }
 }
 

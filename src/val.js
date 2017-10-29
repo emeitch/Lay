@@ -11,8 +11,12 @@ export default class Val {
     return this;
   }
 
-  reduce(_book) {
+  seq(_book) {
     return this;
+  }
+
+  reduce(book) {
+    return this.seq(book);
   }
 
   collate(val) {
