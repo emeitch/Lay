@@ -25,8 +25,9 @@ class CaseAlt {
   }
 
   _replace(book, sym, val, pats) {
+    const index = this.pats.map(p => p.origin).indexOf(sym.origin);
     const grds = this.grds.map(grd => {
-      return grd.replace(book, sym, val, this.pats);
+      return grd.replace(book, sym, val, index);
     });
 
     return new this.constructor(...pats.concat([grds]));
@@ -58,9 +59,9 @@ class CaseGrd {
     }
   }
 
-  replace(book, sym, val, pats) {
+  replace(book, sym, val, index) {
     const exp = this.exp instanceof Native ?
-      this.exp.bind(pats.map(p => p.origin).indexOf(sym.origin), val) :
+      this.exp.bind(index, val) :
       this.exp.replace(book, sym, val);
 
     return new this.constructor(
