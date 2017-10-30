@@ -4,8 +4,9 @@ import { v } from '../src/val';
 import { plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';
-import { exp } from '../src/exp';
+import Exp, { exp } from '../src/exp';
 import Book from '../src/book';
+import { sym } from '../src/sym';
 import Native from '../src/native';
 
 describe("Exp", () => {
@@ -32,6 +33,25 @@ describe("Exp", () => {
 
         const e3 = e2.seq();
         assert.deepStrictEqual(e3, v(6));
+      });
+    });
+
+    context("multiple hopped operator", () => {
+      it("should evalutate one step the expression", () => {
+        const book = new Book();
+        book.assign("plus0", plus);
+        book.assign("plus1", sym("plus0"));
+
+        const e = exp("plus1", v(1), v(2));
+
+        const e2 = e.seq(book);
+        assert(e2 instanceof Exp);
+
+        const e3 = e2.seq(book);
+        assert(e3 instanceof Native);
+
+        const e4 = e3.seq(book);
+        assert.deepStrictEqual(e4, v(3));
       });
     });
   });
