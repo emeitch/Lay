@@ -16,9 +16,9 @@ export default class Exp extends Val {
     return new this.constructor(...terms);
   }
 
-  seq(book) {
+  step(book) {
     const [op, ...args] = this.terms;
-    const func = op.seq(book);
+    const func = op.step(book);
     if (func.apply) {
       return func.apply(book, ...args);
     } else {
@@ -28,10 +28,10 @@ export default class Exp extends Val {
 
   reduce(book=new Book()) {
     let prev = this;
-    let e = this.seq(book);
+    let e = this.step(book);
     while(!e.equals(prev)) {
       prev = e;
-      e = e.seq(book);
+      e = e.step(book);
     }
     return e;
   }

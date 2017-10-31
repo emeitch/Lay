@@ -10,16 +10,16 @@ import { sym } from '../src/sym';
 import Native from '../src/native';
 
 describe("Exp", () => {
-  describe("#seq", () => {
+  describe("#step", () => {
     context("simple", () => {
       it("should evalutate one step the expression", () => {
         const e = exp(plus, v(1), v(2));
         const book = new Book();
 
-        const e2 = e.seq(book);
+        const e2 = e.step(book);
         assert(e2 instanceof Native);
 
-        const e3 = e2.seq(book);
+        const e3 = e2.step(book);
         assert.deepStrictEqual(e3, v(3));
       });
     });
@@ -28,10 +28,10 @@ describe("Exp", () => {
       it("should evalutate one step the expression", () => {
         const e = exp(plus, v(1), exp(plus, v(2), v(3)));
 
-        const e2 = e.seq();
+        const e2 = e.step();
         assert(e2 instanceof Native);
 
-        const e3 = e2.seq();
+        const e3 = e2.step();
         assert.deepStrictEqual(e3, v(6));
       });
     });
@@ -44,13 +44,13 @@ describe("Exp", () => {
 
         const e = exp("plus1", v(1), v(2));
 
-        const e2 = e.seq(book);
+        const e2 = e.step(book);
         assert(e2 instanceof Exp);
 
-        const e3 = e2.seq(book);
+        const e3 = e2.step(book);
         assert(e3 instanceof Native);
 
-        const e4 = e3.seq(book);
+        const e4 = e3.step(book);
         assert.deepStrictEqual(e4, v(3));
       });
     });

@@ -12,7 +12,7 @@ export default class Sym extends Val {
     return this.equals(sym) ? val : this;
   }
 
-  seq(book) {
+  step(book) {
     return book.resolve(this.origin);
   }
 }
