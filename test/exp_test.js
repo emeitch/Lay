@@ -48,10 +48,13 @@ describe("Exp", () => {
         assert(e2 instanceof Exp);
 
         const e3 = e2.step(book);
-        assert(e3 instanceof Native);
+        assert(e3 instanceof Exp);
 
         const e4 = e3.step(book);
-        assert.deepStrictEqual(e4, v(3));
+        assert(e4 instanceof Native);
+
+        const e5 = e4.step(book);
+        assert.deepStrictEqual(e5, v(3));
       });
     });
   });

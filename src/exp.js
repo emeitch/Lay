@@ -19,11 +19,11 @@ export default class Exp extends Val {
   step(book) {
     const [op, ...args] = this.terms;
     const func = op.step(book);
-    if (func.apply) {
-      return func.apply(book, ...args);
-    } else {
+    if (func != op || !func.apply) {
       return new this.constructor(func, ...args);
     }
+
+    return func.apply(book, ...args);
   }
 
   reduce(book=new Book()) {
