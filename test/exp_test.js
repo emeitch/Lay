@@ -4,7 +4,7 @@ import { v } from '../src/val';
 import { plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';
-import Exp, { exp } from '../src/exp';
+import { exp } from '../src/exp';
 import Book from '../src/book';
 import { sym } from '../src/sym';
 import Native from '../src/native';
@@ -45,10 +45,10 @@ describe("Exp", () => {
         const e = exp("plus1", v(1), v(2));
 
         const e2 = e.step(book);
-        assert(e2 instanceof Exp);
+        assert.deepStrictEqual(e2, exp("plus0", v(1), v(2)));
 
         const e3 = e2.step(book);
-        assert(e3 instanceof Exp);
+        assert.deepStrictEqual(e3, exp(plus, v(1), v(2)));
 
         const e4 = e3.step(book);
         assert(e4 instanceof Native);
