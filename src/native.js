@@ -6,19 +6,7 @@ export default class Native extends Val {
     this.args = args; // bound args
   }
 
-  bind(i, val) {
-    if (i === -1) {
-      return this;
-    }
-
-    const args = [];
-    args[i] = val;
-    this.args.forEach((arg, i) => {
-      args.splice(i, 0, arg);
-    });
-    return new this.constructor(this.origin, args);
-  }
-
+  // todo5: このステップ部分は無くすか、applyなど別表現にできるはず
   step(book) {
     const rargs = this.args.map(a => a.reduce(book));
     const arity = this.origin.length;

@@ -54,6 +54,8 @@ describe("Func", () => {
 
         const reduced = e.reduce();
         assert(reduced instanceof Func);
+        assert.deepStrictEqual(reduced.alts[0].pats.length, 1);
+        assert.deepStrictEqual(reduced.alts[0].grds[0].exp.terms[0], plus.alts[0].grds[0].exp);
 
         const e2 = exp(reduced, v(3));
         assert.deepStrictEqual(e2.reduce(), v(5));

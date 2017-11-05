@@ -1,6 +1,8 @@
 import Val from './val';
 import Book from './book';
 import { sym } from './sym';
+import Native, { native } from './native';
+import { func } from './func';
 
 export default class Exp extends Val {
   constructor(...terms) {
@@ -18,12 +20,30 @@ export default class Exp extends Val {
 
   step(book) {
     const [op, ...args] = this.terms;
-    const func = op.step(book);
-    if (func != op || !func.apply) {
-      return new this.constructor(func, ...args);
+
+    if (op instanceof Native) {
+      const rest = op.origin.length - args.length;
+      if (rest <= 0) {
+        // todo1: ここでnativeにargsを渡さなくても良いようにする
+        const ntv = native(op.origin, args);
+        return ntv.step(book);
+      } else {
+        let pats = [];
+        for (var i = 0; i < rest; i++) {
+          const vname = "__" + "arg_" + i + "__";
+          pats.push(vname);
+        }
+        const e = exp(op, ...args.concat(pats));
+        return func(...pats.concat([e]));
+      }
     }
 
-    return func.apply(book, ...args);
+    const f = op.step(book);
+    if (f != op || !f.apply) {
+      return new this.constructor(f, ...args);
+    }
+
+    return f.apply(book, ...args);
   }
 
   reduce(book=new Book()) {

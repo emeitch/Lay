@@ -17,7 +17,9 @@ describe("Exp", () => {
         const book = new Book();
 
         const e2 = e.step(book);
-        assert(e2 instanceof Native);
+        // todo2: nativeの取り出し方法やassert方法がダサいのをどうにかする
+        const ntv = plus.alts[0].grds[0].exp;
+        assert.deepStrictEqual(e2, exp(ntv, v(1), v(2)));
 
         const e3 = e2.step(book);
         assert.deepStrictEqual(e3, v(3));
@@ -29,7 +31,10 @@ describe("Exp", () => {
         const e = exp(plus, v(1), exp(plus, v(2), v(3)));
 
         const e2 = e.step();
-        assert(e2 instanceof Native);
+        const ntv = plus.alts[0].grds[0].exp;
+        assert.deepStrictEqual(e2, exp(ntv, v(1), exp(plus, v(2), v(3))));
+
+        // todo3: もっとstepを踏めるようにするべきでは?
 
         const e3 = e2.step();
         assert.deepStrictEqual(e3, v(6));
@@ -51,7 +56,8 @@ describe("Exp", () => {
         assert.deepStrictEqual(e3, exp(plus, v(1), v(2)));
 
         const e4 = e3.step(book);
-        assert(e4 instanceof Native);
+        const ntv = plus.alts[0].grds[0].exp;
+        assert.deepStrictEqual(e4, exp(ntv, v(1), v(2)));
 
         const e5 = e4.step(book);
         assert.deepStrictEqual(e5, v(3));
@@ -72,6 +78,9 @@ describe("Exp", () => {
       it("should keep the expression", () => {
         const path = new Path(new UUID(), new UUID());
         const e = exp(plus, path, v(2));
+        // todo4: ここでNativeが返るのもおかしい。
+        // 引数があっているからNativeが返ってきている。
+        // 式をキープすべきでは?
         assert(e.reduce() instanceof Native);
       });
     });

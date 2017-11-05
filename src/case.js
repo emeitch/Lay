@@ -1,5 +1,6 @@
 import { sym } from './sym';
 import Val from './val';
+import { exp } from './exp';
 import Native, { native } from './native';
 
 class CaseAlt {
@@ -59,9 +60,9 @@ class CaseGrd {
     }
   }
 
-  replace(book, sym, val, index) {
+  replace(book, sym, val, _index) {
     const exp = this.exp instanceof Native ?
-      this.exp.bind(index, val) :
+      this.exp :
       this.exp.replace(book, sym, val);
 
     return new this.constructor(
@@ -107,11 +108,19 @@ export default class Case extends Val {
           new this.constructor(alt));
 
         if (args.length < alt.pats.length) {
+          const e = kase.alts[0].grds[0].exp;
+          if (e instanceof Native) {
+            return exp(e, ...args);
+          }
+
           return kase;
         }
 
         for (const grd of kase.alts[0].grds) {
           if (grd.cond.reduce(book).origin) {
+            if (grd.exp instanceof Native) {
+              return exp(grd.exp, ...args);
+            }
             return grd.exp;
           }
         }
