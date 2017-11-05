@@ -69,6 +69,17 @@ describe("Func", () => {
       });
     });
 
+    context("variadic function", () => {
+      it("should reduce the expression", () => {
+        const e = exp(
+          func("arg1", "arg2", (...args) => args[0] + args[1]),
+          v(2),
+          v(3)
+        );
+        assert.deepStrictEqual(e.reduce(), v(5));
+      });
+    });
+
     context("recursive function", () => {
       it("should reduce the expression", () => {
         const book = new Book();
