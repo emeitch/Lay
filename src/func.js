@@ -1,9 +1,7 @@
-import Case from './case';
+import Func, { kfunc } from './case';
 
-export default class Func extends Case {}
-
-export function func(...args) {
-  return Func.func(...args);
-}
+// defined by case for anti cyclic referencing
+export default Func;
+export const func = kfunc;
 
 export const plus = func("x", "y", (x, y) => x + y);

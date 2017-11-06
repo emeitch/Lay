@@ -1,7 +1,32 @@
+import Val, { v } from './val';
 import { sym } from './sym';
-import Val from './val';
 import { exp } from './exp';
-import Native, { native } from './native';
+
+export class Native extends Val {
+  apply(book, ...args) {
+    const rest = this.origin.length - args.length;
+    if (rest > 0) {
+      let pats = [];
+      for (var i = 0; i < rest; i++) {
+        const vname = "__" + "arg_" + i + "__";
+        pats.push(vname);
+      }
+      const e = exp(this, ...args.concat(pats));
+      return kfunc(...pats.concat([e]));
+    }
+
+    const rargs = args.map(a => a.reduce(book));
+    if (rargs.some(rarg => rarg.constructor !== Val)) {
+      // todo4: とりあえず適当な値を返す
+      // return exp(this, ...rargs);
+      return v(0);
+    }
+
+    const oargs = rargs.map(a => a.origin);
+    const orig = this.origin.apply(undefined, oargs);
+    return v(orig);
+  }
+}
 
 class CaseAlt {
   constructor(...args) {
@@ -15,7 +40,7 @@ class CaseAlt {
       if (grds.length > 0 && grds.length != this.pats.length) {
         throw "arity mismatched for native function";
       }
-      grds = native(grds);
+      grds = new Native(grds);
     }
 
     if (!Array.isArray(grds)) {
@@ -135,6 +160,8 @@ export function kase(...args) {
     return new Case(...args);
 }
 
+export class Func extends Case {}
+
 export function kfunc(...args) {
-  return Case.func(...args);
+  return Func.func(...args);
 }

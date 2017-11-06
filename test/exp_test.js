@@ -7,7 +7,6 @@ import Path from '../src/path';
 import { exp } from '../src/exp';
 import Book from '../src/book';
 import { sym } from '../src/sym';
-import Native from '../src/native';
 
 describe("Exp", () => {
   describe("#step", () => {
@@ -78,10 +77,8 @@ describe("Exp", () => {
       it("should keep the expression", () => {
         const path = new Path(new UUID(), new UUID());
         const e = exp(plus, path, v(2));
-        // todo4: ここでNativeが返るのもおかしい。
-        // 引数があっているからNativeが返ってきている。
-        // 式をキープすべきでは?
-        assert(e.reduce() instanceof Native);
+        // todo4: 適当な値が返ってきているので是正
+        assert.deepStrictEqual(e.reduce(), v(0));
       });
     });
 
