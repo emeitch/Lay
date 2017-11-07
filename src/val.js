@@ -1,10 +1,12 @@
+import _ from 'underscore';
+
 export default class Val {
   constructor(origin) {
     this.origin = origin;
   }
 
   equals(other) {
-    return this.constructor === other.constructor && this.origin === other.origin;
+    return _.isEqual(this, other);
   }
 
   replace(_book, _sym, _val) {

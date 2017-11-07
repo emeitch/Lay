@@ -77,8 +77,9 @@ describe("Exp", () => {
       it("should keep the expression", () => {
         const path = new Path(new UUID(), new UUID());
         const e = exp(plus, path, v(2));
-        // todo4: 適当な値が返ってきているので是正
-        assert.deepStrictEqual(e.reduce(), v(0));
+        // todo2: nativeの取り出し方法やassert方法がダサいのをどうにかする
+        const ntv = plus.alts[0].grds[0].exp;
+        assert.deepStrictEqual(e.reduce(), exp(ntv, path, v(2)));
       });
     });
 

@@ -17,9 +17,7 @@ export class Native extends Val {
 
     const rargs = args.map(a => a.reduce(book));
     if (rargs.some(rarg => rarg.constructor !== Val)) {
-      // todo4: とりあえず適当な値を返す
-      // return exp(this, ...rargs);
-      return v(0);
+      return exp(this, ...rargs);
     }
 
     const oargs = rargs.map(a => a.origin);

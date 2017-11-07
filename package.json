@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "bidirectional-map": "^1.0.3",
-    "jssha": "^2.3.0"
+    "jssha": "^2.3.0",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel": "^6.23.0",
