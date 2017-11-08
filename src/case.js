@@ -155,7 +155,7 @@ export default class Case extends Val {
 }
 
 export function kase(...args) {
-    return new Case(...args);
+  return new Case(...args);
 }
 
 export class Func extends Case {
