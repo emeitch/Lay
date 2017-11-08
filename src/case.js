@@ -12,7 +12,7 @@ export class Native extends Val {
         pats.push(vname);
       }
       const e = exp(this, ...args.concat(pats));
-      return kfunc(...pats.concat([e]));
+      return Func.func(...pats.concat([e]));
     }
 
     const rargs = args.map(a => a.reduce(book));
@@ -162,8 +162,4 @@ export class Func extends Case {
   get exp() {
     return this.alts[0].grds[0].exp;
   }
-}
-
-export function kfunc(...args) {
-  return Func.func(...args);
 }
