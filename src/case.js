@@ -158,7 +158,11 @@ export function kase(...args) {
     return new Case(...args);
 }
 
-export class Func extends Case {}
+export class Func extends Case {
+  get exp() {
+    return this.alts[0].grds[0].exp;
+  }
+}
 
 export function kfunc(...args) {
   return Func.func(...args);

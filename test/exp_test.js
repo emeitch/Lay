@@ -16,9 +16,8 @@ describe("Exp", () => {
         const book = new Book();
 
         const e2 = e.step(book);
-        // todo2: nativeの取り出し方法やassert方法がダサいのをどうにかする
-        const ntv = plus.alts[0].grds[0].exp;
-        assert.deepStrictEqual(e2, exp(ntv, v(1), v(2)));
+        const native = plus.exp;
+        assert.deepStrictEqual(e2, exp(native, v(1), v(2)));
 
         const e3 = e2.step(book);
         assert.deepStrictEqual(e3, v(3));
@@ -30,8 +29,8 @@ describe("Exp", () => {
         const e = exp(plus, v(1), exp(plus, v(2), v(3)));
 
         const e2 = e.step();
-        const ntv = plus.alts[0].grds[0].exp;
-        assert.deepStrictEqual(e2, exp(ntv, v(1), exp(plus, v(2), v(3))));
+        const native = plus.exp;
+        assert.deepStrictEqual(e2, exp(native, v(1), exp(plus, v(2), v(3))));
 
         // todo3: もっとstepを踏めるようにするべきでは?
 
@@ -55,8 +54,8 @@ describe("Exp", () => {
         assert.deepStrictEqual(e3, exp(plus, v(1), v(2)));
 
         const e4 = e3.step(book);
-        const ntv = plus.alts[0].grds[0].exp;
-        assert.deepStrictEqual(e4, exp(ntv, v(1), v(2)));
+        const native = plus.exp;
+        assert.deepStrictEqual(e4, exp(native, v(1), v(2)));
 
         const e5 = e4.step(book);
         assert.deepStrictEqual(e5, v(3));
@@ -77,9 +76,8 @@ describe("Exp", () => {
       it("should keep the expression", () => {
         const path = new Path(new UUID(), new UUID());
         const e = exp(plus, path, v(2));
-        // todo2: nativeの取り出し方法やassert方法がダサいのをどうにかする
-        const ntv = plus.alts[0].grds[0].exp;
-        assert.deepStrictEqual(e.reduce(), exp(ntv, path, v(2)));
+        const native = plus.exp;
+        assert.deepStrictEqual(e.reduce(), exp(native, path, v(2)));
       });
     });
 
