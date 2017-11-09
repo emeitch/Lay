@@ -7,7 +7,7 @@ export class Native extends Val {
     const rest = this.origin.length - args.length;
     if (rest > 0) {
       let pats = [];
-      for (var i = 0; i < rest; i++) {
+      for (let i = 0; i < rest; i++) {
         const vname = "__" + "arg_" + i + "__";
         pats.push(vname);
       }
@@ -15,12 +15,20 @@ export class Native extends Val {
       return Func.func(...pats.concat([e]));
     }
 
-    const rargs = args.map(a => a.reduce(book));
-    if (rargs.some(rarg => rarg.constructor !== Val)) {
-      return exp(this, ...rargs);
+    for (let i = 0; i < args.length; i++) {
+      const a = args[i];
+      const na = a.step(book);
+      if (!na.equals(a)) {
+        args[i] = na;
+        return exp(this, ...args);
+      }
     }
 
-    const oargs = rargs.map(a => a.origin);
+    if (args.some(arg => arg.constructor !== Val)) {
+      return exp(this, ...args);
+    }
+
+    const oargs = args.map(a => a.origin);
     const orig = this.origin.apply(undefined, oargs);
     return v(orig);
   }

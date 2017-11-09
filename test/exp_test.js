@@ -32,10 +32,14 @@ describe("Exp", () => {
         const native = plus.exp;
         assert.deepStrictEqual(e2, exp(native, v(1), exp(plus, v(2), v(3))));
 
-        // todo3: もっとstepを踏めるようにするべきでは?
-
         const e3 = e2.step();
-        assert.deepStrictEqual(e3, v(6));
+        assert.deepStrictEqual(e3, exp(native, v(1), exp(native, v(2), v(3))));
+
+        const e4 = e3.step();
+        assert.deepStrictEqual(e4, exp(native, v(1), v(5)));
+
+        const e5 = e4.step();
+        assert.deepStrictEqual(e5, v(6));
       });
     });
 
