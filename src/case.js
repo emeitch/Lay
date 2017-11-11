@@ -92,9 +92,7 @@ class CaseGrd {
   }
 
   replace(book, sym, val, _index) {
-    const exp = this.exp instanceof Native ?
-      this.exp :
-      this.exp.replace(book, sym, val);
+    const exp = this.exp.replace(book, sym, val);
 
     return new this.constructor(
       this.cond.replace(book, sym, val),
