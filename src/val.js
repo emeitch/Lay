@@ -9,7 +9,7 @@ export default class Val {
     return _.isEqual(this, other);
   }
 
-  replace(_book, _sym, _val) {
+  replace(_book, _matches) {
     return this;
   }
 

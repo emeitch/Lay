@@ -8,8 +8,15 @@ export default class Sym extends Val {
     };
   }
 
-  replace(book, sym, val) {
-    return this.equals(sym) ? val : this;
+  replace(book, matches) {
+    for (const match of matches) {
+      for (const key of Object.keys(match)) {
+        if (this.equals(sym(key))) {
+          return match[key];
+        }
+      }
+    }
+    return this;
   }
 
   step(book) {

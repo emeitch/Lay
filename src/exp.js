@@ -11,8 +11,8 @@ export default class Exp extends Val {
     return this.origin;
   }
 
-  replace(book, sym, val) {
-    const terms = this.terms.map(t => t.replace(book, sym, val));
+  replace(book, matches) {
+    const terms = this.terms.map(t => t.replace(book, matches));
     return new this.constructor(...terms);
   }
 

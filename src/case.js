@@ -3,11 +3,13 @@ import { sym } from './sym';
 import { exp } from './exp';
 
 export class Native extends Val {
-  apply(book, ...args) {
+  apply(book, ...bargs) {
+    const args = bargs.concat();
     const rest = this.origin.length - args.length;
     if (rest > 0) {
       let pats = [];
       for (let i = 0; i < rest; i++) {
+        // todo: もっと適切なシンボルにしたい
         const vname = "__" + "arg_" + i + "__";
         pats.push(vname);
       }
@@ -18,6 +20,7 @@ export class Native extends Val {
     for (let i = 0; i < args.length; i++) {
       const a = args[i];
       const na = a.step(book);
+
       if (!na.equals(a)) {
         args[i] = na;
         return exp(this, ...args);
@@ -56,25 +59,38 @@ class CaseAlt {
     return grds;
   }
 
-  _replace(book, sym, val, pats) {
-    const index = this.pats.map(p => p.origin).indexOf(sym.origin);
+  _replace(book, matches, pats) {
     const grds = this.grds.map(grd => {
-      return grd.replace(book, sym, val, index);
+      return grd.replace(book, matches);
     });
 
     return new this.constructor(...pats.concat([grds]));
   }
 
-  replaceWithPats(book, sym, val) {
-    const pats = this.pats.filter(pat => !sym.equals(pat));
-    return this._replace(book, sym, val, pats);
+  replaceWithPats(book, matches) {
+    const pats = [];
+    for (const match of matches) {
+      for (const key of Object.keys(match)) {
+        for (const pat of this.pats) {
+          if (key !== "it" && !sym(key).equals(pat)) {
+            pats.push(pat);
+          }
+        }
+      }
+    }
+
+    return this._replace(book, matches, pats);
   }
 
-  replace(book, sym, val) {
-    if (this.pats.some(pat => sym.equals(pat))) {
-      return this;
+  replace(book, matches) {
+    for (const match of matches) {
+      for (const key of Object.keys(match)) {
+        if (this.pats.some(pat => sym(key).equals(pat))) {
+          return this;
+        }
+      }
     }
-    return this._replace(book, sym, val, this.pats);
+    return this._replace(book, matches, this.pats);
   }
 }
 export function alt(...args) {
@@ -91,11 +107,11 @@ class CaseGrd {
     }
   }
 
-  replace(book, sym, val, _index) {
-    const exp = this.exp.replace(book, sym, val);
+  replace(book, matches) {
+    const exp = this.exp.replace(book, matches);
 
     return new this.constructor(
-      this.cond.replace(book, sym, val),
+      this.cond.replace(book, matches),
       exp
     );
   }
@@ -116,25 +132,17 @@ export default class Case extends Val {
     this.alts = alts;
   }
 
-  replaceWithPats(book, sym, val) {
-    const alts = this.alts.map(alt => alt.replaceWithPats(book, sym, val));
-    return new this.constructor(...alts);
-  }
-
-  replace(book, sym, val) {
-    const alts = this.alts.map(alt => alt.replace(book, sym, val));
+  replace(book, matches) {
+    const alts = this.alts.map(alt => alt.replace(book, matches));
     return new this.constructor(...alts);
   }
 
   apply(book, ...args) {
     for (const alt of this.alts) {
-      const matches = args.map((v, i) => v.match(alt.pats[i]));
-      if (matches.every(v => v !== undefined)) {
-        const kase = matches.reduce(
-          (cs, match) => Object.keys(match).reduce(
-            (c, key) => c.replaceWithPats(book, sym(key), match[key]),
-            cs),
-          new this.constructor(alt));
+      const matches = args.map((arg, i) => arg.match(alt.pats[i]));
+      if (matches.every(match => match !== undefined)) {
+        const kalt = alt.replaceWithPats(book, matches);
+        const kase = new this.constructor(kalt);
 
         if (args.length < alt.pats.length) {
           const e = kase.alts[0].grds[0].exp;
