@@ -1,10 +1,11 @@
 import Val, { v } from './val';
-import { sym } from './sym';
+import Sym, { sym } from './sym';
 import { exp } from './exp';
 
 export class Native extends Val {
   apply(book, ...bargs) {
     const args = bargs.concat();
+
     const rest = this.origin.length - args.length;
     if (rest > 0) {
       let pats = [];
@@ -15,6 +16,12 @@ export class Native extends Val {
       }
       const e = exp(this, ...args.concat(pats));
       return Func.func(...pats.concat([e]));
+    }
+
+    const syms = args.filter(arg => arg instanceof Sym);
+    if (syms.length > 0) {
+      const e = exp(this, ...args);
+      return Func.func(...syms.concat([e]));
     }
 
     for (let i = 0; i < args.length; i++) {
@@ -143,15 +150,6 @@ export default class Case extends Val {
       if (matches.every(match => match !== undefined)) {
         const kalt = alt.replaceWithPats(book, matches);
         const kase = new this.constructor(kalt);
-
-        if (args.length < alt.pats.length) {
-          const e = kase.alts[0].grds[0].exp;
-          if (e instanceof Native) {
-            return exp(e, ...args);
-          }
-
-          return kase;
-        }
 
         for (const grd of kase.alts[0].grds) {
           if (grd.cond.reduce(book).origin) {
