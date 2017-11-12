@@ -3,9 +3,7 @@ import Sym, { sym } from './sym';
 import { exp } from './exp';
 
 export class Native extends Val {
-  apply(book, ...bargs) {
-    const args = bargs.concat();
-
+  apply(book, ...args) {
     const rest = this.origin.length - args.length;
     if (rest > 0) {
       let pats = [];
@@ -29,8 +27,9 @@ export class Native extends Val {
       const na = a.step(book);
 
       if (!na.equals(a)) {
-        args[i] = na;
-        return exp(this, ...args);
+        const nargs = args.concat();
+        nargs[i] = na;
+        return exp(this, ...nargs);
       }
     }
 
