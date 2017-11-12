@@ -41,6 +41,19 @@ export class Native extends Val {
     const orig = this.origin.apply(undefined, oargs);
     return v(orig);
   }
+
+  replaceAsTop(book, matches) {
+    const args = [];
+    for (const match of matches) {
+      for (const key of Object.keys(match)) {
+        if (key === "it") {
+          args.push(match["it"]);
+        }
+      }
+    }
+
+    return exp(this, ...args);
+  }
 }
 
 class CaseAlt {
@@ -65,15 +78,7 @@ class CaseAlt {
     return grds;
   }
 
-  _replace(book, matches, pats) {
-    const grds = this.grds.map(grd => {
-      return grd.replace(book, matches);
-    });
-
-    return new this.constructor(...pats.concat([grds]));
-  }
-
-  replaceWithPats(book, matches) {
+  replaceAsTop(book, matches) {
     const pats = [];
     for (const match of matches) {
       for (const key of Object.keys(match)) {
@@ -85,7 +90,11 @@ class CaseAlt {
       }
     }
 
-    return this._replace(book, matches, pats);
+    const grds = this.grds.map(grd => {
+      return grd.replaceAsTop(book, matches);
+    });
+
+    return new this.constructor(...pats.concat([grds]));
   }
 
   replace(book, matches) {
@@ -96,7 +105,12 @@ class CaseAlt {
         }
       }
     }
-    return this._replace(book, matches, this.pats);
+
+    const grds = this.grds.map(grd => {
+      return grd.replace(book, matches);
+    });
+
+    return new this.constructor(...this.pats.concat([grds]));
   }
 }
 export function alt(...args) {
@@ -113,9 +127,16 @@ class CaseGrd {
     }
   }
 
+  replaceAsTop(book, matches) {
+    const exp = this.exp.replaceAsTop ? this.exp.replaceAsTop(book, matches) : this.exp.replace(book, matches);
+    return new this.constructor(
+      this.cond.replace(book, matches),
+      exp
+    );
+  }
+
   replace(book, matches) {
     const exp = this.exp.replace(book, matches);
-
     return new this.constructor(
       this.cond.replace(book, matches),
       exp
@@ -147,12 +168,9 @@ export default class Case extends Val {
     for (const alt of this.alts) {
       const matches = args.map((arg, i) => arg.match(alt.pats[i]));
       if (matches.every(match => match !== undefined)) {
-        const nalt = alt.replaceWithPats(book, matches);
+        const nalt = alt.replaceAsTop(book, matches);
         for (const grd of nalt.grds) {
           if (grd.cond.reduce(book).origin) {
-            if (grd.exp instanceof Native) {
-              return exp(grd.exp, ...args);
-            }
             return grd.exp;
           }
         }
