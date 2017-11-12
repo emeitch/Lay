@@ -147,10 +147,8 @@ export default class Case extends Val {
     for (const alt of this.alts) {
       const matches = args.map((arg, i) => arg.match(alt.pats[i]));
       if (matches.every(match => match !== undefined)) {
-        const kalt = alt.replaceWithPats(book, matches);
-        const kase = new this.constructor(kalt);
-
-        for (const grd of kase.alts[0].grds) {
+        const nalt = alt.replaceWithPats(book, matches);
+        for (const grd of nalt.grds) {
           if (grd.cond.reduce(book).origin) {
             if (grd.exp instanceof Native) {
               return exp(grd.exp, ...args);
