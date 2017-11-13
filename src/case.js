@@ -42,7 +42,7 @@ export class Native extends Val {
     return v(orig);
   }
 
-  replaceAsTop(book, matches) {
+  replaceAsTop(matches) {
     const args = [];
     for (const match of matches) {
       for (const key of Object.keys(match)) {
@@ -78,7 +78,7 @@ class CaseAlt {
     return grds;
   }
 
-  replaceAsTop(book, matches) {
+  replaceAsTop(matches) {
     const pats = [];
     for (const match of matches) {
       for (const key of Object.keys(match)) {
@@ -91,13 +91,13 @@ class CaseAlt {
     }
 
     const grds = this.grds.map(grd => {
-      return grd.replaceAsTop(book, matches);
+      return grd.replaceAsTop(matches);
     });
 
     return new this.constructor(...pats.concat([grds]));
   }
 
-  replace(book, matches) {
+  replace(matches) {
     for (const match of matches) {
       for (const key of Object.keys(match)) {
         if (this.pats.some(pat => sym(key).equals(pat))) {
@@ -107,7 +107,7 @@ class CaseAlt {
     }
 
     const grds = this.grds.map(grd => {
-      return grd.replace(book, matches);
+      return grd.replace(matches);
     });
 
     return new this.constructor(...this.pats.concat([grds]));
@@ -127,18 +127,18 @@ class CaseGrd {
     }
   }
 
-  replaceAsTop(book, matches) {
-    const exp = this.exp.replaceAsTop ? this.exp.replaceAsTop(book, matches) : this.exp.replace(book, matches);
+  replaceAsTop(matches) {
+    const exp = this.exp.replaceAsTop ? this.exp.replaceAsTop(matches) : this.exp.replace(matches);
     return new this.constructor(
-      this.cond.replace(book, matches),
+      this.cond.replace(matches),
       exp
     );
   }
 
-  replace(book, matches) {
-    const exp = this.exp.replace(book, matches);
+  replace(matches) {
+    const exp = this.exp.replace(matches);
     return new this.constructor(
-      this.cond.replace(book, matches),
+      this.cond.replace(matches),
       exp
     );
   }
@@ -159,8 +159,8 @@ export default class Case extends Val {
     this.alts = alts;
   }
 
-  replace(book, matches) {
-    const alts = this.alts.map(alt => alt.replace(book, matches));
+  replace(matches) {
+    const alts = this.alts.map(alt => alt.replace(matches));
     return new this.constructor(...alts);
   }
 
@@ -168,7 +168,7 @@ export default class Case extends Val {
     for (const alt of this.alts) {
       const matches = args.map((arg, i) => arg.match(alt.pats[i]));
       if (matches.every(match => match !== undefined)) {
-        const nalt = alt.replaceAsTop(book, matches);
+        const nalt = alt.replaceAsTop(matches);
         for (const grd of nalt.grds) {
           if (grd.cond.reduce(book).origin) {
             return grd.exp;

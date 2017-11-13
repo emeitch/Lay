@@ -8,7 +8,7 @@ export default class Sym extends Val {
     };
   }
 
-  replace(book, matches) {
+  replace(matches) {
     for (const match of matches) {
       for (const key of Object.keys(match)) {
         if (this.equals(sym(key))) {
