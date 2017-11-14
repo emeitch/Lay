@@ -130,7 +130,7 @@ class CaseGrd {
   replaceAsTop(matches) {
     const exp = this.exp.replaceAsTop(matches);
     return new this.constructor(
-      this.cond.replace(matches),
+      this.cond.replaceAsTop(matches),
       exp
     );
   }
