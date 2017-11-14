@@ -13,6 +13,10 @@ export default class Val {
     return this;
   }
 
+  replaceAsTop(matches) {
+    return this.replace(matches);
+  }
+
   step(_book) {
     return this;
   }
