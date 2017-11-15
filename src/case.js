@@ -90,10 +90,7 @@ class CaseAlt {
       }
     }
 
-    const grds = this.grds.map(grd => {
-      return grd.replaceAsTop(matches);
-    });
-
+    const grds = this.grds.map(grd => grd.replaceAsTop(matches));
     return new this.constructor(...pats.concat([grds]));
   }
 
@@ -106,10 +103,7 @@ class CaseAlt {
       }
     }
 
-    const grds = this.grds.map(grd => {
-      return grd.replace(matches);
-    });
-
+    const grds = this.grds.map(grd => grd.replace(matches));
     return new this.constructor(...this.pats.concat([grds]));
   }
 }
