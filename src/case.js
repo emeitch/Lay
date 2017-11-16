@@ -79,30 +79,24 @@ class CaseAlt {
   }
 
   replaceAsTop(matches) {
-    const pats = [];
-    for (const match of matches) {
-      for (const key of Object.keys(match)) {
-        for (const pat of this.pats) {
-          if (key !== "it" && !sym(key).equals(pat)) {
-            pats.push(pat);
-          }
-        }
-      }
-    }
-
+    const pats = matches.reduce((prv, m) =>
+      prv.concat(
+        this.pats.filter(p =>
+          Object.keys(m).some(k =>
+            k !== "it" && !sym(k).equals(p)
+        )
+      )), []);
     const grds = this.grds.map(grd => grd.replaceAsTop(matches));
     return new this.constructor(...pats.concat([grds]));
   }
 
   replace(matches) {
-    for (const match of matches) {
-      for (const key of Object.keys(match)) {
-        if (this.pats.some(pat => sym(key).equals(pat))) {
-          return this;
-        }
-      }
-    }
-
+    if (matches.some(m =>
+          this.pats.some(p =>
+            Object.keys(m).some(k =>
+              sym(k).equals(p))))) {
+                return this;
+              }
     const grds = this.grds.map(grd => grd.replace(matches));
     return new this.constructor(...this.pats.concat([grds]));
   }
