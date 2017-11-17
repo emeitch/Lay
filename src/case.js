@@ -43,15 +43,9 @@ export class Native extends Val {
   }
 
   replaceAsTop(matches) {
-    const args = [];
-    for (const match of matches) {
-      for (const key of Object.keys(match)) {
-        if (key === "it") {
-          args.push(match["it"]);
-        }
-      }
-    }
-
+    const args = matches.reduce((prv, match) =>
+      prv.concat(Object.keys(match).filter(k =>
+        k === "it").map(k => match[k])), []);
     return exp(this, ...args);
   }
 }
