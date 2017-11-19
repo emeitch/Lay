@@ -43,5 +43,12 @@ describe("Val", () => {
         assert(!new Inherited(0).match(val));
       });
     });
+
+    describe("#equals", () => {
+      it("should return equality for other vals", () => {
+        assert(v(0).equals(v(0)));
+        assert(!v(0).equals(v(1)));
+      });
+    });
   });
 });
