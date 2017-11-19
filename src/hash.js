@@ -3,19 +3,14 @@ import jsSHA from 'jssha';
 import ID from './id';
 
 export default class Hash extends ID {
-  constructor(...args) {
-    const shaObj = new jsSHA("SHA3-512", "TEXT");
-    for (const arg of args) {
-      shaObj.update(
-        arg.constructor.name +
-        "$$" +
-        JSON.stringify(arg.origin)
-      );
-    }
-    super(shaObj.getHash("HEX"));
+  constructor(object) {
+    const shaObj = new jsSHA("SHA-1", "TEXT");
+    shaObj.update(JSON.stringify(object));
+    const hash = shaObj.getHash("HEX");
+    super(hash);
   }
 
   prefix() {
-    return "urn:sha3-512:";
+    return "urn:sha1:";
   }
 }
