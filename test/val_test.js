@@ -49,6 +49,11 @@ describe("Val", () => {
         assert(v(0).equals(v(0)));
         assert(!v(0).equals(v(1)));
       });
+
+      context("with js object", () => {
+        assert(v({a: 1, b: 2}).equals(v({a: 1, b: 2})));
+        assert(!v({a: 1, b: 2}).equals(v({a: 2, b: 1})));
+      });
     });
   });
 });
