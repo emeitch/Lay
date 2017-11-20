@@ -132,6 +132,10 @@ describe("Obj", () => {
       it("should return the val", () => {
         assert.deepStrictEqual(obj.get(key), val);
       });
+
+      it("should return the val as a obj", () => {
+        assert.deepStrictEqual(obj.get(key), book.obj(val));
+      });
     });
   });
 });

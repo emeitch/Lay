@@ -1,4 +1,5 @@
 import { v } from './val';
+import ID from './id';
 import UUID from './uuid';
 import Log from './log';
 import Obj from './obj';
@@ -79,7 +80,11 @@ export default class Book {
   }
 
   obj(id) {
-    return new Obj(this, id);
+    if (id instanceof ID) {
+      return new Obj(this, id);
+    } else {
+      return id;
+    }
   }
 
   transactionObj(log) {
