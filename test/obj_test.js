@@ -125,7 +125,7 @@ describe("Obj", () => {
     context("with a map val", () => {
       let val;
       beforeEach(() => {
-        val = v({a: 1, b: 2});
+        val = v({a: 1, b: {c: 2, d: 3}});
         book.put(new Log(id, key, val));
       });
 
@@ -140,6 +140,11 @@ describe("Obj", () => {
       it("should return the property", () => {
         const map = obj.get(key);
         assert.deepStrictEqual(map.get("a"), v(1));
+      });
+
+      it("should return the nested property", () => {
+        const map = obj.get(key).get("b");
+        assert.deepStrictEqual(map.get("d"), v(3));
       });
     });
   });
