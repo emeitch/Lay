@@ -39,6 +39,10 @@ export default class Val {
   toJSON() {
     return JSON.stringify(this.origin);
   }
+
+  get(key) {
+    return v(this.origin[key]);
+  }
 }
 
 export function v(origin) {

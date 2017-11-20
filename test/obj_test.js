@@ -136,6 +136,11 @@ describe("Obj", () => {
       it("should return the val as a obj", () => {
         assert.deepStrictEqual(obj.get(key), book.obj(val));
       });
+
+      it("should return the property", () => {
+        const map = obj.get(key);
+        assert.deepStrictEqual(map.get("a"), v(1));
+      });
     });
   });
 });
