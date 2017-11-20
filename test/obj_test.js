@@ -121,5 +121,17 @@ describe("Obj", () => {
         assert.deepStrictEqual(obj.get(key), val2);
       });
     });
+
+    context("with a map val", () => {
+      let val;
+      beforeEach(() => {
+        val = v({a: 1, b: 2});
+        book.put(new Log(id, key, val));
+      });
+
+      it("should return the val", () => {
+        assert.deepStrictEqual(obj.get(key), val);
+      });
+    });
   });
 });
