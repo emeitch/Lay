@@ -1,5 +1,6 @@
 import assert from 'assert';
 
+import Hash from '../src/hash';
 import Val, { v } from '../src/val';
 
 describe("Val", () => {
@@ -53,6 +54,13 @@ describe("Val", () => {
       context("with js object", () => {
         assert(v({a: 1, b: 2}).equals(v({a: 1, b: 2})));
         assert(!v({a: 1, b: 2}).equals(v({a: 2, b: 1})));
+      });
+    });
+
+    describe("#id", () => {
+      it("should return a hash", () => {
+        assert(v(1).id, new Hash(1));
+        assert(v({a: 1, b: 2}).id, new Hash({a: 1, b: 2}));
       });
     });
   });
