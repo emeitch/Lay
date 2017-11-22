@@ -15,6 +15,10 @@ export default class Val {
     return new hashConstructor(this.origin);
   }
 
+  get(key) {
+    return v(this.origin[key]);
+  }
+
   equals(other) {
     return _.isEqual(this, other);
   }
@@ -48,10 +52,6 @@ export default class Val {
 
   toJSON() {
     return JSON.stringify(this.origin);
-  }
-
-  get(key) {
-    return v(this.origin[key]);
   }
 }
 
