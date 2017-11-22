@@ -1,5 +1,6 @@
 import jsSHA from 'jssha';
 
+import Val from './val';
 import ID from './id';
 
 export default class Hash extends ID {
@@ -14,3 +15,6 @@ export default class Hash extends ID {
     return "urn:sha1:";
   }
 }
+
+// dependency injection anti cyclic import
+Val.setHash(Hash);

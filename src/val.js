@@ -1,14 +1,18 @@
 import _ from 'underscore';
 
-import Hash from './hash';
+let hashConstructor=undefined;
 
 export default class Val {
   constructor(origin) {
     this.origin = origin;
   }
 
+  static setHash(hash) {
+    hashConstructor = hash;
+  }
+
   get id() {
-    return new Hash(this.origin);
+    return new hashConstructor(this.origin);
   }
 
   equals(other) {
