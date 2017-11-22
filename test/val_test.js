@@ -52,8 +52,10 @@ describe("Val", () => {
       });
 
       context("with js object", () => {
-        assert(v({a: 1, b: 2}).equals(v({a: 1, b: 2})));
-        assert(!v({a: 1, b: 2}).equals(v({a: 2, b: 1})));
+        it("should return equality for other js object vals", () => {
+          assert(v({a: 1, b: 2}).equals(v({a: 1, b: 2})));
+          assert(!v({a: 1, b: 2}).equals(v({a: 2, b: 1})));
+        });
       });
     });
 
