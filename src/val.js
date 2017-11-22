@@ -1,8 +1,18 @@
 import _ from 'underscore';
 
+let hashConstructor=undefined;
+
 export default class Val {
   constructor(origin) {
     this.origin = origin;
+  }
+
+  static setHash(hash) {
+    hashConstructor = hash;
+  }
+
+  get id() {
+    return new hashConstructor(this.origin);
   }
 
   equals(other) {
