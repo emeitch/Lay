@@ -57,6 +57,13 @@ describe("Val", () => {
           assert(!v({a: 1, b: 2}).equals(v({a: 2, b: 1})));
         });
       });
+
+      context("with js array", () => {
+        it("should return equality for other js object vals", () => {
+          assert(v([1, 2]).equals(v([1, 2])));
+          assert(!v([1, 2]).equals(v([1, 2, 3])));
+        });
+      });
     });
 
     describe("#id", () => {
