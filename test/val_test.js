@@ -68,7 +68,7 @@ describe("Val", () => {
 
     describe("#id", () => {
       it("should return a hash", () => {
-        assert(v({a: 1, b: 2}).id, new Hash({a: 1, b: 2}));
+        assert(v({a: 1, b: 2}).id.equals(new Hash({a: 1, b: 2})));
       });
     });
   });
