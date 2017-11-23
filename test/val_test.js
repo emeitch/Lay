@@ -89,5 +89,13 @@ describe("Val", () => {
         assert(v(true).id.equals(v(true)));
       });
     });
+
+    describe("#reducible", () => {
+      it("should return false", () => {
+        assert.deepStrictEqual(v(1).reducible, false);
+        assert.deepStrictEqual(v("foo").reducible, false);
+        assert.deepStrictEqual(v(true).reducible, false);
+      });
+    });
   });
 });
