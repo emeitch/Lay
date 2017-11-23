@@ -64,7 +64,9 @@ export class Prim extends Val {
 
 export function v(origin) {
   const type = typeof(origin);
-  if (type === "number" || type === "string" || type === "boolean") {
+  if (type === "number" ||
+      type === "string" ||
+      type === "boolean") {
     return new Prim(origin);
   }
 
