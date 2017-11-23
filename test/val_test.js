@@ -81,5 +81,13 @@ describe("Val", () => {
         assert(v(true).constructor === Prim);
       });
     });
+
+    describe("#id", () => {
+      it("should return oneself", () => {
+        assert(v(1).id.equals(v(1)));
+        assert(v("foo").id.equals(v("foo")));
+        assert(v(true).id.equals(v(true)));
+      });
+    });
   });
 });
