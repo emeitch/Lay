@@ -1,13 +1,13 @@
 import assert from 'assert';
 
 import Hash from '../src/hash';
-import Val, { v } from '../src/val';
+import Val, { v, Prim } from '../src/val';
 
 describe("Val", () => {
   context("number origin", () => {
     let val;
     beforeEach(() => {
-      val = new Val(0);
+      val = v(0);
     });
 
     describe("v function", () => {
@@ -68,8 +68,17 @@ describe("Val", () => {
 
     describe("#id", () => {
       it("should return a hash", () => {
-        assert(v(1).id, new Hash(1));
         assert(v({a: 1, b: 2}).id, new Hash({a: 1, b: 2}));
+      });
+    });
+  });
+
+  context("primitive value", () => {
+    describe("#constructor", () => {
+      it("should return Prim", () => {
+        assert(v(1).constructor === Prim);
+        assert(v("foo").constructor === Prim);
+        assert(v(true).constructor === Prim);
       });
     });
   });

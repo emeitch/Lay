@@ -33,7 +33,7 @@ export class Native extends Val {
       }
     }
 
-    if (args.some(arg => arg.constructor !== Val)) {
+    if (args.some(arg => arg.reducible)) {
       return exp(this, ...args);
     }
 
@@ -66,7 +66,7 @@ class CaseAlt {
     }
 
     if (!Array.isArray(grds)) {
-      grds = [grd(new Val(true), grds)];
+      grds = [grd(v(true), grds)];
     }
 
     return grds;
@@ -129,7 +129,7 @@ export function grd(cond, exp) {
   return new CaseGrd(cond, exp);
 }
 
-export const otherwise = new Val(true);
+export const otherwise = v(true);
 
 export default class Case extends Val {
   static func(...args) {

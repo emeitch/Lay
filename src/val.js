@@ -23,6 +23,10 @@ export default class Val {
     return _.isEqual(this, other);
   }
 
+  get reducible() {
+    return true;
+  }
+
   replace(_matches) {
     return this;
   }
@@ -40,10 +44,7 @@ export default class Val {
   }
 
   collate(val) {
-    return (
-      this.constructor === val.constructor
-      && this.origin === val.origin
-    ) ? {it: val} : undefined;
+    return this.equals(val) ? {it: val} : undefined;
   }
 
   match(pattern) {
@@ -55,6 +56,17 @@ export default class Val {
   }
 }
 
+export class Prim extends Val {
+  get reducible() {
+    return false;
+  }
+}
+
 export function v(origin) {
+  const type = typeof(origin);
+  if (type === "number" || type === "string" || type === "boolean") {
+    return new Prim(origin);
+  }
+
   return new Val(origin);
 }
