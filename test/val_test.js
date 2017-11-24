@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import Hash from '../src/hash';
-import Val, { v, Prim } from '../src/val';
+import Val, { v, Prim, Comp } from '../src/val';
 
 describe("Val", () => {
   context("number origin", () => {
@@ -96,6 +96,28 @@ describe("Val", () => {
         assert.deepStrictEqual(v("foo").reducible, false);
         assert.deepStrictEqual(v(true).reducible, false);
       });
+    });
+  });
+
+  context("complex value", () => {
+    describe("#constructor", () => {
+      it("should return Comp", () => {
+        assert(v({a: 1, b: 2}).constructor === Comp);
+        assert(v([1, 2, 3]).constructor === Comp);
+      });
+    });
+
+    describe("#reducible", () => {
+      it("should return false", () => {
+        assert.deepStrictEqual(v({a: 1, b: 2}).reducible, false);
+        assert.deepStrictEqual(v([1, 2, 3]).reducible, false);
+      });
+    });
+  });
+
+  context("error value", () => {
+    it("should throw error", () => {
+      assert.throws(() => v(undefined), /not supported origin:/);
     });
   });
 });

@@ -60,7 +60,13 @@ export class Prim extends Val {
   get id() {
     return this;
   }
-  
+
+  get reducible() {
+    return false;
+  }
+}
+
+export class Comp extends Val {
   get reducible() {
     return false;
   }
@@ -68,11 +74,19 @@ export class Prim extends Val {
 
 export function v(origin) {
   const type = typeof(origin);
+
   if (type === "number" ||
       type === "string" ||
       type === "boolean") {
     return new Prim(origin);
   }
 
-  return new Val(origin);
+  if (Array.isArray(origin) ||
+      (type === "object" &&
+       (origin.constructor === Object ||
+        origin.constructor === Date))) { // todo:DateはJSではなくLay側の型・クラスに変更したい
+    return new Comp(origin);
+  }
+
+  throw `not supported origin: ${origin}`;
 }
