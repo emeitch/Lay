@@ -1,9 +1,6 @@
 import assert from 'assert';
 
-import Hash from '../src/hash';
 import Val from '../src/val';
-import Prim from '../src/prim';
-import Comp from '../src/comp';
 import v from '../src/v';
 
 describe("Val", () => {
@@ -66,62 +63,6 @@ describe("Val", () => {
           assert(v([1, 2]).equals(v([1, 2])));
           assert(!v([1, 2]).equals(v([1, 2, 3])));
         });
-      });
-    });
-  });
-
-  context("primitive value", () => {
-    describe("#constructor", () => {
-      it("should return Prim", () => {
-        assert(v(1).constructor === Prim);
-        assert(v("foo").constructor === Prim);
-        assert(v(true).constructor === Prim);
-      });
-    });
-
-    describe("#id", () => {
-      it("should return oneself", () => {
-        assert(v(1).id.equals(v(1)));
-        assert(v("foo").id.equals(v("foo")));
-        assert(v(true).id.equals(v(true)));
-      });
-    });
-
-    describe("#reducible", () => {
-      it("should return false", () => {
-        assert.deepStrictEqual(v(1).reducible, false);
-        assert.deepStrictEqual(v("foo").reducible, false);
-        assert.deepStrictEqual(v(true).reducible, false);
-      });
-    });
-  });
-
-  context("complex value", () => {
-    describe("#constructor", () => {
-      it("should return Comp", () => {
-        assert(v({a: 1, b: 2}).constructor === Comp);
-        assert(v([1, 2, 3]).constructor === Comp);
-      });
-    });
-
-    describe("#hash", () => {
-      it("should return a hash val", () => {
-        assert(v({a: 1, b: 2}).hash.equals(new Hash({a: 1, b: 2})));
-        assert(v([1, 2, 3]).hash.equals(new Hash([1, 2, 3])));
-      });
-    });
-
-    describe("#id", () => {
-      it("should return a hash", () => {
-        assert(v({a: 1, b: 2}).id.equals(new Hash({a: 1, b: 2})));
-        assert(v([1, 2, 3]).id.equals(new Hash([1, 2, 3])));
-      });
-    });
-
-    describe("#reducible", () => {
-      it("should return false", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2}).reducible, false);
-        assert.deepStrictEqual(v([1, 2, 3]).reducible, false);
       });
     });
   });
