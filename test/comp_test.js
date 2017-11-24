@@ -15,15 +15,15 @@ describe("Comp", () => {
 
     describe("#hash", () => {
       it("should return a hash val", () => {
-        assert(v({a: 1, b: 2}).hash.equals(new Hash({a: 1, b: 2})));
-        assert(v([1, 2, 3]).hash.equals(new Hash([1, 2, 3])));
+        assert.deepStrictEqual(v({a: 1, b: 2}).hash, new Hash({a: 1, b: 2}));
+        assert.deepStrictEqual(v([1, 2, 3]).hash, new Hash([1, 2, 3]));
       });
     });
 
     describe("#id", () => {
       it("should return a hash", () => {
-        assert(v({a: 1, b: 2}).id.equals(new Hash({a: 1, b: 2})));
-        assert(v([1, 2, 3]).id.equals(new Hash([1, 2, 3])));
+        assert.deepStrictEqual(v({a: 1, b: 2}).id, new Hash({a: 1, b: 2}));
+        assert.deepStrictEqual(v([1, 2, 3]).id, new Hash([1, 2, 3]));
       });
     });
 

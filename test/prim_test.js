@@ -15,9 +15,9 @@ describe("Prim", () => {
 
     describe("#id", () => {
       it("should return oneself", () => {
-        assert(v(1).id.equals(v(1)));
-        assert(v("foo").id.equals(v("foo")));
-        assert(v(true).id.equals(v(true)));
+        assert.deepStrictEqual(v(1).id, v(1));
+        assert.deepStrictEqual(v("foo").id, v("foo"));
+        assert.deepStrictEqual(v(true).id, v(true));
       });
     });
 
