@@ -17,12 +17,6 @@ describe("Path", () => {
     p = new Path(id1, id2, id3);
   });
 
-  describe("#id", () => {
-    it("should return oneself", () => {
-      assert.deepStrictEqual(p.id, p);
-    });
-  });
-
   describe("#receiver", () => {
     it("should return the first id", () => {
       assert.deepStrictEqual(p.receiver, id1);
