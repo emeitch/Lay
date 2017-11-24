@@ -50,20 +50,6 @@ describe("Val", () => {
         assert(v(0).equals(v(0)));
         assert(!v(0).equals(v(1)));
       });
-
-      context("with js object", () => {
-        it("should return equality for other js object vals", () => {
-          assert(v({a: 1, b: 2}).equals(v({a: 1, b: 2})));
-          assert(!v({a: 1, b: 2}).equals(v({a: 2, b: 1})));
-        });
-      });
-
-      context("with js array", () => {
-        it("should return equality for other js object vals", () => {
-          assert(v([1, 2]).equals(v([1, 2])));
-          assert(!v([1, 2]).equals(v([1, 2, 3])));
-        });
-      });
     });
   });
 
