@@ -1,26 +1,8 @@
 import _ from 'underscore';
 
-let hashConstructor=undefined;
-
 export default class Val {
   constructor(origin) {
     this.origin = origin;
-  }
-
-  static setHash(hash) {
-    hashConstructor = hash;
-  }
-
-  get hash() {
-    return new hashConstructor(this.origin);
-  }
-
-  get id() {
-    return this.hash;
-  }
-
-  get(key) {
-    return v(this.origin[key]);
   }
 
   equals(other) {
@@ -58,39 +40,4 @@ export default class Val {
   toJSON() {
     return JSON.stringify(this.origin);
   }
-}
-
-export class Prim extends Val {
-  get id() {
-    return this;
-  }
-
-  get reducible() {
-    return false;
-  }
-}
-
-export class Comp extends Val {
-  get reducible() {
-    return false;
-  }
-}
-
-export function v(origin) {
-  const type = typeof(origin);
-
-  if (type === "number" ||
-      type === "string" ||
-      type === "boolean") {
-    return new Prim(origin);
-  }
-
-  if (Array.isArray(origin) ||
-      (type === "object" &&
-       (origin.constructor === Object ||
-        origin.constructor === Date))) { // todo:DateはJSではなくLay側の型・クラスに変更したい
-    return new Comp(origin);
-  }
-
-  throw `not supported origin: ${origin}`;
 }

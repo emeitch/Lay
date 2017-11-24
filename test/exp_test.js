@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { v } from '../src/val';
+import v from '../src/v';
 import { plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';

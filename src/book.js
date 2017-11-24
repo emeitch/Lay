@@ -1,4 +1,4 @@
-import { v } from './val';
+import v from './v';
 import ID from './id';
 import UUID from './uuid';
 import Log from './log';

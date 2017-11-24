@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { v } from '../src/val';
+import v from '../src/v';
 import UUID from '../src/uuid';
 import Log from '../src/log';
 import Book from '../src/book';

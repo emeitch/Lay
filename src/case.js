@@ -1,4 +1,5 @@
-import Val, { v } from './val';
+import Val from './val';
+import v from './v';
 import Sym, { sym } from './sym';
 import { exp } from './exp';
 

@@ -1,7 +1,10 @@
 import assert from 'assert';
 
 import Hash from '../src/hash';
-import Val, { v, Prim, Comp } from '../src/val';
+import Val from '../src/val';
+import Prim from '../src/prim';
+import Comp from '../src/comp';
+import v from '../src/v';
 
 describe("Val", () => {
   context("number origin", () => {

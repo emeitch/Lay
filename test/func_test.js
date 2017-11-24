@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { v } from '../src/val';
+import v from '../src/v';
 import { exp } from '../src/exp';
 import Book from '../src/book';
 import { kase, alt, grd, otherwise } from '../src/case';
