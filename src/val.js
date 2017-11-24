@@ -11,8 +11,12 @@ export default class Val {
     hashConstructor = hash;
   }
 
-  get id() {
+  get hash() {
     return new hashConstructor(this.origin);
+  }
+
+  get id() {
+    return this.hash;
   }
 
   get(key) {
