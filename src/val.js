@@ -5,6 +5,10 @@ export default class Val {
     this.origin = origin;
   }
 
+  get id() {
+    return this;
+  }
+
   equals(other) {
     return _.isEqual(this, other);
   }
