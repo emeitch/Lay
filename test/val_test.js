@@ -10,12 +10,6 @@ describe("Val", () => {
       val = v(0);
     });
 
-    describe("v function", () => {
-      it("should suger for Val constructor", () => {
-        assert.deepStrictEqual(v(0), val);
-      });
-    });
-
     describe("#origin", () => {
       it("should return original value", () => {
         assert.deepStrictEqual(val.origin, 0);
@@ -50,12 +44,6 @@ describe("Val", () => {
         assert(v(0).equals(v(0)));
         assert(!v(0).equals(v(1)));
       });
-    });
-  });
-
-  context("error value", () => {
-    it("should throw error", () => {
-      assert.throws(() => v(undefined), /not supported origin:/);
     });
   });
 });
