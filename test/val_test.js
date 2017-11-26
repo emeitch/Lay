@@ -5,9 +5,10 @@ import v from '../src/v';
 
 describe("Val", () => {
   context("number origin", () => {
+    const Inherited = class extends Val {};
     let val;
     beforeEach(() => {
-      val = v(0);
+      val = new Inherited(0);
     });
 
     describe("#origin", () => {
@@ -16,26 +17,9 @@ describe("Val", () => {
       });
     });
 
-    describe("#reduce", () => {
-      it("should return oneself", () => {
-        assert.deepStrictEqual(val.reduce(), val);
-      });
-    });
-
-    describe("#toJSON", () => {
-      it("should return JSON stringified original value", () => {
-        assert.deepStrictEqual(val.toJSON(), "0");
-      });
-    });
-
-    describe("#match", () => {
-      it("should collate the original value equivalency", () => {
-        assert.deepStrictEqual(v(0).match(val)["it"], v(0));
-        assert(v(1).match(val) === undefined);
-
-        const Inherited = class extends Val {};
-        // same origin but different constructor
-        assert(!new Inherited(0).match(val));
+    describe("#id", () => {
+      it("should return oneslf by default behavior", () => {
+        assert.deepStrictEqual(val.id, val);
       });
     });
 
@@ -43,6 +27,66 @@ describe("Val", () => {
       it("should return equality for other vals", () => {
         assert(v(0).equals(v(0)));
         assert(!v(0).equals(v(1)));
+      });
+    });
+
+    describe("#reducible", () => {
+      it("should return true by default behavior", () => {
+        assert.deepStrictEqual(val.reducible, true);
+      });
+    });
+
+    describe("#step", () => {
+      it("should return oneself by default behavior", () => {
+        assert.deepStrictEqual(val.step(), val);
+      });
+    });
+
+    describe("#reduce", () => {
+      it("should return oneself by default behavior", () => {
+        assert.deepStrictEqual(val.reduce(), val);
+      });
+    });
+
+    describe("#replace", () => {
+      it("should return oneself by default behavior", () => {
+        assert.deepStrictEqual(val.replace(), val);
+      });
+    });
+
+    describe("#replaceAsTop", () => {
+      it("should return oneself by default behavior", () => {
+        assert.deepStrictEqual(val.replaceAsTop(), val);
+      });
+    });
+
+    describe('#collate', () => {
+      it("should return only 'it' collation by default behavior", () => {
+        const v0 = new Inherited(0);
+        assert.deepStrictEqual(val.collate(v0), {it: v0});
+
+        const v1 = new Inherited(1);
+        assert.deepStrictEqual(val.collate(v1), undefined);
+      });
+    });
+
+    describe("#match", () => {
+      it("should collate the original value equivalency", () => {
+        const v0 = new Inherited(0);
+        assert.deepStrictEqual(v0.match(val), {it: v0});
+
+        const v1 = new Inherited(1);
+        assert.deepStrictEqual(v1.match(val), undefined);
+
+        const Inherited2 = class extends Val {};
+        // same origin but different constructor
+        assert(!new Inherited2(0).match(val));
+      });
+    });
+
+    describe("#toJSON", () => {
+      it("should return JSON stringified original value", () => {
+        assert.deepStrictEqual(val.toJSON(), "0");
       });
     });
   });

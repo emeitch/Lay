@@ -17,20 +17,20 @@ export default class Val {
     return true;
   }
 
-  replace(_matches) {
-    return this;
-  }
-
-  replaceAsTop(matches) {
-    return this.replace(matches);
-  }
-
   step(_book) {
     return this;
   }
 
   reduce(book) {
     return this.step(book);
+  }
+
+  replace(_matches) {
+    return this;
+  }
+
+  replaceAsTop(matches) {
+    return this.replace(matches);
   }
 
   collate(val) {
