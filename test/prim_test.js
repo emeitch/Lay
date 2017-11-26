@@ -1,18 +1,9 @@
 import assert from 'assert';
 
-import Prim from '../src/prim';
 import v from '../src/v';
 
 describe("Prim", () => {
   context("primitive value", () => {
-    describe("#constructor", () => {
-      it("should return Prim", () => {
-        assert(v(1).constructor === Prim);
-        assert(v("foo").constructor === Prim);
-        assert(v(true).constructor === Prim);
-      });
-    });
-
     describe("#id", () => {
       it("should return oneself", () => {
         assert.deepStrictEqual(v(1).id, v(1));

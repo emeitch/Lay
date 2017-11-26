@@ -1,18 +1,10 @@
 import assert from 'assert';
 
 import Hash from '../src/hash';
-import Comp from '../src/comp';
 import v from '../src/v';
 
 describe("Comp", () => {
   context("complex value", () => {
-    describe("#constructor", () => {
-      it("should return Comp", () => {
-        assert(v({a: 1, b: 2}).constructor === Comp);
-        assert(v([1, 2, 3]).constructor === Comp);
-      });
-    });
-
     describe("#hash", () => {
       it("should return a hash val", () => {
         assert.deepStrictEqual(v({a: 1, b: 2}).hash, new Hash({a: 1, b: 2}));
