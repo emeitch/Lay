@@ -90,4 +90,10 @@ describe("Val", () => {
       });
     });
   });
+
+  context("direct construction", () => {
+    it("should throw error", () => {
+      assert.throws(() => new Val(0), /Can not create Val instances. 'Val' is abstruct class./);
+    });
+  });
 });

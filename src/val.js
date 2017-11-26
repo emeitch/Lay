@@ -2,6 +2,10 @@ import _ from 'underscore';
 
 export default class Val {
   constructor(origin) {
+    if(this.constructor === Val) {
+      throw "Can not create Val instances. 'Val' is abstruct class.";
+    }
+
     this.origin = origin;
   }
 
