@@ -20,13 +20,13 @@ export default class Path extends Ref {
     return this.origin.join("/");
   }
 
-  reduce(book) {
+  step(book) {
     let v = this.receiver.reduce(book);
     for (const key of this.keys) {
       const k = key.reduce(book);
       const log = book.activeLog(v, k);
       if (!log) {
-        return super.reduce(book);
+        return super.step(book);
       }
       const e = new Book(book);
       e.assign("self", log.id);

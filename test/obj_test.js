@@ -6,7 +6,10 @@ import UUID from '../src/uuid';
 import Path from '../src/path';
 import Log from '../src/log';
 import Book from '../src/book';
+import { exp } from '../src/exp';
+import { plus } from '../src/func';
 import { invalidate } from '../src/ontology';
+
 
 describe("Obj", () => {
   const id = new UUID();
@@ -119,6 +122,21 @@ describe("Obj", () => {
 
       it("should return the val", () => {
         assert.deepStrictEqual(obj.get(key), val2);
+      });
+    });
+
+    context("with a relative reference exp", () => {
+      let val2;
+      beforeEach(() => {
+        val2 = v(1);
+        const key2 = new UUID();
+
+        book.put(new Log(id, key2, val2));
+        book.put(new Log(id, key, exp(plus, new Path(sym("self"), key2), v(2))));
+      });
+
+      it("should return the reduced val", () => {
+        assert.deepStrictEqual(obj.get(key), v(3));
       });
     });
 
