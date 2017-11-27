@@ -7,7 +7,7 @@ import Path from '../src/path';
 import Log from '../src/log';
 import Book from '../src/book';
 import { exp } from '../src/exp';
-import { plus } from '../src/func';
+import { func, plus } from '../src/func';
 import { invalidate } from '../src/ontology';
 
 
@@ -163,6 +163,23 @@ describe("Obj", () => {
       it("should return the nested property", () => {
         const map = obj.get(key).get("b");
         assert.deepStrictEqual(map.get("d"), v(3));
+      });
+    });
+  });
+
+  describe("call", () => {
+    context("with a relative reference func", () => {
+      let val2;
+      beforeEach(() => {
+        val2 = v(1);
+        const key2 = new UUID();
+
+        book.put(new Log(id, key2, val2));
+        book.put(new Log(id, key, func("x", exp(plus, new Path(sym("self"), key2), "x"))));
+      });
+
+      it("should return the reduced val as methods", () => {
+        assert.deepStrictEqual(obj.call(key, v(2)), v(3));
       });
     });
   });

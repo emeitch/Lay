@@ -1,5 +1,6 @@
 import UUID from './uuid';
 import Path from './path';
+import Book from './book';
 
 export default class Obj {
   constructor(book, id) {
@@ -17,5 +18,12 @@ export default class Obj {
     } else {
       return v;
     }
+  }
+
+  call(key, ...args) {
+    const f = this.get(key);
+    const e = new Book(this.book);
+    e.assign("self", this.id);
+    return f.apply(e, ...args).reduce(e);
   }
 }
