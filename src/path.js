@@ -22,7 +22,17 @@ export default class Path extends Ref {
 
   step(book) {
     let v = this.receiver.reduce(book);
-    for (const key of this.keys) {
+    for (const elm of this.keys) {
+      let key;
+      let args = [];
+      if (Array.isArray(elm)) {
+        const [top, ...rest] = elm;
+        key = top;
+        args = rest;
+      } else {
+        key = elm;
+      }
+
       const k = key.reduce(book);
       const log = book.activeLog(v, k);
       if (!log) {
@@ -30,7 +40,12 @@ export default class Path extends Ref {
       }
       const e = new Book(book);
       e.assign("self", log.id);
-      v = log.val.reduce(e);
+
+      if (args.length > 0) {
+        v = log.val.apply(e, ...args).reduce(e);
+      } else {
+        v = log.val.reduce(e);
+      }
     }
     return v;
   }

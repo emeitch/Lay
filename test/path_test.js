@@ -4,6 +4,8 @@ import v from '../src/v';
 import Path from '../src/path';
 import UUID from '../src/uuid';
 import { sym } from '../src/sym';
+import { exp } from '../src/exp';
+import { func, plus } from '../src/func';
 import Log from '../src/log';
 import Book from '../src/book';
 
@@ -93,6 +95,23 @@ describe("Path", () => {
 
       it("should return the val", () => {
         assert.deepStrictEqual(p.reduce(book), val3);
+      });
+    });
+
+    context("assigned sym path chain with self exp", () => {
+      const id = new UUID();
+      const key = new UUID();
+      const key2 = new UUID();
+      const val2 = v(2);
+
+      beforeEach(() => {
+        book.put(new Log(id, key, func("x", exp(plus, new Path(sym("self"), key2), "x"))));
+        book.put(new Log(id, key2, val2));
+        p = new Path(id, [key, v(3)]);
+      });
+
+      it("should return the val", () => {
+        assert.deepStrictEqual(p.reduce(book), v(5));
       });
     });
 
