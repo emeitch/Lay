@@ -1,5 +1,6 @@
 import Ref from './ref';
 import Book from './book';
+import { exp } from './exp';
 
 export default class Path extends Ref {
   constructor(...ids) {
@@ -38,13 +39,15 @@ export default class Path extends Ref {
       if (!log) {
         return super.step(book);
       }
-      const e = new Book(book);
-      e.assign("self", log.id);
+
+      const env = new Book(book);
+      env.assign("self", log.id);
 
       if (args.length > 0) {
-        v = log.val.apply(e, ...args).reduce(e);
+        const e = exp(log.val, ...args);
+        v = e.reduce(env);
       } else {
-        v = log.val.reduce(e);
+        v = log.val.reduce(env);
       }
     }
     return v;
