@@ -22,6 +22,6 @@ export default class Obj {
   call(key, ...args) {
     const path = new Path(this.id, [key, ...args]);
     const v = path.reduce(this.book);
-    return v;
+    return v; // todo: #getと同じくUUID時にObjで返さなくて良い?
   }
 }
