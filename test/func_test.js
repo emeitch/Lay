@@ -232,5 +232,12 @@ describe("Func", () => {
         assert.deepStrictEqual(e.reduce(book), v("else"));
       });
     });
+
+    context("arity zero func", () => {
+      it("should return the reduced value", () => {
+        assert.deepStrictEqual(exp(func(exp(plus, v(1), v(2)))).reduce(), v(3));
+        assert.deepStrictEqual(exp(func(v(3))).reduce(), v(3));
+      });
+    });
   });
 });
