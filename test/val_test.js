@@ -6,10 +6,7 @@ import v from '../src/v';
 describe("Val", () => {
   context("number origin", () => {
     const Inherited = class extends Val {};
-    let val;
-    beforeEach(() => {
-      val = new Inherited(0);
-    });
+    const val = new Inherited(0);
 
     describe("#origin", () => {
       it("should return original value", () => {
