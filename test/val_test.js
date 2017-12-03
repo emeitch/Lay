@@ -63,7 +63,7 @@ describe("Val", () => {
         assert.deepStrictEqual(val.collate(v0), {it: v0});
 
         const v1 = new Inherited(1);
-        assert.deepStrictEqual(val.collate(v1), undefined);
+        assert.deepStrictEqual(val.collate(v1), null);
       });
     });
 
@@ -73,7 +73,7 @@ describe("Val", () => {
         assert.deepStrictEqual(v0.match(val), {it: v0});
 
         const v1 = new Inherited(1);
-        assert.deepStrictEqual(v1.match(val), undefined);
+        assert.deepStrictEqual(v1.match(val), null);
 
         const Inherited2 = class extends Val {};
         // same origin but different constructor
