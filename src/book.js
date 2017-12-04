@@ -54,9 +54,9 @@ export default class Book {
     }
 
     const actives = Array.from(alogs.values()).sort((a, b) => {
-      if (a.at === undefined) {
+      if (a.at === null) {
         return -1;
-      } else if (b.at === undefined) {
+      } else if (b.at === null) {
         return 1;
       } else {
         return a.at.getTime() - b.at.getTime();
@@ -91,7 +91,7 @@ export default class Book {
     const tlogs = this.findLogs({id: log.logid, key: transaction});
 
     if (tlogs.length === 0) {
-      return undefined;
+      return null;
     }
 
     const tlog = tlogs[0];
@@ -110,7 +110,7 @@ export default class Book {
       return this.parent.resolve(name);
     }
 
-    return undefined;
+    return null;
   }
 
   assign(name, id) {

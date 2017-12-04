@@ -2,7 +2,7 @@ import Val from './val';
 import UUID from './uuid';
 
 export default class Log {
-  constructor(id, key, val, at_, in_) {
+  constructor(id, key, val, at_=null, in_=null) {
     if (!id) {
       throw "id is required";
     }

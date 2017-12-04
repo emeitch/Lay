@@ -29,7 +29,7 @@ describe("Book", () => {
         assert(log.id === id);
         assert(log.key === key);
         assert(log.val === val);
-        assert(log.in === undefined);
+        assert(log.in === null);
         assert(book.log(log.logid) === log);
       });
 
@@ -90,14 +90,14 @@ describe("Book", () => {
     });
 
     it("should has no more transaction", () => {
-      assert(book.transactionObj(tobj.id) === undefined);
+      assert.deepStrictEqual(book.transactionObj(tobj.id), null);
     });
   });
 
   describe("#resolve", () => {
     context("name un assigned", () => {
       it("should return undefined", () => {
-        assert(book.resolve("unassigned") === undefined);
+        assert.deepStrictEqual(book.resolve("unassigned"), null);
       });
     });
 
