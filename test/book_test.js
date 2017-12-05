@@ -49,7 +49,7 @@ describe("Book", () => {
 
       let log;
       beforeEach(() => {
-        log = new Log(id, key, val, undefined, location);
+        log = new Log(id, key, val, null, location);
         book.put(log);
       });
 
@@ -96,7 +96,7 @@ describe("Book", () => {
 
   describe("#resolve", () => {
     context("name un assigned", () => {
-      it("should return undefined", () => {
+      it("should return null", () => {
         assert.deepStrictEqual(book.resolve("unassigned"), null);
       });
     });
@@ -164,7 +164,7 @@ describe("Book", () => {
         it("should return only the first log", () => {
           const logs = book.activeLogs(id, key);
           assert.deepStrictEqual(logs[0].val, v("val0"));
-          assert.deepStrictEqual(logs[1], undefined);
+          assert(!logs[1]);
         });
       });
     });
@@ -184,7 +184,7 @@ describe("Book", () => {
       it("should return only the first log by specifying time before applied", () => {
         const logs = book.activeLogs(id, key, new Date(2017, 1));
         assert.deepStrictEqual(logs[0].val, v("val0"));
-        assert.deepStrictEqual(logs[1], undefined);
+        assert(!logs[1]);
       });
 
       context("invalidate the last log", () => {
@@ -196,26 +196,26 @@ describe("Book", () => {
         it("should return only the first log", () => {
           const logs = book.activeLogs(id, key);
           assert.deepStrictEqual(logs[0].val, v("val0"));
-          assert.deepStrictEqual(logs[1], undefined);
+          assert(!logs[1]);
         });
       });
 
       context("invalidate the last log with applying time", () => {
         beforeEach(() => {
           const log = book.activeLog(id, key);
-          book.put(new Log(log.logid, invalidate, undefined, new Date(2017, 4)));
+          book.put(new Log(log.logid, invalidate, null, new Date(2017, 4)));
         });
 
         it("should return only the first log", () => {
           const logs = book.activeLogs(id, key, new Date(2017, 6));
           assert.deepStrictEqual(logs[0].val, v("val0"));
-          assert.deepStrictEqual(logs[1], undefined);
+          assert(!logs[1]);
         });
 
         it("should return only the first log by time specified just invalidation time", () => {
           const logs = book.activeLogs(id, key, new Date(2017, 4));
           assert.deepStrictEqual(logs[0].val, v("val0"));
-          assert.deepStrictEqual(logs[1], undefined);
+          assert(!logs[1]);
         });
 
         it("should return all logs by time specified before invalidation", () => {
@@ -247,7 +247,7 @@ describe("Book", () => {
         it("should return only the first log", () => {
           const logs = book.activeLogs(id, key);
           assert.deepStrictEqual(logs[0].val, v("val1"));
-          assert.deepStrictEqual(logs[1], undefined);
+          assert(!logs[1]);
         });
       });
     });
@@ -268,9 +268,9 @@ describe("Book", () => {
 
   describe("#activeLog", () => {
     context("no logs", () => {
-      it("should return undefined", () => {
+      it("should return empty", () => {
         const log = book.activeLog(id, key);
-        assert.deepStrictEqual(log, undefined);
+        assert(!log);
       });
     });
 
