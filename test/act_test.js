@@ -160,13 +160,13 @@ describe("Act", () => {
 
         assert(act.rejected);
         assert(act.val === "an error");
-        assert(act.next !== undefined);
+        assert(act.next !== null);
 
         act = act.proceed();
 
         assert(act.rejected);
         assert(act.val === "an error");
-        assert(act.next === undefined);
+        assert(act.next === null);
 
         assert.throws(() => { act.proceed(); }, /next act not found error/);
       });
@@ -185,26 +185,26 @@ describe("Act", () => {
       });
 
       let act = first.catch(ctch).then(second);
-      
+
       act = act.proceed();
 
       assert(catched === false);
       assert(act.rejected);
       assert(act.val === "an error");
-      assert(act.next !== undefined);
+      assert(act.next !== null);
 
       act = act.proceed();
 
       assert(catched === true);
       assert(act.fulfilled);
       assert(act.val === "recovered");
-      assert(act.next !== undefined);
+      assert(act.next !== null);
 
       act = act.proceed();
 
       assert(act.fulfilled);
       assert(act.val === "finished");
-      assert(act.next === undefined);
+      assert(act.next === null);
     });
   });
 });

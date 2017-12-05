@@ -8,11 +8,11 @@ const ActStatus = {
 
 export default class Act extends Val {
   constructor(
-    executor=undefined,
+    executor=null,
     status=ActStatus.PENDING,
-    val=undefined,
-    next=undefined,
-    recovery=undefined
+    val=null,
+    next=null,
+    recovery=null
   ) {
     super();
     this.executor = executor;
@@ -51,7 +51,7 @@ export default class Act extends Val {
     let next = this.next;
     if (val instanceof Act) {
       next = val.then(next);
-      val = undefined;
+      val = null;
     }
 
     return this.clone({status: ActStatus.FULFILLED, val, next});
