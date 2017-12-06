@@ -13,7 +13,7 @@ export default class Obj {
     if (v instanceof UUID) {
       return new Obj(this.book, v);
     } else if (v === path){
-      return undefined;
+      return null;
     } else {
       return v;
     }

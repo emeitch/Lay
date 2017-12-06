@@ -24,8 +24,8 @@ describe("Obj", () => {
 
   describe("#get", () => {
     context("without logs", () => {
-      it("should return undefined", () => {
-        assert(obj.get(key) === undefined);
+      it("should return null", () => {
+        assert(obj.get(key) === null);
       });
     });
 
@@ -68,8 +68,8 @@ describe("Obj", () => {
         book.put(new Log(log.logid, invalidate));
       });
 
-      it("should return undefined", () => {
-        assert.deepStrictEqual(obj.get(key), undefined);
+      it("should return null", () => {
+        assert.deepStrictEqual(obj.get(key), null);
       });
 
       context("add another log", () => {
