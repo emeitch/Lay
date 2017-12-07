@@ -11,6 +11,7 @@ describe("v function", () => {
       assert.deepStrictEqual(v(0).constructor, Prim);
       assert.deepStrictEqual(v("foo").constructor, Prim);
       assert.deepStrictEqual(v(true).constructor, Prim);
+      assert.deepStrictEqual(v(null).constructor, Prim);
     });
   });
 

@@ -8,7 +8,8 @@ export default class Comp extends Val {
 
     if (type === "number" ||
         type === "string" ||
-        type === "boolean") {
+        type === "boolean" ||
+        origin === null) {
       return new Prim(origin);
     }
 
