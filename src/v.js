@@ -1,5 +1,5 @@
 import Comp from './comp';
 
-export default function v(origin) {
-  return Comp.valFrom(origin);
+export default function v(...args) {
+  return Comp.valFrom(...args);
 }

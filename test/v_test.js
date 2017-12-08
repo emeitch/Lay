@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import Prim from '../src/prim';
 import Comp from '../src/comp';
+import { sym } from '../src/sym';
 
 import v from '../src/v';
 
@@ -20,6 +21,15 @@ describe("v function", () => {
       assert.deepStrictEqual(v({a: 1, b: 2}).constructor, Comp);
       assert.deepStrictEqual(v([1, 2, 3]).constructor, Comp);
       assert.deepStrictEqual(v(new Date()).constructor, Comp);
+    });
+  });
+
+  context("with complex value and construcor", () => {
+    it("should return a Comp", () => {
+      const val = v("Foo", {a: 1, b: 2});
+      assert.deepStrictEqual(val.constructor, Comp);
+      assert.deepStrictEqual(val.head, sym("Foo"));
+      assert.deepStrictEqual(val.origin, {a: 1, b: 2});
     });
   });
 

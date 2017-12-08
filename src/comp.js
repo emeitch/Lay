@@ -1,15 +1,19 @@
 import Val from './val';
 import Prim from './prim';
 import Hash from './hash';
+import { sym } from './sym';
 
 export default class Comp extends Val {
-  static valFrom(origin) {
+  static valFrom(...args) {
+    const origin = args.pop();
+    const head = args.pop();
     const type = typeof(origin);
 
-    if (type === "number" ||
-        type === "string" ||
-        type === "boolean" ||
-        origin === null) {
+    if (head === undefined &&
+        (type === "number" ||
+         type === "string" ||
+         type === "boolean" ||
+         origin === null)) {
       return new Prim(origin);
     }
 
@@ -17,10 +21,18 @@ export default class Comp extends Val {
         (type === "object" &&
          (origin.constructor === Object ||
           origin.constructor === Date))) { // todo:DateはJSではなくLay側の型・クラスに変更したい
-      return new Comp(origin);
+      return new Comp(origin, head);
     }
 
     throw `not supported origin: ${origin}`;
+  }
+
+  constructor(origin, head=undefined) {
+    super(origin);
+    
+    if (head) {
+      this.head = sym(head);
+    }
   }
 
   get hash() {
