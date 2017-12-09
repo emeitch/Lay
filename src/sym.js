@@ -1,6 +1,10 @@
 import Val from './val';
 
 export default class Sym extends Val {
+  get head() {
+    return this;
+  }
+
   collate(val) {
     return {
       it: val,
@@ -25,5 +29,9 @@ export default class Sym extends Val {
 }
 
 export function sym(origin) {
+  if (typeof(origin) !== "string") {
+    return undefined;
+  }
+
   return new Sym(origin);
 }

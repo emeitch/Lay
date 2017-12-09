@@ -6,7 +6,7 @@ import { sym } from './sym';
 export default class Comp extends Val {
   static valFrom(...args) {
     const origin = args.pop();
-    const head = args.pop();
+    const head = sym(args.pop());
     const type = typeof(origin);
 
     if (head === undefined &&
@@ -21,6 +21,9 @@ export default class Comp extends Val {
         (type === "object" &&
          (origin.constructor === Object ||
           origin.constructor === Date))) { // todo:DateはJSではなくLay側の型・クラスに変更したい
+      if(origin.constructor === Object && Object.keys(origin).length == 0) {
+        return head;
+      }
       return new Comp(origin, head);
     }
 
@@ -29,10 +32,7 @@ export default class Comp extends Val {
 
   constructor(origin, head=undefined) {
     super(origin);
-    
-    if (head) {
-      this.head = sym(head);
-    }
+    this.head = head;
   }
 
   get hash() {

@@ -33,6 +33,14 @@ describe("v function", () => {
     });
   });
 
+  context("with empty complex value as enum value", () => {
+    it("should return a Sym", () => {
+      const val = v("Foo", {});
+      assert.deepStrictEqual(val, sym("Foo"));
+      assert.deepStrictEqual(val.head, sym("Foo"));
+    });
+  });
+
   context("with error value", () => {
     it("should throw error", () => {
       assert.throws(() => v(undefined), /not supported origin:/);
