@@ -55,4 +55,9 @@ export default class Comp extends Val {
   get(key) {
     return this.constructor.valFrom(this.origin[key]);
   }
+
+  merge(diff) {
+    const o = Object.assign({}, this.origin, diff);
+    return this.constructor(o, this.head);
+  }
 }

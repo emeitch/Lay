@@ -25,5 +25,12 @@ describe("Comp", () => {
         assert.deepStrictEqual(v([1, 2, 3]).reducible, false);
       });
     });
+
+    describe("#merge", () => {
+      it("should return false", () => {
+        const val = v({a: 1, b: 2});
+        assert.deepStrictEqual(val.merge({b: 3, c: 4}), v({a: 1, b: 3, c: 4}));
+      });
+    });
   });
 });
