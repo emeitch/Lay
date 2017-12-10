@@ -38,6 +38,7 @@ describe("v function", () => {
       const val = v("Foo", {});
       assert.deepStrictEqual(val, sym("Foo"));
       assert.deepStrictEqual(val.head, sym("Foo"));
+      assert.deepStrictEqual(val.fields, null);
     });
   });
 

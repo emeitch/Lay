@@ -5,6 +5,10 @@ export default class Sym extends Val {
     return this;
   }
 
+  get fields() {
+    return null;
+  }
+
   collate(val) {
     return {
       it: val,
