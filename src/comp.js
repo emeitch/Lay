@@ -47,6 +47,10 @@ export default class Comp extends Val {
     return false;
   }
 
+  get fields() {
+    return this.origin;
+  }
+
   get(key) {
     return this.constructor.valFrom(this.origin[key]);
   }
