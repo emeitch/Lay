@@ -9,7 +9,7 @@ import { kase, alt, grd, otherwise, Func } from '../src/case';
 describe("Case", () => {
   describe("#reduce", () => {
     context("unmatching", () => {
-      it("should reduce the case", () => {
+      it("should throws a error", () => {
         const e = exp(
           kase(
             alt(v(0), v("result"))
@@ -30,44 +30,6 @@ describe("Case", () => {
           v(1)
         );
         assert.deepStrictEqual(e.reduce(), v("result"));
-      });
-    });
-
-    context("unmatching comp tuple pattern", () => {
-      it("should reduce the matched result exp", () => {
-        const e = exp(
-          kase(
-            alt(
-              v("Foo", [sym("a"), sym("b")]),
-              exp(
-                Func.func("x", "y", (x, y) => x * y),
-                "a",
-                "b"
-              )
-            )
-          ),
-          v("Bar", [2, 3])
-        );
-        assert.throws(() => e.reduce(), /matched pattern not found/);
-      });
-    });
-
-    context("matching comp tuple pattern", () => {
-      it("should reduce the matched result exp", () => {
-        const e = exp(
-          kase(
-            alt(
-              v("Foo", [sym("a"), sym("b")]),
-              exp(
-                Func.func("x", "y", (x, y) => x * y),
-                "a",
-                "b"
-              )
-            )
-          ),
-          v("Foo", [2, 3])
-        );
-        assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
 
@@ -208,6 +170,40 @@ describe("Case", () => {
 
         const r2 = exp(kase(a), v(3), v(4), v(5)).reduce();
         assert.deepStrictEqual(r2, v(10));
+      });
+    });
+
+    context("unmatching comp tuple pattern", () => {
+      it("should throws a error", () => {
+        const e = exp(
+          kase(
+            alt(
+              v("Foo", [sym("a"), sym("b")]),
+              v("unmatched pattern")
+            )
+          ),
+          v("Bar", [2, 3])
+        );
+        assert.throws(() => e.reduce(), /matched pattern not found/);
+      });
+    });
+
+    context("matching comp tuple pattern", () => {
+      it("should reduce the matched result exp", () => {
+        const e = exp(
+          kase(
+            alt(
+              v("Foo", [sym("a"), sym("b")]),
+              exp(
+                Func.func("x", "y", (x, y) => x * y),
+                "a",
+                "b"
+              )
+            )
+          ),
+          v("Foo", [2, 3])
+        );
+        assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
   });
