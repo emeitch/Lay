@@ -1,6 +1,7 @@
 import assert from 'assert';
 
 import v from '../src/v';
+import { sym } from '../src/sym';
 import Book from '../src/book';
 import { exp } from '../src/exp';
 import { kase, alt, grd, otherwise, Func } from '../src/case';
@@ -29,6 +30,44 @@ describe("Case", () => {
           v(1)
         );
         assert.deepStrictEqual(e.reduce(), v("result"));
+      });
+    });
+
+    context("unmatching comp tuple pattern", () => {
+      it("should reduce the matched result exp", () => {
+        const e = exp(
+          kase(
+            alt(
+              v("Foo", [sym("a"), sym("b")]),
+              exp(
+                Func.func("x", "y", (x, y) => x * y),
+                "a",
+                "b"
+              )
+            )
+          ),
+          v("Bar", [2, 3])
+        );
+        assert.throws(() => e.reduce(), /matched pattern not found/);
+      });
+    });
+
+    context("matching comp tuple pattern", () => {
+      it("should reduce the matched result exp", () => {
+        const e = exp(
+          kase(
+            alt(
+              v("Foo", [sym("a"), sym("b")]),
+              exp(
+                Func.func("x", "y", (x, y) => x * y),
+                "a",
+                "b"
+              )
+            )
+          ),
+          v("Foo", [2, 3])
+        );
+        assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
 

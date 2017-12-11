@@ -60,4 +60,24 @@ export default class Comp extends Val {
     const o = Object.assign({}, this.origin, diff);
     return this.constructor(o, this.head);
   }
+
+  collate(val) {
+    if (val.constructor === this.constructor &&
+        val.head.equals(this.head) &&
+        Array.isArray(val.fields) &&
+        Array.isArray(this.fields) &&
+        val.fields.length === this.fields.length) {
+          const result = {};
+          let i = 0;
+          for (const pat of this.fields) {
+            const m = pat.collate(Comp.valFrom(val.fields[i]));
+            Object.assign(result, m);
+            i++;
+          }
+          Object.assign(result, {it: val});
+          return result;
+    }
+
+    return super.collate(val);
+  }
 }
