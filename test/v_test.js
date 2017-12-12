@@ -31,6 +31,7 @@ describe("v function", () => {
       assert.deepStrictEqual(val.head, sym("Foo"));
       assert.deepStrictEqual(val.fields, {a: 1, b: 2});
       assert.deepStrictEqual(val.origin, {a: 1, b: 2});
+      assert.deepStrictEqual(val.get("a"), v(1));
     });
   });
 
