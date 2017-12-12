@@ -6,6 +6,11 @@ import { sym } from './sym';
 export default class Comp extends Val {
   static valFrom(...args) {
     const origin = args.pop();
+
+    if (origin instanceof Val) {
+      return origin;
+    }
+
     const head = sym(args.pop());
     const type = typeof(origin);
 
