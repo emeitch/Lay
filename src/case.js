@@ -79,8 +79,11 @@ class CaseAlt {
         this.pats.filter(p =>
           Object.keys(m).some(k =>
             k !== "it" && !sym(k).equals(p)
+          )
         )
-      )), []);
+      ),
+      []
+    );
     const grds = this.grds.map(grd => grd.replaceAsTop(matches));
     return new this.constructor(...pats.concat([grds]));
   }
