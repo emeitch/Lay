@@ -206,5 +206,24 @@ describe("Case", () => {
         assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
+
+    context("matching nested comp tuple pattern", () => {
+      it("should reduce the matched result exp", () => {
+        const e = exp(
+          kase(
+            alt(
+              v("Foo", [v("Bar", [sym("a"), sym("b")])]),
+              exp(
+                Func.func("x", "y", (x, y) => x * y),
+                "a",
+                "b"
+              )
+            )
+          ),
+          v("Foo", [v("Bar", [3, 4])])
+        );
+        assert.deepStrictEqual(e.reduce(), v(12));
+      });
+    });
   });
 });
