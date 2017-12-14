@@ -32,6 +32,13 @@ describe("v function", () => {
       assert.deepStrictEqual(val.fields, {a: 1, b: 2});
       assert.deepStrictEqual(val.origin, {a: 1, b: 2});
       assert.deepStrictEqual(val.get("a"), v(1));
+
+      const val2 = v("Foo", [1, 2]);
+      assert.deepStrictEqual(val2.constructor, Comp);
+      assert.deepStrictEqual(val2.head, sym("Foo"));
+      assert.deepStrictEqual(val2.fields, [1, 2]);
+      assert.deepStrictEqual(val2.origin, [1, 2]);
+      assert.deepStrictEqual(val2.get(0), v(1));
     });
   });
 
