@@ -67,22 +67,32 @@ export default class Comp extends Val {
   }
 
   collate(val) {
-    if (val.constructor === this.constructor &&
-        val.head.equals(this.head) &&
-        Array.isArray(val.fields) &&
-        Array.isArray(this.fields) &&
-        val.fields.length === this.fields.length) {
-          const result = {};
-          let i = 0;
-          for (const pat of this.fields) {
-            const m = pat.collate(Comp.valFrom(val.fields[i]));
-            Object.assign(result, m);
-            i++;
-          }
-          Object.assign(result, {it: val});
-          return result;
+    if (val.constructor !== this.constructor ||
+        !val.head.equals(this.head)) {
+      return super.collate(val);
     }
 
-    return super.collate(val);
+    if (Array.isArray(val.fields) && val.fields.length === this.fields.length) {
+      const result = {};
+      let i = 0;
+      for (const pat of this.fields) {
+        const m = pat.collate(Comp.valFrom(val.fields[i]));
+        Object.assign(result, m);
+        i++;
+      }
+      Object.assign(result, {it: val});
+      return result;
+    }
+
+    { // Object fields
+      const result = {};
+      for (const key of Object.keys(this.fields)) {
+        const pat = this.fields[key];
+        const m = pat.collate(Comp.valFrom(val.fields[key]));
+        Object.assign(result, m);
+      }
+      Object.assign(result, {it: val});
+      return result;
+    }
   }
 }

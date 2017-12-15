@@ -225,5 +225,24 @@ describe("Case", () => {
         assert.deepStrictEqual(e.reduce(), v(12));
       });
     });
+
+    context("matching comp record pattern", () => {
+      it("should reduce the matched result exp", () => {
+        const e = exp(
+          kase(
+            alt(
+              v("Foo", {a: sym("a"), b: sym("b")}),
+              exp(
+                Func.func("x", "y", (x, y) => x * y),
+                "a",
+                "b"
+              )
+            )
+          ),
+          v("Foo", {a: 2, b: 3})
+        );
+        assert.deepStrictEqual(e.reduce(), v(6));
+      });
+    });
   });
 });
