@@ -244,5 +244,24 @@ describe("Case", () => {
         assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
+
+    context("matching nested comp record pattern", () => {
+      it("should reduce the matched result exp", () => {
+        const e = exp(
+          kase(
+            alt(
+              v("Foo", {nested: v("Bar", {a: sym("a")}), b: sym("b")}),
+              exp(
+                Func.func("x", "y", (x, y) => x * y),
+                "a",
+                "b"
+              )
+            )
+          ),
+          v("Foo", {nested: v("Bar", {a: 2}), b: 3})
+        );
+        assert.deepStrictEqual(e.reduce(), v(6));
+      });
+    });
   });
 });
