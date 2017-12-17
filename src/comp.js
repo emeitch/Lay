@@ -26,10 +26,6 @@ export default class Comp extends Val {
         (type === "object" &&
          (origin.constructor === Object ||
           origin.constructor === Date))) { // todo:DateはJSではなくLay側の型・クラスに変更したい
-      if(origin.constructor === Object &&
-         Object.keys(origin).length === 0) {
-        return head;
-      }
       return new Comp(origin, head);
     }
 

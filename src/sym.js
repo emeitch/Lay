@@ -1,14 +1,6 @@
 import Val from './val';
 
 export default class Sym extends Val {
-  get head() {
-    return this;
-  }
-
-  get fields() {
-    return null;
-  }
-
   collate(val) {
     return {
       it: val,
