@@ -62,6 +62,16 @@ describe("v function", () => {
     });
   });
 
+  context("with literal prototype complex value", () => {
+    it("should return a Comp", () => {
+      const val = v(v(v({a: 1}), {b: 2}), {c: 3});
+      assert.deepStrictEqual(val.head, v(v({a: 1}), {b: 2}));
+      assert.deepStrictEqual(val.get("a"), v(1));
+      assert.deepStrictEqual(val.get("b"), v(2));
+      assert.deepStrictEqual(val.get("c"), v(3));
+    });
+  });
+
   context("with error value", () => {
     it("should throw error", () => {
       assert.throws(() => v(undefined), /not supported origin:/);

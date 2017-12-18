@@ -11,7 +11,8 @@ export default class Comp extends Val {
       return origin;
     }
 
-    const head = sym(args.pop());
+    const hsrc = args.pop();
+    const head = hsrc instanceof Val ? hsrc : sym(hsrc);
     const type = typeof(origin);
 
     if (head === undefined &&
@@ -54,7 +55,12 @@ export default class Comp extends Val {
   }
 
   get(key) {
-    return this.constructor.valFrom(this.origin[key]);
+    const o = this.origin[key];
+    if (o) {
+      return this.constructor.valFrom(o);
+    } else {
+      return this.head.get(key);
+    }
   }
 
   merge(diff) {
