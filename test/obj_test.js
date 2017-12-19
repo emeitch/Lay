@@ -47,7 +47,7 @@ describe("Obj", () => {
       });
 
       it("should return a value", () => {
-        assert.deepStrictEqual(obj.get(key), v("value"));
+        assert.deepStrictEqual(obj.get(key), book.obj(v("value")));
       });
     });
 
@@ -58,7 +58,7 @@ describe("Obj", () => {
       });
 
       it("should return the last val", () => {
-        assert.deepStrictEqual(obj.get(key), v("val1"));
+        assert.deepStrictEqual(obj.get(key), book.obj(v("val1")));
       });
     });
 
@@ -78,7 +78,7 @@ describe("Obj", () => {
         });
 
         it("should return the val", () => {
-          assert.deepStrictEqual(obj.get(key), v("val1"));
+          assert.deepStrictEqual(obj.get(key), book.obj(v("val1")));
         });
       });
 
@@ -88,7 +88,7 @@ describe("Obj", () => {
         });
 
         it("should return the val", () => {
-          assert.deepStrictEqual(obj.get(key), v("val0"));
+          assert.deepStrictEqual(obj.get(key), book.obj(v("val0")));
         });
       });
     });
@@ -106,7 +106,7 @@ describe("Obj", () => {
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(obj.get(key), v("path end"));
+        assert.deepStrictEqual(obj.get(key), book.obj(v("path end")));
       });
     });
 
@@ -121,7 +121,7 @@ describe("Obj", () => {
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(obj.get(key), val2);
+        assert.deepStrictEqual(obj.get(key), book.obj(val2));
       });
     });
 
@@ -136,7 +136,7 @@ describe("Obj", () => {
       });
 
       it("should return the reduced val", () => {
-        assert.deepStrictEqual(obj.get(key), v(3));
+        assert.deepStrictEqual(obj.get(key), book.obj(v(3)));
       });
     });
 
@@ -148,7 +148,7 @@ describe("Obj", () => {
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(obj.get(key), val);
+        assert.deepStrictEqual(obj.get(key), book.obj(val));
       });
 
       it("should return the val as a obj", () => {
@@ -157,13 +157,29 @@ describe("Obj", () => {
 
       it("should return the property", () => {
         const map = obj.get(key);
-        assert.deepStrictEqual(map.get("a"), v(1));
+        assert.deepStrictEqual(map.get("a"), book.obj(v(1)));
       });
 
       it("should return the nested property", () => {
         const map = obj.get(key).get("b");
-        assert.deepStrictEqual(map.get("d"), v(3));
+        assert.deepStrictEqual(map.get("d"), book.obj(v(3)));
       });
+    });
+
+    context("with a directed specified map val obj", () => {
+      beforeEach(() => {
+        book.assign("Foo", v({e: 4}));
+        const val = v("Foo", {a: 1, b: {c: 2, d: 3}});
+        obj = book.obj(val);
+      });
+
+      it("should return the nested property", () => {
+        assert.deepStrictEqual(obj.get("b").get("d"), book.obj(v(3)));
+      });
+
+      // it("should return the prototype property", () => {
+      //   assert.deepStrictEqual(obj.get("e"), book.obj(v(4)));
+      // });
     });
   });
 
