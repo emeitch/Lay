@@ -3,6 +3,7 @@ import ID from './id';
 import UUID from './uuid';
 import Log from './log';
 import Obj from './obj';
+import Comp from './comp';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
@@ -80,7 +81,7 @@ export default class Book {
   }
 
   obj(id) {
-    if (id instanceof ID) {
+    if (id instanceof ID || id instanceof Comp) {
       return new Obj(this, id);
     } else {
       return id;

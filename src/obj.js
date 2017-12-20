@@ -1,5 +1,5 @@
-import UUID from './uuid';
 import Path from './path';
+import Comp from './comp';
 
 export default class Obj {
   constructor(book, id) {
@@ -7,15 +7,23 @@ export default class Obj {
     this.id = id;
   }
 
+  get origin() {
+    return this.id.origin;
+  }
+
   get(key) {
+    if (this.id instanceof Comp) {
+      const comp = this.id;
+      const prop = comp.get(key, this.book);
+      return this.book.obj(prop);
+    }
+
     const path = new Path(this.id, key);
     const v = path.reduce(this.book);
-    if (v instanceof UUID) {
-      return new Obj(this.book, v);
-    } else if (v === path){
+    if (v === path){
       return null;
     } else {
-      return v;
+      return this.book.obj(v);
     }
   }
 
