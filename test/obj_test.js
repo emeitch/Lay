@@ -181,6 +181,23 @@ describe("Obj", () => {
         assert.deepStrictEqual(obj.get("e"), book.obj(v(4)));
       });
     });
+
+    context("with a directed specified map val obj unreferenced head", () => {
+      beforeEach(() => {
+        book.assign("Foo", v({e: 4}));
+        const val = v("Bar", {a: 1, b: {c: 2, d: 3}});
+        obj = book.obj(val);
+      });
+
+      it("should return the nested property", () => {
+        assert.deepStrictEqual(obj.get("b").get("d"), book.obj(v(3)));
+      });
+
+      it("should return the prototype property", () => {
+        assert.deepStrictEqual(obj.get("e"), book.obj(v(null)));
+      });
+    });
+
   });
 
   describe("call", () => {

@@ -60,7 +60,7 @@ export default class Comp extends Val {
       return this.constructor.valFrom(o);
     } else {
       const proto = this.head.reduce(book);
-      return proto.get(key);
+      return proto ? proto.get(key) : Comp.valFrom(proto);
     }
   }
 
