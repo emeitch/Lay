@@ -35,7 +35,7 @@ export default class Comp extends Val {
 
   constructor(origin, head=undefined) {
     super(origin);
-    this.head = head;
+    this.head = head ? head : Comp.valFrom(null);
   }
 
   get hash() {
