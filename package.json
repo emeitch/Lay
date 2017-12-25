@@ -14,7 +14,6 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "babel": "^6.23.0",
     "babel-loader": "^7.0.0",
     "babel-plugin-istanbul": "^4.1.4",
     "babel-preset-env": "^1.6.1",
