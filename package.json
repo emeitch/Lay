@@ -15,7 +15,8 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "babel-loader": "^7.0.0",
+    "babel-core": "^6.0.0",
+    "babel-loader": "^7.1.2",
     "babel-plugin-istanbul": "^4.1.4",
     "babel-preset-env": "^1.6.1",
     "babel-preset-power-assert": "^1.0.0",
