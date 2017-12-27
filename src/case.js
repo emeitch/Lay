@@ -143,6 +143,7 @@ export default class Case extends Comp {
 
   constructor(...alts) {
     super(alts);
+    this.head = this.constructor.name;
   }
 
   get alts() {
