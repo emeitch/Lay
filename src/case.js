@@ -1,4 +1,5 @@
 import Val from './val';
+import Comp from './comp';
 import v from './v';
 import Sym, { sym } from './sym';
 import { exp } from './exp';
@@ -135,7 +136,7 @@ export function grd(cond, exp) {
 
 export const otherwise = v(true);
 
-export default class Case extends Val {
+export default class Case extends Comp {
   static func(...args) {
     return new this(alt(...args));
   }
