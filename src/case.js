@@ -142,8 +142,11 @@ export default class Case extends Comp {
   }
 
   constructor(...alts) {
-    super();
-    this.alts = alts;
+    super(alts);
+  }
+
+  get alts() {
+    return this.origin;
   }
 
   replace(matches) {
