@@ -52,26 +52,32 @@ export class Native extends Val {
   }
 }
 
-class CaseAlt {
+class CaseAlt extends Comp {
   constructor(...args) {
-    const pats = args.slice(0, -1);
-    this.pats = pats.map(p => typeof(p) === "string" ? sym(p) : p);
-    this.grds = this.parseGuards(args[args.length-1]);
+    const pats = args.slice(0, -1).map(p => typeof(p) === "string" ? sym(p) : p);
+    let grds = args[args.length-1];
+    {
+      if (grds instanceof Function) {
+        if (grds.length > 0 && grds.length != pats.length) {
+          throw "arity mismatched for native function";
+        }
+        grds = new Native(grds);
+      }
+
+      if (!Array.isArray(grds)) {
+        grds = [grd(v(true), grds)];
+      }
+    }
+
+    super({ pats, grds }, "CaseAlt");
   }
 
-  parseGuards(grds) {
-    if (grds instanceof Function) {
-      if (grds.length > 0 && grds.length != this.pats.length) {
-        throw "arity mismatched for native function";
-      }
-      grds = new Native(grds);
-    }
+  get pats() {
+    return this.origin.pats;
+  }
 
-    if (!Array.isArray(grds)) {
-      grds = [grd(v(true), grds)];
-    }
-
-    return grds;
+  get grds() {
+    return this.origin.grds;
   }
 
   replaceAsTop(matches) {
