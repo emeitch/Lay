@@ -1,8 +1,8 @@
-import Val from './val';
+import Comp from './val';
 import Book from './book';
 import { sym } from './sym';
 
-export default class Exp extends Val {
+export default class Exp extends Comp {
   constructor(...terms) {
     super(terms.map(t => typeof(t) === "string" ? sym(t) : t));
   }
