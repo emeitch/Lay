@@ -1,4 +1,5 @@
 import Val from './val';
+import Comp from './comp';
 import v from './v';
 import Sym, { sym } from './sym';
 import { exp } from './exp';
@@ -51,26 +52,32 @@ export class Native extends Val {
   }
 }
 
-class CaseAlt {
+class CaseAlt extends Comp {
   constructor(...args) {
-    const pats = args.slice(0, -1);
-    this.pats = pats.map(p => typeof(p) === "string" ? sym(p) : p);
-    this.grds = this.parseGuards(args[args.length-1]);
+    const pats = args.slice(0, -1).map(p => typeof(p) === "string" ? sym(p) : p);
+    let grds = args[args.length-1];
+    {
+      if (grds instanceof Function) {
+        if (grds.length > 0 && grds.length != pats.length) {
+          throw "arity mismatched for native function";
+        }
+        grds = new Native(grds);
+      }
+
+      if (!Array.isArray(grds)) {
+        grds = [grd(v(true), grds)];
+      }
+    }
+
+    super({ pats, grds }, "CaseAlt");
   }
 
-  parseGuards(grds) {
-    if (grds instanceof Function) {
-      if (grds.length > 0 && grds.length != this.pats.length) {
-        throw "arity mismatched for native function";
-      }
-      grds = new Native(grds);
-    }
+  get pats() {
+    return this.origin.pats;
+  }
 
-    if (!Array.isArray(grds)) {
-      grds = [grd(v(true), grds)];
-    }
-
-    return grds;
+  get grds() {
+    return this.origin.grds;
   }
 
   replaceAsTop(matches) {
@@ -103,14 +110,21 @@ export function alt(...args) {
   return new CaseAlt(...args);
 }
 
-class CaseGrd {
+class CaseGrd extends Comp {
   constructor(cond, exp) {
-    this.cond = cond;
     if (typeof(exp) === "string") {
-      this.exp = sym(exp);
-    } else {
-      this.exp = exp;
+      exp = sym(exp);
     }
+
+    super({cond, exp});
+  }
+
+  get cond() {
+    return this.origin.cond;
+  }
+
+  get exp() {
+    return this.origin.exp;
   }
 
   replaceAsTop(matches) {
@@ -135,14 +149,18 @@ export function grd(cond, exp) {
 
 export const otherwise = v(true);
 
-export default class Case extends Val {
+export default class Case extends Comp {
   static func(...args) {
     return new this(alt(...args));
   }
 
   constructor(...alts) {
-    super();
-    this.alts = alts;
+    super(alts);
+    this.head = this.constructor.name;
+  }
+
+  get alts() {
+    return this.origin;
   }
 
   replace(matches) {
