@@ -110,14 +110,21 @@ export function alt(...args) {
   return new CaseAlt(...args);
 }
 
-class CaseGrd {
+class CaseGrd extends Comp {
   constructor(cond, exp) {
-    this.cond = cond;
     if (typeof(exp) === "string") {
-      this.exp = sym(exp);
-    } else {
-      this.exp = exp;
+      exp = sym(exp);
     }
+
+    super({cond, exp});
+  }
+
+  get cond() {
+    return this.origin.cond;
+  }
+
+  get exp() {
+    return this.origin.exp;
   }
 
   replaceAsTop(matches) {
