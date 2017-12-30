@@ -17,7 +17,7 @@ describe("Book", () => {
     book = new Book();
   });
 
-  describe("#put", () => {
+  describe("#putLog", () => {
     context("standard arguments", () => {
       let log;
       beforeEach(() => {
