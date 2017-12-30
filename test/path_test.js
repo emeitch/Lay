@@ -51,8 +51,8 @@ describe("Path", () => {
       const id3 = new UUID();
 
       beforeEach(() => {
-        book.put(new Log(id, key, id2));
-        book.put(new Log(id2, key2, id3));
+        book.putLog(new Log(id, key, id2));
+        book.putLog(new Log(id2, key2, id3));
         p = new Path(id, key, key2);
       });
 
@@ -67,7 +67,7 @@ describe("Path", () => {
       const val = v("val0");
 
       beforeEach(() => {
-        book.put(new Log(id, key, val));
+        book.putLog(new Log(id, key, val));
         book.assign("a", id);
         p = new Path(sym("a"), key);
       });
@@ -86,9 +86,9 @@ describe("Path", () => {
       const val3 = v("val0");
 
       beforeEach(() => {
-        book.put(new Log(id, key, id2));
-        book.put(new Log(id2, key2, new Path(sym("self"), key3)));
-        book.put(new Log(id2, key3, val3));
+        book.putLog(new Log(id, key, id2));
+        book.putLog(new Log(id2, key2, new Path(sym("self"), key3)));
+        book.putLog(new Log(id2, key3, val3));
         book.assign("a", id);
         p = new Path(sym("a"), key, key2);
       });
@@ -105,8 +105,8 @@ describe("Path", () => {
       const val2 = v(2);
 
       beforeEach(() => {
-        book.put(new Log(id, key, func("x", exp(plus, new Path(sym("self"), key2), "x"))));
-        book.put(new Log(id, key2, val2));
+        book.putLog(new Log(id, key, func("x", exp(plus, new Path(sym("self"), key2), "x"))));
+        book.putLog(new Log(id, key2, val2));
         p = new Path(id, [key, v(3)]);
       });
 

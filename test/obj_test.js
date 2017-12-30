@@ -33,7 +33,7 @@ describe("Obj", () => {
       const dst = new UUID();
 
       beforeEach(() => {
-        book.put(new Log(id, key, dst));
+        book.putLog(new Log(id, key, dst));
       });
 
       it("should return a obj of log's val", () => {
@@ -43,7 +43,7 @@ describe("Obj", () => {
 
     context("with a log which has a val typed by Val", () => {
       beforeEach(() => {
-        book.put(new Log(id, key, v("value")));
+        book.putLog(new Log(id, key, v("value")));
       });
 
       it("should return a value", () => {
@@ -53,8 +53,8 @@ describe("Obj", () => {
 
     context("with the same key but different val logs", () => {
       beforeEach(() => {
-        book.put(new Log(id, key, v("val0")));
-        book.put(new Log(id, key, v("val1")));
+        book.putLog(new Log(id, key, v("val0")));
+        book.putLog(new Log(id, key, v("val1")));
       });
 
       it("should return the last val", () => {
@@ -64,8 +64,8 @@ describe("Obj", () => {
 
     context("with a invalidated log", () => {
       beforeEach(() => {
-        const log = book.put(new Log(id, key, v("val0")));
-        book.put(new Log(log.logid, invalidate));
+        const log = book.putLog(new Log(id, key, v("val0")));
+        book.putLog(new Log(log.logid, invalidate));
       });
 
       it("should return null", () => {
@@ -74,7 +74,7 @@ describe("Obj", () => {
 
       context("add another log", () => {
         beforeEach(() => {
-          book.put(new Log(id, key, v("val1")));
+          book.putLog(new Log(id, key, v("val1")));
         });
 
         it("should return the val", () => {
@@ -84,7 +84,7 @@ describe("Obj", () => {
 
       context("add a log which has same args for the invalidated log", () => {
         beforeEach(() => {
-          book.put(new Log(id, key, v("val0")));
+          book.putLog(new Log(id, key, v("val0")));
         });
 
         it("should return the val", () => {
@@ -100,9 +100,9 @@ describe("Obj", () => {
         const key2 = new UUID();
         const key3 = new UUID();
 
-        book.put(new Log(id2, key2, id3));
-        book.put(new Log(id3, key3, v("path end")));
-        book.put(new Log(id, key, new Path(id2, key2, key3)));
+        book.putLog(new Log(id2, key2, id3));
+        book.putLog(new Log(id3, key3, v("path end")));
+        book.putLog(new Log(id, key, new Path(id2, key2, key3)));
       });
 
       it("should return the val", () => {
@@ -116,8 +116,8 @@ describe("Obj", () => {
         val2 = v("val0");
         const key2 = new UUID();
 
-        book.put(new Log(id, key2, val2));
-        book.put(new Log(id, key, new Path(sym("self"), key2)));
+        book.putLog(new Log(id, key2, val2));
+        book.putLog(new Log(id, key, new Path(sym("self"), key2)));
       });
 
       it("should return the val", () => {
@@ -131,8 +131,8 @@ describe("Obj", () => {
         val2 = v(1);
         const key2 = new UUID();
 
-        book.put(new Log(id, key2, val2));
-        book.put(new Log(id, key, exp(plus, new Path(sym("self"), key2), v(2))));
+        book.putLog(new Log(id, key2, val2));
+        book.putLog(new Log(id, key, exp(plus, new Path(sym("self"), key2), v(2))));
       });
 
       it("should return the reduced val", () => {
@@ -144,7 +144,7 @@ describe("Obj", () => {
       let val;
       beforeEach(() => {
         val = v({a: 1, b: {c: 2, d: 3}});
-        book.put(new Log(id, key, val));
+        book.putLog(new Log(id, key, val));
       });
 
       it("should return the val", () => {
@@ -207,8 +207,8 @@ describe("Obj", () => {
         val2 = v(1);
         const key2 = new UUID();
 
-        book.put(new Log(id, key2, val2));
-        book.put(new Log(id, key, func("x", exp(plus, new Path(sym("self"), key2), "x"))));
+        book.putLog(new Log(id, key2, val2));
+        book.putLog(new Log(id, key, func("x", exp(plus, new Path(sym("self"), key2), "x"))));
       });
 
       it("should return the reduced val as methods", () => {

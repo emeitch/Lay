@@ -22,7 +22,7 @@ describe("Book", () => {
       let log;
       beforeEach(() => {
         log = new Log(id, key, val);
-        book.put(log);
+        book.putLog(log);
       });
 
       it("should append a log", () => {
@@ -50,7 +50,7 @@ describe("Book", () => {
       let log;
       beforeEach(() => {
         log = new Log(id, key, val, null, location);
-        book.put(log);
+        book.putLog(log);
       });
 
       it("should append a log with location", () => {
@@ -68,7 +68,7 @@ describe("Book", () => {
       let log;
       beforeEach(() => {
         log = new Log(id, key, val, time);
-        book.put(log);
+        book.putLog(log);
       });
 
       it("should append a log with time", () => {
@@ -85,7 +85,7 @@ describe("Book", () => {
     let tobj;
     beforeEach(() => {
       const log = new Log(id, key, val);
-      book.put(log);
+      book.putLog(log);
       tobj = book.transactionObj(log);
     });
 
@@ -145,8 +145,8 @@ describe("Book", () => {
 
     context("logs with same ids & keys but different vals", () => {
       beforeEach(() => {
-        book.put(new Log(id, key, v("val0")));
-        book.put(new Log(id, key, v("val1")));
+        book.putLog(new Log(id, key, v("val0")));
+        book.putLog(new Log(id, key, v("val1")));
       });
 
       it("should return all logs", () => {
@@ -158,7 +158,7 @@ describe("Book", () => {
       context("invalidate the last log", () => {
         beforeEach(() => {
           const log = book.activeLog(id, key);
-          book.put(new Log(log.logid, invalidate));
+          book.putLog(new Log(log.logid, invalidate));
         });
 
         it("should return only the first log", () => {
@@ -171,8 +171,8 @@ describe("Book", () => {
 
     context("logs with applying time", () => {
       beforeEach(() => {
-        book.put(new Log(id, key, v("val0"), new Date(2017, 0)));
-        book.put(new Log(id, key, v("val1"), new Date(2017, 2)));
+        book.putLog(new Log(id, key, v("val0"), new Date(2017, 0)));
+        book.putLog(new Log(id, key, v("val1"), new Date(2017, 2)));
       });
 
       it("should return all logs", () => {
@@ -190,7 +190,7 @@ describe("Book", () => {
       context("invalidate the last log", () => {
         beforeEach(() => {
           const log = book.activeLog(id, key);
-          book.put(new Log(log.logid, invalidate));
+          book.putLog(new Log(log.logid, invalidate));
         });
 
         it("should return only the first log", () => {
@@ -203,7 +203,7 @@ describe("Book", () => {
       context("invalidate the last log with applying time", () => {
         beforeEach(() => {
           const log = book.activeLog(id, key);
-          book.put(new Log(log.logid, invalidate, null, new Date(2017, 4)));
+          book.putLog(new Log(log.logid, invalidate, null, new Date(2017, 4)));
         });
 
         it("should return only the first log", () => {
@@ -228,8 +228,8 @@ describe("Book", () => {
 
     context("contain logs with old applying time", () => {
       beforeEach(() => {
-        book.put(new Log(id, key, v("val0"), new Date(2017, 1)));
-        book.put(new Log(id, key, v("val1"), new Date(2017, 0)));
+        book.putLog(new Log(id, key, v("val0"), new Date(2017, 1)));
+        book.putLog(new Log(id, key, v("val1"), new Date(2017, 0)));
       });
 
       it("should return all logs order by applying time", () => {
@@ -241,7 +241,7 @@ describe("Book", () => {
       context("invalidate the last log", () => {
         beforeEach(() => {
           const log = book.activeLog(id, key);
-          book.put(new Log(log.logid, invalidate));
+          book.putLog(new Log(log.logid, invalidate));
         });
 
         it("should return only the first log", () => {
@@ -254,8 +254,8 @@ describe("Book", () => {
 
     context("contain a log with time and a log without time", () => {
       beforeEach(() => {
-        book.put(new Log(id, key, v("val0"), new Date(2017, 2)));
-        book.put(new Log(id, key, v("val1")));
+        book.putLog(new Log(id, key, v("val0"), new Date(2017, 2)));
+        book.putLog(new Log(id, key, v("val1")));
       });
 
       it("should return all logs order by applying time", () => {
@@ -276,8 +276,8 @@ describe("Book", () => {
 
     context("logs with applying time", () => {
       beforeEach(() => {
-        book.put(new Log(id, key, v("val0"), new Date(2017, 0)));
-        book.put(new Log(id, key, v("val1"), new Date(2017, 2)));
+        book.putLog(new Log(id, key, v("val0"), new Date(2017, 0)));
+        book.putLog(new Log(id, key, v("val1"), new Date(2017, 2)));
       });
 
       it("should return the last log", () => {
@@ -294,7 +294,7 @@ describe("Book", () => {
 
   describe("#obj", () => {
     beforeEach(() => {
-      book.put(new Log(id, key, val));
+      book.putLog(new Log(id, key, val));
     });
 
     it("should return the obj", () => {

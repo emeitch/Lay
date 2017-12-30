@@ -117,7 +117,7 @@ export default class Book {
   assign(name, id) {
     // todo: ユニーク制約をかけたい
     const log = new Log(v(name), assign, id);
-    this.put(log);
+    this.putLog(log);
   }
 
   syncCache(log) {
@@ -155,7 +155,7 @@ export default class Book {
     return block(putWithTransaction);
   }
 
-  put(log) {
+  putLog(log) {
     return this.doTransaction(putWithTransaction => {
       return putWithTransaction(log);
     });
