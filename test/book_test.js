@@ -81,6 +81,25 @@ describe("Book", () => {
     });
   });
 
+  describe("#put", () => {
+    context("standard arguments with time", () => {
+      const time = new Date(2017, 0);
+
+      let log;
+      beforeEach(() => {
+        log = book.put(id, key, val, time);
+      });
+
+      it("should append a log", () => {
+        assert(log.id === id);
+        assert(log.key === key);
+        assert(log.val === val);
+        assert(log.at === time);
+        assert(book.log(log.logid) === log);
+      });
+    });
+  });
+
   describe("#transactionObj", () => {
     let tobj;
     beforeEach(() => {

@@ -160,4 +160,9 @@ export default class Book {
       return putWithTransaction(log);
     });
   }
+
+  put(...args) {
+    const log = new Log(...args);
+    return this.putLog(log);
+  }
 }
