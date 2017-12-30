@@ -20,7 +20,7 @@ export default class Sym extends Val {
   }
 
   step(book) {
-    return book.resolve(this.origin);
+    return book.get(this.origin);
   }
 }
 

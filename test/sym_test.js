@@ -9,7 +9,7 @@ describe("Sym", () => {
     it("should return val of book", () => {
       const val = v("sym val");
       const book = new Book();
-      book.assign("sym", val);
+      book.set("sym", val);
       assert(sym("sym").reduce(book) === val);
     });
 
@@ -17,7 +17,7 @@ describe("Sym", () => {
       it("should return val of nested book", () => {
         const val = v("sym val");
         const pbook = new Book();
-        pbook.assign("sym", val);
+        pbook.set("sym", val);
         const book = new Book(pbook);
 
         assert(sym("sym").reduce(book) === val);

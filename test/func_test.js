@@ -65,7 +65,7 @@ describe("Func", () => {
     context("defined function", () => {
       it("should reduce the expression", () => {
         const book = new Book();
-        book.assign("f", func("y", exp(plus, v(3), "y")));
+        book.set("f", func("y", exp(plus, v(3), "y")));
 
         assert.deepStrictEqual(exp("f", v(2)).reduce(book), v(5));
       });
@@ -85,7 +85,7 @@ describe("Func", () => {
     context("recursive function", () => {
       it("should reduce the expression", () => {
         const book = new Book();
-        book.assign("f", func(
+        book.set("f", func(
           "x",
           exp(
             kase(
@@ -194,11 +194,11 @@ describe("Func", () => {
     context("with infinite recursive exp", () => {
       it("should not reduce the infinite recursive exp", () => {
         const book = new Book();
-        book.assign("f", func(
+        book.set("f", func(
           "x",
           exp("f", "x")
         ));
-        book.assign("if", func(
+        book.set("if", func(
           "cond",
           "then",
           "else",
@@ -246,7 +246,7 @@ describe("Func", () => {
             )
           ).reduce(),
           v(3));
-        
+
         assert.deepStrictEqual(
           exp(
             func(

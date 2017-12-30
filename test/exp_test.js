@@ -46,8 +46,8 @@ describe("Exp", () => {
     context("multiple hopped operator", () => {
       it("should evalutate one step the expression", () => {
         const book = new Book();
-        book.assign("plus0", plus);
-        book.assign("plus1", sym("plus0"));
+        book.set("plus0", plus);
+        book.set("plus1", sym("plus0"));
 
         const e = exp("plus1", v(1), v(2));
 

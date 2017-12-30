@@ -168,7 +168,7 @@ describe("Obj", () => {
 
     context("with a directed specified map val obj", () => {
       beforeEach(() => {
-        book.assign("Foo", v({e: 4}));
+        book.set("Foo", v({e: 4}));
         const val = v("Foo", {a: 1, b: {c: 2, d: 3}});
         obj = book.obj(val);
       });
@@ -184,7 +184,7 @@ describe("Obj", () => {
 
     context("with a directed specified map val obj unreferenced head", () => {
       beforeEach(() => {
-        book.assign("Foo", v({e: 4}));
+        book.set("Foo", v({e: 4}));
         const val = v("Bar", {a: 1, b: {c: 2, d: 3}});
         obj = book.obj(val);
       });

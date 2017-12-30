@@ -100,7 +100,7 @@ export default class Book {
     return this.obj(tid);
   }
 
-  resolve(name) {
+  get(name) {
     const logs = this.findLogs({id: v(name), key: assign});
     const log = logs[logs.length-1];
     if (log) {
@@ -108,13 +108,13 @@ export default class Book {
     }
 
     if (this.parent) {
-      return this.parent.resolve(name);
+      return this.parent.get(name);
     }
 
     return null;
   }
 
-  assign(name, id) {
+  set(name, id) {
     // todo: ユニーク制約をかけたい
     const log = new Log(v(name), assign, id);
     this.putLog(log);

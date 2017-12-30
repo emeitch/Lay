@@ -68,7 +68,7 @@ describe("Path", () => {
 
       beforeEach(() => {
         book.putLog(new Log(id, key, val));
-        book.assign("a", id);
+        book.set("a", id);
         p = new Path(sym("a"), key);
       });
 
@@ -89,7 +89,7 @@ describe("Path", () => {
         book.putLog(new Log(id, key, id2));
         book.putLog(new Log(id2, key2, new Path(sym("self"), key3)));
         book.putLog(new Log(id2, key3, val3));
-        book.assign("a", id);
+        book.set("a", id);
         p = new Path(sym("a"), key, key2);
       });
 

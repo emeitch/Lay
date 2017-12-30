@@ -41,7 +41,7 @@ export default class Path extends Ref {
       }
 
       const env = new Book(book);
-      env.assign("self", log.id);
+      env.set("self", log.id);
 
       if (args.length > 0) {
         const e = exp(log.val, ...args);

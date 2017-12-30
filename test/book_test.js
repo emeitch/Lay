@@ -113,42 +113,42 @@ describe("Book", () => {
     });
   });
 
-  describe("#resolve", () => {
+  describe("#get", () => {
     context("name un assigned", () => {
       it("should return null", () => {
-        assert.deepStrictEqual(book.resolve("unassigned"), null);
+        assert.deepStrictEqual(book.get("unassigned"), null);
       });
     });
 
     context("name assigned", () => {
       beforeEach(() => {
-        book.assign("i", id);
-        book.assign("k", key);
-        book.assign("v", val);
+        book.set("i", id);
+        book.set("k", key);
+        book.set("v", val);
       });
 
       it("should return a id by name", () => {
-        assert(book.resolve("i") === id);
-        assert(book.resolve("k") === key);
-        assert(book.resolve("v") === val);
+        assert(book.get("i") === id);
+        assert(book.get("k") === key);
+        assert(book.get("v") === val);
       });
 
       context("name re-assigned", () => {
         const key2 = new UUID();
 
         beforeEach(() => {
-          book.assign("r", key2);
+          book.set("r", key2);
         });
 
         it("should return a re-assigned id by name", () => {
-          assert(book.resolve("r") === key2);
+          assert(book.get("r") === key2);
         });
       });
 
       context("parent-child", () => {
         it("should return a parent assigned value", () => {
           const cbook = new Book(book);
-          assert(cbook.resolve("i") === id);
+          assert(cbook.get("i") === id);
         });
       });
     });

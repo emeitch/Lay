@@ -5,35 +5,35 @@ import { uuid } from './uuid';
 import v from './v';
 
 const d = new Book();
-d.assign("tasks", uuid());
-d.assign("item", uuid());
-d.assign("title", uuid());
+d.set("tasks", uuid());
+d.set("item", uuid());
+d.set("title", uuid());
 
 {
   const t = uuid();
-  d.put(d.resolve("tasks"), d.resolve("item"), t);
-  d.put(t, d.resolve("title"), v("buy the milk"));
+  d.put(d.get("tasks"), d.get("item"), t);
+  d.put(t, d.get("title"), v("buy the milk"));
 
   const to = new Obj(d, t);
-  console.log(to.get(d.resolve("title")));
+  console.log(to.get(d.get("title")));
 }
 
 {
   const t = uuid();
-  d.put(d.resolve("tasks"), d.resolve("item"), t);
-  d.put(t, d.resolve("title"), v("buy the beer"));
+  d.put(d.get("tasks"), d.get("item"), t);
+  d.put(t, d.get("title"), v("buy the beer"));
 
   const to = new Obj(d, t);
-  console.log(to.get(d.resolve("title")));
+  console.log(to.get(d.get("title")));
 }
 
 {
   const t = uuid();
-  d.put(d.resolve("tasks"), d.resolve("item"), t);
-  d.put(t, d.resolve("title"), v("buy the wine"));
+  d.put(d.get("tasks"), d.get("item"), t);
+  d.put(t, d.get("title"), v("buy the wine"));
 
   const to = new Obj(d, t);
-  console.log(to.get(d.resolve("title")));
+  console.log(to.get(d.get("title")));
 }
 
 console.log(d);
