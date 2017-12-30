@@ -2,7 +2,7 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack --watch -d --devtool source-map & browser-sync start --server --files build/bundle.js",
-    "test": "npm run lint && cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --compilers js:babel-register",
+    "test": "npm run lint && cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --require babel-register",
     "lint": "eslint src/*.js test/*.js"
   },
   "nyc": {
