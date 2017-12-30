@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import Val from './val';
 import Prim from './prim';
 import Hash from './hash';
@@ -62,6 +63,12 @@ export default class Comp extends Val {
       const proto = this.head.reduce(book);
       return proto ? proto.get(key) : Comp.valFrom(proto);
     }
+  }
+
+  set(key, val) {
+    const o = _.clone(this.origin);
+    o[key] = val.origin;
+    return this.constructor.valFrom(o);
   }
 
   merge(diff) {

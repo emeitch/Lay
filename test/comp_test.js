@@ -32,5 +32,12 @@ describe("Comp", () => {
         assert.deepStrictEqual(val.merge({b: 3, c: 4}), v({a: 1, b: 3, c: 4}));
       });
     });
+
+    describe("#set", () => {
+      it("should return updated comp", () => {
+        const val = v({a: 1, b: 2});
+        assert.deepStrictEqual(val.set("b", v({c: 3, d: 4})), v({a: 1, b: {c: 3, d: 4}}));
+      });
+    });
   });
 });
