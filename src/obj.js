@@ -1,5 +1,6 @@
 import Path from './path';
 import Comp from './comp';
+import v from './v';
 
 export default class Obj {
   constructor(book, id) {
@@ -18,12 +19,12 @@ export default class Obj {
       return this.book.obj(prop);
     }
 
-    const path = new Path(this.id, key);
-    const v = path.reduce(this.book);
-    if (v === path){
+    const path = new Path(this.id, v(key));
+    const val = path.reduce(this.book);
+    if (val === path){
       return null;
     } else {
-      return this.book.obj(v);
+      return this.book.obj(val);
     }
   }
 

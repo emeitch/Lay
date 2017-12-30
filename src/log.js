@@ -1,5 +1,6 @@
 import Val from './val';
 import UUID from './uuid';
+import v from './v';
 
 export default class Log {
   constructor(id, key, val, at_=null, in_=null) {
@@ -16,8 +17,8 @@ export default class Log {
     }
 
     this.logid = new UUID();
-    this.id = id;
-    this.key = key;
+    this.id = v(id);
+    this.key = v(key);
     this.val = val;
     this.at = at_;
     this.in = in_;
