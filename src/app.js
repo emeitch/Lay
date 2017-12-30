@@ -1,32 +1,24 @@
 /* eslint-env browser */
 import Book from './book';
-import Obj from './obj';
-import { uuid } from './uuid';
 import v from './v';
 
 const d = new Book();
 
 {
-  const t = uuid();
-  d.put(t, "title", v("buy the milk"));
-  const to = new Obj(d, t);
-
+  const to = d.obj();
+  to.set("title", v("buy the milk"));
   console.log(to.get("title"));
 }
 
 {
-  const t = uuid();
-  d.put(t, "title", v("buy the beer"));
-
-  const to = new Obj(d, t);
+  const to = d.obj();
+  to.set("title", v("buy the beer"));
   console.log(to.get("title"));
 }
 
 {
-  const t = uuid();
-  d.put(t, "title", v("buy the wine"));
-
-  const to = new Obj(d, t);
+  const to = d.obj();
+  to.set("title", v("buy the wine"));
   console.log(to.get("title"));
 }
 
