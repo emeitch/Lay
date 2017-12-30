@@ -81,7 +81,7 @@ export default class Book {
   }
 
   obj(id) {
-    if (id instanceof ID || id instanceof Comp) {
+    if (id instanceof ID || id instanceof Comp || !id) {
       return new Obj(this, id);
     } else {
       return id;
