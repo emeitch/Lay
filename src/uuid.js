@@ -23,3 +23,7 @@ export default class UUID extends ID {
     return "urn:uuid:";
   }
 }
+
+export function uuid(...args) {
+  return new UUID(...args);
+}
