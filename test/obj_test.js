@@ -197,6 +197,42 @@ describe("Obj", () => {
         assert.deepStrictEqual(obj.get("e"), book.obj(v(null)));
       });
     });
+  });
+
+  describe("set", () => {
+    context("with a UUID val", () => {
+      const dst = new UUID();
+
+      beforeEach(() => {
+        obj.set(key, dst);
+      });
+
+      it("should return a obj of log's val", () => {
+        assert.deepStrictEqual(obj.get(key), book.obj(dst));
+      });
+    });
+
+    context("with a obj val", () => {
+      let obj2;
+      beforeEach(() => {
+        obj2 = book.obj();
+        obj.set(key, obj2);
+      });
+
+      it("should return a obj", () => {
+        assert.deepStrictEqual(obj.get(key), obj2);
+      });
+    });
+
+    context("map obj", () => {
+      beforeEach(() => {
+        obj = book.obj(v({a: 1, b: 2}));
+      });
+
+      it("should throw a error", () => {
+        assert.throws(() => obj.set("b", book.obj(v({c: 4, d: 5}))), /Obj#set method unsupported for comp id/);
+      });
+    });
 
   });
 

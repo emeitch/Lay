@@ -29,6 +29,17 @@ export default class Obj {
     }
   }
 
+  set(key, val) {
+    if (this.id instanceof Comp) {
+      throw "Obj#set method unsupported for comp id";
+    }
+
+    if (val instanceof Obj) {
+      val = val.id;
+    }
+    this.book.put(this.id, key, val);
+  }
+
   call(key, ...args) {
     const path = new Path(this.id, [key, ...args]);
     const v = path.reduce(this.book);
