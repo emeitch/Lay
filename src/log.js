@@ -1,4 +1,3 @@
-import Val from './val';
 import UUID from './uuid';
 import v from './v';
 
@@ -12,14 +11,10 @@ export default class Log {
       throw "key is required";
     }
 
-    if (val && !(val instanceof Val)) {
-      throw "val is not a Val";
-    }
-
     this.logid = new UUID();
     this.id = v(id);
     this.key = v(key);
-    this.val = val;
+    this.val = val === undefined ? val : v(val);
     this.at = at_;
     this.in = in_;
   }

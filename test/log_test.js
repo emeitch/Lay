@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import UUID from '../src/uuid';
 import Log, { n } from '../src/log';
+import v from '../src/v';
 
 describe("Log", () => {
   const id = new UUID();
@@ -19,7 +20,7 @@ describe("Log", () => {
     });
   });
 
-  describe("constructor ", () => {
+  describe("constructor", () => {
     it("should require a id", () => {
       assert.throws(() => new Log(), /id is required/);
     });
@@ -28,8 +29,9 @@ describe("Log", () => {
       assert.throws(() => new Log(id), /key is required/);
     });
 
-    it("should constrain a val typed Val", () => {
-      assert.throws(() => new Log(id, key, "unval"), /val is not a Val/);
+    it("should constrain a val coverting Val", () => {
+      const l = new Log(id, key, "str");
+      assert.deepStrictEqual(l.val, v("str"));
     });
   });
 });
