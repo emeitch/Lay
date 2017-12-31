@@ -88,6 +88,12 @@ export default class Book {
     }
   }
 
+  new() {
+    const obj = this.obj();
+    obj.set("exists");
+    return obj;
+  }
+
   transactionObj(log) {
     const tlogs = this.findLogs({id: log.logid, key: transaction});
 

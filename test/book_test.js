@@ -326,7 +326,21 @@ describe("Book", () => {
         const o = book.obj();
         assert(o.constructor === Obj);
         assert(o.id);
+
+        const logs = book.activeLogs(o.id, v("exists"));
+        assert(logs.length === 0); // no exists
       });
+    });
+  });
+
+  describe("#new", () => {
+    it("should return the obj", () => {
+      const o = book.new();
+      assert(o.constructor === Obj);
+      assert(o.id);
+
+      const logs = book.activeLogs(o.id, v("exists"));
+      assert(logs.length > 0);
     });
   });
 });
