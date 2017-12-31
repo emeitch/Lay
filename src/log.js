@@ -14,7 +14,7 @@ export default class Log {
     this.logid = new UUID();
     this.id = v(id);
     this.key = v(key);
-    this.val = val === undefined ? val : v(val);
+    this.val = val !== undefined ? v(val) : undefined;
     this.at = at_;
     this.in = in_;
   }
