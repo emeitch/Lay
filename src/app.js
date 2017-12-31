@@ -1,24 +1,23 @@
 /* eslint-env browser */
 import Book from './book';
-import v from './v';
 
 const d = new Book();
 
 {
   const to = d.obj();
-  to.set("title", v("buy the milk"));
+  to.set("title", "buy the milk");
   console.log(to.get("title"));
 }
 
 {
   const to = d.obj();
-  to.set("title", v("buy the beer"));
+  to.set("title", "buy the beer");
   console.log(to.get("title"));
 }
 
 {
   const to = d.obj();
-  to.set("title", v("buy the wine"));
+  to.set("title", "buy the wine");
   console.log(to.get("title"));
 }
 
