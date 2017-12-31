@@ -34,7 +34,7 @@ export default class Book {
   }
 
   cacheIndex(id, key) {
-    return id + "__" + key;
+    return id.toJSON() + "__" + key.toJSON();
   }
 
   activeLogs(id, key, at=new Date()) {
@@ -89,9 +89,19 @@ export default class Book {
     }
   }
 
-  new() {
+  new(props) {
     const obj = this.obj(new UUID());
     obj.set("exists");
+
+    if (props) {
+      for (let key in props) {
+        if (props.hasOwnProperty(key)) {
+          const val = props[key];
+          obj.set(key, val);
+        }
+      }
+    }
+
     return obj;
   }
 

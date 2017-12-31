@@ -331,6 +331,18 @@ describe("Book", () => {
       const logs = book.activeLogs(o.id, v("exists"));
       assert(logs.length > 0);
     });
+
+    context("with properties", () => {
+      it("should return the obj set properties", () => {
+        const o = book.new({
+          foo: 1,
+          bar: "baz"
+        });
+
+        assert.deepStrictEqual(o.get("foo"), v(1));
+        assert.deepStrictEqual(o.get("bar"), v("baz"));
+      });
+    });
   });
 
   describe("#objs", () => {
