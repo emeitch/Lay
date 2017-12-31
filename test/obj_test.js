@@ -215,7 +215,7 @@ describe("Obj", () => {
     context("with a obj val", () => {
       let obj2;
       beforeEach(() => {
-        obj2 = book.obj();
+        obj2 = book.obj(new UUID());
         obj.set(key, obj2);
       });
 

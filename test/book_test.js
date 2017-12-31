@@ -320,17 +320,6 @@ describe("Book", () => {
       const o = book.obj(id);
       assert(o.constructor === Obj);
     });
-
-    context("unspecified id", () => {
-      it("should return the obj", () => {
-        const o = book.obj();
-        assert(o.constructor === Obj);
-        assert(o.id);
-
-        const logs = book.activeLogs(o.id, v("exists"));
-        assert(logs.length === 0); // no exists
-      });
-    });
   });
 
   describe("#new", () => {

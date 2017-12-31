@@ -81,7 +81,7 @@ export default class Book {
   }
 
   obj(id) {
-    if (id instanceof ID || id instanceof Comp || !id) {
+    if (id instanceof ID || id instanceof Comp) {
       return new Obj(this, id);
     } else {
       return id;
@@ -89,7 +89,7 @@ export default class Book {
   }
 
   new() {
-    const obj = this.obj();
+    const obj = this.obj(new UUID());
     obj.set("exists");
     return obj;
   }

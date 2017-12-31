@@ -1,10 +1,9 @@
 import Path from './path';
 import Comp from './comp';
-import { uuid } from './uuid';
 import v from './v';
 
 export default class Obj {
-  constructor(book, id=uuid()) {
+  constructor(book, id) {
     this.book = book;
     this.id = id;
   }
