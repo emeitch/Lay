@@ -37,6 +37,8 @@ export default class Obj {
       val = val.id;
     }
     this.book.put(this.id, key, val);
+
+    return this;
   }
 
   call(key, ...args) {

@@ -203,12 +203,17 @@ describe("Obj", () => {
     context("with a UUID val", () => {
       const dst = new UUID();
 
+      let ret;
       beforeEach(() => {
-        obj.set(key, dst);
+        ret = obj.set(key, dst);
       });
 
-      it("should return a obj of log's val", () => {
+      it("should set a property", () => {
         assert.deepStrictEqual(obj.get(key), book.obj(dst));
+      });
+
+      it("should return the obj", () => {
+        assert(ret, obj);
       });
     });
 
