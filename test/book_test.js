@@ -332,4 +332,18 @@ describe("Book", () => {
       assert(logs.length > 0);
     });
   });
+
+  describe("#objs", () => {
+    it("should return new generated objs", () => {
+      const o0 = book.new();
+      const o1 = book.new();
+      const o2 = book.new();
+
+      const objs = book.objs();
+      assert(objs.length === 3);
+      assert(objs[0].id === o0.id);
+      assert(objs[1].id === o1.id);
+      assert(objs[2].id === o2.id);
+    });
+  });
 });

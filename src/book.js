@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import v from './v';
 import ID from './id';
 import UUID from './uuid';
@@ -92,6 +93,12 @@ export default class Book {
     const obj = this.obj(new UUID());
     obj.set("exists");
     return obj;
+  }
+
+  objs() {
+    const logs = this.findLogs({key: v("exists")});
+    const ids = _.uniq(logs.map(l => l.id));
+    return ids.map(id => new Obj(this, id));
   }
 
   transactionObj(log) {
