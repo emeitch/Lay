@@ -94,11 +94,9 @@ export default class Book {
     obj.set("exists");
 
     if (props) {
-      for (let key in props) {
-        if (props.hasOwnProperty(key)) {
-          const val = props[key];
-          obj.set(key, val);
-        }
+      for (const key of Object.keys(props)) {
+        const val = props[key];
+        obj.set(key, val);
       }
     }
 
