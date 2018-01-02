@@ -5,16 +5,16 @@ import { sym } from './sym';
 const d = new Book();
 
 d.new()
-  .set("type", sym("Task"))
+  .set("tag", sym("Task"))
   .set("title", "buy the milk");
 d.new()
-  .set("type", sym("Task"))
+  .set("tag", sym("Task"))
   .set("title", "buy the beer");
 d.new()
-  .set("type", sym("Task"))
+  .set("tag", sym("Task"))
   .set("title", "buy the wine");
 
 d.objs().forEach(o => {
-  console.log(o.get("type"));
+  console.log(o.get("tag"));
   console.log(o.get("title"));
 });
