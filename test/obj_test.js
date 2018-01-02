@@ -257,4 +257,16 @@ describe("Obj", () => {
       });
     });
   });
+
+  describe("keys", () => {
+    let key2 = v("key2");
+    beforeEach(() => {
+      book.put(id, key, v(1));
+      book.put(id, key2, v(2));
+    });
+
+    it("should return keys", () => {
+      assert.deepStrictEqual(obj.keys(), [key, key2]);
+    });
+  });
 });

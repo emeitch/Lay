@@ -46,4 +46,9 @@ export default class Obj {
     const v = path.reduce(this.book);
     return v; // todo: #getと同じくUUID時にObjで返さなくて良い?
   }
+
+  keys() {
+    const logs = this.book.findLogs({id: this.id});
+    return logs.map(l => l.key);
+  }
 }
