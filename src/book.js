@@ -132,7 +132,7 @@ export default class Book {
       return this.parent.get(name);
     }
 
-    return null;
+    return undefined;
   }
 
   set(name, id) {

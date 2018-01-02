@@ -116,7 +116,7 @@ describe("Book", () => {
   describe("#get", () => {
     context("name un assigned", () => {
       it("should return null", () => {
-        assert.deepStrictEqual(book.get("unassigned"), null);
+        assert.deepStrictEqual(book.get("unassigned"), undefined);
       });
     });
 

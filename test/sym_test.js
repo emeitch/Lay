@@ -13,6 +13,14 @@ describe("Sym", () => {
       assert(sym("sym").reduce(book) === val);
     });
 
+    context("unassigned", () => {
+      it("should return the sym", () => {
+        const s = sym("sym");
+        const book = new Book();
+        assert(s.reduce(book) === s);
+      });
+    });
+
     context("nested book", () => {
       it("should return val of nested book", () => {
         const val = v("sym val");

@@ -193,8 +193,8 @@ describe("Obj", () => {
         assert.deepStrictEqual(obj.get("b").get("d"), book.obj(v(3)));
       });
 
-      it("should return the prototype property", () => {
-        assert.deepStrictEqual(obj.get("e"), book.obj(v(null)));
+      it("should return the head sym", () => {
+        assert.deepStrictEqual(obj.get("e"), book.obj(sym("Bar")));
       });
     });
   });
