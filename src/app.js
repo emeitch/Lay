@@ -15,6 +15,7 @@ d.new()
   .set("title", "buy the wine");
 
 d.objs().forEach(o => {
-  console.log(o.get("tag"));
-  console.log(o.get("title"));
+  o.keys().forEach(k => {
+    console.log(o.get(k));
+  });
 });

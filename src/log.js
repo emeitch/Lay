@@ -2,7 +2,7 @@ import UUID from './uuid';
 import v from './v';
 
 export default class Log {
-  constructor(id, key, val, at_=null, in_=null) {
+  constructor(id, key, val=null, at_=null, in_=null) {
     if (!id) {
       throw "id is required";
     }
@@ -14,7 +14,7 @@ export default class Log {
     this.logid = new UUID();
     this.id = v(id);
     this.key = v(key);
-    this.val = val !== undefined ? v(val) : undefined;
+    this.val = v(val);
     this.at = at_;
     this.in = in_;
   }
