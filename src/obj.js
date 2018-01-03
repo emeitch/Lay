@@ -41,7 +41,7 @@ export default class Obj {
     return this;
   }
 
-  call(key, ...args) {
+  send(key, ...args) {
     const path = new Path(this.id, [key, ...args]);
     const v = path.reduce(this.book);
     return v; // todo: #getと同じくUUID時にObjで返さなくて良い?

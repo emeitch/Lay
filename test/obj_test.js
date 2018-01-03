@@ -241,7 +241,7 @@ describe("Obj", () => {
 
   });
 
-  describe("call", () => {
+  describe("send", () => {
     context("with a relative reference func", () => {
       let val2;
       beforeEach(() => {
@@ -253,7 +253,7 @@ describe("Obj", () => {
       });
 
       it("should return the reduced val as methods", () => {
-        assert.deepStrictEqual(obj.call(key, v(2)), v(3));
+        assert.deepStrictEqual(obj.send(key, v(2)), v(3));
       });
     });
   });
