@@ -253,7 +253,21 @@ describe("Obj", () => {
       });
 
       it("should return the reduced val as methods", () => {
-        assert.deepStrictEqual(obj.send(key, v(2)), v(3));
+        assert.deepStrictEqual(obj.send(key, v(2)), book.obj(v(3)));
+      });
+    });
+
+    context("returning reference func", () => {
+      const ref = new UUID();
+      beforeEach(() => {
+        const key2 = new UUID();
+
+        book.putLog(new Log(id, key2, ref));
+        book.putLog(new Log(id, key, new Path(sym("self"), key2)));
+      });
+
+      it("should return a obj wrapping the ref", () => {
+        assert.deepStrictEqual(obj.send(key), book.obj(ref));
       });
     });
   });

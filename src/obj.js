@@ -44,7 +44,7 @@ export default class Obj {
   send(key, ...args) {
     const path = new Path(this.id, [key, ...args]);
     const v = path.reduce(this.book);
-    return v; // todo: #getと同じくUUID時にObjで返さなくて良い?
+    return this.book.obj(v);
   }
 
   keys() {
