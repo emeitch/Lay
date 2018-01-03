@@ -115,6 +115,54 @@ describe("Path", () => {
       });
     });
 
+    context("access a key only its tag has the key", () => {
+      const id = new UUID();
+
+      beforeEach(() => {
+        const tagid1 = new UUID();
+        const tagid2 = new UUID();
+        const tagid3 = new UUID();
+
+        book.set("parent1", tagid1);
+        book.set("parent2", tagid2);
+        book.set("grandparent", tagid3);
+
+        book.put(id, "tag", sym("parent1"));
+        book.put(id, "tag", sym("parent2"));
+        book.put(tagid2, "tag", sym("grandparent"));
+
+        book.put(tagid1, "foo", v(1));
+        book.put(tagid2, "foo", v(2));
+        book.put(tagid2, "bar", v(3));
+        book.put(tagid3, "baz", v(4));
+      });
+
+      it("should return the tag's val", () => {
+        const p1 = new Path(id, v("foo"));
+        assert.deepStrictEqual(p1.reduce(book), v(1));
+
+        const p2 = new Path(id, v("bar"));
+        assert.deepStrictEqual(p2.reduce(book), v(3));
+
+        const p3 = new Path(id, v("baz"));
+        assert.deepStrictEqual(p3.reduce(book), v(4));
+      });
+    });
+
+    context("with tag but it dosen't have the key", () => {
+      const id = new UUID();
+
+      beforeEach(() => {
+        const tagid = new UUID();
+        book.put(id, "tag", tagid);
+      });
+
+      it("should return the path", () => {
+        const p = new Path(id, v("foo"));
+        assert.deepStrictEqual(p.reduce(book), p);
+      });
+    });
+
     context("unknown path", () => {
       const id = new UUID();
       const unknownKey1 = new UUID();
@@ -124,7 +172,7 @@ describe("Path", () => {
         p = new Path(id, unknownKey1, unknownKey2);
       });
 
-      it("should raise exception", () => {
+      it("should return the path", () => {
         assert.deepStrictEqual(p.reduce(book), p);
       });
     });

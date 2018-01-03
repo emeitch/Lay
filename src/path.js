@@ -1,5 +1,6 @@
 import Ref from './ref';
 import Book from './book';
+import v from './v';
 import { exp } from './exp';
 
 export default class Path extends Ref {
@@ -22,7 +23,7 @@ export default class Path extends Ref {
   }
 
   step(book) {
-    let v = this.receiver.reduce(book);
+    let r = this.receiver.reduce(book);
     for (const elm of this.keys) {
       let key;
       let args = [];
@@ -35,21 +36,35 @@ export default class Path extends Ref {
       }
 
       const k = key.reduce(book);
-      const log = book.activeLog(v, k);
+      const findLog = (i) => {
+        const log = book.activeLog(i, k);
+        if (!log) {
+          const tlogs = book.activeLogs(i, v("tag"));
+          for (const tlog of tlogs) {
+            const p = tlog.val.reduce(book);
+            const l = findLog(p);
+            if (l) {
+              return l;
+            }
+          }
+        }
+        return log;
+      };
+      const log = findLog(r);
       if (!log) {
         return super.step(book);
       }
 
       const env = new Book(book);
-      env.set("self", log.id);
+      env.set("self", r);
 
       if (args.length > 0) {
         const e = exp(log.val, ...args);
-        v = e.reduce(env);
+        r = e.reduce(env);
       } else {
-        v = log.val.reduce(env);
+        r = log.val.reduce(env);
       }
     }
-    return v;
+    return r;
   }
 }
