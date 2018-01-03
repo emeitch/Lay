@@ -5,6 +5,12 @@ import Sym, { sym } from './sym';
 import { exp } from './exp';
 
 export class Native extends Val {
+  _apply(...args) {
+    const oargs = args.map(a => a.origin);
+    const orig = this.origin.apply(undefined, oargs);
+    return v(orig);
+  }
+
   apply(book, ...args) {
     const rest = this.origin.length - args.length;
     if (rest > 0) {
@@ -39,9 +45,7 @@ export class Native extends Val {
       return exp(this, ...args);
     }
 
-    const oargs = args.map(a => a.origin);
-    const orig = this.origin.apply(undefined, oargs);
-    return v(orig);
+    return this._apply(...args);
   }
 
   replaceAsTop(matches) {
@@ -49,6 +53,12 @@ export class Native extends Val {
       prv.concat(Object.keys(match).filter(k =>
         k === "it").map(k => match[k])), []);
     return exp(this, ...args);
+  }
+}
+
+export class LiftedNative extends Native {
+  _apply(...args) {
+    return this.origin.apply(undefined, args);
   }
 }
 

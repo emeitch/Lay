@@ -6,6 +6,7 @@ import Log from './log';
 import Obj from './obj';
 import Comp from './comp';
 import Act from './act';
+import { func, LiftedNative } from './func';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
@@ -14,6 +15,12 @@ export default class Book {
     this.logs = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();
+
+    this.setup();
+  }
+
+  setup() {
+    this.set("put", func("id", "key", "val", new LiftedNative((id, key, val) => this.putAct(id, key, val))));
   }
 
   log(logid) {

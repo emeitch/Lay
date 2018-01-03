@@ -5,6 +5,7 @@ import UUID from '../src/uuid';
 import Log from '../src/log';
 import Book from '../src/book';
 import Obj from '../src/obj';
+import { exp } from '../src/exp';
 import { transaction, transactionTime, invalidate } from '../src/ontology';
 
 describe("Book", () => {
@@ -359,15 +360,15 @@ describe("Book", () => {
     });
   });
 
-  describe("putAct", () => {
+  describe("putAct as assigned `put`", () => {
     it("should return a calling put act", () => {
-      let pa = book.putAct(id, key, val);
-      assert(!book.activeLog(id, key));
+      const pae = exp("put", id, key, val);
+      let pa = pae.reduce(book);
 
+      assert(!book.activeLog(id, key));
       while(!pa.settled) {
         pa = pa.proceed();
       }
-
       assert(book.activeLog(id, key));
     });
   });
