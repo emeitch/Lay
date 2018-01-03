@@ -358,4 +358,17 @@ describe("Book", () => {
       assert(objs[2].id === o2.id);
     });
   });
+
+  describe("putAct", () => {
+    it("should return a calling put act", () => {
+      let pa = book.putAct(id, key, val);
+      assert(!book.activeLog(id, key));
+
+      while(!pa.settled) {
+        pa = pa.proceed();
+      }
+
+      assert(book.activeLog(id, key));
+    });
+  });
 });

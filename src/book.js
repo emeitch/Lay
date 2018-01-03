@@ -5,6 +5,7 @@ import UUID from './uuid';
 import Log from './log';
 import Obj from './obj';
 import Comp from './comp';
+import Act from './act';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
@@ -185,5 +186,11 @@ export default class Book {
   put(...args) {
     const log = new Log(...args);
     return this.putLog(log);
+  }
+
+  putAct(...args) {
+    return new Act(() => {
+      return this.put(...args);
+    });
   }
 }
