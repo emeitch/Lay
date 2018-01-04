@@ -5,9 +5,9 @@ import Sym, { sym } from './sym';
 import { exp } from './exp';
 
 export class Native extends Val {
-  _apply(...args) {
+  _apply(book, ...args) {
     const oargs = args.map(a => a.origin);
-    const orig = this.origin.apply(undefined, oargs);
+    const orig = this.origin.apply(book, oargs);
     return v(orig);
   }
 
@@ -45,7 +45,7 @@ export class Native extends Val {
       return exp(this, ...args);
     }
 
-    return this._apply(...args);
+    return this._apply(book, ...args);
   }
 
   replaceAsTop(matches) {
@@ -57,8 +57,8 @@ export class Native extends Val {
 }
 
 export class LiftedNative extends Native {
-  _apply(...args) {
-    return this.origin.apply(undefined, args);
+  _apply(book, ...args) {
+    return this.origin.apply(book, args);
   }
 }
 
