@@ -23,9 +23,11 @@ export default class Book {
     this.set("put", func("id", "key", "val", new LiftedNative((id, key, val) => this.putAct(id, key, val))));
 
     const obj = new UUID();
+    const base = this;
     this.set("Object", obj);
-    this.put(obj, "set", func("key", "val", new LiftedNative((key, val) =>
-      this.putAct(this.get("self"), key, val))));
+    this.put(obj, "set", func("key", "val", new LiftedNative(function(key, val) {
+      return base.putAct(this.get("self"), key, val);
+    })));
   }
 
   log(logid) {

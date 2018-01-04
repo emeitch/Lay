@@ -270,6 +270,18 @@ describe("Obj", () => {
         assert.deepStrictEqual(obj.send(key), book.obj(ref));
       });
     });
+
+    // adhoc specification
+    context("accessing default Object set method", () => {
+      beforeEach(() => {
+        book.put(id, key, v(1));
+      });
+
+      it("should execute the act that returned set method", () => {
+        obj.send(v("set"), v("key2"), v(2));
+        assert.deepStrictEqual(obj.send(v("key2")), book.obj(v(2)));
+      });
+    });
   });
 
   describe("keys", () => {
