@@ -24,12 +24,6 @@ export class Native extends Val {
       return Func.func(...pats.concat([e]));
     }
 
-    const syms = args.filter(arg => arg instanceof Sym);
-    if (syms.length > 0) {
-      const e = exp(this, ...args);
-      return Func.func(...syms.concat([e]));
-    }
-
     for (let i = 0; i < args.length; i++) {
       const a = args[i];
       const na = a.step(book);
@@ -52,7 +46,13 @@ export class Native extends Val {
     const args = matches.reduce((prv, match) =>
       prv.concat(Object.keys(match).filter(k =>
         k === "it").map(k => match[k])), []);
-    return exp(this, ...args);
+    const e = exp(this, ...args);
+    const syms = args.filter(arg => arg instanceof Sym);
+    if (syms.length > 0) {
+      return Func.func(...syms.concat([e]));
+    } else {
+      return e;
+    }
   }
 }
 
