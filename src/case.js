@@ -6,6 +6,10 @@ import { exp } from './exp';
 
 export class Native extends Val {
   _apply(book, ...args) {
+    if (args.some(arg => arg.reducible)) {
+      return exp(this, ...args);
+    }
+
     const oargs = args.map(a => a.origin);
     const orig = this.origin.apply(book, oargs);
     return v(orig);
@@ -35,10 +39,6 @@ export class Native extends Val {
       }
     }
 
-    if (args.some(arg => arg.reducible)) {
-      return exp(this, ...args);
-    }
-
     return this._apply(book, ...args);
   }
 
@@ -47,7 +47,13 @@ export class Native extends Val {
       prv.concat(Object.keys(match).filter(k =>
         k === "it").map(k => match[k])), []);
     const e = exp(this, ...args);
-    const syms = args.filter(arg => arg instanceof Sym);
+    const syms = matches.filter(m => {
+      const k = Object.keys(m).filter(k => k !== "it")[0];
+      const a = m[k];
+      // todo: たまたま設定されたSymとkey名が同じ場合に対応できてない
+      // 根本的な対処が必要
+      return a instanceof Sym && a.origin === k;
+    }).map(m => m["it"]);
     if (syms.length > 0) {
       return Func.func(...syms.concat([e]));
     } else {

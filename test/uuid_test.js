@@ -15,4 +15,11 @@ describe("UUID", () => {
       assert(u.toJSON() === u.toString());
     });
   });
+
+  describe("#reducible", () => {
+    it("should return true by default behavior", () => {
+      const u = uuid();
+      assert.deepStrictEqual(u.reducible, false);
+    });
+  });
 });

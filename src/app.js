@@ -1,17 +1,30 @@
 /* eslint-env browser */
 import Book from './book';
+import { sym } from './sym';
 import v from './v';
 
 const d = new Book();
 
-d.new({tag: "Task"});
-d.objs().pop().send(v("set"), v("title"), v("buy the milk"));
+d.new();
+{
+  const o = d.objs().pop();
+  o.send(v("set"), v("tag"), sym("Task"));
+  o.send(v("set"), v("title"), v("buy the milk"));
+}
 
-d.new({tag: "Task"});
-d.objs().pop().send(v("set"), v("title"), v("buy the beer"));
+d.new();
+{
+  const o = d.objs().pop();
+  o.send(v("set"), v("tag"), sym("Task"));
+  o.send(v("set"), v("title"), v("buy the beer"));
+}
 
-d.new({tag: "Task"});
-d.objs().pop().send(v("set"), v("title"), v("buy the wine"));
+d.new();
+{
+  const o = d.objs().pop();
+  o.send(v("set"), v("tag"), sym("Task"));
+  o.send(v("set"), v("title"), v("buy the wine"));
+}
 
 d.objs().forEach(o => {
   o.keys().forEach(k => {
