@@ -10,6 +10,7 @@ d.new();
   const o = d.objs().pop();
   o.send(v("set"), v("tag"), sym("Task"));
   o.send(v("set"), v("title"), v("buy the milk"));
+  o.send(v("set"), v("state"), sym("active"));
 }
 
 d.new();
@@ -17,6 +18,7 @@ d.new();
   const o = d.objs().pop();
   o.send(v("set"), v("tag"), sym("Task"));
   o.send(v("set"), v("title"), v("buy the beer"));
+  o.send(v("set"), v("state"), sym("active"));
 }
 
 d.new();
@@ -24,6 +26,7 @@ d.new();
   const o = d.objs().pop();
   o.send(v("set"), v("tag"), sym("Task"));
   o.send(v("set"), v("title"), v("buy the wine"));
+  o.send(v("set"), v("state"), sym("active"));
 }
 
 d.objs().forEach(o => {
