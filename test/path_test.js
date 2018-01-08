@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import v from '../src/v';
-import Path from '../src/path';
+import Path, { path } from '../src/path';
 import UUID from '../src/uuid';
 import Act from '../src/act';
 import { sym } from '../src/sym';
@@ -185,7 +185,7 @@ describe("Path", () => {
       const unknownKey2 = new UUID();
 
       beforeEach(() => {
-        p = new Path(id, unknownKey1, unknownKey2);
+        p = path(id, unknownKey1, unknownKey2);
       });
 
       it("should return the path", () => {

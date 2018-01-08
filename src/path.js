@@ -70,3 +70,7 @@ export default class Path extends Ref {
     return r;
   }
 }
+
+export function path(...args) {
+  return new Path(...args);
+}
