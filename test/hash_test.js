@@ -18,4 +18,11 @@ describe("Hash", () => {
       });
     });
   });
+
+  describe("#reducible", () => {
+    it("should return true by default behavior", () => {
+      const h = new Hash({a: 1});
+      assert.deepStrictEqual(h.reducible, false);
+    });
+  });
 });
