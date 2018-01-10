@@ -1,5 +1,5 @@
 import Ref from './ref';
-import Book from './book';
+import { Env } from './book';
 import v from './v';
 import { exp } from './exp';
 
@@ -57,7 +57,7 @@ export default class Path extends Ref {
         return super.step(book);
       }
 
-      const env = new Book(book);
+      const env = new Env(book);
       env.set("self", r);
 
       if (args.length > 0) {
