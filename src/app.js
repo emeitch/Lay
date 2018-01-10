@@ -31,6 +31,7 @@ d.new();
 
 d.objs().forEach(o => {
   o.keys().forEach(k => {
-    console.log(o.get(k));
+    console.log(k, o.get(k));
   });
+  console.log("----------");
 });
