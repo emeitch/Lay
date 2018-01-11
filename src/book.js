@@ -10,23 +10,31 @@ import { func, LiftedNative } from './func';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
-  constructor(parent=null) {
+  static createStandardBook() {
+    const stdbook = new Book(null);
+
+    {
+      const putf = (id, key, val) => stdbook.putAct(id, key, val);
+      stdbook.set("put", func("id", "key", "val", new LiftedNative(putf)));
+    }
+
+    {
+      const obj = new UUID();
+      const setf = function(key, val) {
+        return this.putAct(this.get("self"), key, val);
+      };
+      stdbook.set("Object", obj);
+      stdbook.put(obj, "set", func("key", "val", new LiftedNative(setf)));
+    }
+
+    return stdbook;
+  }
+
+  constructor(parent=Book.createStandardBook()) {
     this.parent = parent;
     this.logs = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();
-
-    this.setup();
-  }
-
-  setup() {
-    this.set("put", func("id", "key", "val", new LiftedNative((id, key, val) => this.putAct(id, key, val))));
-
-    const obj = new UUID();
-    this.set("Object", obj);
-    this.put(obj, "set", func("key", "val", new LiftedNative(function(key, val) {
-      return this.putAct(this.get("self"), key, val);
-    })));
   }
 
   log(logid) {
