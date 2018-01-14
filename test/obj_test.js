@@ -282,6 +282,19 @@ describe("Obj", () => {
         assert.deepStrictEqual(obj.send(v("key2")), book.obj(v(2)));
       });
     });
+
+    context("lazy definition", () => {
+      it("should be able to define tags", () => {
+        book.put(id, v("tag"), sym("Tag1"));
+        assert(obj.send(v("foo")).origin !== "bar");
+
+        const tag = new UUID();
+        book.set(v("Tag1"), tag);
+        book.put(tag, v("foo"), v("bar"));
+
+        assert(obj.send(v("foo")).origin === "bar");
+      });
+    });
   });
 
   describe("keys", () => {
