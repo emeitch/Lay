@@ -372,4 +372,22 @@ describe("Book", () => {
       assert(book.activeLog(id, key));
     });
   });
+
+  describe("findActiveLogs", () => {
+    context("invalidate the last log", () => {
+      beforeEach(() => {
+        book.put(id, key, v("val0"));
+        book.put(id, key, v("val1"));
+
+        const log = book.activeLog(id, key);
+        book.put(log.logid, invalidate);
+      });
+
+      it("should return only the first log", () => {
+        const logs = book.findActiveLogs({id});
+        assert.deepStrictEqual(logs[0].val, v("val0"));
+        assert(!logs[1]);
+      });
+    });
+  });
 });

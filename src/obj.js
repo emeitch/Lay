@@ -58,7 +58,7 @@ export default class Obj {
   }
 
   keys() {
-    const logs = this.book.findLogs({id: this.id});
+    const logs = this.book.findActiveLogs({id: this.id});
     return logs.map(l => l.key);
   }
 }

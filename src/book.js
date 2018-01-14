@@ -59,6 +59,28 @@ export default class Book {
     return id.toJSON() + "__" + key.toJSON();
   }
 
+  findActiveLogs(cond) {
+    const logs = [];
+    for (const log of this.findLogs(cond)) {
+      const i = this.cacheIndex(log.id, log.key);
+      const ilogs = new Map(this.invalidationLogsCache.get(i));
+
+      let invalidated = false;
+      for (let [, ilog] of ilogs) {
+        if (ilog.id.equals(log.logid)) {
+          invalidated = true;
+          break;
+        }
+      }
+
+      if (!invalidated) {
+        logs.push(log);
+      }
+    }
+
+    return logs;
+  }
+
   activeLogs(id, key, at=new Date()) {
     const i = this.cacheIndex(id, key);
     const alogs = new Map(this.activeLogsCache.get(i));
