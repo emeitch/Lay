@@ -43,7 +43,10 @@ export default class Path extends Ref {
           for (const tlog of tlogs) {
             // todo: tagが式だったり、引数を伴って評価するパスの場合に対応できていない
             // 下のselfのset以下と同様の処理で再帰する必要がある
-            const p = tlog.val.reduce(book);
+            const env = new Env(book);
+            env.set("self", i);
+
+            const p = tlog.val.reduce(env);
             const l = findLog(p);
             if (l) {
               return l;
