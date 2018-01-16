@@ -150,7 +150,7 @@ describe("Path", () => {
       });
     });
 
-    context("exp tag", () => {
+    context("path referencing tag", () => {
       const id = new UUID();
 
       beforeEach(() => {
@@ -160,6 +160,26 @@ describe("Path", () => {
 
         book.put(id, "tag", path(sym("self"), sym("baz")));
         book.put(id, "baz", sym("parent1"));
+
+        book.put(tagid1, "foo", v("bar"));
+      });
+
+      it("should return the tag's val", () => {
+        const p1 = new Path(id, v("foo"));
+        assert.deepStrictEqual(p1.reduce(book), v("bar"));
+      });
+    });
+
+    context("tag by path with args", () => {
+      const id = new UUID();
+
+      beforeEach(() => {
+        const tagid1 = new UUID();
+
+        book.set("parent1", tagid1);
+
+        book.put(id, "tag", path(sym("self"), [sym("baz"), sym("parent1")]));
+        book.put(id, "baz", func("arg", sym("arg")));
 
         book.put(tagid1, "foo", v("bar"));
       });

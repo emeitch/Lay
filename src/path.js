@@ -41,8 +41,6 @@ export default class Path extends Ref {
         if (!log) {
           const tlogs = book.activeLogs(i, v("tag"));
           for (const tlog of tlogs) {
-            // todo: tagが式だったり、引数を伴って評価するパスの場合に対応できていない
-            // 下のselfのset以下と同様の処理で再帰する必要がある
             const env = new Env(book);
             env.set("self", i);
 
