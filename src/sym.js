@@ -23,6 +23,10 @@ export default class Sym extends Val {
     const val = book.get(this.origin);
     return val !== undefined ? val : this;
   }
+
+  toJSON() {
+    return this.origin;
+  }
 }
 
 export function sym(origin) {

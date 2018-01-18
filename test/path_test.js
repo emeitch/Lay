@@ -158,7 +158,7 @@ describe("Path", () => {
 
         book.set("parent1", tagid1);
 
-        book.put(id, "tag", path(sym("self"), sym("baz")));
+        book.put(id, "tag", path(sym("self"), v("baz")));
         book.put(id, "baz", sym("parent1"));
 
         book.put(tagid1, "foo", v("bar"));
@@ -178,7 +178,7 @@ describe("Path", () => {
 
         book.set("parent1", tagid1);
 
-        book.put(id, "tag", path(sym("self"), [sym("baz"), sym("parent1")]));
+        book.put(id, "tag", path(sym("self"), [v("baz"), sym("parent1")]));
         book.put(id, "baz", func("arg", sym("arg")));
 
         book.put(tagid1, "foo", v("bar"));
