@@ -39,7 +39,7 @@ describe("Func", () => {
       it("should reduce the expression", () => {
         const e = exp(
           exp(
-            func("x", "y", exp(plus, "x", "y")),
+            func("a", "b", exp(plus, "a", "b")),
             v(2)
           ),
           v(3)

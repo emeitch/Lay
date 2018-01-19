@@ -1,7 +1,7 @@
 import Val from './val';
 import Comp from './comp';
 import v from './v';
-import Sym, { sym } from './sym';
+import { sym } from './sym';
 import { exp } from './exp';
 
 export class Native extends Val {
@@ -16,18 +16,6 @@ export class Native extends Val {
   }
 
   apply(book, ...args) {
-    const rest = this.origin.length - args.length;
-    if (rest > 0) {
-      let pats = [];
-      for (let i = 0; i < rest; i++) {
-        // todo: もっと適切なシンボルにしたい
-        const vname = "__" + "arg_" + i + "__";
-        pats.push(vname);
-      }
-      const e = exp(this, ...args.concat(pats));
-      return Func.func(...pats.concat([e]));
-    }
-
     for (let i = 0; i < args.length; i++) {
       const a = args[i];
       const na = a.step(book);
@@ -42,23 +30,11 @@ export class Native extends Val {
     return this._apply(book, ...args);
   }
 
-  replaceAsTop(matches) {
+  replaceAsTop(matches, ...restargs) {
     const args = matches.reduce((prv, match) =>
       prv.concat(Object.keys(match).filter(k =>
         k === "it").map(k => match[k])), []);
-    const e = exp(this, ...args);
-    const syms = matches.filter(m => {
-      const k = Object.keys(m).filter(k => k !== "it")[0];
-      const a = m[k];
-      // todo: たまたま設定されたSymとkey名が同じ場合に対応できてない
-      // 根本的な対処が必要
-      return a instanceof Sym && a.origin === k;
-    }).map(m => m["it"]);
-    if (syms.length > 0) {
-      return Func.func(...syms.concat([e]));
-    } else {
-      return e;
-    }
+    return exp(this, ...args.concat(restargs));
   }
 }
 
@@ -97,17 +73,8 @@ class CaseAlt extends Comp {
   }
 
   replaceAsTop(matches) {
-    const pats = matches.reduce((prv, m) =>
-      prv.concat(
-        this.pats.filter(p =>
-          Object.keys(m).some(k =>
-            k !== "it" && !sym(k).equals(p)
-          )
-        )
-      ),
-      []
-    );
-    const grds = this.grds.map(grd => grd.replaceAsTop(matches));
+    const pats = this.pats.slice(matches.length, this.pats.length);
+    const grds = this.grds.map(grd => grd.replaceAsTop(matches, ...pats));
     return new this.constructor(...pats.concat([grds]));
   }
 
@@ -143,8 +110,8 @@ class CaseGrd extends Comp {
     return this.origin.exp;
   }
 
-  replaceAsTop(matches) {
-    const exp = this.exp.replaceAsTop(matches);
+  replaceAsTop(matches, ...restargs) {
+    const exp = this.exp.replaceAsTop(matches, ...restargs);
     return new this.constructor(
       this.cond.replaceAsTop(matches),
       exp
@@ -189,6 +156,10 @@ export default class Case extends Comp {
       const matches = args.map((arg, i) => arg.match(alt.pats[i]));
       if (matches.every(match => match !== null)) {
         const nalt = alt.replaceAsTop(matches);
+        if (nalt.pats.length > 0) {
+          return new this.constructor(nalt);
+        }
+
         for (const grd of nalt.grds) {
           if (grd.cond.reduce(book).origin) {
             return grd.exp;
