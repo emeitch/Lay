@@ -9,7 +9,6 @@
     "setupFiles": [
       "jest-context/setup"
     ],
-    "testRegex": "test/.*.js",
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/.*.js",
