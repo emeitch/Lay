@@ -9,7 +9,7 @@
     "setupTestFrameworkScriptFile": "./jest.setup.js",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/.*.js",
+      "src/*.js",
       "!src/app.js"
     ]
   },
