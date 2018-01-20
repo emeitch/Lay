@@ -2,12 +2,19 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack --watch -d --devtool source-map & browser-sync start --server --files build/bundle.js",
-    "test": "npm run lint && cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --require babel-register",
+    "test": "npm run lint && jest",
     "lint": "eslint src/*.js test/*.js"
   },
-  "nyc": {
-    "sourceMap": false,
-    "instrument": false
+  "jest": {
+    "setupFiles": [
+      "jest-context/setup"
+    ],
+    "testRegex": "test/.*.js",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/.*.js",
+      "!src/app.js"
+    ]
   },
   "dependencies": {
     "bidirectional-map": "^1.0.3",
@@ -22,10 +29,9 @@
     "babel-preset-power-assert": "^1.0.0",
     "babel-register": "^6.24.1",
     "browser-sync": "^2.18.8",
-    "cross-env": "^5.0.1",
     "eslint": "^4.0.0",
-    "mocha": "^4.0.0",
-    "nyc": "^11.0.2",
+    "jest": "^22.1.4",
+    "jest-context": "^2.1.0",
     "power-assert": "^1.4.2",
     "webpack": "^3.0.0"
   }
