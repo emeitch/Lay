@@ -39,8 +39,8 @@ export default class Comp extends Val {
     this.head = head ? head : Comp.valFrom(null);
   }
 
-  str() {
-    const head = this.head.origin === null ? "" : this.head.str();
+  toString() {
+    const head = this.head.origin === null ? "" : this.head.toString();
     return head + Val.stringify(this.origin);
   }
 

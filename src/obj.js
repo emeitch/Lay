@@ -13,6 +13,10 @@ export default class Obj {
     return this.id.origin;
   }
 
+  toString() {
+    return this.id.toString();
+  }
+
   get(key) {
     if (this.id instanceof Comp) {
       const comp = this.id;

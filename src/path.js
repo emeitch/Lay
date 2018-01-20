@@ -20,10 +20,6 @@ export default class Path extends Ref {
   }
 
   toString() {
-    return this.origin.join("/");
-  }
-
-  str() {
     return "Path" + Val.stringify(this.origin);
   }
 

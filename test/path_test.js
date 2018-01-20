@@ -32,12 +32,6 @@ describe("Path", () => {
     });
   });
 
-  describe("#toString", () => {
-    it("should return ids joined by slash", () => {
-      assert.deepStrictEqual(p.toString(),`${id1}/${id2}/${id3}`);
-    });
-  });
-
   describe("#reduce", () => {
     let book;
     beforeEach(() => {
@@ -234,10 +228,10 @@ describe("Path", () => {
     });
   });
 
-  describe("str", () => {
+  describe("toString", () => {
     it("should return string dump", () => {
       const p = new Path(sym("self"), v("foo"));
-      assert(p.str() === 'Path[ self, "foo" ]');
+      assert(p.toString() === 'Path[ self, "foo" ]');
     });
   });
 });

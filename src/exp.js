@@ -1,6 +1,5 @@
-import Comp from './val';
+import Comp from './comp';
 import Book from './book';
-import Val from './val';
 import { sym } from './sym';
 
 export default class Exp extends Comp {
@@ -36,10 +35,6 @@ export default class Exp extends Comp {
       e = e.step(book);
     }
     return e;
-  }
-
-  str() {
-    return "Exp" + Val.stringify(this.terms);
   }
 }
 

@@ -34,7 +34,8 @@ d.new();
 
 d.objs().forEach(o => {
   o.keys().forEach(k => {
-    console.log(k.str(), o.get(k).str());
+    const val = o.get(k);
+    console.log(k.toString(), val.toString());
   });
   console.log("----------");
 });
@@ -43,15 +44,19 @@ d.new();
 {
   const taskClass = d.objs().pop();
   taskClass.send(v("set"), v("title_desc"),
-    exp(plus, path(sym("self"), v("title")), v("description")));
+    exp(plus, path(sym("self"), v("title")), v(" description")));
 
   d.set("Task", taskClass.id);
 }
 
 d.objs().forEach(o => {
   const k = v("title_desc");
-  console.log(k.str(), o.get(k).str());
+  const val = o.get(k);
+  console.log(val);
+  console.log(k.toString(), val.toString());
   console.log("----------");
 });
 
-console.log(v("Foo", {a: 1, b: "b", c: null, d: [1, "2"], e: {e1: 1, e2: "2"}}).str());
+const e = exp(plus, v(1), v(2));
+console.log(e.toString());
+console.log(v("Foo", {a: 1, b: "b", c: null, d: [1, "2"], e: {e1: 1, e2: "2"}}).toString());

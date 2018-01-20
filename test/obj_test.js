@@ -308,4 +308,10 @@ describe("Obj", () => {
       assert.deepStrictEqual(obj.keys(), [key, key2]);
     });
   });
+
+  describe("toString", () => {
+    it("should return string dump", () => {
+      assert(obj.toString() === id.toString());
+    });
+  });
 });

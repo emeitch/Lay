@@ -256,13 +256,13 @@ describe("Func", () => {
     });
   });
 
-  describe("str", () => {
+  describe("toString", () => {
     it("should return string dump", () => {
       const n = new Native(() => {});
-      assert(n.str() === "<Native>");
+      assert(n.toString() === "<Native>");
 
       const ln = new LiftedNative(() => {});
-      assert(ln.str() === "<LiftedNative>");
+      assert(ln.toString() === "<LiftedNative>");
     });
   });
 });

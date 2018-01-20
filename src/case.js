@@ -37,7 +37,7 @@ export class Native extends Val {
     return exp(this, ...args.concat(restargs));
   }
 
-  str() {
+  toString() {
     return "<Native>";
   }
 }
@@ -47,7 +47,7 @@ export class LiftedNative extends Native {
     return this.origin.apply(book, args);
   }
 
-  str() {
+  toString() {
     return "<LiftedNative>";
   }
 }

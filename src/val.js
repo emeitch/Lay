@@ -47,7 +47,7 @@ export default class Val {
 
   static stringify(v) {
     if (v instanceof Val) {
-      return v.str();
+      return v.toString();
     } else {
       if (Array.isArray(v)) {
         return "[ "

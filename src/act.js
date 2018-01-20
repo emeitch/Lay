@@ -114,7 +114,7 @@ export default class Act extends Val {
     return this.clone({recovery});
   }
 
-  str() {
+  toString() {
     return "<Act>";
   }
 }

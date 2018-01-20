@@ -5,7 +5,7 @@ export default class Prim extends Val {
     return false;
   }
 
-  str() {
+  toString() {
     return JSON.stringify(this.origin);
   }
 }

@@ -41,11 +41,11 @@ describe("Comp", () => {
     });
   });
 
-  describe("str", () => {
+  describe("toString", () => {
     it("should return string dump", () => {
-      assert(v({a: [1, 2], b: "bar"}).str() === '{ a: [ 1, 2 ], b: "bar" }');
-      assert(v({a: [v(1), v(2)], b: v("bar")}).str() === '{ a: [ 1, 2 ], b: "bar" }');
-      assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).str() === 'Foo{ a: [ 1, 2 ], b: "bar" }');
+      assert(v({a: [1, 2], b: "bar"}).toString() === '{ a: [ 1, 2 ], b: "bar" }');
+      assert(v({a: [v(1), v(2)], b: v("bar")}).toString() === '{ a: [ 1, 2 ], b: "bar" }');
+      assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).toString() === 'Foo{ a: [ 1, 2 ], b: "bar" }');
     });
   });
 });

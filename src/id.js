@@ -8,8 +8,4 @@ export default class ID extends Ref {
   toString() {
     return this.prefix() + this.origin;
   }
-
-  str() {
-    return this.prefix() + this.origin;
-  }
 }
