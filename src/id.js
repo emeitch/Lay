@@ -5,7 +5,7 @@ export default class ID extends Ref {
     return false;
   }
 
-  toString() {
+  stringify(_indent) {
     return this.prefix() + this.origin;
   }
 }

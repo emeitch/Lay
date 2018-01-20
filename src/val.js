@@ -45,18 +45,18 @@ export default class Val {
     return pattern.collate(this);
   }
 
-  static stringify(v) {
+  static stringify(v, indent=0) {
     if (v instanceof Val) {
-      return v.toString();
+      return v.stringify(indent);
     } else {
       if (Array.isArray(v)) {
-        return "[ "
-          + v.map(i => Val.stringify(i)).join(", ")
-          + " ]";
+        return "["
+          + v.map(i => "\n" + " ".repeat(indent+2) + this.stringify(i, indent+2)).join(", ")
+          + "\n" + " ".repeat(indent) + "]";
       } else if (v !== null & typeof(v) === "object") {
-        return "{ "
-          + Object.keys(v).map(k => k + ": " + Val.stringify(v[k])).join(", ")
-          + " }";
+        return "{"
+          + Object.keys(v).map(k => "\n" + " ".repeat(indent+2) + k + ": " + this.stringify(v[k], indent+2)).join(", ")
+          + "\n" + " ".repeat(indent) + "}";
       } else {
         return JSON.stringify(v);
       }

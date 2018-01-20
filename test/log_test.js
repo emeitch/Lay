@@ -30,8 +30,8 @@ describe("Log", () => {
     });
 
     it("should constrain a val coverting Val", () => {
-      const l = new Log(id, key, "toString");
-      assert.deepStrictEqual(l.val, v("toString"));
+      const l = new Log(id, key, "stringify");
+      assert.deepStrictEqual(l.val, v("stringify"));
     });
   });
 });

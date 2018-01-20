@@ -19,8 +19,8 @@ export default class Path extends Ref {
     return keys;
   }
 
-  toString() {
-    return "Path" + Val.stringify(this.origin);
+  stringify(indent=0) {
+    return "Path " + Val.stringify(this.origin, indent);
   }
 
   step(book) {

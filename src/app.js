@@ -35,7 +35,7 @@ d.new();
 d.objs().forEach(o => {
   o.keys().forEach(k => {
     const val = o.get(k);
-    console.log(k.toString(), val.toString());
+    console.log(k.stringify(), val.stringify());
   });
   console.log("----------");
 });
@@ -53,10 +53,10 @@ d.objs().forEach(o => {
   const k = v("title_desc");
   const val = o.get(k);
   console.log(val);
-  console.log(k.toString(), val.toString());
+  console.log(k.stringify(), val.stringify());
   console.log("----------");
 });
 
 const e = exp(plus, v(1), v(2));
-console.log(e.toString());
-console.log(v("Foo", {a: 1, b: "b", c: null, d: [1, "2"], e: {e1: 1, e2: "2"}}).toString());
+console.log(e.stringify());
+console.log(v("Foo", {a: 1, b: "b", c: null, d: [1, "2"], e: {e1: 1, e2: "2"}}).stringify());

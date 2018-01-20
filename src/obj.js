@@ -13,8 +13,8 @@ export default class Obj {
     return this.id.origin;
   }
 
-  toString() {
-    return this.id.toString();
+  stringify(indent=0) {
+    return this.id.stringify(indent);
   }
 
   get(key) {

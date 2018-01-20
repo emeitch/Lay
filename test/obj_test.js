@@ -309,9 +309,9 @@ describe("Obj", () => {
     });
   });
 
-  describe("toString", () => {
+  describe("stringify", () => {
     it("should return string dump", () => {
-      assert(obj.toString() === id.toString());
+      assert(obj.stringify() === id.stringify());
     });
   });
 });

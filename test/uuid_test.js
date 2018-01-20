@@ -3,9 +3,9 @@ import assert from 'assert';
 import UUID, { uuid } from '../src/uuid';
 
 describe("UUID", () => {
-  describe("#toString", () => {
+  describe("#stringify", () => {
     it("should return uuid urn", () => {
-      assert(new UUID().toString().match(/^urn:uuid:.*$/));
+      assert(new UUID().stringify().match(/^urn:uuid:.*$/));
     });
   });
 

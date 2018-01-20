@@ -228,10 +228,10 @@ describe("Path", () => {
     });
   });
 
-  describe("toString", () => {
+  describe("stringify", () => {
     it("should return string dump", () => {
       const p = new Path(sym("self"), v("foo"));
-      assert(p.toString() === 'Path[ self, "foo" ]');
+      assert(p.stringify() === 'Path[ self, "foo" ]');
     });
   });
 });

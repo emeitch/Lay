@@ -208,10 +208,10 @@ describe("Act", () => {
     });
   });
 
-  describe("toString", () => {
+  describe("stringify", () => {
     it("should return string dump", () => {
       const act = new Act(() => {});
-      assert(act.toString() === "<Act>");
+      assert(act.stringify() === "<Act>");
     });
   });
 });
