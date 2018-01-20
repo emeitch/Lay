@@ -53,3 +53,5 @@ d.objs().forEach(o => {
   console.log(k.str(), o.get(k).str());
   console.log("----------");
 });
+
+console.log(v("Foo", {a: 1, b: "b", c: null, d: [1, "2"], e: {e1: 1, e2: "2"}}).str());
