@@ -43,9 +43,11 @@ describe("Comp", () => {
 
   describe("stringify", () => {
     it("should return string dump", () => {
-      assert(v({a: [1, 2], b: "bar"}).stringify() === '{ a: [ 1, 2 ], b: "bar" }');
-      assert(v({a: [v(1), v(2)], b: v("bar")}).stringify() === '{ a: [ 1, 2 ], b: "bar" }');
-      assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).stringify() === 'Foo{ a: [ 1, 2 ], b: "bar" }');
+      assert(v({a: [1, 2], b: "bar"}).stringify() === "{\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
+
+      assert(v({a: [v(1), v(2)], b: v("bar")}).stringify() === "{\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
+
+      assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).stringify() === "Foo {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
     });
   });
 });

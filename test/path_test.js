@@ -231,7 +231,7 @@ describe("Path", () => {
   describe("stringify", () => {
     it("should return string dump", () => {
       const p = new Path(sym("self"), v("foo"));
-      assert(p.stringify() === 'Path[ self, "foo" ]');
+      assert(p.stringify() === "Path [\n  self, \n  \"foo\"\n]");
     });
   });
 });
