@@ -53,7 +53,7 @@ export default class Val {
         return "[ "
           + v.map(i => Val.stringify(i)).join(", ")
           + " ]";
-      } else if (typeof(v) === "object") {
+      } else if (v !== null & typeof(v) === "object") {
         return "{ "
           + Object.keys(v).map(k => k + ": " + Val.stringify(v[k])).join(", ")
           + " }";
