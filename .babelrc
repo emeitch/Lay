@@ -1,5 +1,12 @@
 {
   "presets": [
     "env"
-  ]
+  ],
+  "env": {
+    "test": {
+      "presets": [
+        "power-assert"
+      ]
+    }
+  }
 }
