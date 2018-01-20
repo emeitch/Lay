@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import _ from 'lodash';
 import Val from './val';
 import Prim from './prim';
 import Hash from './hash';

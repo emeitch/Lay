@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import _ from 'lodash';
 
 export default class Val {
   constructor(origin) {
