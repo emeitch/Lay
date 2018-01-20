@@ -1,10 +1,12 @@
 import Comp from './val';
 import Book from './book';
+import Val from './val';
 import { sym } from './sym';
 
 export default class Exp extends Comp {
   constructor(...terms) {
     super(terms.map(t => typeof(t) === "string" ? sym(t) : t));
+    this.head = sym(this.constructor.name);
   }
 
   get terms() {
@@ -34,6 +36,10 @@ export default class Exp extends Comp {
       e = e.step(book);
     }
     return e;
+  }
+
+  str() {
+    return "Exp" + Val.stringify(this.terms);
   }
 }
 

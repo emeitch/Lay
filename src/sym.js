@@ -24,7 +24,7 @@ export default class Sym extends Val {
     return val !== undefined ? val : this;
   }
 
-  toJSON() {
+  str() {
     return this.origin;
   }
 }

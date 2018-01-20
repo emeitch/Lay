@@ -36,11 +36,19 @@ export class Native extends Val {
         k === "it").map(k => match[k])), []);
     return exp(this, ...args.concat(restargs));
   }
+
+  str() {
+    return "<Native>";
+  }
 }
 
 export class LiftedNative extends Native {
   _apply(book, ...args) {
     return this.origin.apply(book, args);
+  }
+
+  str() {
+    return "<LiftedNative>";
   }
 }
 
@@ -61,7 +69,8 @@ class CaseAlt extends Comp {
       }
     }
 
-    super({ pats, grds }, "CaseAlt");
+    super({ pats, grds });
+    this.head = sym(this.constructor.name);
   }
 
   get pats() {
@@ -100,6 +109,7 @@ class CaseGrd extends Comp {
     }
 
     super({cond, exp});
+    this.head = sym(this.constructor.name);
   }
 
   get cond() {
@@ -139,7 +149,7 @@ export default class Case extends Comp {
 
   constructor(...alts) {
     super(alts);
-    this.head = this.constructor.name;
+    this.head = sym(this.constructor.name);
   }
 
   get alts() {

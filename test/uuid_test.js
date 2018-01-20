@@ -9,13 +9,6 @@ describe("UUID", () => {
     });
   });
 
-  describe("#toJSON", () => {
-    it("should return uuid urn", () => {
-      const u = uuid();
-      assert(u.toJSON() === u.toString());
-    });
-  });
-
   describe("#reducible", () => {
     it("should return true by default behavior", () => {
       const u = uuid();

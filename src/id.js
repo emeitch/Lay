@@ -4,8 +4,12 @@ export default class ID extends Ref {
   get reducible() {
     return false;
   }
-  
+
   toString() {
+    return this.prefix() + this.origin;
+  }
+
+  str() {
     return this.prefix() + this.origin;
   }
 }

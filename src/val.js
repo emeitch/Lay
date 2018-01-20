@@ -45,7 +45,21 @@ export default class Val {
     return pattern.collate(this);
   }
 
-  toJSON() {
-    return JSON.stringify(this.origin);
+  static stringify(v) {
+    if (v instanceof Val) {
+      return v.str();
+    } else {
+      if (Array.isArray(v)) {
+        return "[ "
+          + v.map(i => Val.stringify(i)).join(", ")
+          + " ]";
+      } else if (typeof(v) === "object") {
+        return "{ "
+          + Object.keys(v).map(k => k + ": " + Val.stringify(v[k])).join(", ")
+          + " }";
+      } else {
+        return JSON.stringify(v);
+      }
+    }
   }
 }

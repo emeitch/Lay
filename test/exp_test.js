@@ -92,4 +92,11 @@ describe("Exp", () => {
       });
     });
   });
+
+  describe("str", () => {
+    it("should return string dump", () => {
+      const e = exp(plus, v(1), v(2));
+      assert(e.str() === "Exp[ Func[ CaseAlt{ pats: [ x, y ], grds: [ CaseGrd{ cond: true, exp: <Native> } ] } ], 1, 2 ]");
+    });
+  });
 });

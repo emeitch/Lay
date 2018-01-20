@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import Val from './val';
 import v from './v';
 import ID from './id';
 import UUID from './uuid';
@@ -56,7 +57,7 @@ export default class Book {
   }
 
   cacheIndex(id, key) {
-    return id.toJSON() + "__" + key.toJSON();
+    return Val.stringify(id) + "__" + Val.stringify(key);
   }
 
   findActiveLogs(cond) {

@@ -49,6 +49,6 @@ d.new();
 }
 
 d.objs().forEach(o => {
-  console.log("title_desc", o.get(v("title_desc")));
+  console.log("title_desc", o.get(v("title_desc")).str());
   console.log("----------");
 });

@@ -1,5 +1,6 @@
 import Ref from './ref';
 import { Env } from './book';
+import Val from './val';
 import v from './v';
 import { exp } from './exp';
 
@@ -20,6 +21,10 @@ export default class Path extends Ref {
 
   toString() {
     return this.origin.join("/");
+  }
+
+  str() {
+    return "Path" + Val.stringify(this.origin);
   }
 
   step(book) {

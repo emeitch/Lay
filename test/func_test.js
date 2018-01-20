@@ -3,7 +3,7 @@ import assert from 'assert';
 import v from '../src/v';
 import { exp } from '../src/exp';
 import Book from '../src/book';
-import { kase, alt, grd, otherwise } from '../src/case';
+import { kase, alt, grd, otherwise, Native, LiftedNative } from '../src/case';
 import Func, { func, plus } from '../src/func';
 
 describe("Func", () => {
@@ -253,6 +253,16 @@ describe("Func", () => {
               v(3))).reduce(),
           v(3));
       });
+    });
+  });
+
+  describe("str", () => {
+    it("should return string dump", () => {
+      const n = new Native(() => {});
+      assert(n.str() === "<Native>");
+
+      const ln = new LiftedNative(() => {});
+      assert(ln.str() === "<LiftedNative>");
     });
   });
 });

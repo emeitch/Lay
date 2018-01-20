@@ -113,4 +113,8 @@ export default class Act extends Val {
   catch(recovery) {
     return this.clone({recovery});
   }
+
+  str() {
+    return "<Act>";
+  }
 }

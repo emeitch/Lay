@@ -80,12 +80,6 @@ describe("Val", () => {
         assert(!new Inherited2(0).match(val));
       });
     });
-
-    describe("#toJSON", () => {
-      it("should return JSON stringified original value", () => {
-        assert.deepStrictEqual(val.toJSON(), "0");
-      });
-    });
   });
 
   context("direct construction", () => {

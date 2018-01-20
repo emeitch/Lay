@@ -233,4 +233,11 @@ describe("Path", () => {
       });
     });
   });
+
+  describe("str", () => {
+    it("should return string dump", () => {
+      const p = new Path(sym("self"), v("foo"));
+      assert(p.str() === 'Path[ self, "foo" ]');
+    });
+  });
 });

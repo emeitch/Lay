@@ -207,4 +207,11 @@ describe("Act", () => {
       assert(act.next === null);
     });
   });
+
+  describe("str", () => {
+    it("should return string dump", () => {
+      const act = new Act(() => {});
+      assert(act.str() === "<Act>");
+    });
+  });
 });
