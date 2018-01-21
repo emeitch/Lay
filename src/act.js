@@ -124,7 +124,7 @@ export default class Act extends Val {
     return this.clone({recovery});
   }
 
-  stringify() {
-    return `<Act executor: ${this.executor}, status: ${this.statusName}, val: ${this.val}>`;
+  stringify(indent) {
+    return `<Act executor: ${this.appendIndent(this.executor, indent)}, status: ${this.statusName}, val: ${this.val}>`;
   }
 }

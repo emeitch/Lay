@@ -45,6 +45,10 @@ export default class Val {
     return pattern.collate(this);
   }
 
+  appendIndent(str, indent=0) {
+    return str.toString().replace(/\n/g, "\n"+" ".repeat(indent));
+  }
+
   static stringify(v, indent=0) {
     if (v instanceof Val) {
       return v.stringify(indent);
