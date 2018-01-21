@@ -9,10 +9,11 @@ export default class Sym extends Val {
   }
 
   replace(matches) {
-    for (const match of matches) {
-      for (const key of Object.keys(match)) {
+    const mresults = matches.filter(m => m.result).map(m => m.result);
+    for (const result of mresults) {
+      for (const key of Object.keys(result)) {
         if (this.equals(sym(key))) {
-          return match[key];
+          return result[key];
         }
       }
     }

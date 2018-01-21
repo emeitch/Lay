@@ -30,11 +30,9 @@ export class Native extends Val {
     return this._apply(book, ...args);
   }
 
-  replaceAsTop(matches, ...restargs) {
-    const args = matches.reduce((prv, match) =>
-      prv.concat(Object.keys(match).filter(k =>
-        k === "it").map(k => match[k])), []);
-    return exp(this, ...args.concat(restargs));
+  replaceAsTop(matches) {
+    const args = matches.map(m => m.result ? m.result["it"] : m.pattern);
+    return exp(this, ...args);
   }
 
   stringify(indent) {
@@ -82,19 +80,18 @@ class CaseAlt extends Comp {
   }
 
   replaceAsTop(matches) {
-    const pats = this.pats.slice(matches.length, this.pats.length);
-    const grds = this.grds.map(grd => grd.replaceAsTop(matches, ...pats));
+    const pats = matches.filter(m => !m.result).map(m => m.pattern);
+    const grds = this.grds.map(grd => grd.replaceAsTop(matches));
     return new this.constructor(...pats.concat([grds]));
   }
 
   replace(matches) {
-    if (matches.some(m =>
-          this.pats.some(p =>
-            Object.keys(m).some(k =>
-              sym(k).equals(p))))) {
-                return this;
-              }
-    const grds = this.grds.map(grd => grd.replace(matches));
+    const submatches = matches.filter(m =>
+      m.result &&
+      Object.keys(m.result).every(k =>
+        this.pats.every(p =>
+          !sym(k).equals(p))));
+    const grds = this.grds.map(grd => grd.replace(submatches));
     return new this.constructor(...this.pats.concat([grds]));
   }
 }
@@ -120,19 +117,17 @@ class CaseGrd extends Comp {
     return this.origin.exp;
   }
 
-  replaceAsTop(matches, ...restargs) {
-    const exp = this.exp.replaceAsTop(matches, ...restargs);
+  replaceAsTop(matches) {
     return new this.constructor(
       this.cond.replaceAsTop(matches),
-      exp
+      this.exp.replaceAsTop(matches)
     );
   }
 
   replace(matches) {
-    const exp = this.exp.replace(matches);
     return new this.constructor(
       this.cond.replace(matches),
-      exp
+      this.exp.replace(matches)
     );
   }
 }
@@ -163,8 +158,16 @@ export default class Case extends Comp {
 
   apply(book, ...args) {
     for (const alt of this.alts) {
-      const matches = args.map((arg, i) => arg.match(alt.pats[i]));
-      if (matches.every(match => match !== null)) {
+      const matches = alt.pats.map((pattern, i) => {
+        if (i < args.length) {
+          const result = args[i].match(pattern);
+          return {pattern, result};
+        } else {
+          return {pattern};
+        }
+      });
+
+      if (matches.every(match => match.result !== null)) {
         const nalt = alt.replaceAsTop(matches);
         if (nalt.pats.length > 0) {
           return new this.constructor(nalt);
