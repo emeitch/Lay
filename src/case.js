@@ -38,7 +38,7 @@ export class Native extends Val {
   }
 
   stringify(_indent) {
-    return "<Native>";
+    return `<Native ${this.origin.toString()}>`;
   }
 }
 
@@ -48,7 +48,7 @@ export class LiftedNative extends Native {
   }
 
   stringify(_indent) {
-    return "<LiftedNative>";
+    return `<LiftedNative ${this.origin.toString()}>`;
   }
 }
 
