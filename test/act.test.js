@@ -208,10 +208,20 @@ describe("Act", () => {
     });
   });
 
+  describe("statusName", () => {
+    it("should return status name", () => {
+      const act = new Act(a => a * a, undefined, 1);
+      assert(act.statusName === "PENDING");
+
+      act.status = undefined;
+      assert(act.statusName === null);
+    });
+  });
+
   describe("stringify", () => {
     it("should return string dump", () => {
-      const act = new Act(() => {});
-      assert(act.stringify() === "<Act>");
+      const act = new Act(a => a * a, undefined, 1);
+      assert(act.stringify() === "<Act executor: function (a) {return a * a;}, status: PENDING, val: 1>");
     });
   });
 });

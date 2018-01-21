@@ -47,6 +47,16 @@ export default class Act extends Val {
     return !this.pending;
   }
 
+  get statusName() {
+    for (const key of Object.keys(ActStatus)) {
+      if (this.status === ActStatus[key]) {
+        return key;
+      }
+    }
+
+    return null;
+  }
+
   resolve(val) {
     let next = this.next;
     if (val instanceof Act) {
@@ -115,6 +125,6 @@ export default class Act extends Val {
   }
 
   stringify() {
-    return "<Act>";
+    return `<Act executor: ${this.executor}, status: ${this.statusName}, val: ${this.val}>`;
   }
 }
