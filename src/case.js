@@ -68,7 +68,6 @@ class CaseAlt extends Comp {
     }
 
     super({ pats, grds });
-    this.head = sym(this.constructor.name);
   }
 
   get pats() {
@@ -107,7 +106,6 @@ class CaseGrd extends Comp {
     }
 
     super({cond, exp});
-    this.head = sym(this.constructor.name);
   }
 
   get cond() {
@@ -145,7 +143,6 @@ export default class Case extends Comp {
 
   constructor(...alts) {
     super(alts);
-    this.head = sym(this.constructor.name);
   }
 
   get alts() {

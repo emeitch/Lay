@@ -16,7 +16,7 @@ export default class Comp extends Val {
     const head = hsrc instanceof Val ? hsrc : sym(hsrc);
     const type = typeof(origin);
 
-    if (head === undefined &&
+    if (head === null &&
         (type === "number" ||
          type === "string" ||
          type === "boolean" ||
@@ -34,9 +34,19 @@ export default class Comp extends Val {
     throw `not supported origin: ${origin}`;
   }
 
-  constructor(origin, head=undefined) {
+  constructor(origin, head) {
     super(origin);
-    this.head = head ? head : Comp.valFrom(null);
+
+    const parse = (h) => {
+      if (h) {
+        return h;
+      } else if (h === null) {
+        return Comp.valFrom(null);
+      } else {
+        return sym(this.constructor.name);
+      }
+    };
+    this.head = parse(head);
   }
 
   stringify(_indent=0) {

@@ -31,7 +31,7 @@ export default class Sym extends Val {
 
 export function sym(origin) {
   if (typeof(origin) !== "string") {
-    return undefined;
+    return null;
   }
 
   return new Sym(origin);
