@@ -86,6 +86,7 @@ class CaseAlt extends Comp {
   }
 
   replace(matches) {
+    // todo: Compのfiledsにバインドしている物を除外できていないのを修正する必要あり
     const submatches = matches.filter(m =>
       m.target &&
       Object.keys(m.result).every(k =>
