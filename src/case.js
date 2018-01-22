@@ -31,7 +31,7 @@ export class Native extends Val {
   }
 
   replaceAsTop(matches) {
-    const args = matches.map(m => m.result ? m.result["it"] : m.pattern);
+    const args = matches.map(m => m.target ? m.target : m.pattern);
     return exp(this, ...args);
   }
 
@@ -159,9 +159,10 @@ export default class Case extends Comp {
   apply(book, ...args) {
     for (const alt of this.alts) {
       const matches = alt.pats.map((pattern, i) => {
-        if (i < args.length) {
-          const result = args[i].match(pattern);
-          return {pattern, result};
+        const target = args[i];
+        if (target) {
+          const result = target.match(pattern);
+          return {pattern, target, result};
         } else {
           return {pattern};
         }
