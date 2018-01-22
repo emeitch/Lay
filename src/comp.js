@@ -95,7 +95,6 @@ export default class Comp extends Val {
         Object.assign(result, m);
         i++;
       }
-      Object.assign(result, {it: val});
       return result;
     }
 
@@ -106,7 +105,6 @@ export default class Comp extends Val {
         const m = pat.collate(Comp.valFrom(val.fields[key]));
         Object.assign(result, m);
       }
-      Object.assign(result, {it: val});
       return result;
     }
   }

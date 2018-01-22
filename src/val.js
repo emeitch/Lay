@@ -38,7 +38,7 @@ export default class Val {
   }
 
   collate(val) {
-    return this.equals(val) ? {it: val} : null;
+    return this.equals(val) ? {__it__: val} : null;
   }
 
   match(pattern) {

@@ -60,7 +60,7 @@ describe("Val", () => {
     describe('#collate', () => {
       it("should return only 'it' collation by default behavior", () => {
         const v0 = new Inherited(0);
-        assert.deepStrictEqual(val.collate(v0), {it: v0});
+        assert.deepStrictEqual(val.collate(v0), {__it__: v0});
 
         const v1 = new Inherited(1);
         assert.deepStrictEqual(val.collate(v1), null);
@@ -70,7 +70,7 @@ describe("Val", () => {
     describe("#match", () => {
       it("should collate the original value equivalency", () => {
         const v0 = new Inherited(0);
-        assert.deepStrictEqual(v0.match(val), {it: v0});
+        assert.deepStrictEqual(v0.match(val), {__it__: v0});
 
         const v1 = new Inherited(1);
         assert.deepStrictEqual(v1.match(val), null);

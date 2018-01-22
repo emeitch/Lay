@@ -80,14 +80,14 @@ class CaseAlt extends Comp {
   }
 
   replaceAsTop(matches) {
-    const pats = matches.filter(m => !m.result).map(m => m.pattern);
+    const pats = matches.filter(m => !m.target).map(m => m.pattern);
     const grds = this.grds.map(grd => grd.replaceAsTop(matches));
     return new this.constructor(...pats.concat([grds]));
   }
 
   replace(matches) {
     const submatches = matches.filter(m =>
-      m.result &&
+      m.target &&
       Object.keys(m.result).every(k =>
         this.pats.every(p =>
           !sym(k).equals(p))));

@@ -3,7 +3,6 @@ import Val from './val';
 export default class Sym extends Val {
   collate(val) {
     return {
-      it: val,
       [this.origin]: val
     };
   }
