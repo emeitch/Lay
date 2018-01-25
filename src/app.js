@@ -41,20 +41,16 @@ d.objs().forEach(o => {
 
 d.new();
 {
-  const taskClass = d.objs().pop();
-  taskClass.set(
+  const Task = d.objs().pop();
+  Task.set(
     v("complete"),
     path(sym("self"), [v("set"), v("state"), sym("completed")])
   );
 
-  d.set("Task", taskClass.id);
+  d.set("Task", Task.id);
 }
 
-d.objs().forEach(o => {
-  if (d.get("Task") === o.id) {
-    return;
-  }
-
+d.obj("Task").all.forEach(o => {
   o.send(v("complete"));
 
   const k = v("state");

@@ -129,6 +129,8 @@ export default class Book {
   obj(id) {
     if (id instanceof ID || id instanceof Comp) {
       return new Obj(this, id);
+    } else if (typeof(id) === "string") {
+      return this.obj(this.get(id));
     } else {
       return id;
     }
@@ -184,6 +186,11 @@ export default class Book {
     // todo: ユニーク制約をかけたい
     const log = new Log(v(name), assign, id);
     this.putLog(log);
+  }
+
+  name(id) {
+    const logs = this.findActiveLogs({key: assign, val: id});
+    return logs.length > 0 ? logs[0].id : v(null);
   }
 
   syncCache(log) {
