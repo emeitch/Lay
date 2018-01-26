@@ -321,6 +321,18 @@ describe("Book", () => {
       const o = book.obj(id);
       assert(o.constructor === Obj);
     });
+
+    context("with assigning name", () => {
+      beforeEach(() => {
+        book.set("Foo", id);
+      });
+
+      it("should return assigned id", () => {
+        const o = book.obj("Foo");
+        assert(o.constructor === Obj);
+        assert.deepStrictEqual(o.id, id);
+      });
+    });
   });
 
   describe("#new", () => {
