@@ -314,4 +314,31 @@ describe("Obj", () => {
       assert(obj.stringify() === id.stringify());
     });
   });
+
+  describe("name", () => {
+    it("should return assigned name on book", () => {
+      book.set("Foo", id);
+      assert(obj.name.equals(v("Foo")));
+    });
+  });
+
+  describe("all", () => {
+    it("should return tagged objs", () => {
+      assert.deepStrictEqual(obj.all, []);
+
+      const id2 = new UUID();
+      const id3 = new UUID();
+      const id4 = new UUID();
+      book.set("Foo", id);
+      book.put(id2, v("tag"), sym("Foo"));
+      book.put(id3, v("tag"), sym("Foo"));
+      book.put(id4, v("tag"), sym("Foo"));
+
+      const all = obj.all;
+      assert.deepStrictEqual(all[0], book.obj(id2));
+      assert.deepStrictEqual(all[1], book.obj(id3));
+      assert.deepStrictEqual(all[2], book.obj(id4));
+    });
+  });
+
 });
