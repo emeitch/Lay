@@ -198,7 +198,6 @@ describe("Path", () => {
       });
     });
 
-
     context("with tag but it dosen't have the key", () => {
       const id = new UUID();
 
@@ -210,6 +209,13 @@ describe("Path", () => {
       it("should return the path", () => {
         const p = new Path(id, v("foo"));
         assert.deepStrictEqual(p.reduce(book), p);
+      });
+    });
+
+    context("with comp val", () => {
+      it("should return nested val", () => {
+        const p = new Path(v({a: {b: v("c")}}), v("a"), v("b"));
+        assert.deepStrictEqual(p.reduce(book), v("c"));
       });
     });
 

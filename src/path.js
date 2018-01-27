@@ -1,6 +1,7 @@
 import Ref from './ref';
 import { Env } from './book';
 import Val from './val';
+import Comp from './comp';
 import Case from './case';
 import v from './v';
 import { exp } from './exp';
@@ -38,6 +39,12 @@ export default class Path extends Ref {
       }
 
       const k = key.reduce(book);
+
+      if (r instanceof Comp) {
+        r = r.get(k);
+        continue;
+      }
+
       const findLog = (i) => {
         const log = book.activeLog(i, k);
         if (!log) {
