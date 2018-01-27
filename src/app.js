@@ -50,7 +50,10 @@ d.new();
   d.set("Task", Task.id);
 }
 
-d.obj("Task").all.forEach(o => {
+const vtasks = d.obj("Task").send(v("all"), v("hoge"));
+
+for (let i = 0; i < vtasks.origin.length; i++) {
+  const o = vtasks.get(i);
   o.send(v("complete"));
 
   const k = v("state");
@@ -59,4 +62,4 @@ d.obj("Task").all.forEach(o => {
     console.log(k.stringify(), ":", val.stringify());
     console.log("----------");
   }
-});
+}

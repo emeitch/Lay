@@ -22,11 +22,23 @@ export default class Book {
 
     {
       const obj = new UUID();
-      const setf = function(key, val) {
-        return this.putAct(this.get("self"), key, val);
-      };
       stdbook.set("Object", obj);
-      stdbook.put(obj, "set", func("key", "val", new LiftedNative(setf)));
+
+      stdbook.put(
+        obj,
+        "set",
+        func("key", "val", new LiftedNative(function(key, val) {
+          return this.putAct(this.get("self"), key, val);
+        }))
+      );
+
+      stdbook.put(
+        obj,
+        "all",
+        func("n", new LiftedNative(function(_n) {
+          return v(this.taggedIds(this.get("self")));
+        }))
+      );
     }
 
     return stdbook;
@@ -44,7 +56,7 @@ export default class Book {
   }
 
   findLogs(cond) {
-    const logs = [];
+    const logs = this.parent ? this.parent.findLogs(cond) : [];
 
     // todo: 線形探索になっているので高速化する
     for (const [, log] of this.logs) {
@@ -246,14 +258,18 @@ export default class Book {
     });
   }
 
-  taggedObjs(id) {
+  taggedIds(id) {
     const name = this.name(id);
     if (name.origin === null) {
       return [];
     }
     const sname = sym(name.origin);
     const logs = this.findActiveLogs({key: v("tag"), val: sname});
-    return logs.map(log => this.obj(log.id));
+    return logs.map(log => log.id);
+  }
+
+  taggedObjs(id) {
+    return this.taggedIds(id).map(i => this.obj(i));
   }
 }
 
