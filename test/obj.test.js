@@ -294,7 +294,7 @@ describe("Obj", () => {
         });
 
         it("should return tagged objs array comp", () => {
-          const all = obj.send(v("all"), v("hoge"));
+          const all = obj.send(v("all"));
           assert.deepStrictEqual(all.get(0), book.obj(id2));
           assert.deepStrictEqual(all.get(1), book.obj(id3));
         });

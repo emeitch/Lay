@@ -35,7 +35,7 @@ export default class Book {
       stdbook.put(
         obj,
         "all",
-        func("n", new LiftedNative(function(_n) {
+        func(new LiftedNative(function() {
           return v(this.taggedIds(this.get("self")));
         }))
       );

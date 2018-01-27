@@ -1,6 +1,7 @@
 import Ref from './ref';
 import { Env } from './book';
 import Val from './val';
+import Case from './case';
 import v from './v';
 import { exp } from './exp';
 
@@ -62,7 +63,7 @@ export default class Path extends Ref {
       const env = new Env(book);
       env.set("self", r);
 
-      if (args.length > 0) {
+      if (log.val instanceof Case) {
         const e = exp(log.val, ...args);
         r = e.reduce(env);
       } else {
