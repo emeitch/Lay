@@ -7,6 +7,7 @@ import Log from './log';
 import Obj from './obj';
 import Comp from './comp';
 import Act from './act';
+import { sym } from './sym';
 import { func, LiftedNative } from './func';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
@@ -243,6 +244,16 @@ export default class Book {
     return new Act(() => {
       return this.put(...args);
     });
+  }
+
+  taggedObjs(id) {
+    const name = this.name(id);
+    if (name.origin === null) {
+      return [];
+    }
+    const sname = sym(name.origin);
+    const logs = this.findActiveLogs({key: v("tag"), val: sname});
+    return logs.map(log => this.obj(log.id));
   }
 }
 

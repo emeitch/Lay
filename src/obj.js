@@ -1,7 +1,6 @@
 import Path from './path';
 import Comp from './comp';
 import Act from './act';
-import { sym } from './sym';
 import v from './v';
 
 export default class Obj {
@@ -67,12 +66,7 @@ export default class Obj {
   }
 
   get all() {
-    if (this.name.origin === null) {
-      return [];
-    }
-    const sname = sym(this.name.origin);
-    const logs = this.book.findActiveLogs({key: v("tag"), val: sname});
-    return logs.map(log => this.book.obj(log.id));
+    return this.book.taggedObjs(this.id);
   }
 
   keys() {
