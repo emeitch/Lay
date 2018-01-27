@@ -71,6 +71,10 @@ export default class Comp extends Val {
   }
 
   get(key, book) {
+    if (key instanceof Prim) {
+      key = key.origin;
+    }
+    
     const o = this.origin[key];
     if (o) {
       return this.constructor.valFrom(o);
