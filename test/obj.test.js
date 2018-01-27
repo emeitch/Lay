@@ -272,14 +272,32 @@ describe("Obj", () => {
     });
 
     // adhoc specification
-    context("accessing default Object set method", () => {
-      beforeEach(() => {
-        book.put(id, key, v(1));
+    context("accessing default Object methods", () => {
+      describe("set", () => {
+        beforeEach(() => {
+          book.put(id, key, v(1));
+        });
+
+        it("should execute the act that returned set method", () => {
+          obj.send(v("set"), v("key2"), v(2));
+          assert.deepStrictEqual(obj.send(v("key2")), book.obj(v(2)));
+        });
       });
 
-      it("should execute the act that returned set method", () => {
-        obj.send(v("set"), v("key2"), v(2));
-        assert.deepStrictEqual(obj.send(v("key2")), book.obj(v(2)));
+      describe("all", () => {
+        const id2 = new UUID();
+        const id3 = new UUID();
+        beforeEach(() => {
+          book.set("Foo", id);
+          book.put(id2, v("tag"), sym("Foo"));
+          book.put(id3, v("tag"), sym("Foo"));
+        });
+
+        it("should return tagged objs array comp", () => {
+          const all = obj.send(v("all"), v("hoge"));
+          assert.deepStrictEqual(all.get(0), book.obj(id2));
+          assert.deepStrictEqual(all.get(1), book.obj(id3));
+        });
       });
     });
 
