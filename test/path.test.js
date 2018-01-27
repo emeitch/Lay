@@ -214,8 +214,17 @@ describe("Path", () => {
 
     context("with comp val", () => {
       it("should return nested val", () => {
-        const p = new Path(v({a: {b: v("c")}}), v("a"), v("b"));
-        assert.deepStrictEqual(p.reduce(book), v("c"));
+        const c = v({a: {b: {c: "d"}}});
+
+        {
+          const p = new Path(c, v("a"), v("b"));
+          assert.deepStrictEqual(p.reduce(book), v({c: "d"}));
+        }
+
+        {
+          const p = new Path(c, v("a"), v("b"), v("c"));
+          assert.deepStrictEqual(p.reduce(book), v("d"));
+        }
       });
     });
 
