@@ -39,6 +39,13 @@ describe("Comp", () => {
         assert.deepStrictEqual(val.set("b", v({c: 3, d: 4})), v({a: 1, b: {c: 3, d: 4}}));
       });
     });
+
+    describe("#get", () => {
+      it("should return arg index val", () => {
+        const val = v({a: 1, b: 2});
+        assert.deepStrictEqual(val.get("a"), v(1));
+      });
+    });
   });
 
   describe("stringify", () => {
