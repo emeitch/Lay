@@ -54,7 +54,6 @@ const vtasks = d.obj("Task").send(v("all"));
 
 for (let i = 0; i < vtasks.origin.length; i++) {
   const o = vtasks.get(i);
-  console.log(o);
   o.send(v("complete"));
 
   const k = v("state");
