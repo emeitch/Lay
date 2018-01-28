@@ -8,6 +8,7 @@ import Obj from './obj';
 import Comp from './comp';
 import Act from './act';
 import { sym } from './sym';
+import { exp } from './exp';
 import { func, LiftedNative } from './func';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
@@ -37,6 +38,19 @@ export default class Book {
         "all",
         func(new LiftedNative(function() {
           return v(this.taggedIds(this.get("self")));
+        }))
+      );
+
+      stdbook.put(
+        obj,
+        "fmap",
+        func("fnc", new LiftedNative(function(fnc) {
+          const arr = this.get("self");
+          const narr = arr.origin.map(o => {
+            const e = exp(fnc, o);
+            return e.reduce(this, o);
+          });
+          return v(narr);
         }))
       );
     }

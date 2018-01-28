@@ -2,7 +2,7 @@
 import Book from './book';
 import { sym } from './sym';
 import { path } from './path';
-// import { plus } from './func';
+import { func, LiftedNative } from './func';
 import v from './v';
 
 const d = new Book();
@@ -51,15 +51,16 @@ d.new();
 }
 
 const vtasks = d.obj("Task").send(v("all"));
-
-for (let i = 0; i < vtasks.origin.length; i++) {
-  const o = vtasks.get(i);
-  o.send(v("complete"));
+vtasks.send(v("fmap"), func("t", new LiftedNative(function(tid) {
+  const t = this.obj(tid);
+  t.send(v("complete"));
 
   const k = v("state");
-  const val = o.get(k);
+  const val = t.get(k);
   if (val) {
     console.log(k.stringify(), ":", val.stringify());
     console.log("----------");
   }
-}
+
+  return tid;
+})));

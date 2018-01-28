@@ -41,8 +41,11 @@ export default class Path extends Ref {
       const k = key.reduce(book);
 
       if (r instanceof Comp) {
-        r = r.get(k);
-        continue;
+        const prop = r.get(k);
+        if (prop.origin !== null) {
+          r = prop;
+          continue;
+        }
       }
 
       const findLog = (i) => {
