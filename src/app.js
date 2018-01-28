@@ -51,7 +51,7 @@ d.new();
 }
 
 const vtasks = d.obj("Task").send(v("all"));
-vtasks.send(v("map"), func("t", new LiftedNative(function(tid) {
+vtasks.send(v("map"), func("tid", new LiftedNative(function(tid) {
   const t = this.obj(tid);
   t.send(v("complete"));
 
