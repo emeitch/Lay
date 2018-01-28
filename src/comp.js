@@ -79,7 +79,12 @@ export default class Comp extends Val {
     if (o) {
       return this.constructor.valFrom(o);
     } else {
-      const proto = this.head.reduce(book);
+      let proto = this.head.reduce(book);
+      if (!proto.origin) {
+        if (Array.isArray(this.origin)) {
+          proto = book.obj(sym("Array").reduce(book));
+        }
+      }
       return proto.get ? proto.get(key) : Comp.valFrom(proto);
     }
   }

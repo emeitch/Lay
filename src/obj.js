@@ -1,6 +1,7 @@
 import Path from './path';
 import Comp from './comp';
 import Act from './act';
+import { Env } from './book';
 import v from './v';
 
 export default class Obj {
@@ -24,13 +25,27 @@ export default class Obj {
       return this.book.obj(prop);
     }
 
-    const path = new Path(this.id, v(key));
-    const val = path.reduce(this.book);
-    if (val === path){
-      return null;
-    } else {
-      return this.book.obj(val);
-    }
+    const findLog = (i) => {
+      const log = this.book.activeLog(i, key);
+      if (!log) {
+        const tlogs = this.book.activeLogs(i, v("tag"));
+        for (const tlog of tlogs) {
+          const env = new Env(this.book);
+          env.set("self", i);
+
+          const p = tlog.val.reduce(env);
+          const l = findLog(p);
+          if (l) {
+            return l;
+          }
+        }
+      }
+      return log;
+    };
+    const log = findLog(this.id) || this.book.activeLog(this.book.get("Object"), key);
+
+    const val = log ? log.val : v(null);
+    return this.book.obj(val);
   }
 
   set(key, val) {

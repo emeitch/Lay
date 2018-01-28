@@ -40,9 +40,14 @@ export default class Book {
           return v(this.taggedIds(this.get("self")));
         }))
       );
+    }
+
+    {
+      const arr = new UUID();
+      stdbook.set("Array", arr);
 
       stdbook.put(
-        obj,
+        arr,
         "map",
         func("fnc", new LiftedNative(function(fnc) {
           const arr = this.get("self");

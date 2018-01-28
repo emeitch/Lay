@@ -25,7 +25,7 @@ describe("Obj", () => {
   describe("#get", () => {
     context("without logs", () => {
       it("should return null", () => {
-        assert(obj.get(key) === null);
+        assert.deepStrictEqual(obj.get(key), v(null));
       });
     });
 
@@ -62,6 +62,16 @@ describe("Obj", () => {
       });
     });
 
+    context("with reducible val", () => {
+      beforeEach(() => {
+        book.putLog(new Log(id, key, exp(plus, v(1), v(2))));
+      });
+
+      it("should return the val as it is", () => {
+        assert.deepStrictEqual(obj.get(key), book.obj(exp(plus, v(1), v(2))));
+      });
+    });
+
     context("with a invalidated log", () => {
       beforeEach(() => {
         const log = book.putLog(new Log(id, key, v("val0")));
@@ -69,7 +79,7 @@ describe("Obj", () => {
       });
 
       it("should return null", () => {
-        assert.deepStrictEqual(obj.get(key), null);
+        assert.deepStrictEqual(obj.get(key), v(null));
       });
 
       context("add another log", () => {
@@ -90,53 +100,6 @@ describe("Obj", () => {
         it("should return the val", () => {
           assert.deepStrictEqual(obj.get(key), book.obj(v("val0")));
         });
-      });
-    });
-
-    context("with a absolute path", () => {
-      beforeEach(() => {
-        const id2 = new UUID();
-        const id3 = new UUID();
-        const key2 = new UUID();
-        const key3 = new UUID();
-
-        book.putLog(new Log(id2, key2, id3));
-        book.putLog(new Log(id3, key3, v("path end")));
-        book.putLog(new Log(id, key, new Path(id2, key2, key3)));
-      });
-
-      it("should return the val", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(v("path end")));
-      });
-    });
-
-    context("with a relative path", () => {
-      let val2;
-      beforeEach(() => {
-        val2 = v("val0");
-        const key2 = new UUID();
-
-        book.putLog(new Log(id, key2, val2));
-        book.putLog(new Log(id, key, new Path(sym("self"), key2)));
-      });
-
-      it("should return the val", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(val2));
-      });
-    });
-
-    context("with a relative reference exp", () => {
-      let val2;
-      beforeEach(() => {
-        val2 = v(1);
-        const key2 = new UUID();
-
-        book.putLog(new Log(id, key2, val2));
-        book.putLog(new Log(id, key, exp(plus, new Path(sym("self"), key2), v(2))));
-      });
-
-      it("should return the reduced val", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(v(3)));
       });
     });
 
@@ -242,6 +205,53 @@ describe("Obj", () => {
   });
 
   describe("send", () => {
+    context("with a absolute path", () => {
+      beforeEach(() => {
+        const id2 = new UUID();
+        const id3 = new UUID();
+        const key2 = new UUID();
+        const key3 = new UUID();
+
+        book.putLog(new Log(id2, key2, id3));
+        book.putLog(new Log(id3, key3, v("path end")));
+        book.putLog(new Log(id, key, new Path(id2, key2, key3)));
+      });
+
+      it("should return the val", () => {
+        assert.deepStrictEqual(obj.send(key), book.obj(v("path end")));
+      });
+    });
+
+    context("with a relative path", () => {
+      let val2;
+      beforeEach(() => {
+        val2 = v("val0");
+        const key2 = new UUID();
+
+        book.putLog(new Log(id, key2, val2));
+        book.putLog(new Log(id, key, new Path(sym("self"), key2)));
+      });
+
+      it("should return the val", () => {
+        assert.deepStrictEqual(obj.send(key), book.obj(val2));
+      });
+    });
+
+    context("with a relative reference exp", () => {
+      let val2;
+      beforeEach(() => {
+        val2 = v(1);
+        const key2 = new UUID();
+
+        book.putLog(new Log(id, key2, val2));
+        book.putLog(new Log(id, key, exp(plus, new Path(sym("self"), key2), v(2))));
+      });
+
+      it("should return the reduced val", () => {
+        assert.deepStrictEqual(obj.send(key), book.obj(v(3)));
+      });
+    });
+
     context("with a relative reference func", () => {
       let val2;
       beforeEach(() => {

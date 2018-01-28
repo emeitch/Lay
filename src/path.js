@@ -1,10 +1,9 @@
 import Ref from './ref';
 import { Env } from './book';
 import Val from './val';
-import Comp from './comp';
 import Case from './case';
-import v from './v';
 import { exp } from './exp';
+import v from './v';
 
 export default class Path extends Ref {
   constructor(...ids) {
@@ -26,7 +25,7 @@ export default class Path extends Ref {
   }
 
   step(book) {
-    let r = this.receiver.reduce(book);
+    let r = book.obj(this.receiver.reduce(book));
     for (const elm of this.keys) {
       let key;
       let args = [];
@@ -39,48 +38,22 @@ export default class Path extends Ref {
       }
 
       const k = key.reduce(book);
-
-      if (r instanceof Comp) {
-        const prop = r.get(k);
-        if (prop.origin !== null) {
-          r = prop;
-          continue;
-        }
-      }
-
-      const findLog = (i) => {
-        const log = book.activeLog(i, k);
-        if (!log) {
-          const tlogs = book.activeLogs(i, v("tag"));
-          for (const tlog of tlogs) {
-            const env = new Env(book);
-            env.set("self", i);
-
-            const p = tlog.val.reduce(env);
-            const l = findLog(p);
-            if (l) {
-              return l;
-            }
-          }
-        }
-        return log;
-      };
-      const log = findLog(r) || book.activeLog(book.get("Object"), k);
-      if (!log) {
+      const prop = r.get(k, book).id;
+      if (prop.equals(v(null))) {
         return super.step(book);
       }
 
       const env = new Env(book);
-      env.set("self", r);
+      env.set("self", r.id);
 
-      if (log.val instanceof Case) {
-        const e = exp(log.val, ...args);
-        r = e.reduce(env);
+      if (prop instanceof Case) {
+        const e = exp(prop, ...args);
+        r = book.obj(e.reduce(env));
       } else {
-        r = log.val.reduce(env);
+        r = book.obj(prop.reduce(env));
       }
     }
-    return r;
+    return r.id;
   }
 }
 
