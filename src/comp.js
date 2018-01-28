@@ -74,8 +74,8 @@ export default class Comp extends Val {
     if (key instanceof Prim) {
       key = key.origin;
     }
-    
-    const o = this.origin[key];
+
+    const o = this.origin.hasOwnProperty(key) ? this.origin[key] : undefined;
     if (o) {
       return this.constructor.valFrom(o);
     } else {

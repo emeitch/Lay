@@ -43,7 +43,7 @@ export default class Book {
 
       stdbook.put(
         obj,
-        "fmap",
+        "map",
         func("fnc", new LiftedNative(function(fnc) {
           const arr = this.get("self");
           const narr = arr.origin.map(o => {
