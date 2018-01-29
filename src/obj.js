@@ -22,7 +22,7 @@ export default class Obj {
     if (this.id instanceof Comp) {
       const comp = this.id;
       const prop = comp.get(key, this.book);
-      return this.book.obj(prop);
+      return prop;
     }
 
     const findLog = (i) => {
@@ -44,8 +44,7 @@ export default class Obj {
     };
     const log = findLog(this.id) || this.book.activeLog(this.book.get("Object"), key);
 
-    const val = log ? log.val : v(null);
-    return this.book.obj(val);
+    return log ? log.val : v(null);
   }
 
   set(key, val) {

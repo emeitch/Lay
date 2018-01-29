@@ -25,7 +25,7 @@ export default class Path extends Ref {
   }
 
   step(book) {
-    let r = book.obj(this.receiver.reduce(book));
+    let val = this.receiver.reduce(book);
     for (const elm of this.keys) {
       let key;
       let args = [];
@@ -38,22 +38,22 @@ export default class Path extends Ref {
       }
 
       const k = key.reduce(book);
-      const prop = r.get(k, book).id;
+      const prop = book.obj(val).get(k);
       if (prop.equals(v(null))) {
         return super.step(book);
       }
 
       const env = new Env(book);
-      env.set("self", r.id);
+      env.set("self", val);
 
       if (prop instanceof Case) {
         const e = exp(prop, ...args);
-        r = book.obj(e.reduce(env));
+        val = e.reduce(env);
       } else {
-        r = book.obj(prop.reduce(env));
+        val = prop.reduce(env);
       }
     }
-    return r.id;
+    return val;
   }
 }
 

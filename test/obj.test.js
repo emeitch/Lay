@@ -37,7 +37,7 @@ describe("Obj", () => {
       });
 
       it("should return a obj of log's val", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(dst));
+        assert.deepStrictEqual(obj.get(key), dst);
       });
     });
 
@@ -47,7 +47,7 @@ describe("Obj", () => {
       });
 
       it("should return a value", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(v("value")));
+        assert.deepStrictEqual(obj.get(key), v("value"));
       });
     });
 
@@ -58,7 +58,7 @@ describe("Obj", () => {
       });
 
       it("should return the last val", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(v("val1")));
+        assert.deepStrictEqual(obj.get(key), v("val1"));
       });
     });
 
@@ -68,7 +68,7 @@ describe("Obj", () => {
       });
 
       it("should return the val as it is", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(exp(plus, v(1), v(2))));
+        assert.deepStrictEqual(obj.get(key), exp(plus, v(1), v(2)));
       });
     });
 
@@ -88,7 +88,7 @@ describe("Obj", () => {
         });
 
         it("should return the val", () => {
-          assert.deepStrictEqual(obj.get(key), book.obj(v("val1")));
+          assert.deepStrictEqual(obj.get(key), v("val1"));
         });
       });
 
@@ -98,7 +98,7 @@ describe("Obj", () => {
         });
 
         it("should return the val", () => {
-          assert.deepStrictEqual(obj.get(key), book.obj(v("val0")));
+          assert.deepStrictEqual(obj.get(key), v("val0"));
         });
       });
     });
@@ -111,21 +111,17 @@ describe("Obj", () => {
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(val));
-      });
-
-      it("should return the val as a obj", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(val));
+        assert.deepStrictEqual(obj.get(key), val);
       });
 
       it("should return the property", () => {
         const map = obj.get(key);
-        assert.deepStrictEqual(map.get("a"), book.obj(v(1)));
+        assert.deepStrictEqual(map.get("a"), v(1));
       });
 
       it("should return the nested property", () => {
         const map = obj.get(key).get("b");
-        assert.deepStrictEqual(map.get("d"), book.obj(v(3)));
+        assert.deepStrictEqual(map.get("d"), v(3));
       });
     });
 
@@ -137,11 +133,11 @@ describe("Obj", () => {
       });
 
       it("should return the nested property", () => {
-        assert.deepStrictEqual(obj.get("b").get("d"), book.obj(v(3)));
+        assert.deepStrictEqual(obj.get("b").get("d"), v(3));
       });
 
       it("should return the prototype property", () => {
-        assert.deepStrictEqual(obj.get("e"), book.obj(v(4)));
+        assert.deepStrictEqual(obj.get("e"), v(4));
       });
     });
 
@@ -153,11 +149,11 @@ describe("Obj", () => {
       });
 
       it("should return the nested property", () => {
-        assert.deepStrictEqual(obj.get("b").get("d"), book.obj(v(3)));
+        assert.deepStrictEqual(obj.get("b").get("d"), v(3));
       });
 
       it("should return the head sym", () => {
-        assert.deepStrictEqual(obj.get("e"), book.obj(sym("Bar")));
+        assert.deepStrictEqual(obj.get("e"), sym("Bar"));
       });
     });
   });
@@ -172,7 +168,7 @@ describe("Obj", () => {
       });
 
       it("should set a property", () => {
-        assert.deepStrictEqual(obj.get(key), book.obj(dst));
+        assert.deepStrictEqual(obj.get(key), dst);
       });
 
       it("should return the obj", () => {
@@ -187,8 +183,8 @@ describe("Obj", () => {
         obj.set(key, obj2);
       });
 
-      it("should return a obj", () => {
-        assert.deepStrictEqual(obj.get(key), obj2);
+      it("should return the id", () => {
+        assert.deepStrictEqual(obj.get(key), obj2.id);
       });
     });
 
@@ -198,7 +194,7 @@ describe("Obj", () => {
       });
 
       it("should throw a error", () => {
-        assert.throws(() => obj.set("b", book.obj(v({c: 4, d: 5}))), /Obj#set method unsupported for comp id/);
+        assert.throws(() => obj.set("b", v({c: 4, d: 5})), /Obj#set method unsupported for comp id/);
       });
     });
 
@@ -305,8 +301,8 @@ describe("Obj", () => {
 
         it("should return tagged objs array comp", () => {
           const all = obj.send(v("all"));
-          assert.deepStrictEqual(all.get(0), book.obj(id2));
-          assert.deepStrictEqual(all.get(1), book.obj(id3));
+          assert.deepStrictEqual(all.get(0), id2);
+          assert.deepStrictEqual(all.get(1), id3);
         });
       });
     });
