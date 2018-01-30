@@ -5,6 +5,7 @@ import UUID from '../src/uuid';
 import Log from '../src/log';
 import Book from '../src/book';
 import Obj from '../src/obj';
+import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
 import { transaction, transactionTime, invalidate } from '../src/ontology';
 
@@ -399,6 +400,16 @@ describe("Book", () => {
         const logs = book.findActiveLogs({id});
         assert.deepStrictEqual(logs[0].val, v("val0"));
         assert(!logs[1]);
+      });
+    });
+  });
+
+  context("accessing default Array methods", () => {
+    describe("map", () => {
+      it("should map arg func for items", () => {
+        const book = new Book();
+        const mapped = book.obj(v([v(1), v(2), v(3)])).send(v("map"), func("x", exp(plus, "x", v(1))));
+        assert.deepStrictEqual(mapped.id, v([v(2), v(3), v(4)]));
       });
     });
   });

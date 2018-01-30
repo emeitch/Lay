@@ -159,6 +159,7 @@ export default class Case extends Comp {
       const matches = alt.pats.map((pattern, i) => {
         const target = args[i];
         if (target) {
+          console.log(target);
           const result = target.match(pattern);
           return {pattern, target, result};
         } else {
