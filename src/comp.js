@@ -34,6 +34,7 @@ export default class Comp extends Val {
     throw `not supported origin: ${origin}`;
   }
 
+
   constructor(origin, head) {
     super(origin);
 

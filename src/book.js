@@ -52,8 +52,8 @@ export default class Book {
         func("fnc", new LiftedNative(function(fnc) {
           const arr = this.get("self");
           const narr = arr.origin.map(o => {
-            const e = exp(fnc, o);
-            return e.reduce(this, o);
+            const e = exp(fnc, v(o));
+            return e.reduce(this).origin;
           });
           return v(narr);
         }))

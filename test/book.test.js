@@ -408,8 +408,8 @@ describe("Book", () => {
     describe("map", () => {
       it("should map arg func for items", () => {
         const book = new Book();
-        const mapped = book.obj(v([v(1), v(2), v(3)])).send(v("map"), func("x", exp(plus, "x", v(1))));
-        assert.deepStrictEqual(mapped.id, v([v(2), v(3), v(4)]));
+        const mapped = book.obj(v([1, 2, 3])).send(v("map"), func("x", exp(plus, "x", v(1))));
+        assert.deepStrictEqual(mapped.id, v([2, 3, 4]));
       });
     });
   });
