@@ -22,6 +22,12 @@ describe("Obj", () => {
     obj = book.obj(id);
   });
 
+  describe("#origin", () => {
+    it("should return id value origin", () => {
+      assert.deepStrictEqual(book.obj(v({a: 5})).origin, {a: 5});
+    });
+  });
+
   describe("#get", () => {
     context("without logs", () => {
       it("should return null", () => {
