@@ -82,9 +82,8 @@ export default class Comp extends Val {
     } else {
       let proto = this.head.reduce(book);
       if (!proto.origin) {
-        if (Array.isArray(this.origin)) {
-          proto = book.obj(sym("Array").reduce(book));
-        }
+        const name = Array.isArray(this.origin) ? "Array" : "Map";
+        proto = book.obj(sym(name).reduce(book));
       }
       return proto.get ? proto.get(key) : Comp.valFrom(proto);
     }

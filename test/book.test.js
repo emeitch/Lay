@@ -413,4 +413,14 @@ describe("Book", () => {
       });
     });
   });
+
+  context("accessing default Map methods", () => {
+    describe("get", () => {
+      it("should return the property", () => {
+        const book = new Book();
+        const val = book.obj(v({a: 1, b: 2})).send(v("get"), v("b"));
+        assert.deepStrictEqual(val, v(2));
+      });
+    });
+  });
 });

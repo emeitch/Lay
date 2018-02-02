@@ -60,6 +60,19 @@ export default class Book {
       );
     }
 
+    {
+      const map = new UUID();
+      stdbook.set("Map", map);
+
+      stdbook.put(
+        map,
+        "get",
+        func("key", new LiftedNative(function(key) {
+          return this.obj("self").get(key);
+        }))
+      );
+    }
+
     return stdbook;
   }
 
