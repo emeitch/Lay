@@ -291,7 +291,7 @@ describe("Obj", () => {
         });
 
         it("should execute the act that returned set method", () => {
-          obj.send(v("set"), v("key2"), v(2));
+          book.run(obj.send(v("set"), v("key2"), v(2)));
           assert.deepStrictEqual(obj.send(v("key2")), book.obj(v(2)));
         });
       });

@@ -1,6 +1,5 @@
 import Path from './path';
 import Comp from './comp';
-import Act from './act';
 import { Env } from './book';
 import v from './v';
 
@@ -63,15 +62,6 @@ export default class Obj {
   send(key, ...args) {
     const path = new Path(this.id, [key, ...args]);
     const v = path.reduce(this.book);
-
-    // todo: 暫定的にActをこのタイミングで処理
-    if (v instanceof Act) {
-      let act = v;
-      while(!act.settled) {
-        act = act.proceed();
-      }
-    }
-
     return this.book.obj(v);
   }
 

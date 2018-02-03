@@ -53,7 +53,7 @@ export default class Book {
           const arr = this.get("self");
           const narr = arr.origin.map(o => {
             const e = exp(fnc, v(o));
-            return e.reduce(this).origin;
+            return e.reduce(this);
           });
           return v(narr);
         }))
@@ -305,6 +305,10 @@ export default class Book {
   }
 
   run(acts) {
+    if (acts instanceof Obj) {
+      acts = acts.id;
+    }
+
     if (acts instanceof Act) {
       acts = v([acts]);
     }

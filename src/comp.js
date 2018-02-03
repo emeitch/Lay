@@ -28,7 +28,14 @@ export default class Comp extends Val {
         (type === "object" &&
          (origin.constructor === Object ||
           origin.constructor === Date))) { // todo:DateはJSではなくLay側の型・クラスに変更したい
-      return new Comp(origin, head);
+
+      let orgn;
+      if (Array.isArray(origin)) {
+        orgn = origin.map(i => i instanceof Prim ? i.origin : i);
+      } else {
+        orgn = origin;
+      }
+      return new Comp(orgn, head);
     }
 
     throw `not supported origin: ${origin}`;
