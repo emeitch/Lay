@@ -5,6 +5,7 @@ import UUID from '../src/uuid';
 import Log from '../src/log';
 import Book from '../src/book';
 import Obj from '../src/obj';
+import Act from '../src/act';
 import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
 import { transaction, transactionTime, invalidate } from '../src/ontology';
@@ -423,4 +424,21 @@ describe("Book", () => {
       });
     });
   });
+
+  describe("run", () => {
+    it("should execute arg Act", () => {
+      const book = new Book();
+      book.run(v(1)); // pass
+
+      let a = 0;
+      book.run(new Act(() => { a = 1; }));
+      assert.deepStrictEqual(a, 1);
+
+      let b = 0;
+      book.run(v([new Act(() => { a = 2; }), new Act(() => { b = 2; })]));
+      assert.deepStrictEqual(a, 2);
+      assert.deepStrictEqual(b, 2);
+    });
+  });
+
 });

@@ -303,6 +303,20 @@ export default class Book {
   taggedObjs(id) {
     return this.taggedIds(id).map(i => this.obj(i));
   }
+
+  run(acts) {
+    if (acts instanceof Act) {
+      acts = v([acts]);
+    }
+
+    if (acts instanceof Comp && Array.isArray(acts.origin)) {
+      for (let act of acts.origin) {
+        do {
+          act = act.proceed();
+        } while(act.next);
+      }
+    }
+  }
 }
 
 export class Env extends Book {
