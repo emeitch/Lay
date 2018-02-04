@@ -74,8 +74,8 @@ describe("v function", () => {
 
   context("with Prim item complex value", () => {
     it("should return a Comp with Prim origin", () => {
-      const val = v([v(1), v(2)]);
-      assert.deepStrictEqual(val, v([1, 2]));
+      assert.deepStrictEqual(v([v(1), v(2)]), v([1, 2]));
+      assert.deepStrictEqual(v({a: v(1), b: v(2)}), v({a: 1, b: 2}));
     });
   });
 
