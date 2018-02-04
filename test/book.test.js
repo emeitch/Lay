@@ -425,6 +425,23 @@ describe("Book", () => {
     });
   });
 
+  context("accessing Console methods", () => {
+    describe("puts", () => {
+      it("should return a Act", () => {
+        const book = new Book();
+        const o = book.obj("Console").send(v("puts"), v("foo"));
+
+        // stub
+        const orig = console.log;
+        console.log = arg => {
+          assert.deepStrictEqual(arg, "foo");
+        };
+        o.id.proceed();
+        console.log = orig;
+      });
+    });
+  });
+
   describe("run", () => {
     it("should execute arg Act", () => {
       const book = new Book();

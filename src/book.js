@@ -73,6 +73,21 @@ export default class Book {
       );
     }
 
+    {
+      const cnsl = new UUID();
+      stdbook.set("Console", cnsl);
+
+      stdbook.put(
+        cnsl,
+        "puts",
+        func("val", new LiftedNative(function(val) {
+          return new Act(() => {
+            console.log(val.origin);
+          });
+        }))
+      );
+    }
+
     return stdbook;
   }
 

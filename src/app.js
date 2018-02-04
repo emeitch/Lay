@@ -50,21 +50,27 @@ d.new();
   d.set("Task", Task.id);
 }
 
-const vtasks = d.obj("Task").send(v("all"));
-const cmps = vtasks.send(v("map"), func("tid", new LiftedNative(function(tid) {
-  const t = this.obj(tid);
-  return t.send(v("complete")).id;
-})));
-d.run(cmps);
+{
+  const vtasks = d.obj("Task").send(v("all"));
 
-
-vtasks.send(v("map"), func("tid", new LiftedNative(function(tid) {
-  const t = this.obj(tid);
-  const k = v("state");
-  const val = t.send(k);
-  if (val) {
-    console.log(k.stringify(), ":", val.stringify());
-    console.log("----------");
+  {
+    const acts = vtasks.send(v("map"), func("tid", new LiftedNative(function(tid) {
+      const t = this.obj(tid);
+      return t.send(v("complete")).id;
+    })));
+    d.run(acts);
   }
-  return tid;
-})));
+
+  {
+    const acts = vtasks.send(v("map"), func("tid", new LiftedNative(function(tid) {
+      const t = this.obj(tid);
+      const k = v("state");
+      const val = t.send(k);
+      const str = k.stringify() + ": " + val.stringify();
+      const a1 = d.obj("Console").send(v("puts"), v(str));
+      const a2 = d.obj("Console").send(v("puts"), v("----------"));
+      return a1.then(a2);
+    })));
+    d.run(acts);
+  }
+}
