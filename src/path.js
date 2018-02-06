@@ -24,6 +24,10 @@ export default class Path extends Ref {
     return "Path " + Val.stringify(this.origin, indent);
   }
 
+  replace(matches) {
+    return new this.constructor(...this.origin.map(id => Array.isArray(id) ? id.map(i => i.replace(matches)) : id.replace(matches)));
+  }
+
   step(book) {
     let val = this.receiver.reduce(book);
     for (const elm of this.keys) {

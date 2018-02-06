@@ -1,6 +1,5 @@
 /* eslint-env browser */
 import Book from './book';
-import { exp } from './exp';
 import { sym } from './sym';
 import { path } from './path';
 import { func, LiftedNative } from './func';
@@ -73,7 +72,7 @@ d.new();
     //   return a1.then(a2);
     // })));
     // d.run(acts);
-    const acts = vtasks.send(v("map"), func("tid", exp(d.obj("Console").get(v("puts")), "tid")));
+    const acts = vtasks.send(v("map"), func("tid", path(sym("Console"), [v("puts"), sym("tid")])));
     d.run(acts);
   }
 }
