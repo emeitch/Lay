@@ -72,7 +72,7 @@ d.new();
     //   return a1.then(a2);
     // })));
     // d.run(acts);
-    const acts = vtasks.send(v("map"), func("tid", path(sym("Console"), [v("puts"), sym("tid")])));
+    const acts = vtasks.send(v("map"), func("tid", path(sym("Console"), [v("puts"), path(sym("tid"), v("state"))])));
     d.run(acts);
   }
 }
