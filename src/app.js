@@ -1,8 +1,9 @@
 /* eslint-env browser */
 import Book from './book';
 import { sym } from './sym';
+import { exp } from './exp';
 import { path } from './path';
-import { func, LiftedNative } from './func';
+import { func, plus, LiftedNative } from './func';
 import v from './v';
 
 const d = new Book();
@@ -44,7 +45,7 @@ d.new();
   const Task = d.objs().pop();
   Task.set(
     v("complete"),
-    path(sym("self"), [v("set"), v("state"), sym("completed")])
+    path(sym("self"), [v("set"), v("state"), v("completed")])
   );
 
   d.set("Task", Task.id);
@@ -72,7 +73,7 @@ d.new();
     //   return a1.then(a2);
     // })));
     // d.run(acts);
-    const acts = vtasks.send(v("map"), func("tid", path(sym("Console"), [v("puts"), path(sym("tid"), v("state"))])));
+    const acts = vtasks.send(v("map"), func("tid", path(sym("Console"), [v("puts"), exp(plus, v("state: "), path(sym("tid"), v("state")))])));
     d.run(acts);
   }
 }
