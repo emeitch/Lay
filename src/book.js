@@ -33,11 +33,21 @@ export default class Book {
         }))
       );
 
+      // todo: allはClassオブジェクト用のメソッドにしたい
       stdbook.put(
         obj,
         "all",
         func(new LiftedNative(function() {
           return v(this.taggedIds(this.get("self")));
+        }))
+      );
+
+      // todo: thenはActオブジェクト用のメソッドにしたい
+      stdbook.set(
+        "then",
+        func("act1", "act2", new LiftedNative(function(act1, act2) {
+          const act = act1.then(act2);
+          return act;
         }))
       );
     }
