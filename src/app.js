@@ -63,16 +63,6 @@ d.new();
   }
 
   {
-    // const acts = vtasks.send(v("map"), func("tid", new LiftedNative(function(tid) {
-    //   const t = this.obj(tid);
-    //   const k = v("state");
-    //   const val = t.send(k);
-    //   const str = k.stringify() + ": " + val.stringify();
-    //   const a1 = d.obj("Console").send(v("puts"), v(str));
-    //   const a2 = d.obj("Console").send(v("puts"), v("----------"));
-    //   return a1.then(a2);
-    // })));
-    // d.run(acts);
     const sep = path(sym("Console"), [v("puts"), v("-----------")]);
     const acts = vtasks.send(v("map"), func("tid", exp(sym("then"), path(sym("Console"), [v("puts"), exp(plus, v("state: "), path(sym("tid"), v("state")))]), sep)));
     d.run(acts);
