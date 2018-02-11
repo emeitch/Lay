@@ -3,7 +3,7 @@ import Book from './book';
 import { sym } from './sym';
 import { exp } from './exp';
 import { path } from './path';
-import { func, plus, LiftedNative } from './func';
+import { func, concat, LiftedNative } from './func';
 import v from './v';
 
 const d = new Book();
@@ -64,7 +64,7 @@ d.new();
 
   {
     const sep = path(sym("Console"), [v("puts"), v("-----------")]);
-    const acts = vtasks.send(v("map"), func("tid", exp(sym("then"), path(sym("Console"), [v("puts"), exp(plus, v("state: "), path(sym("tid"), v("state")))]), sep)));
+    const acts = vtasks.send(v("map"), func("tid", exp(sym("then"), path(sym("Console"), [v("puts"), exp(concat, v("state: "), path(sym("tid"), v("state")))]), sep)));
     d.run(acts);
   }
 }
