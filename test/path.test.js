@@ -6,7 +6,7 @@ import UUID from '../src/uuid';
 import Act from '../src/act';
 import { sym } from '../src/sym';
 import { exp } from '../src/exp';
-import { func, plus } from '../src/func';
+import { func, plus, concat } from '../src/func';
 import Log from '../src/log';
 import Book from '../src/book';
 
@@ -225,6 +225,15 @@ describe("Path", () => {
           const p = new Path(c, v("a"), v("b"), v("c"));
           assert.deepStrictEqual(p.reduce(book), v("d"));
         }
+      });
+    });
+
+    context("path in func", () => {
+      it("should replace path args", () => {
+        const id = new UUID();
+        book.put(id, v("foo"), func("a", exp(concat, v("f"), "a")));
+        const e = exp(func("x", new Path(id, [v("foo"), sym("x")])), v("bar"));
+        assert.deepStrictEqual(e.reduce(book), v("fbar"));
       });
     });
 
