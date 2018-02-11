@@ -4,7 +4,7 @@ import v from '../src/v';
 import { exp } from '../src/exp';
 import Book from '../src/book';
 import { kase, alt, grd, otherwise, Native, LiftedNative } from '../src/case';
-import Func, { func, plus } from '../src/func';
+import Func, { func, plus, concat } from '../src/func';
 
 describe("Func", () => {
   describe("func", () => {
@@ -263,6 +263,12 @@ describe("Func", () => {
 
       const ln = new LiftedNative(val => val.origin * val.origin);
       assert(ln.stringify() === "<LiftedNative function (val) {return val.origin * val.origin;}>");
+    });
+  });
+
+  describe("concat", () => {
+    it("should concatenate arg strings", () => {
+      assert.deepStrictEqual(exp(concat, v("foo"), v("bar")).reduce(), v("foobar"));
     });
   });
 });
