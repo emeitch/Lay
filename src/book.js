@@ -127,6 +127,7 @@ export default class Book {
   }
 
   cacheIndex(id, key) {
+    key = typeof(key) === "string" ? sym(key) : v(key);
     return Val.stringify(id) + "__" + Val.stringify(key);
   }
 

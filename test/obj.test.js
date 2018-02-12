@@ -107,6 +107,16 @@ describe("Obj", () => {
           assert.deepStrictEqual(obj.get(key), v("val0"));
         });
       });
+
+      context("js string key", () => {
+        beforeEach(() => {
+          book.put(id, "bar", v("val0"));
+        });
+
+        it("should return the val", () => {
+          assert.deepStrictEqual(obj.get("bar"), v("val0"));
+        });
+      });
     });
 
     context("with a map val", () => {
