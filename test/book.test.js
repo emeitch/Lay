@@ -443,6 +443,21 @@ describe("Book", () => {
     });
   });
 
+  context("accessing funcs", () => {
+    describe("then", () => {
+      it("should return a chained Act", () => {
+        const f1 = () => {};
+        const f2 = () => {};
+        const a1 = new Act(f1);
+        const a2 = new Act(f2);
+
+        const act = exp("then", a1, a2).reduce();
+        assert(act.executor === f1);
+        assert(act.next.executor === f2);
+      });
+    });
+  });
+
   describe("run", () => {
     it("should execute arg Act", () => {
       const book = new Book();
