@@ -12,24 +12,24 @@ d.new();
 {
   const o = d.objs().pop();
   o.set(v("tag"), sym("Task"));
-  o.set(v("title"), v("buy the milk"));
-  o.set(v("state"), sym("active"));
+  o.set(sym("title"), v("buy the milk"));
+  o.set(sym("state"), sym("active"));
 }
 
 d.new();
 {
   const o = d.objs().pop();
   o.set(v("tag"), sym("Task"));
-  o.set(v("title"), v("buy the beer"));
-  o.set(v("state"), sym("active"));
+  o.set(sym("title"), v("buy the beer"));
+  o.set(sym("state"), sym("active"));
 }
 
 d.new();
 {
   const o = d.objs().pop();
   o.set(v("tag"), sym("Task"));
-  o.set(v("title"), v("buy the wine"));
-  o.set(v("state"), sym("active"));
+  o.set(sym("title"), v("buy the wine"));
+  o.set(sym("state"), sym("active"));
 }
 
 d.objs().forEach(o => {
@@ -70,13 +70,13 @@ d.new();
           path(sym("Console"),
             [v("puts"),
               exp(concat,
-                v('"tag": '),
+                v('tag: '),
                 path(sym("tid"), v("tag")))]),
           path(sym("Console"),
             [v("puts"),
               exp(concat,
-                v('"state": '),
-                path(sym("tid"), v("state")))])),
+                v('state: '),
+                path(sym("tid"), sym("state")))])),
       sep))));
   }
 }
