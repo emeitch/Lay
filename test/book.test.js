@@ -8,6 +8,7 @@ import Obj from '../src/obj';
 import Act from '../src/act';
 import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
+import { sym } from '../src/sym';
 import { transaction, transactionTime, invalidate } from '../src/ontology';
 
 describe("Book", () => {
@@ -409,7 +410,7 @@ describe("Book", () => {
     describe("map", () => {
       it("should map arg func for items", () => {
         const book = new Book();
-        const mapped = book.obj(v([1, 2, 3])).send(v("map"), func("x", exp(plus, "x", v(1))));
+        const mapped = book.obj(v([1, 2, 3])).send(sym("map"), func("x", exp(plus, "x", v(1))));
         assert.deepStrictEqual(mapped.id, v([2, 3, 4]));
       });
     });
@@ -419,7 +420,7 @@ describe("Book", () => {
     describe("get", () => {
       it("should return the property", () => {
         const book = new Book();
-        const val = book.obj(v({a: 1, b: 2})).send(v("get"), v("b"));
+        const val = book.obj(v({a: 1, b: 2})).send(sym("get"), v("b"));
         assert.deepStrictEqual(val, v(2));
       });
     });
@@ -429,7 +430,7 @@ describe("Book", () => {
     describe("puts", () => {
       it("should return a Act", () => {
         const book = new Book();
-        const o = book.obj("Console").send(v("puts"), v("foo"));
+        const o = book.obj("Console").send(sym("puts"), v("foo"));
 
         // stub
         const orig = console.log;

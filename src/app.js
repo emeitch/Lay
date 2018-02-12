@@ -11,7 +11,7 @@ const d = new Book();
 d.new();
 {
   const o = d.objs().pop();
-  o.set(v("tag"), sym("Task"));
+  o.set(sym("tag"), sym("Task"));
   o.set(sym("title"), v("buy the milk"));
   o.set(sym("state"), sym("active"));
 }
@@ -19,7 +19,7 @@ d.new();
 d.new();
 {
   const o = d.objs().pop();
-  o.set(v("tag"), sym("Task"));
+  o.set(sym("tag"), sym("Task"));
   o.set(sym("title"), v("buy the beer"));
   o.set(sym("state"), sym("active"));
 }
@@ -27,7 +27,7 @@ d.new();
 d.new();
 {
   const o = d.objs().pop();
-  o.set(v("tag"), sym("Task"));
+  o.set(sym("tag"), sym("Task"));
   o.set(sym("title"), v("buy the wine"));
   o.set(sym("state"), sym("active"));
 }
@@ -44,38 +44,38 @@ d.new();
 {
   const Task = d.objs().pop();
   Task.set(
-    v("complete"),
-    path(sym("self"), [v("set"), v("state"), sym("completed")])
+    sym("complete"),
+    path(sym("self"), [sym("set"), sym("state"), sym("completed")])
   );
 
   d.set("Task", Task.id);
 }
 
 {
-  const vtasks = d.obj("Task").send(v("all"));
+  const vtasks = d.obj("Task").send(sym("all"));
 
   {
-    const acts = vtasks.send(v("map"), func("tid", new LiftedNative(function(tid) {
+    const acts = vtasks.send(sym("map"), func("tid", new LiftedNative(function(tid) {
       const t = this.obj(tid);
-      return t.send(v("complete")).id;
+      return t.send(sym("complete")).id;
     })));
     d.run(acts);
   }
 
   {
-    const sep = path(sym("Console"), [v("puts"), v("-----------")]);
-    d.run(vtasks.send(v("map"), func("tid",
+    const sep = path(sym("Console"), [sym("puts"), v("-----------")]);
+    d.run(vtasks.send(sym("map"), func("tid",
       exp(sym("then"),
         exp(sym("then"),
           path(sym("Console"),
-            [v("puts"),
+            [sym("puts"),
               exp(concat,
-                v('tag: '),
-                path(sym("tid"), v("tag")))]),
+                v("tag: "),
+                path(sym("tid"), sym("tag")))]),
           path(sym("Console"),
-            [v("puts"),
+            [sym("puts"),
               exp(concat,
-                v('state: '),
+                v("state: "),
                 path(sym("tid"), sym("state")))])),
       sep))));
   }

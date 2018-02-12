@@ -291,8 +291,8 @@ describe("Obj", () => {
         });
 
         it("should execute the act that returned set method", () => {
-          book.run(obj.send(v("set"), v("key2"), v(2)));
-          assert.deepStrictEqual(obj.send(v("key2")), book.obj(v(2)));
+          book.run(obj.send(sym("set"), sym("key2"), v(2)));
+          assert.deepStrictEqual(obj.send(sym("key2")), book.obj(v(2)));
         });
       });
 
@@ -301,12 +301,12 @@ describe("Obj", () => {
         const id3 = new UUID();
         beforeEach(() => {
           book.set("Foo", id);
-          book.put(id2, v("tag"), sym("Foo"));
-          book.put(id3, v("tag"), sym("Foo"));
+          book.put(id2, sym("tag"), sym("Foo"));
+          book.put(id3, sym("tag"), sym("Foo"));
         });
 
         it("should return tagged objs array comp", () => {
-          const all = obj.send(v("all"));
+          const all = obj.send(sym("all"));
           assert.deepStrictEqual(all.get(0), id2);
           assert.deepStrictEqual(all.get(1), id3);
         });
@@ -315,14 +315,14 @@ describe("Obj", () => {
 
     context("lazy definition", () => {
       it("should be able to define tags", () => {
-        book.put(id, v("tag"), sym("Tag1"));
-        assert(obj.send(v("foo")).origin !== "bar");
+        book.put(id, sym("tag"), sym("Tag1"));
+        assert(obj.send(sym("foo")).origin !== "bar");
 
         const tag = new UUID();
-        book.set(v("Tag1"), tag);
-        book.put(tag, v("foo"), v("bar"));
+        book.set("Tag1", tag);
+        book.put(tag, sym("foo"), sym("bar"));
 
-        assert(obj.send(v("foo")).origin === "bar");
+        assert(obj.send(sym("foo")).origin === "bar");
       });
     });
   });
@@ -360,9 +360,9 @@ describe("Obj", () => {
       const id3 = new UUID();
       const id4 = new UUID();
       book.set("Foo", id);
-      book.put(id2, v("tag"), sym("Foo"));
-      book.put(id3, v("tag"), sym("Foo"));
-      book.put(id4, v("tag"), sym("Foo"));
+      book.put(id2, sym("tag"), sym("Foo"));
+      book.put(id3, sym("tag"), sym("Foo"));
+      book.put(id4, sym("tag"), sym("Foo"));
 
       const all = obj.all;
       assert.deepStrictEqual(all[0], book.obj(id2));

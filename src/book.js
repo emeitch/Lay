@@ -27,7 +27,7 @@ export default class Book {
 
       stdbook.put(
         obj,
-        "set",
+        sym("set"),
         func("key", "val", new LiftedNative(function(key, val) {
           return this.putAct(this.get("self"), key, val);
         }))
@@ -36,7 +36,7 @@ export default class Book {
       // todo: allはClassオブジェクト用のメソッドにしたい
       stdbook.put(
         obj,
-        "all",
+        sym("all"),
         func(new LiftedNative(function() {
           return v(this.taggedIds(this.get("self")));
         }))
@@ -58,7 +58,7 @@ export default class Book {
 
       stdbook.put(
         arr,
-        "map",
+        sym("map"),
         func("fnc", new LiftedNative(function(fnc) {
           const arr = this.get("self");
           const narr = arr.origin.map(o => {
@@ -76,7 +76,7 @@ export default class Book {
 
       stdbook.put(
         map,
-        "get",
+        sym("get"),
         func("key", new LiftedNative(function(key) {
           return this.obj("self").get(key);
         }))
@@ -89,7 +89,7 @@ export default class Book {
 
       stdbook.put(
         cnsl,
-        "puts",
+        sym("puts"),
         func("val", new LiftedNative(function(val) {
           return new Act(() => {
             console.log(val.origin);
@@ -321,7 +321,7 @@ export default class Book {
       return [];
     }
     const sname = sym(name.origin);
-    const logs = this.findActiveLogs({key: v("tag"), val: sname});
+    const logs = this.findActiveLogs({key: sym("tag"), val: sname});
     return logs.map(log => log.id);
   }
 

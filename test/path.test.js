@@ -122,24 +122,24 @@ describe("Path", () => {
         book.set("parent2", tagid2);
         book.set("grandparent", tagid3);
 
-        book.put(id, "tag", sym("parent1"));
-        book.put(id, "tag", sym("parent2"));
-        book.put(tagid2, "tag", sym("grandparent"));
+        book.put(id, sym("tag"), sym("parent1"));
+        book.put(id, sym("tag"), sym("parent2"));
+        book.put(tagid2, sym("tag"), sym("grandparent"));
 
-        book.put(tagid1, "foo", v(1));
-        book.put(tagid2, "foo", v(2));
-        book.put(tagid2, "bar", v(3));
-        book.put(tagid3, "baz", v(4));
+        book.put(tagid1, sym("foo"), v(1));
+        book.put(tagid2, sym("foo"), v(2));
+        book.put(tagid2, sym("bar"), v(3));
+        book.put(tagid3, sym("baz"), v(4));
       });
 
       it("should return the tag's val", () => {
-        const p1 = new Path(id, v("foo"));
+        const p1 = new Path(id, sym("foo"));
         assert.deepStrictEqual(p1.reduce(book), v(1));
 
-        const p2 = new Path(id, v("bar"));
+        const p2 = new Path(id, sym("bar"));
         assert.deepStrictEqual(p2.reduce(book), v(3));
 
-        const p3 = new Path(id, v("baz"));
+        const p3 = new Path(id, sym("baz"));
         assert.deepStrictEqual(p3.reduce(book), v(4));
       });
     });
@@ -152,14 +152,14 @@ describe("Path", () => {
 
         book.set("parent1", tagid1);
 
-        book.put(id, "tag", path(sym("self"), v("baz")));
-        book.put(id, "baz", sym("parent1"));
+        book.put(id, sym("tag"), path(sym("self"), sym("baz")));
+        book.put(id, sym("baz"), sym("parent1"));
 
-        book.put(tagid1, "foo", v("bar"));
+        book.put(tagid1, sym("foo"), v("bar"));
       });
 
       it("should return the tag's val", () => {
-        const p1 = new Path(id, v("foo"));
+        const p1 = new Path(id, sym("foo"));
         assert.deepStrictEqual(p1.reduce(book), v("bar"));
       });
     });
@@ -172,14 +172,14 @@ describe("Path", () => {
 
         book.set("parent1", tagid1);
 
-        book.put(id, "tag", path(sym("self"), [v("baz"), sym("parent1")]));
-        book.put(id, "baz", func("arg", sym("arg")));
+        book.put(id, sym("tag"), path(sym("self"), [sym("baz"), sym("parent1")]));
+        book.put(id, sym("baz"), func("arg", sym("arg")));
 
-        book.put(tagid1, "foo", v("bar"));
+        book.put(tagid1, sym("foo"), v("bar"));
       });
 
       it("should return the tag's val", () => {
-        const p1 = new Path(id, v("foo"));
+        const p1 = new Path(id, sym("foo"));
         assert.deepStrictEqual(p1.reduce(book), v("bar"));
       });
     });
@@ -193,7 +193,7 @@ describe("Path", () => {
       });
 
       it("should return the path", () => {
-        const p = new Path(id, [v("set"), v("foo"), v("val")]);
+        const p = new Path(id, [sym("set"), sym("foo"), v("val")]);
         assert.deepStrictEqual(p.reduce(book).constructor, Act);
       });
     });
@@ -207,7 +207,7 @@ describe("Path", () => {
       });
 
       it("should return the path", () => {
-        const p = new Path(id, v("foo"));
+        const p = new Path(id, sym("foo"));
         assert.deepStrictEqual(p.reduce(book), p);
       });
     });

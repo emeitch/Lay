@@ -1,6 +1,7 @@
 import Path from './path';
 import Comp from './comp';
 import { Env } from './book';
+import { sym } from './sym';
 import v from './v';
 
 export default class Obj {
@@ -27,7 +28,7 @@ export default class Obj {
     const findLog = (i) => {
       const log = this.book.activeLog(i, key);
       if (!log) {
-        const tlogs = this.book.activeLogs(i, v("tag"));
+        const tlogs = this.book.activeLogs(i, sym("tag"));
         for (const tlog of tlogs) {
           const env = new Env(this.book);
           env.set("self", i);
