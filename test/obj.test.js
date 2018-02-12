@@ -358,7 +358,7 @@ describe("Obj", () => {
   describe("name", () => {
     it("should return assigned name on book", () => {
       book.set("Foo", id);
-      assert(obj.name.equals(v("Foo")));
+      assert.deepStrictEqual(obj.name, sym("Foo"));
     });
   });
 

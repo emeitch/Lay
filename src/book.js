@@ -222,7 +222,7 @@ export default class Book {
   }
 
   objs() {
-    const logs = this.findLogs({key: v("exists")});
+    const logs = this.findLogs({key: sym("exists")});
     const ids = _.uniq(logs.map(l => l.id));
     return ids.map(id => new Obj(this, id));
   }
@@ -240,7 +240,7 @@ export default class Book {
   }
 
   get(name) {
-    const logs = this.findLogs({id: v(name), key: assign});
+    const logs = this.findLogs({id: sym(name), key: assign});
     const log = logs[logs.length-1];
     if (log) {
       return log.val;
@@ -255,7 +255,7 @@ export default class Book {
 
   set(name, id) {
     // todo: ユニーク制約をかけたい
-    const log = new Log(v(name), assign, id);
+    const log = new Log(sym(name), assign, id);
     this.putLog(log);
   }
 
