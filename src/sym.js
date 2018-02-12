@@ -1,6 +1,10 @@
 import Val from './val';
 
 export default class Sym extends Val {
+  get reducible() {
+    return false;
+  }
+
   collate(val) {
     return {
       [this.origin]: val

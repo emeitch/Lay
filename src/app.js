@@ -45,7 +45,7 @@ d.new();
   const Task = d.objs().pop();
   Task.set(
     v("complete"),
-    path(sym("self"), [v("set"), v("state"), v("completed")])
+    path(sym("self"), [v("set"), v("state"), sym("completed")])
   );
 
   d.set("Task", Task.id);
