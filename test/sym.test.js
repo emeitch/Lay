@@ -5,6 +5,12 @@ import Book from '../src/book';
 import { sym } from '../src/sym';
 
 describe("Sym", () => {
+  describe("#reducible", () => {
+    it("should return false", () => {
+      assert.deepStrictEqual(sym("foo").reducible, false);
+    });
+  });
+
   describe("#reduce", () => {
     it("should return val of book", () => {
       const val = v("sym val");
