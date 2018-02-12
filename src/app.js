@@ -64,7 +64,11 @@ d.new();
 
   {
     const sep = path(sym("Console"), [v("puts"), v("-----------")]);
-    const acts = vtasks.send(v("map"), func("tid", exp(sym("then"), path(sym("Console"), [v("puts"), exp(concat, v("state: "), path(sym("tid"), v("state")))]), sep)));
-    d.run(acts);
+    d.run(vtasks.send(v("map"), func("tid",
+      exp(sym("then"),
+        exp(sym("then"),
+          path(sym("Console"), [v("puts"), exp(concat, v('"tag": '), path(sym("tid"), v("tag")))]),
+          path(sym("Console"), [v("puts"), exp(concat, v('"state": '), path(sym("tid"), v("state")))])),
+      sep))));
   }
 }
