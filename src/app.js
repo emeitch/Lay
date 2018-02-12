@@ -1,6 +1,5 @@
 /* eslint-env browser */
 import Book from './book';
-import { sym } from './sym';
 import { exp } from './exp';
 import { path } from './path';
 import { func, concat, LiftedNative } from './func';
@@ -43,40 +42,36 @@ d.objs().forEach(o => {
 d.new();
 {
   const Task = d.objs().pop();
-  Task.set(
-    "complete",
-    path(sym("self"), [sym("set"), sym("state"), sym("completed")])
-  );
-
+  Task.set("complete", path("self", ["set", "state", "completed"]));
   d.set("Task", Task.id);
 }
 
 {
-  const vtasks = d.obj("Task").send(sym("all"));
+  const vtasks = d.obj("Task").send("all");
 
   {
-    const acts = vtasks.send(sym("map"), func("tid", new LiftedNative(function(tid) {
+    const acts = vtasks.send("map", func("tid", new LiftedNative(function(tid) {
       const t = this.obj(tid);
-      return t.send(sym("complete")).id;
+      return t.send("complete").id;
     })));
     d.run(acts);
   }
 
   {
-    const sep = path(sym("Console"), [sym("puts"), v("-----------")]);
-    d.run(vtasks.send(sym("map"), func("tid",
-      exp(sym("then"),
-        exp(sym("then"),
-          path(sym("Console"),
-            [sym("puts"),
+    const sep = path("Console", ["puts", v("-----------")]);
+    d.run(vtasks.send("map", func("tid",
+      exp("then",
+        exp("then",
+          path("Console",
+            ["puts",
               exp(concat,
                 v("tag: "),
-                path(sym("tid"), sym("tag")))]),
-          path(sym("Console"),
-            [sym("puts"),
+                path("tid", "tag"))]),
+          path("Console",
+            ["puts",
               exp(concat,
                 v("state: "),
-                path(sym("tid"), sym("state")))])),
+                path("tid", "state"))])),
       sep))));
   }
 }

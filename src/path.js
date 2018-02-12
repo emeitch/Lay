@@ -3,10 +3,26 @@ import { Env } from './book';
 import Val from './val';
 import Case from './case';
 import { exp } from './exp';
+import { sym } from './sym';
 import v from './v';
 
 export default class Path extends Ref {
   constructor(...ids) {
+    ids = ids.map(id => {
+      if (typeof(id) === "string") {
+        return sym(id);
+      } else if (Array.isArray(id)) {
+        return id.map(i => {
+          if (typeof(i) === "string") {
+            return sym(i);
+          } else {
+            return i;
+          }
+        });
+      } else {
+        return id;
+      }
+    });
     super(ids);
   }
 

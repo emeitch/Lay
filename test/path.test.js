@@ -20,6 +20,12 @@ describe("Path", () => {
     p = new Path(id1, id2, id3);
   });
 
+  describe("constructor", () => {
+    it("should complete sym", () => {
+      assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), new Path(sym("foo"), [sym("bar"), sym("buz")], sym("fiz")));
+    });
+  });
+
   describe("#receiver", () => {
     it("should return the first id", () => {
       assert.deepStrictEqual(p.receiver, id1);
