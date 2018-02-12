@@ -126,7 +126,7 @@ describe("Book", () => {
 
     context("name assigned", () => {
       beforeEach(() => {
-        book.set("i", id);
+        book.set(sym("i"), id);
         book.set("k", key);
         book.set("v", val);
       });
@@ -372,7 +372,6 @@ describe("Book", () => {
       assert(book.findLogs({key: sym("foo")}).length === 1);
       assert(book.findLogs({key: "foo"}).length === 1);
       assert(book.findLogs({key: v("foo")}).length === 0);
-
     });
   });
 

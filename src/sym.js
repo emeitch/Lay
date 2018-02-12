@@ -34,6 +34,10 @@ export default class Sym extends Val {
 }
 
 export function sym(origin) {
+  if (origin instanceof Sym) {
+    return origin;
+  }
+  
   if (typeof(origin) !== "string") {
     return null;
   }
