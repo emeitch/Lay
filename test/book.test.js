@@ -359,7 +359,20 @@ describe("Book", () => {
         assert.deepStrictEqual(o.get(sym("foo")), v(1));
         assert.deepStrictEqual(o.get(sym("bar")), v("bar"));
         assert.deepStrictEqual(o.get(sym("baz")), sym("baz"));
+
+        assert(book.findLogs({key: sym("foo")}).length === 1);
       });
+    });
+  });
+
+  describe("#findLogs", () => {
+    it("should return the logs with sym completion", () => {
+      book.put(id, "foo", v(1));
+
+      assert(book.findLogs({key: sym("foo")}).length === 1);
+      assert(book.findLogs({key: "foo"}).length === 1);
+      assert(book.findLogs({key: v("foo")}).length === 0);
+
     });
   });
 

@@ -112,13 +112,22 @@ export default class Book {
     return this.logs.get(logid);
   }
 
-  findLogs(cond) {
+  findLogs(condition) {
+    const cond = {};
+    Object.keys(condition).forEach(k => {
+      if (typeof(condition[k]) === "string") {
+        cond[k] = sym(condition[k]);
+      } else {
+        cond[k] = condition[k];
+      }
+    });
+
     const logs = this.parent ? this.parent.findLogs(cond) : [];
 
     // todo: 線形探索になっているので高速化する
     for (const [, log] of this.logs) {
       const keys = Object.keys(cond);
-      if (keys.every((k) => JSON.stringify(log[k]) === JSON.stringify(cond[k]))) {
+      if (keys.every((k) => Val.stringify(log[k]) === Val.stringify(cond[k]))) {
         logs.push(log);
       }
     }
