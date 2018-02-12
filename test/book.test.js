@@ -344,7 +344,7 @@ describe("Book", () => {
       assert(o.constructor === Obj);
       assert(o.id);
 
-      const logs = book.activeLogs(o.id, v("exists"));
+      const logs = book.activeLogs(o.id, sym("exists"));
       assert(logs.length > 0);
     });
 
@@ -352,11 +352,13 @@ describe("Book", () => {
       it("should return the obj set properties", () => {
         const o = book.new({
           foo: 1,
-          bar: "baz"
+          bar: v("bar"),
+          baz: "baz"
         });
 
-        assert.deepStrictEqual(o.get("foo"), v(1));
-        assert.deepStrictEqual(o.get("bar"), v("baz"));
+        assert.deepStrictEqual(o.get(sym("foo")), v(1));
+        assert.deepStrictEqual(o.get(sym("bar")), v("bar"));
+        assert.deepStrictEqual(o.get(sym("baz")), sym("baz"));
       });
     });
   });

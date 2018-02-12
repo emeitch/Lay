@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import UUID from '../src/uuid';
 import Log, { n } from '../src/log';
-import v from '../src/v';
+import { sym } from '../src/sym';
 
 describe("Log", () => {
   const id = new UUID();
@@ -29,9 +29,11 @@ describe("Log", () => {
       assert.throws(() => new Log(id), /key is required/);
     });
 
-    it("should constrain a val coverting Val", () => {
-      const l = new Log(id, key, "stringify");
-      assert.deepStrictEqual(l.val, v("stringify"));
+    context("js string", () => {
+      const l = new Log("foo", "bar", "baz");
+      assert.deepStrictEqual(l.id, sym("foo"));
+      assert.deepStrictEqual(l.key, sym("bar"));
+      assert.deepStrictEqual(l.val, sym("baz"));
     });
   });
 });
