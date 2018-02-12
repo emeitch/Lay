@@ -11,25 +11,25 @@ const d = new Book();
 d.new();
 {
   const o = d.objs().pop();
-  o.set(sym("tag"), sym("Task"));
-  o.set(sym("title"), v("buy the milk"));
-  o.set(sym("state"), sym("active"));
+  o.set("tag", "Task");
+  o.set("title", v("buy the milk"));
+  o.set("state", "active");
 }
 
 d.new();
 {
   const o = d.objs().pop();
-  o.set(sym("tag"), sym("Task"));
-  o.set(sym("title"), v("buy the beer"));
-  o.set(sym("state"), sym("active"));
+  o.set("tag", "Task");
+  o.set("title", v("buy the beer"));
+  o.set("state", "active");
 }
 
 d.new();
 {
   const o = d.objs().pop();
-  o.set(sym("tag"), sym("Task"));
-  o.set(sym("title"), v("buy the wine"));
-  o.set(sym("state"), sym("active"));
+  o.set("tag", "Task");
+  o.set("title", v("buy the wine"));
+  o.set("state", "active");
 }
 
 d.objs().forEach(o => {
@@ -44,7 +44,7 @@ d.new();
 {
   const Task = d.objs().pop();
   Task.set(
-    sym("complete"),
+    "complete",
     path(sym("self"), [sym("set"), sym("state"), sym("completed")])
   );
 
