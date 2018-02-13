@@ -206,6 +206,27 @@ export default class Book {
     return actives[actives.length-1];
   }
 
+  findLogWithTags(id, key) {
+    const log = this.activeLog(id, key);
+    if (log) {
+      return log;
+    }
+
+    const tlogs = this.activeLogs(id, "tag");
+    for (const tlog of tlogs) {
+      const env = new Env(this);
+      env.set("self", id);
+
+      const p = tlog.val.reduce(env);
+      const l = this.findLogWithTags(p, key);
+      if (l) {
+        return l;
+      }
+    }
+
+    return this.activeLog(this.get("Object"), key);
+  }
+
   obj(id) {
     if (id instanceof ID || id instanceof Comp) {
       return new Obj(this, id);
@@ -331,7 +352,7 @@ export default class Book {
       return [];
     }
     const sname = sym(name.origin);
-    const logs = this.findActiveLogs({key: sym("tag"), val: sname});
+    const logs = this.findActiveLogs({key: "tag", val: sname});
     return logs.map(log => log.id);
   }
 
