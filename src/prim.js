@@ -11,6 +11,10 @@ export default class Prim extends Val {
   }
 
   get tag() {
+    if (this.origin === null) {
+      return sym("Null");
+    }
+
     const type = typeof(this.origin);
     return sym(type[0].toUpperCase() + type.substring(1));
   }
