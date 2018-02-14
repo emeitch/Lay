@@ -66,7 +66,7 @@ export default class Comp extends Val {
   }
 
   stringify(_indent=0) {
-    const head = this.head.origin === null ? "" : this.head.stringify() + " ";
+    const head = this.head.stringify() + " ";
     return head + Val.stringify(this.origin, _indent);
   }
 
