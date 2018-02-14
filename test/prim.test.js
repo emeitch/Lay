@@ -1,5 +1,5 @@
 import assert from 'assert';
-
+import { sym } from '../src/sym';
 import v from '../src/v';
 
 describe("Prim", () => {
@@ -17,6 +17,14 @@ describe("Prim", () => {
         assert.deepStrictEqual(v(1).reducible, false);
         assert.deepStrictEqual(v("foo").reducible, false);
         assert.deepStrictEqual(v(true).reducible, false);
+      });
+    });
+
+    describe("#tag", () => {
+      it("should return tag sym", () => {
+        assert.deepStrictEqual(v(1).tag, sym("Number"));
+        assert.deepStrictEqual(v("foo").tag, sym("String"));
+        assert.deepStrictEqual(v(true).tag, sym("Boolean"));
       });
     });
   });
