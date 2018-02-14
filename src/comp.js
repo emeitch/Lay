@@ -54,10 +54,12 @@ export default class Comp extends Val {
     const parse = (h) => {
       if (h) {
         return h;
-      } else if (h === null) {
-        return Comp.valFrom(null);
       } else {
-        return sym(this.constructor.name);
+        if (Array.isArray(origin)) {
+          return sym("Array");
+        } else {
+          return sym("Map");
+        }
       }
     };
     this.head = parse(head);
@@ -84,6 +86,10 @@ export default class Comp extends Val {
     return this.origin;
   }
 
+  get tag() {
+    return this.head;
+  }
+
   get(key, book) {
     if (key instanceof Prim) {
       key = key.origin;
@@ -92,14 +98,14 @@ export default class Comp extends Val {
     const o = this.origin.hasOwnProperty(key) ? this.origin[key] : undefined;
     if (o) {
       return this.constructor.valFrom(o);
-    } else {
-      let proto = this.head.reduce(book);
-      if (!proto.origin) {
-        const name = Array.isArray(this.origin) ? "Array" : "Map";
-        proto = book.obj(sym(name).reduce(book));
-      }
-      return proto.get ? proto.get(key) : Comp.valFrom(proto);
     }
+
+    if (!book && this.head.get) {
+      return this.head.get(key);
+    }
+
+    let proto = book.obj(this.head.reduce(book));
+    return proto.get ? proto.get(key) : Comp.valFrom(proto);
   }
 
   set(key, val) {

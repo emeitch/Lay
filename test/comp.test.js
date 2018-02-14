@@ -1,6 +1,7 @@
 import assert from 'assert';
 
 import Hash from '../src/hash';
+import { sym } from '../src/sym';
 import v from '../src/v';
 
 describe("Comp", () => {
@@ -23,6 +24,13 @@ describe("Comp", () => {
       it("should return false", () => {
         assert.deepStrictEqual(v({a: 1, b: 2}).reducible, false);
         assert.deepStrictEqual(v([1, 2, 3]).reducible, false);
+      });
+    });
+
+    describe("#tag", () => {
+      it("should return tag sym", () => {
+        assert.deepStrictEqual(v({a: 1, b: 2}).tag, sym("Map"));
+        assert.deepStrictEqual(v([1, 2, 3]).tag, sym("Array"));
       });
     });
 
@@ -51,9 +59,9 @@ describe("Comp", () => {
 
   describe("stringify", () => {
     it("should return string dump", () => {
-      assert(v({a: [1, 2], b: "bar"}).stringify() === "{\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
+      assert(v({a: [1, 2], b: "bar"}).stringify() === "Map {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
 
-      assert(v({a: [v(1), v(2)], b: v("bar")}).stringify() === "{\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
+      assert(v({a: [v(1), v(2)], b: v("bar")}).stringify() === "Map {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
 
       assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).stringify() === "Foo {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
     });
