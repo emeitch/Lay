@@ -1,16 +1,23 @@
 import assert from 'assert';
 
 import Val from '../src/val';
+import { sym } from '../src/sym';
 import v from '../src/v';
 
 describe("Val", () => {
   context("number origin", () => {
-    const Inherited = class extends Val {};
+    const Inherited = class ExtendedVal extends Val {};
     const val = new Inherited(0);
 
     describe("#origin", () => {
       it("should return original value", () => {
         assert.deepStrictEqual(val.origin, 0);
+      });
+    });
+
+    describe("#tag", () => {
+      it("should return tag sym", () => {
+        assert.deepStrictEqual(val.tag, sym("ExtendedVal"));
       });
     });
 

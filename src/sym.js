@@ -1,43 +1,12 @@
-import Val from './val';
+import { Sym } from './val';
 
-export default class Sym extends Val {
-  get reducible() {
-    return false;
-  }
-
-  collate(val) {
-    return {
-      [this.origin]: val
-    };
-  }
-
-  replace(matches) {
-    const mresults = matches.filter(m => m.result).map(m => m.result);
-    for (const result of mresults) {
-      for (const key of Object.keys(result)) {
-        if (this.equals(sym(key))) {
-          return result[key];
-        }
-      }
-    }
-    return this;
-  }
-
-  step(book) {
-    const val = book.get(this.origin);
-    return val !== undefined ? val : this;
-  }
-
-  stringify(_indent) {
-    return this.origin;
-  }
-}
+export default Sym;
 
 export function sym(origin) {
   if (origin instanceof Sym) {
     return origin;
   }
-  
+
   if (typeof(origin) !== "string") {
     return null;
   }
