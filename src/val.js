@@ -17,6 +17,10 @@ export default class Val {
     return new Sym(this.constructor.name);
   }
 
+  get(key) {
+    return this[key];
+  }
+
   equals(other) {
     return _.isEqual(this, other);
   }

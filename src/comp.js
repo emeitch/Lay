@@ -2,7 +2,7 @@ import _ from 'lodash';
 import Val from './val';
 import Prim from './prim';
 import Hash from './hash';
-import { sym } from './sym';
+import Sym, { sym } from './sym';
 
 export default class Comp extends Val {
   static valFrom(...args) {
@@ -105,7 +105,7 @@ export default class Comp extends Val {
     }
 
     let proto = book.obj(this.head.reduce(book));
-    return proto.get ? proto.get(key) : Comp.valFrom(proto);
+    return proto instanceof Sym ? Comp.valFrom(null) : proto.get(key);
   }
 
   set(key, val) {

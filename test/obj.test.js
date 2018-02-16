@@ -169,7 +169,7 @@ describe("Obj", () => {
       });
 
       it("should return the head sym", () => {
-        assert.deepStrictEqual(obj.get("e"), sym("Bar"));
+        assert.deepStrictEqual(obj.get("e"), v(null));
       });
     });
   });
