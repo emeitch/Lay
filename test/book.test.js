@@ -158,6 +158,19 @@ describe("Book", () => {
     });
   });
 
+  describe("Val#get", () => {
+    context("prototype assigned", () => {
+      beforeEach(() => {
+        book.set(sym("Number"), id);
+        book.put(id, "foo", v("bar"));
+      });
+
+      it("should return tag's prop", () => {
+        assert.deepStrictEqual(v(1).get("foo", book), v("bar"));
+      });
+    });
+  });
+
   describe("#activeLogs", () => {
     context("no logs", () => {
       it("should return empty", () => {

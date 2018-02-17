@@ -17,8 +17,14 @@ export default class Val {
     return new Sym(this.constructor.name);
   }
 
-  get(key) {
-    return this[key];
+  get(key, book) {
+    const val = this[key];
+    if (val) {
+      return val;
+    }
+
+    const proto = this.tag.reduce(book);
+    return book.obj(proto).get(key);
   }
 
   equals(other) {
