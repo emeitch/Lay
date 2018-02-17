@@ -168,6 +168,12 @@ describe("Book", () => {
       it("should return tag's prop", () => {
         assert.deepStrictEqual(v(1).get("foo", book), v("bar"));
       });
+
+      it("should return id's prop", () => {
+        assert.deepStrictEqual(id.get("foo", book), v("bar"));
+        assert.deepStrictEqual(id.get("tag", book), sym("UUID"));
+        assert.deepStrictEqual(id.get("tag"), sym("UUID"));
+      });
     });
   });
 
