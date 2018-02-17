@@ -32,6 +32,12 @@ describe("Val", () => {
         assert.deepStrictEqual(val.get("tag"), sym("ExtendedVal"));
         assert.deepStrictEqual(val.get("id"), val);
       });
+
+      context("not exists key", () => {
+        it("should throw error", () => {
+          assert.throws(() => val.get("not_exists"), /not exists key/);
+        });
+      });
     });
 
     describe("#equals", () => {

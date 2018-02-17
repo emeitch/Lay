@@ -23,6 +23,10 @@ export default class Val {
       return val;
     }
 
+    if (!book) {
+      throw `not exists key: ${key}`;
+    }
+
     const proto = this.tag.reduce(book);
     return book.obj(proto).get(key);
   }
