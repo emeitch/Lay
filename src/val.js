@@ -28,7 +28,7 @@ export default class Val {
     }
 
     const proto = this.tag.reduce(book);
-    return book.obj(proto).get(key);
+    return proto.get(key, book);
   }
 
   equals(other) {
