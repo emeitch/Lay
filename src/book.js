@@ -78,7 +78,7 @@ export default class Book {
         map,
         sym("get"),
         func("key", new LiftedNative(function(key) {
-          return this.obj("self").get(key);
+          return this.get("self").get(key, this);
         }))
       );
     }
