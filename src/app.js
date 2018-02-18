@@ -43,19 +43,16 @@ d.existsIDs().forEach(i => {
 }
 
 {
-  const vtasks = d.obj("Task").send("all");
-
+  const vtasks = path("Task", "all").reduce(d);
   {
-    const acts = vtasks.send("map", func("tid", new LiftedNative(function(tid) {
-      const t = this.obj(tid);
-      return t.send("complete").id;
-    })));
-    d.run(acts);
+    d.run(path(vtasks, ["map", func("tid", new LiftedNative(function(tid) {
+      return path(tid, "complete").reduce(this);
+    }))]).reduce(d));
   }
 
   {
     const sep = path("Console", ["puts", v("-----------")]);
-    d.run(vtasks.send("map", func("tid",
+    d.run(path(vtasks, ["map", func("tid",
       exp("then",
         exp("then",
           path("Console",
@@ -68,6 +65,6 @@ d.existsIDs().forEach(i => {
               exp(concat,
                 v("state: "),
                 path("tid", "state"))])),
-      sep))));
+      sep))]).reduce(d));
   }
 }
