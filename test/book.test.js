@@ -337,6 +337,20 @@ describe("Book", () => {
     });
   });
 
+  describe("#taggedIDs", () => {
+    it("should return tagged id list", () => {
+      const t1 = book.new();
+      book.set("T1", t1);
+      const id1 = book.new({"tag": "T1"});
+      const id2 = book.new({"tag": "T1"});
+
+      assert.deepStrictEqual(book.taggedIDs(t1), [id1, id2]);
+
+      const t2 = book.new();
+      assert.deepStrictEqual(book.taggedIDs(t2), []);
+    });
+  });
+
   describe("#new", () => {
     it("should return new id", () => {
       const id = book.new();
@@ -414,6 +428,24 @@ describe("Book", () => {
         const logs = book.findActiveLogs({id});
         assert.deepStrictEqual(logs[0].val, v("val0"));
         assert(!logs[1]);
+      });
+    });
+  });
+
+  context("accessing Object methods", () => {
+    describe("all", () => {
+      it("should return self instances", () => {
+        const book = new Book();
+        book.set("Foo", book.new());
+        const id1 = book.new({"tag": "Foo"});
+        const id2 = book.new({"tag": "Foo"});
+
+        const ids = path("Foo", "all").reduce(book);
+        assert.deepStrictEqual(ids.get(0), id1);
+        assert.deepStrictEqual(ids.get(1), id2);
+
+        const emp = book.new();
+        assert.deepStrictEqual(path(emp, "all").reduce(book), v([]));
       });
     });
   });

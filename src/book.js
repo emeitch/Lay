@@ -36,7 +36,7 @@ export default class Book {
         obj,
         sym("all"),
         func(new LiftedNative(function() {
-          return v(this.taggedIds(this.get("self")));
+          return v(this.taggedIDs(this.get("self")));
         }))
       );
 
@@ -334,7 +334,7 @@ export default class Book {
     });
   }
 
-  taggedIds(id) {
+  taggedIDs(id) {
     const name = this.name(id);
     if (name.origin === null) {
       return [];
