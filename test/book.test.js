@@ -172,6 +172,14 @@ describe("Book", () => {
     });
   });
 
+  describe("#name", () => {
+    it("should return assigned name", () => {
+      book.set(sym("Foo"), id);
+      assert.deepStrictEqual(book.name(id), sym("Foo"));
+      assert.deepStrictEqual(book.name(new UUID()), v(null));
+    });
+  });
+
   describe("#activeLogs", () => {
     context("no logs", () => {
       it("should return empty", () => {
