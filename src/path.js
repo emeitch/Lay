@@ -58,7 +58,7 @@ export default class Path extends Ref {
       }
 
       const k = key.reduce(book);
-      const prop = book.obj(val).get(k);
+      const prop = val.get(k, book);
       if (prop.equals(v(null))) {
         return super.step(book);
       }
