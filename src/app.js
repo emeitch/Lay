@@ -2,7 +2,7 @@
 import Book from './book';
 import { exp } from './exp';
 import { path } from './path';
-import { func, concat, LiftedNative } from './func';
+import { func, concat } from './func';
 import v from './v';
 
 const d = new Book();
@@ -44,32 +44,29 @@ d.existsIDs().forEach(i => {
 
 {
   const vtasks = path("Task", "all");
+
   {
-    d.run(path(vtasks, ["map", func("tid", new LiftedNative(function(tid) {
-      return path(tid, "complete");
-    }))]));
+    d.run(path(vtasks, ["map", func("tid", path("tid", "complete"))]));
   }
 
   {
     d.run(path(vtasks, ["map", func("tid",
-        path(
-          path(
-            "Console",
+      path(
+        "Console",
+        ["puts",
+          exp(concat,
+            v("tag: "),
+            path("tid", "tag"))],
+        ["then",
+          path("Console",
             ["puts",
               exp(concat,
-                v("tag: "),
-                path("tid", "tag"))]),
-          ["then",
-            path("Console",
-              ["puts",
-                exp(concat,
-                  v("state: "),
-                  path("tid", "state"))])
-          ],
-          ["then",
-            path("Console", ["puts", v("-----------")])
-          ]
-        )
-    )]));
+                v("state: "),
+                path("tid", "state"))])
+        ],
+        ["then",
+          path("Console", ["puts", v("-----------")])
+        ]
+    ))]));
   }
 }
