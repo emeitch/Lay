@@ -356,7 +356,8 @@ export default class Book {
     return logs.map(log => log.id);
   }
 
-  run(acts) {
+  run(e) {
+    let acts = e.reduce(this);
     if (acts instanceof Act) {
       acts = v([acts]);
     }

@@ -43,11 +43,11 @@ d.existsIDs().forEach(i => {
 }
 
 {
-  const vtasks = path("Task", "all").reduce(d);
+  const vtasks = path("Task", "all");
   {
     d.run(path(vtasks, ["map", func("tid", new LiftedNative(function(tid) {
-      return path(tid, "complete").reduce(this);
-    }))]).reduce(d));
+      return path(tid, "complete");
+    }))]));
   }
 
   {
@@ -65,6 +65,6 @@ d.existsIDs().forEach(i => {
               exp(concat,
                 v("state: "),
                 path("tid", "state"))])),
-      sep))]).reduce(d));
+      sep))]));
   }
 }
