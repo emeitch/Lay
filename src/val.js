@@ -18,6 +18,10 @@ export default class Val {
   }
 
   get(key, book) {
+    if (key instanceof Sym) {
+      key = key.origin;
+    }
+
     const val = this[key];
     if (val) {
       return val;

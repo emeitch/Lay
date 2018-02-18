@@ -30,6 +30,7 @@ describe("Val", () => {
     describe("#get", () => {
       it("should return key's val", () => {
         assert.deepStrictEqual(val.get("tag"), sym("ExtendedVal"));
+        assert.deepStrictEqual(val.get(sym("tag")), sym("ExtendedVal"));
         assert.deepStrictEqual(val.get("id"), val);
       });
 
