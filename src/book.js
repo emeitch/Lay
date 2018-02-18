@@ -238,17 +238,17 @@ export default class Book {
   }
 
   new(props) {
-    const obj = this.obj(new UUID());
-    obj.set("exists");
+    const id = new UUID();
+    this.put(id, "exists");
 
     if (props) {
       for (const key of Object.keys(props)) {
         const val = props[key];
-        obj.set(key, val);
+        this.put(id, key, val);
       }
     }
 
-    return obj;
+    return id;
   }
 
   objs() {
@@ -257,7 +257,7 @@ export default class Book {
     return ids.map(id => new Obj(this, id));
   }
 
-  transactionObj(log) {
+  transactionID(log) {
     const tlogs = this.findLogs({id: log.logid, key: transaction});
 
     if (tlogs.length === 0) {
@@ -266,7 +266,7 @@ export default class Book {
 
     const tlog = tlogs[0];
     const tid = tlog.val;
-    return this.obj(tid);
+    return tid;
   }
 
   get(name) {
@@ -354,10 +354,6 @@ export default class Book {
     const sname = sym(name.origin);
     const logs = this.findActiveLogs({key: "tag", val: sname});
     return logs.map(log => log.id);
-  }
-
-  taggedObjs(id) {
-    return this.taggedIds(id).map(i => this.obj(i));
   }
 
   run(acts) {

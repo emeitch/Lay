@@ -9,7 +9,7 @@ import Act from '../src/act';
 import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
 import { sym } from '../src/sym';
-import { transaction, transactionTime, invalidate } from '../src/ontology';
+import { transaction, invalidate } from '../src/ontology';
 
 describe("Book", () => {
   const id = new UUID();
@@ -40,11 +40,6 @@ describe("Book", () => {
       it("should append a transaction log", () => {
         const tlogs = book.findLogs({id: log.logid, key: transaction});
         assert(tlogs.length === 1);
-      });
-
-      it("should append a transaction data", () => {
-        const tobj = book.transactionObj(log);
-        assert(tobj.get(transactionTime).origin.constructor === Date);
       });
     });
 
@@ -105,15 +100,15 @@ describe("Book", () => {
   });
 
   describe("#transactionObj", () => {
-    let tobj;
+    let tid;
     beforeEach(() => {
       const log = new Log(id, key, val);
       book.putLog(log);
-      tobj = book.transactionObj(log);
+      tid = book.transactionID(log);
     });
 
     it("should has no more transaction", () => {
-      assert.deepStrictEqual(book.transactionObj(tobj.id), null);
+      assert.deepStrictEqual(book.transactionID(tid), null);
     });
   });
 
@@ -358,26 +353,25 @@ describe("Book", () => {
   });
 
   describe("#new", () => {
-    it("should return the obj", () => {
-      const o = book.new();
-      assert(o.constructor === Obj);
-      assert(o.id);
+    it("should return new id", () => {
+      const id = book.new();
+      assert(id.constructor === UUID);
 
-      const logs = book.activeLogs(o.id, sym("exists"));
+      const logs = book.activeLogs(id, sym("exists"));
       assert(logs.length > 0);
     });
 
     context("with properties", () => {
       it("should return the obj set properties", () => {
-        const o = book.new({
+        const id = book.new({
           foo: 1,
           bar: v("bar"),
           baz: "baz"
         });
 
-        assert.deepStrictEqual(o.get(sym("foo")), v(1));
-        assert.deepStrictEqual(o.get(sym("bar")), v("bar"));
-        assert.deepStrictEqual(o.get(sym("baz")), sym("baz"));
+        assert.deepStrictEqual(id.get(sym("foo"), book), v(1));
+        assert.deepStrictEqual(id.get(sym("bar"), book), v("bar"));
+        assert.deepStrictEqual(id.get(sym("baz"), book), sym("baz"));
 
         assert(book.findLogs({key: sym("foo")}).length === 1);
       });

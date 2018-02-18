@@ -10,11 +10,13 @@ export default class ID extends Ref {
   }
 
   get(key, book) {
-    if (!book) {
-      return super.get(key, book);
+    if (book) {
+      const log = book.findLogWithTags(this, key);
+      if (log) {
+        return log.val;
+      }
     }
-    
-    const log = book.findLogWithTags(this, key);
-    return log ? log.val : super.get(key, book);
+
+    return super.get(key, book);
   }
 }

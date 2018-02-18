@@ -51,7 +51,7 @@ export default class Obj {
   }
 
   get all() {
-    return this.book.taggedObjs(this.id);
+    return this.book.taggedIds(this.id).map(i => this.book.obj(i));
   }
 
   keys() {
