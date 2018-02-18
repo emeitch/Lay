@@ -357,10 +357,6 @@ export default class Book {
   }
 
   run(acts) {
-    if (acts instanceof Obj) {
-      acts = acts.id;
-    }
-
     if (acts instanceof Act) {
       acts = v([acts]);
     }

@@ -498,9 +498,6 @@ describe("Book", () => {
       book.run(v([new Act(() => { a = 2; }), new Act(() => { b = 2; })]));
       assert.deepStrictEqual(a, 2);
       assert.deepStrictEqual(b, 2);
-
-      book.run(book.obj(v([new Act(() => { a = 3; })])));
-      assert.deepStrictEqual(a, 3);
     });
   });
 
