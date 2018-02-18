@@ -17,9 +17,14 @@ export default class Val {
     return new Sym(this.constructor.name);
   }
 
-  get(key, book) {
-    if (key instanceof Sym) {
-      key = key.origin;
+  get(k, book) {
+    const key = k instanceof Sym ? k.origin : k;
+
+    if (book) {
+      const proto = this.tag.reduce(book);
+      if (!(proto instanceof Sym)) {
+        return proto.get(key, book);
+      }
     }
 
     const val = this[key];
@@ -27,12 +32,7 @@ export default class Val {
       return val;
     }
 
-    if (!book) {
-      throw `not exists key: ${key}`;
-    }
-
-    const proto = this.tag.reduce(book);
-    return proto.get(key, book);
+    return new Prim(null);
   }
 
   equals(other) {
@@ -90,6 +90,7 @@ export default class Val {
   }
 }
 
+/*********************************************************************/
 export class Sym extends Val {
   get reducible() {
     return false;
@@ -120,5 +121,25 @@ export class Sym extends Val {
 
   stringify(_indent) {
     return this.origin;
+  }
+}
+
+/*********************************************************************/
+export class Prim extends Val {
+  get reducible() {
+    return false;
+  }
+
+  stringify(_indent) {
+    return JSON.stringify(this.origin);
+  }
+
+  get tag() {
+    if (this.origin === null) {
+      return new Sym("Null");
+    }
+
+    const type = typeof(this.origin);
+    return new Sym(type[0].toUpperCase() + type.substring(1));
   }
 }

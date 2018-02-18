@@ -453,7 +453,7 @@ describe("Book", () => {
     describe("get", () => {
       it("should return the property", () => {
         const book = new Book();
-        const val = book.obj(v({a: 1, b: 2})).send(sym("get"), v("b"));
+        const val = book.obj(v({a: 1, b: 2})).send(sym("get"), sym("b"));
         assert.deepStrictEqual(val, v(2));
       });
     });

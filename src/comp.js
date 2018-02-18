@@ -90,22 +90,18 @@ export default class Comp extends Val {
     return this.head;
   }
 
-  get(key, book) {
-    if (key instanceof Prim) {
-      key = key.origin;
+  get(k, book) {
+    const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
+
+    if (this.origin.hasOwnProperty(key)) {
+      return this.constructor.valFrom(this.origin[key]);
     }
 
-    const o = this.origin.hasOwnProperty(key) ? this.origin[key] : undefined;
-    if (o) {
-      return this.constructor.valFrom(o);
-    }
-
-    if (!book && this.head.get) {
+    if (this.head instanceof Comp) {
       return this.head.get(key);
     }
 
-    let proto = book.obj(this.head.reduce(book));
-    return proto instanceof Sym ? Comp.valFrom(null) : proto.get(key);
+    return super.get(k, book);
   }
 
   set(key, val) {

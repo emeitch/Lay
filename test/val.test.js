@@ -35,8 +35,8 @@ describe("Val", () => {
       });
 
       context("not exists key", () => {
-        it("should throw error", () => {
-          assert.throws(() => val.get("not_exists"), /not exists key/);
+        it("should return null val", () => {
+          assert.deepStrictEqual(val.get("notExists"), v(null));
         });
       });
     });

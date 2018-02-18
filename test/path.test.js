@@ -223,12 +223,12 @@ describe("Path", () => {
         const c = v({a: {b: {c: "d"}}});
 
         {
-          const p = new Path(c, v("a"), v("b"));
+          const p = new Path(c, sym("a"), sym("b"));
           assert.deepStrictEqual(p.reduce(book), v({c: "d"}));
         }
 
         {
-          const p = new Path(c, v("a"), v("b"), v("c"));
+          const p = new Path(c, "a", "b", "c");
           assert.deepStrictEqual(p.reduce(book), v("d"));
         }
       });
