@@ -388,17 +388,17 @@ describe("Book", () => {
     });
   });
 
-  describe("#objs", () => {
-    it("should return new generated objs", () => {
+  describe("#existsIDs", () => {
+    it("should return new generated ids", () => {
       const o0 = book.new();
       const o1 = book.new();
       const o2 = book.new();
 
-      const objs = book.objs();
-      assert(objs.length === 3);
-      assert(objs[0].id === o0.id);
-      assert(objs[1].id === o1.id);
-      assert(objs[2].id === o2.id);
+      const ids = book.existsIDs();
+      assert(ids.length === 3);
+      assert(ids[0] === o0);
+      assert(ids[1] === o1);
+      assert(ids[2] === o2);
     });
   });
 

@@ -7,43 +7,39 @@ import v from './v';
 
 const d = new Book();
 
-d.new();
 {
-  const o = d.objs().pop();
-  o.set("tag", "Task");
-  o.set("title", v("buy the milk"));
-  o.set("state", "active");
+  const id = d.new();
+  d.put(id, "tag", "Task");
+  d.put(id, "title", v("buy the milk"));
+  d.put(id, "state", "active");
 }
 
-d.new();
 {
-  const o = d.objs().pop();
-  o.set("tag", "Task");
-  o.set("title", v("buy the beer"));
-  o.set("state", "active");
+  const id = d.new();
+  d.put(id, "tag", "Task");
+  d.put(id, "title", v("buy the beer"));
+  d.put(id, "state", "active");
 }
 
-d.new();
 {
-  const o = d.objs().pop();
-  o.set("tag", "Task");
-  o.set("title", v("buy the wine"));
-  o.set("state", "active");
+  const id = d.new();
+  d.put(id, "tag", "Task");
+  d.put(id, "title", v("buy the wine"));
+  d.put(id, "state", "active");
 }
 
-d.objs().forEach(o => {
-  o.keys().forEach(k => {
-    const val = o.get(k);
-    console.log(k.stringify(), ":", val.stringify());
+d.existsIDs().forEach(i => {
+  const logs = d.findLogs({id: i});
+  logs.forEach(l => {
+    console.log(l.key.stringify(), ":", l.val.stringify());
   });
   console.log("----------");
 });
 
-d.new();
 {
-  const Task = d.objs().pop();
-  Task.set("complete", path("self", ["set", "state", "completed"]));
-  d.set("Task", Task.id);
+  const Task = d.new();
+  d.put(Task, "complete", path("self", ["set", "state", "completed"]));
+  d.set("Task", Task);
 }
 
 {

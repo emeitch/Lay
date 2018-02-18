@@ -251,10 +251,10 @@ export default class Book {
     return id;
   }
 
-  objs() {
+  existsIDs() {
     const logs = this.findLogs({key: sym("exists")});
     const ids = _.uniq(logs.map(l => l.id));
-    return ids.map(id => new Obj(this, id));
+    return ids;
   }
 
   transactionID(log) {
