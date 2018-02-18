@@ -4,11 +4,11 @@ import v from '../src/v';
 import UUID from '../src/uuid';
 import Log from '../src/log';
 import Book from '../src/book';
-import Obj from '../src/obj';
 import Act from '../src/act';
 import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
 import { sym } from '../src/sym';
+import { path } from '../src/path';
 import { transaction, invalidate } from '../src/ontology';
 
 describe("Book", () => {
@@ -99,7 +99,7 @@ describe("Book", () => {
     });
   });
 
-  describe("#transactionObj", () => {
+  describe("#transactionID", () => {
     let tid;
     beforeEach(() => {
       const log = new Log(id, key, val);
@@ -329,29 +329,6 @@ describe("Book", () => {
     });
   });
 
-  describe("#obj", () => {
-    beforeEach(() => {
-      book.putLog(new Log(id, key, val));
-    });
-
-    it("should return the obj", () => {
-      const o = book.obj(id);
-      assert(o.constructor === Obj);
-    });
-
-    context("with assigning name", () => {
-      beforeEach(() => {
-        book.set("Foo", id);
-      });
-
-      it("should return assigned id", () => {
-        const o = book.obj("Foo");
-        assert(o.constructor === Obj);
-        assert.deepStrictEqual(o.id, id);
-      });
-    });
-  });
-
   describe("#new", () => {
     it("should return new id", () => {
       const id = book.new();
@@ -362,7 +339,7 @@ describe("Book", () => {
     });
 
     context("with properties", () => {
-      it("should return the obj set properties", () => {
+      it("should return the set properties", () => {
         const id = book.new({
           foo: 1,
           bar: v("bar"),
@@ -437,8 +414,8 @@ describe("Book", () => {
     describe("map", () => {
       it("should map arg func for items", () => {
         const book = new Book();
-        const mapped = book.obj(v([1, 2, 3])).send(sym("map"), func("x", exp(plus, "x", v(1))));
-        assert.deepStrictEqual(mapped.id, v([2, 3, 4]));
+        const mapped = path(v([1, 2, 3]), [sym("map"), func("x", exp(plus, "x", v(1)))]).reduce(book);
+        assert.deepStrictEqual(mapped, v([2, 3, 4]));
       });
     });
   });
@@ -447,7 +424,7 @@ describe("Book", () => {
     describe("get", () => {
       it("should return the property", () => {
         const book = new Book();
-        const val = book.obj(v({a: 1, b: 2})).send(sym("get"), sym("b"));
+        const val = path(v({a: 1, b: 2}), [sym("get"), sym("b")]).reduce(book);
         assert.deepStrictEqual(val, v(2));
       });
     });
@@ -457,7 +434,7 @@ describe("Book", () => {
     describe("puts", () => {
       it("should return a Act", () => {
         const book = new Book();
-        const o = book.obj("Console").send(sym("puts"), v("foo"));
+        const o = path("Console", [sym("puts"), v("foo")]).reduce(book);
 
         // stub
         const orig = console.log;

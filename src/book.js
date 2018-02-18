@@ -1,10 +1,8 @@
 import _ from 'lodash';
 import Val from './val';
 import v from './v';
-import ID from './id';
 import UUID from './uuid';
 import Log from './log';
-import Obj from './obj';
 import Comp from './comp';
 import Act from './act';
 import { sym } from './sym';
@@ -225,16 +223,6 @@ export default class Book {
     }
 
     return this.activeLog(this.get("Object"), key);
-  }
-
-  obj(id) {
-    if (id instanceof ID || id instanceof Comp) {
-      return new Obj(this, id);
-    } else if (typeof(id) === "string") {
-      return this.obj(this.get(id));
-    } else {
-      return id;
-    }
   }
 
   new(props) {
