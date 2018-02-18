@@ -487,7 +487,7 @@ describe("Book", () => {
     });
   });
 
-  context("accessing funcs", () => {
+  context("accessing Act methods", () => {
     describe("then", () => {
       it("should return a chained Act", () => {
         const f1 = () => {};
@@ -495,7 +495,7 @@ describe("Book", () => {
         const a1 = new Act(f1);
         const a2 = new Act(f2);
 
-        const act = exp("then", a1, a2).reduce();
+        const act = path(a1, ["then", a2]).reduce(book);
         assert(act.executor === f1);
         assert(act.next.executor === f2);
       });

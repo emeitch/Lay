@@ -51,20 +51,25 @@ d.existsIDs().forEach(i => {
   }
 
   {
-    const sep = path("Console", ["puts", v("-----------")]);
     d.run(path(vtasks, ["map", func("tid",
-      exp("then",
-        exp("then",
-          path("Console",
+        path(
+          path(
+            "Console",
             ["puts",
               exp(concat,
                 v("tag: "),
                 path("tid", "tag"))]),
-          path("Console",
-            ["puts",
-              exp(concat,
-                v("state: "),
-                path("tid", "state"))])),
-      sep))]));
+          ["then",
+            path("Console",
+              ["puts",
+                exp(concat,
+                  v("state: "),
+                  path("tid", "state"))])
+          ],
+          ["then",
+            path("Console", ["puts", v("-----------")])
+          ]
+        )
+    )]));
   }
 }

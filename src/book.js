@@ -39,15 +39,6 @@ export default class Book {
           return v(this.taggedIDs(this.get("self")));
         }))
       );
-
-      // todo: thenはActオブジェクト用のメソッドにしたい
-      stdbook.set(
-        "then",
-        func("act1", "act2", new LiftedNative(function(act1, act2) {
-          const act = act1.then(act2);
-          return act;
-        }))
-      );
     }
 
     {
@@ -77,6 +68,19 @@ export default class Book {
         sym("get"),
         func("key", new LiftedNative(function(key) {
           return this.get("self").get(key, this);
+        }))
+      );
+    }
+
+    {
+      const act = new UUID();
+      stdbook.set("Act", act);
+
+      stdbook.put(
+        act,
+        sym("then"),
+        func("a", new LiftedNative(function(a) {
+          return this.get("self").then(a);
         }))
       );
     }
