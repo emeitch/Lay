@@ -7,14 +7,13 @@ import Sym, { sym } from './sym';
 export default class Comp extends Val {
   static valFrom(...args) {
     const origin = args.pop();
-
-    if (origin instanceof Val) {
-      return origin;
-    }
-
     const hsrc = args.pop();
     const head = hsrc instanceof Val ? hsrc : sym(hsrc);
     const type = typeof(origin);
+
+    if (!head && origin instanceof Val) {
+      return origin;
+    }
 
     if (head === null &&
         (type === "number" ||
@@ -128,7 +127,7 @@ export default class Comp extends Val {
       return result;
     }
 
-    { // Object fields
+    if (typeof(val.fields) === "object") { // Object fields
       const result = {};
       for (const key of Object.keys(this.fields)) {
         const pat = this.fields[key];
@@ -137,5 +136,7 @@ export default class Comp extends Val {
       }
       return result;
     }
+
+    return this.fields.collate(Comp.valFrom(val.fields));
   }
 }

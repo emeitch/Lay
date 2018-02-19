@@ -245,6 +245,24 @@ describe("Case", () => {
       });
     });
 
+    context("matching comp premitive pattern", () => {
+      it("should reduce the matched result exp", () => {
+        const e = exp(
+          kase(
+            alt(
+              v("Foo", sym("a")),
+              exp(
+                Func.func("x", x => x * 3),
+                "a"
+              )
+            )
+          ),
+          v("Foo", 2)
+        );
+        assert.deepStrictEqual(e.reduce(), v(6));
+      });
+    });
+
     context("matching nested comp record pattern", () => {
       it("should reduce the matched result exp", () => {
         const e = exp(
