@@ -24,11 +24,7 @@ export default class Comp extends Val {
       return new Prim(origin);
     }
 
-    if (Array.isArray(origin) ||
-        (type === "object" &&
-         (origin.constructor === Object ||
-          origin.constructor === Date))) { // todo:DateはJSではなくLay側の型・クラスに変更したい
-
+    if (head || origin) {
       let orgn;
       if (Array.isArray(origin)) {
         orgn = origin.map(val => val instanceof Prim ? val.origin : val);

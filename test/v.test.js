@@ -51,6 +51,15 @@ describe("v function", () => {
     });
   });
 
+  context("with premitive complex value", () => {
+    it("should return a empty Comp", () => {
+      const val = v("Foo", 1);
+      assert.deepStrictEqual(val, new Comp(1, sym("Foo")));
+      assert.deepStrictEqual(val.head, sym("Foo"));
+      assert.deepStrictEqual(val.fields, 1);
+    });
+  });
+
   context("with nested complex value", () => {
     it("should return a Comp", () => {
       const val = v("Foo", {a: v("Bar", {b: 1, c: 2})});
