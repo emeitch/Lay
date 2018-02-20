@@ -27,6 +27,7 @@ export default class Comp extends Val {
       let orgn;
       if (Array.isArray(origin)) {
         orgn = origin.map(val => val instanceof Prim ? val.origin : val);
+        return new CompArray(orgn, head);
       } else if (type === "object" && origin.constructor === Object) {
         orgn = {};
         for (const key of Object.keys(origin)) {
@@ -50,11 +51,7 @@ export default class Comp extends Val {
       if (h) {
         return h;
       } else {
-        if (Array.isArray(origin)) {
-          return sym("Array");
-        } else {
-          return sym("Map");
-        }
+        return sym("Map");
       }
     };
     this.head = parse(head);
@@ -116,17 +113,6 @@ export default class Comp extends Val {
       return super.collate(val);
     }
 
-    if (Array.isArray(val.fields) && val.fields.length === this.fields.length) {
-      const result = {};
-      let i = 0;
-      for (const pat of this.fields) {
-        const m = pat.collate(Comp.valFrom(val.fields[i]));
-        Object.assign(result, m);
-        i++;
-      }
-      return result;
-    }
-
     if (typeof(val.fields) === "object") { // Object fields
       const result = {};
       for (const key of Object.keys(this.fields)) {
@@ -138,5 +124,28 @@ export default class Comp extends Val {
     }
 
     return this.fields.collate(Comp.valFrom(val.fields));
+  }
+}
+
+class CompArray extends Comp {
+  constructor(origin, head) {
+    super(origin, head || sym("Array"));
+  }
+
+  collate(val) {
+    if (val.constructor !== this.constructor ||
+        !val.head.equals(this.head) ||
+        val.fields.length !== this.fields.length) {
+      return super.collate(val);
+    }
+
+    const result = {};
+    let i = 0;
+    for (const pat of this.fields) {
+      const m = pat.collate(Comp.valFrom(val.fields[i]));
+      Object.assign(result, m);
+      i++;
+    }
+    return result;
   }
 }
