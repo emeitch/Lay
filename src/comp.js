@@ -123,7 +123,7 @@ export default class Comp extends Val {
       return result;
     }
 
-    return this.fields.collate(Comp.valFrom(val.fields));
+    return this.origin.collate(Comp.valFrom(val.origin));
   }
 }
 
