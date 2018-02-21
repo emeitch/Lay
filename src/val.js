@@ -17,6 +17,10 @@ export default class Val {
     return new Sym(this.constructor.name);
   }
 
+  get _tag() {
+    return this.tag;
+  }
+
   get(k, book) {
     const key = k instanceof Sym ? k.origin : k;
 
@@ -27,7 +31,7 @@ export default class Val {
       }
     }
 
-    const val = this[key];
+    const val = this["_"+key];
     if (val) {
       return val;
     }
