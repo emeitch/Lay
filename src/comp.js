@@ -98,9 +98,12 @@ export default class Comp extends Val {
     return this.constructor(o, this.head);
   }
 
+  sameType(val) {
+    return val.constructor === this.constructor && val.head.equals(this.head);
+  }
+
   collate(val) {
-    if (val.constructor !== this.constructor ||
-        !val.head.equals(this.head)) {
+    if (!this.sameType(val)) {
       return super.collate(val);
     }
 
@@ -114,9 +117,7 @@ export class CompArray extends Comp {
   }
 
   collate(val) {
-    if (val.constructor !== this.constructor ||
-        !val.head.equals(this.head) ||
-        val.fields.length !== this.fields.length) {
+    if (!this.sameType(val) || val.fields.length !== this.fields.length) {
       return super.collate(val);
     }
 
@@ -137,8 +138,7 @@ export class CompMap extends Comp {
   }
 
   collate(val) {
-    if (val.constructor !== this.constructor ||
-        !val.head.equals(this.head)) {
+    if (!this.sameType(val)) {
       return super.collate(val);
     }
 
