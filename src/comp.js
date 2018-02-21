@@ -34,10 +34,9 @@ export default class Comp extends Val {
           const val = origin[key];
           orgn[key] = val instanceof Prim ? val.origin : val;
         }
-      } else {
-        orgn = origin;
+        return new CompMap(orgn, head);
       }
-      return new Comp(orgn, head);
+      return new Comp(origin, head);
     }
 
     throw `not supported origin: ${origin}`;
@@ -46,15 +45,7 @@ export default class Comp extends Val {
 
   constructor(origin, head) {
     super(origin);
-
-    const parse = (h) => {
-      if (h) {
-        return h;
-      } else {
-        return sym("Map");
-      }
-    };
-    this.head = parse(head);
+    this.head = head;
   }
 
   stringify(_indent=0) {
@@ -113,21 +104,11 @@ export default class Comp extends Val {
       return super.collate(val);
     }
 
-    if (typeof(val.fields) === "object") { // Object fields
-      const result = {};
-      for (const key of Object.keys(this.fields)) {
-        const pat = this.fields[key];
-        const m = pat.collate(Comp.valFrom(val.fields[key]));
-        Object.assign(result, m);
-      }
-      return result;
-    }
-
     return this.origin.collate(Comp.valFrom(val.origin));
   }
 }
 
-class CompArray extends Comp {
+export class CompArray extends Comp {
   constructor(origin, head) {
     super(origin, head || sym("Array"));
   }
@@ -145,6 +126,27 @@ class CompArray extends Comp {
       const m = pat.collate(Comp.valFrom(val.fields[i]));
       Object.assign(result, m);
       i++;
+    }
+    return result;
+  }
+}
+
+export class CompMap extends Comp {
+  constructor(origin, head) {
+    super(origin, head || sym("Map"));
+  }
+
+  collate(val) {
+    if (val.constructor !== this.constructor ||
+        !val.head.equals(this.head)) {
+      return super.collate(val);
+    }
+
+    const result = {};
+    for (const key of Object.keys(this.fields)) {
+      const pat = this.fields[key];
+      const m = pat.collate(Comp.valFrom(val.fields[key]));
+      Object.assign(result, m);
     }
     return result;
   }

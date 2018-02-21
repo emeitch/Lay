@@ -45,7 +45,6 @@ describe("v function", () => {
   context("with empty complex value as enum value", () => {
     it("should return a empty Comp", () => {
       const val = v("Foo", {});
-      assert.deepStrictEqual(val, new Comp({}, sym("Foo")));
       assert.deepStrictEqual(val.head, sym("Foo"));
       assert.deepStrictEqual(val.fields, {});
     });

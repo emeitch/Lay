@@ -1,5 +1,5 @@
 import Val from './val';
-import Comp from './comp';
+import { CompMap } from './comp';
 import v from './v';
 import { sym } from './sym';
 import { exp } from './exp';
@@ -50,7 +50,7 @@ export class LiftedNative extends Native {
   }
 }
 
-class CaseAlt extends Comp {
+class CaseAlt extends CompMap {
   constructor(...args) {
     const pats = args.slice(0, -1).map(p => typeof(p) === "string" ? sym(p) : p);
     let grds = args[args.length-1];
@@ -85,7 +85,7 @@ class CaseAlt extends Comp {
   }
 
   replace(matches) {
-    // todo: Compのfiledsにバインドしている物を除外できていないのを修正する必要あり
+    // todo: CompMapのfiledsにバインドしている物を除外できていないのを修正する必要あり
     const submatches = matches.filter(m =>
       m.target &&
       Object.keys(m.result).every(k =>
@@ -99,7 +99,7 @@ export function alt(...args) {
   return new CaseAlt(...args);
 }
 
-class CaseGrd extends Comp {
+class CaseGrd extends CompMap {
   constructor(cond, exp) {
     if (typeof(exp) === "string") {
       exp = sym(exp);
@@ -136,7 +136,7 @@ export function grd(cond, exp) {
 
 export const otherwise = v(true);
 
-export default class Case extends Comp {
+export default class Case extends CompMap {
   static func(...args) {
     return new this(alt(...args));
   }
