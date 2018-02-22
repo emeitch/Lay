@@ -76,6 +76,8 @@ describe("Book", () => {
         assert(log.val === val);
         assert(log.at === time);
         assert(book.log(log.logid) === log);
+
+        assert(log.logid.get("id", book) === id);
       });
     });
   });

@@ -226,7 +226,17 @@ export default class Book {
       }
     }
 
-    return this.activeLog(this.get("Object"), key);
+    const olog = this.activeLog(this.get("Object"), key);
+    if (olog) {
+      return olog;
+    }
+
+    const rawlog = this.log(id);
+    if (rawlog && rawlog[key]) {
+      return new Log(id, key, rawlog[key]);
+    }
+
+    return undefined;
   }
 
   new(props) {
