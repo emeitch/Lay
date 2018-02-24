@@ -12,10 +12,14 @@ import { exp } from '../src/exp';
 import { sym } from '../src/sym';
 
 describe("stdlib", () => {
+  let book;
+  beforeEach(() => {
+    book = new Book(stdlib);
+  });
+
   context("accessing Object methods", () => {
     describe("all", () => {
       it("should return self instances", () => {
-        const book = new Book(stdlib);
         book.set("Foo", book.new());
         const id1 = book.new({"tag": "Foo"});
         const id2 = book.new({"tag": "Foo"});
@@ -31,7 +35,6 @@ describe("stdlib", () => {
 
     context("accessing Object's key", () => {
       it("should return the path", () => {
-        const book = new Book(stdlib);
         const tagid = new UUID();
         const id = new UUID();
         book.put(id, "tag", tagid);
@@ -43,7 +46,6 @@ describe("stdlib", () => {
 
     describe("putAct as assigned `put`", () => {
       it("should return a calling put act", () => {
-        const book = new Book(stdlib);
         const id = new UUID();
         const key = new UUID();
         const val = new UUID();
@@ -63,7 +65,6 @@ describe("stdlib", () => {
   context("accessing default Array methods", () => {
     describe("map", () => {
       it("should map arg func for items", () => {
-        const book = new Book(stdlib);
         const mapped = path(v([1, 2, 3]), [sym("map"), func("x", exp(plus, "x", v(1)))]).reduce(book);
         assert.deepStrictEqual(mapped, v([2, 3, 4]));
       });
@@ -73,7 +74,6 @@ describe("stdlib", () => {
   context("accessing default Map methods", () => {
     describe("get", () => {
       it("should return the property", () => {
-        const book = new Book(stdlib);
         const val = path(v({a: 1, b: 2}), [sym("get"), sym("b")]).reduce(book);
         assert.deepStrictEqual(val, v(2));
       });
@@ -83,7 +83,6 @@ describe("stdlib", () => {
   context("accessing Console methods", () => {
     describe("puts", () => {
       it("should return a Act", () => {
-        const book = new Book(stdlib);
         const o = path("Console", [sym("puts"), v("foo")]).reduce(book);
 
         // stub
@@ -100,8 +99,6 @@ describe("stdlib", () => {
   context("accessing Act methods", () => {
     describe("then", () => {
       it("should return a chained Act", () => {
-        const book = new Book(stdlib);
-
         const f1 = () => {};
         const f2 = () => {};
         const a1 = new Act(f1);
@@ -117,8 +114,6 @@ describe("stdlib", () => {
   context("accessing Log methods", () => {
     describe("all", () => {
       it("should return all logs", () => {
-        const book = new Book(stdlib);
-
         const log1 = new Log(new UUID(), sym("foo"), v("hoge"));
         book.putLog(log1);
 
