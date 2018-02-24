@@ -43,23 +43,6 @@ describe("stdlib", () => {
         assert.deepStrictEqual(p.reduce(book).constructor, Act);
       });
     });
-
-    describe("putAct as assigned `put`", () => {
-      it("should return a calling put act", () => {
-        const id = new UUID();
-        const key = new UUID();
-        const val = new UUID();
-
-        const pae = exp("put", id, key, val);
-        let pa = pae.reduce(book);
-
-        assert(!book.activeLog(id, key));
-        while(!pa.settled) {
-          pa = pa.proceed();
-        }
-        assert(book.activeLog(id, key));
-      });
-    });
   });
 
   context("accessing default Array methods", () => {

@@ -98,6 +98,23 @@ describe("Book", () => {
     });
   });
 
+  describe("putAct", () => {
+    it("should return a calling put act", () => {
+      const id = new UUID();
+      const key = new UUID();
+      const val = new UUID();
+
+      const pae = book.putAct(id, key, val);
+      let pa = pae.reduce(book);
+
+      assert(!book.activeLog(id, key));
+      while(!pa.settled) {
+        pa = pa.proceed();
+      }
+      assert(book.activeLog(id, key));
+    });
+  });
+
   describe("#transactionID", () => {
     let tid;
     beforeEach(() => {

@@ -9,11 +9,6 @@ import { func, LiftedNative } from './func';
 export const stdlib = new Book(null);
 
 {
-  const putf = (id, key, val) => stdlib.putAct(id, key, val);
-  stdlib.set("put", func("id", "key", "val", new LiftedNative(putf)));
-}
-
-{
   const obj = new UUID();
   stdlib.set("Object", obj);
 
