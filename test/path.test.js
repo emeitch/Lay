@@ -241,6 +241,34 @@ describe("Path", () => {
         assert.deepStrictEqual(p.reduce(book), p);
       });
     });
+
+    context("reducible sym key and sym assgin first", () => {
+      it("should political reduce", () => {
+        const id = new UUID();
+        book.put(id, "foo", v(1));
+        assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
+
+        book.set("foo", sym("bar"));
+        assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
+
+        book.put(id, "bar", v(2));
+        assert.deepStrictEqual(path(id, "foo").reduce(book), v(2));
+      });
+    });
+
+    context("reducible sym key and sym assign last", () => {
+      it("should political reduce", () => {
+        const id = new UUID();
+        book.put(id, "foo", v(1));
+        assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
+
+        book.put(id, "bar", v(2));
+        assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
+
+        book.set("foo", sym("bar"));
+        assert.deepStrictEqual(path(id, "foo").reduce(book), v(2));
+      });
+    });
   });
 
   describe("stringify", () => {

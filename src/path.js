@@ -57,10 +57,12 @@ export default class Path extends Ref {
         key = elm;
       }
 
-      const k = key.reduce(book);
-      const prop = val.get(k, book);
+      let prop = val.get(key.reduce(book), book);
       if (prop.equals(v(null))) {
-        return super.step(book);
+        prop = val.get(key, book);
+        if (prop.equals(v(null))) {
+          return super.step(book);
+        }
       }
 
       const env = new Env(book);
