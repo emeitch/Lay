@@ -504,6 +504,22 @@ describe("Book", () => {
     });
   });
 
+  context("accessing Log methods", () => {
+    describe("all", () => {
+      it("should return all logs", () => {
+        const log1 = new Log(new UUID(), sym("foo"), v("hoge"));
+        book.putLog(log1);
+
+        const log2 = new Log(new UUID(), sym("bar"), v("fuga"));
+        book.putLog(log2);
+
+        const logs = path("Log", "all").reduce(book);
+        assert(logs.origin.some(l => l.equals(log1.logid)));
+        assert(logs.origin.some(l => l.equals(log2.logid)));
+      });
+    });
+  });
+
   describe("run", () => {
     it("should execute arg Act", () => {
       const book = new Book();

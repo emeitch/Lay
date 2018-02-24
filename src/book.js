@@ -86,6 +86,19 @@ export default class Book {
     }
 
     {
+      const log = new UUID();
+      stdbook.set("Log", log);
+
+      stdbook.put(
+        log,
+        sym("all"),
+        func(new LiftedNative(function() {
+          return v(this.logIDs());
+        }))
+      );
+    }
+
+    {
       const cnsl = new UUID();
       stdbook.set("Console", cnsl);
 
@@ -233,6 +246,7 @@ export default class Book {
 
     const rawlog = this.log(id);
     if (rawlog && rawlog[key]) {
+      // todo: アドホックなログとしてlogidが存在しないなど特殊な扱いにしたい
       return new Log(id, key, rawlog[key]);
     }
 
@@ -371,6 +385,15 @@ export default class Book {
         } while(act.next);
       }
     }
+  }
+
+  logIDs() {
+    const logids = [];
+    for (const [, log] of this.logs) {
+      logids.push(log.logid);
+    }
+
+    return logids.concat(this.parent ? this.parent.logIDs() : []);
   }
 }
 
