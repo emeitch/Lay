@@ -5,10 +5,7 @@ import UUID from '../src/uuid';
 import Log from '../src/log';
 import Book from '../src/book';
 import Act from '../src/act';
-import { func, plus } from '../src/func';
-import { exp } from '../src/exp';
 import { sym } from '../src/sym';
-import { path } from '../src/path';
 import { transaction, invalidate } from '../src/ontology';
 
 describe("Book", () => {
@@ -403,19 +400,6 @@ describe("Book", () => {
     });
   });
 
-  describe("putAct as assigned `put`", () => {
-    it("should return a calling put act", () => {
-      const pae = exp("put", id, key, val);
-      let pa = pae.reduce(book);
-
-      assert(!book.activeLog(id, key));
-      while(!pa.settled) {
-        pa = pa.proceed();
-      }
-      assert(book.activeLog(id, key));
-    });
-  });
-
   describe("findActiveLogs", () => {
     context("invalidate the last log", () => {
       beforeEach(() => {
@@ -430,92 +414,6 @@ describe("Book", () => {
         const logs = book.findActiveLogs({id});
         assert.deepStrictEqual(logs[0].val, v("val0"));
         assert(!logs[1]);
-      });
-    });
-  });
-
-  context("accessing Object methods", () => {
-    describe("all", () => {
-      it("should return self instances", () => {
-        const book = new Book();
-        book.set("Foo", book.new());
-        const id1 = book.new({"tag": "Foo"});
-        const id2 = book.new({"tag": "Foo"});
-
-        const ids = path("Foo", "all").reduce(book);
-        assert.deepStrictEqual(ids.get(0), id1);
-        assert.deepStrictEqual(ids.get(1), id2);
-
-        const emp = book.new();
-        assert.deepStrictEqual(path(emp, "all").reduce(book), v([]));
-      });
-    });
-  });
-
-  context("accessing default Array methods", () => {
-    describe("map", () => {
-      it("should map arg func for items", () => {
-        const book = new Book();
-        const mapped = path(v([1, 2, 3]), [sym("map"), func("x", exp(plus, "x", v(1)))]).reduce(book);
-        assert.deepStrictEqual(mapped, v([2, 3, 4]));
-      });
-    });
-  });
-
-  context("accessing default Map methods", () => {
-    describe("get", () => {
-      it("should return the property", () => {
-        const book = new Book();
-        const val = path(v({a: 1, b: 2}), [sym("get"), sym("b")]).reduce(book);
-        assert.deepStrictEqual(val, v(2));
-      });
-    });
-  });
-
-  context("accessing Console methods", () => {
-    describe("puts", () => {
-      it("should return a Act", () => {
-        const book = new Book();
-        const o = path("Console", [sym("puts"), v("foo")]).reduce(book);
-
-        // stub
-        const orig = console.log;
-        console.log = arg => {
-          assert.deepStrictEqual(arg, "foo");
-        };
-        o.id.proceed();
-        console.log = orig;
-      });
-    });
-  });
-
-  context("accessing Act methods", () => {
-    describe("then", () => {
-      it("should return a chained Act", () => {
-        const f1 = () => {};
-        const f2 = () => {};
-        const a1 = new Act(f1);
-        const a2 = new Act(f2);
-
-        const act = path(a1, ["then", a2]).reduce(book);
-        assert(act.executor === f1);
-        assert(act.next.executor === f2);
-      });
-    });
-  });
-
-  context("accessing Log methods", () => {
-    describe("all", () => {
-      it("should return all logs", () => {
-        const log1 = new Log(new UUID(), sym("foo"), v("hoge"));
-        book.putLog(log1);
-
-        const log2 = new Log(new UUID(), sym("bar"), v("fuga"));
-        book.putLog(log2);
-
-        const logs = path("Log", "all").reduce(book);
-        assert(logs.origin.some(l => l.equals(log1.logid)));
-        assert(logs.origin.some(l => l.equals(log2.logid)));
       });
     });
   });

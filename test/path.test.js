@@ -3,7 +3,6 @@ import assert from 'assert';
 import v from '../src/v';
 import Path, { path } from '../src/path';
 import UUID from '../src/uuid';
-import Act from '../src/act';
 import { sym } from '../src/sym';
 import { exp } from '../src/exp';
 import { func, plus, concat } from '../src/func';
@@ -187,20 +186,6 @@ describe("Path", () => {
       it("should return the tag's val", () => {
         const p1 = new Path(id, sym("foo"));
         assert.deepStrictEqual(p1.reduce(book), v("bar"));
-      });
-    });
-
-    context("accessing Object's key", () => {
-      const id = new UUID();
-
-      beforeEach(() => {
-        const tagid = new UUID();
-        book.put(id, "tag", tagid);
-      });
-
-      it("should return the path", () => {
-        const p = new Path(id, [sym("set"), sym("foo"), v("val")]);
-        assert.deepStrictEqual(p.reduce(book).constructor, Act);
       });
     });
 

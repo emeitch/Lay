@@ -1,11 +1,12 @@
 /* eslint-env browser */
 import Book from './book';
+import { stdlib } from './stdlib';
 import { exp } from './exp';
 import { path } from './path';
 import { func, concat } from './func';
 import v from './v';
 
-const d = new Book();
+const d = new Book(stdlib);
 
 {
   const id = d.new();
