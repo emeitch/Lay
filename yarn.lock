@@ -3174,6 +3174,10 @@ makeerror@1.0.x:
   dependencies:
     tmpl "1.0.x"
 
+maquette@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/maquette/-/maquette-3.2.1.tgz#fa25065c2585ff088e8eeab3b0622138ca266c68"
+
 md5.js@^1.3.4:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/md5.js/-/md5.js-1.3.4.tgz#e9bdbde94a20a5ac18b04340fc5764d5b09d901d"

@@ -1,9 +1,12 @@
 /* eslint-env browser */
+import { h, createProjector } from 'maquette';
+
 import Book from './book';
 import { stdlib } from './stdlib';
 import { exp } from './exp';
 import { path } from './path';
 import { func, concat } from './func';
+import Prim from './Prim';
 import v from './v';
 
 const d = new Book(stdlib);
@@ -71,3 +74,29 @@ d.existsIDs().forEach(i => {
     ))]));
   }
 }
+
+const dom = v("div", {children: [
+  v("span", {children: [
+    v("Hello World!!")
+  ]})
+]});
+
+const projector = createProjector();
+
+function render(ev) {
+  const children = [];
+  const cs = ev.get("children");
+  for (let i = 0; i < cs.origin.length; i++) {
+    const c = cs.get(i);
+    if (c instanceof Prim) {
+      children.push(c.origin);
+    } else {
+      children.push(render(c));
+    }
+  }
+  return h(ev.tag.origin, children);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  projector.append(document.body, () => render(dom));
+});
