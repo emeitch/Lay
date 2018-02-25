@@ -82,7 +82,7 @@ function n(head, origin) {
   }
 }
 
-function e(head, attr, ...children) {
+function elm(head, attr, ...children) {
   if (children.length > 0) {
     Object.assign(attr, {children: n("children", children)});
   }
@@ -92,9 +92,9 @@ function e(head, attr, ...children) {
 
 DOM.setup(d);
 {
-  const dom = e("div", {
+  const dom = elm("div", {
     children: path("Task", "all", ["map", func("tid",
-      e("div", {},
+      elm("div", {},
         path("tid", "title")
       )
     )])
