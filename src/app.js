@@ -74,17 +74,12 @@ d.existsIDs().forEach(i => {
 }
 
 function n(head, origin) {
-  let cnst;
-  let o;
   if (Array.isArray(origin)) {
-    cnst = "Array";
-    o = origin;
+    return path("Array", ["new", head].concat(origin));
   } else {
-    cnst = "Map";
-    o = Object.keys(origin).reduce((r, k) => r.concat([k, origin[k]]), []);
+    const o = Object.keys(origin).reduce((r, k) => r.concat([k, origin[k]]), []);
+    return path("Map", ["new", head].concat(o));
   }
-
-  return path(cnst, ["new", head].concat(o));
 }
 
 function e(head, attr, ...children) {
