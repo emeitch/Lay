@@ -75,13 +75,8 @@ d.existsIDs().forEach(i => {
   }
 }
 
-const dom = v("div", {children:
-  path("Task", "all", ["map", func("tid", path("Map", ["new", "div", "children", path("Array", ["new", "foo", path("tid", "title")])]))]).reduce(d)
-});
-
-console.log(dom);
-
-const projector = createProjector();
+const dom = path("Map", ["new", "div", "children",
+  path("Task", "all", ["map", func("tid", path("Map", ["new", "div", "children", path("Array", ["new", "foo", path("tid", "title")])]))])]);
 
 function render(ev) {
   const children = [];
@@ -97,6 +92,7 @@ function render(ev) {
   return h(ev.tag.origin, children);
 }
 
+const projector = createProjector();
 document.addEventListener('DOMContentLoaded', function () {
-  projector.append(document.body, () => render(dom));
+  projector.append(document.body, () => render(dom.reduce(d)));
 });
