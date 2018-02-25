@@ -90,11 +90,17 @@ function elm(head, attr, ...children) {
   return n(head, attr);
 }
 
+const e = {};
+const etags = ["div"];
+etags.forEach(etag => {
+  e[etag] = (...args) => elm(etag, ...args);
+});
+
 DOM.setup(d);
 {
-  const dom = elm("div", {
+  const dom = e.div({
     children: path("Task", "all", ["map", func("tid",
-      elm("div", {},
+      e.div({},
         path("tid", "title")
       )
     )])
