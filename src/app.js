@@ -87,15 +87,21 @@ function n(head, origin) {
   return path(cnst, ["new", head].concat(o));
 }
 
+function e(head, attr, ...children) {
+  if (children.length > 0) {
+    Object.assign(attr, {children: n("children", children)});
+  }
+
+  return n(head, attr);
+}
+
 DOM.setup(d);
 {
-  const dom = n("div", {
+  const dom = e("div", {
     children: path("Task", "all", ["map", func("tid",
-      n("div", {
-        children: n("foo", [
-          path("tid", "title")
-        ])
-      })
+      e("div", {},
+        path("tid", "title")
+      )
     )])
   });
   d.put(d.get("DOM"), "dom", dom);
