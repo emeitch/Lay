@@ -73,10 +73,31 @@ d.existsIDs().forEach(i => {
   }
 }
 
+function n(head, origin) {
+  let cnst;
+  let o;
+  if (Array.isArray(origin)) {
+    cnst = "Array";
+    o = origin;
+  } else {
+    cnst = "Map";
+    o = Object.keys(origin).reduce((r, k) => r.concat([k, origin[k]]), []);
+  }
+
+  return path(cnst, ["new", head].concat(o));
+}
+
 DOM.setup(d);
 {
-  const dom = path("Map", ["new", "div", "children",
-    path("Task", "all", ["map", func("tid", path("Map", ["new", "div", "children", path("Array", ["new", "foo", path("tid", "title")])]))])]);
+  const dom = n("div", {
+    children: path("Task", "all", ["map", func("tid",
+      n("div", {
+        children: n("foo", [
+          path("tid", "title")
+        ])
+      })
+    )])
+  });
   d.put(d.get("DOM"), "dom", dom);
   d.run(path("DOM", "setup"));
 }
