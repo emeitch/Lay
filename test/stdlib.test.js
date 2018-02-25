@@ -46,6 +46,18 @@ describe("stdlib", () => {
   });
 
   context("accessing default Array methods", () => {
+    describe("new", () => {
+      it("should create a array", () => {
+        const m = path("Array", ["new", "Foo", v(1), v(2), v(3)]).reduce(book);
+        assert.deepStrictEqual(m, v("Foo", [1, 2, 3]));
+      });
+
+      it("should create a nested array", () => {
+        const m = path("Array", ["new", "Foo", v(1), v(2), path("Array", ["new", "Fiz", v(3), v(4)])]).reduce(book);
+        assert.deepStrictEqual(m, v("Foo", [v(1), v(2), v("Fiz", [v(3), v(4)])]));
+      });
+    });
+
     describe("map", () => {
       it("should map arg func for items", () => {
         const mapped = path(v([1, 2, 3]), [sym("map"), func("x", exp(plus, "x", v(1)))]).reduce(book);

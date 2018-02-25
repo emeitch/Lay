@@ -76,7 +76,7 @@ d.existsIDs().forEach(i => {
 }
 
 const dom = v("div", {children:
-  path("Task", "all", ["map", func("tid", v("span", {children: path("tid", "title")}))]).reduce(d)
+  path("Task", "all", ["map", func("tid", path("Map", ["new", "div", "children", path("Array", ["new", "foo", path("tid", "title")])]))]).reduce(d)
 });
 
 console.log(dom);

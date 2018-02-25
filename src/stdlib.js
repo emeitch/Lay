@@ -3,7 +3,7 @@ import UUID from './uuid';
 import Act from './act';
 import Book from './book';
 import Prim from './prim';
-import { CompMap } from  './comp';
+import { CompArray, CompMap } from  './comp';
 import { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
@@ -35,6 +35,21 @@ export const stdlib = new Book(null);
 {
   const arr = new UUID();
   stdlib.set("Array", arr);
+
+  stdlib.put(
+    arr,
+    sym("new"),
+    func(new LiftedNative(function(...args) {
+      const head = args.shift();
+      const o = [];
+      while(args.length > 0) {
+        const val = args.shift().reduce(this);
+        // todo: 独自tagが設定されてない場合のみval.originに最適化したい
+        o.push(val instanceof Prim ? val.origin : val);
+      }
+      return new CompArray(o, head);
+    }))
+  );
 
   stdlib.put(
     arr,
