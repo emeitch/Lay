@@ -1,13 +1,11 @@
 /* eslint-env browser */
-import { h, createProjector } from 'maquette';
-
 import Book from './book';
 import { stdlib } from './stdlib';
 import { exp } from './exp';
 import { path } from './path';
 import { func, concat } from './func';
-import Prim from './Prim';
 import v from './v';
+import DOM from './dom';
 
 const d = new Book(stdlib);
 
@@ -75,24 +73,10 @@ d.existsIDs().forEach(i => {
   }
 }
 
-const dom = path("Map", ["new", "div", "children",
-  path("Task", "all", ["map", func("tid", path("Map", ["new", "div", "children", path("Array", ["new", "foo", path("tid", "title")])]))])]);
-
-function render(ev) {
-  const children = [];
-  const cs = ev.get("children");
-  for (let i = 0; i < cs.origin.length; i++) {
-    const c = cs.get(i);
-    if (c instanceof Prim) {
-      children.push(c.origin);
-    } else {
-      children.push(render(c));
-    }
-  }
-  return h(ev.tag.origin, children);
+DOM.setup(d);
+{
+  const dom = path("Map", ["new", "div", "children",
+    path("Task", "all", ["map", func("tid", path("Map", ["new", "div", "children", path("Array", ["new", "foo", path("tid", "title")])]))])]);
+  d.put(d.get("DOM"), "dom", dom);
+  d.run(path("DOM", "setup"));
 }
-
-const projector = createProjector();
-document.addEventListener('DOMContentLoaded', function () {
-  projector.append(document.body, () => render(dom.reduce(d)));
-});

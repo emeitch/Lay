@@ -10,7 +10,8 @@
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/*.js",
-      "!src/app.js"
+      "!src/app.js",
+      "!src/dom.js"
     ]
   },
   "dependencies": {
