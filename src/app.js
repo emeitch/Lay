@@ -75,11 +75,11 @@ d.existsIDs().forEach(i => {
   }
 }
 
-const dom = v("div", {children: [
-  v("span", {children: [
-    v("Hello World!!")
-  ]})
-]});
+const dom = v("div", {children:
+  path("Task", "all", ["map", func("tid", v("span", {children: path("tid", "title")}))]).reduce(d)
+});
+
+console.log(dom);
 
 const projector = createProjector();
 

@@ -2,6 +2,8 @@ import v from './v';
 import UUID from './uuid';
 import Act from './act';
 import Book from './book';
+import Prim from './prim';
+import { CompMap } from  './comp';
 import { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
@@ -51,6 +53,22 @@ export const stdlib = new Book(null);
 {
   const map = new UUID();
   stdlib.set("Map", map);
+
+  stdlib.put(
+    map,
+    sym("new"),
+    func(new LiftedNative(function(...args) {
+      const head = args.shift();
+      const o = {};
+      while(args.length > 0) {
+        const key = args.shift();
+        const val = args.shift().reduce(this);
+        // todo: 独自tagが設定されてない場合のみval.originに最適化したい
+        o[key.origin] = val instanceof Prim ? val.origin : val;
+      }
+      return new CompMap(o, head);
+    }))
+  );
 
   stdlib.put(
     map,

@@ -55,6 +55,18 @@ describe("stdlib", () => {
   });
 
   context("accessing default Map methods", () => {
+    describe("new", () => {
+      it("should create a map", () => {
+        const m = path("Map", ["new", "Foo", "bar", v(1), "buz", v(2)]).reduce(book);
+        assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v(2)}));
+      });
+
+      it("should create a nested map", () => {
+        const m = path("Map", ["new", "Foo", "bar", v(1), "buz", path("Map", ["new", "Fiz", "faz", v(3)])]).reduce(book);
+        assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
+      });
+    });
+
     describe("get", () => {
       it("should return the property", () => {
         const val = path(v({a: 1, b: 2}), [sym("get"), sym("b")]).reduce(book);

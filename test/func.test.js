@@ -79,6 +79,13 @@ describe("Func", () => {
           v(3)
         );
         assert.deepStrictEqual(e.reduce(), v(5));
+
+        const e2 = exp(
+          func((...args) => args[0] + args[1]),
+          v(2),
+          v(3)
+        );
+        assert.deepStrictEqual(e2.reduce(), v(5));
       });
     });
 

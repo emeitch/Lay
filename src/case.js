@@ -156,15 +156,25 @@ export default class Case extends CompMap {
 
   apply(book, ...args) {
     for (const alt of this.alts) {
-      const matches = alt.pats.map((pattern, i) => {
-        const target = args[i];
-        if (target) {
-          const result = target.match(pattern);
-          return {pattern, target, result};
-        } else {
-          return {pattern};
-        }
-      });
+      let matches;
+      if (alt.pats.length > 0) {
+        matches = alt.pats.map((pattern, i) => {
+          const target = args[i];
+          if (target) {
+            const result = target.match(pattern);
+            return {pattern, target, result};
+          } else {
+            return {pattern};
+          }
+        });
+      } else {
+        matches = args.map(target => {
+          return {
+            target,
+            result: {__it__: target}
+          };
+        });
+      }
 
       if (matches.every(match => match.result !== null)) {
         const nalt = alt.replaceAsTop(matches);
