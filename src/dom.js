@@ -29,7 +29,15 @@ export default class DOM {
           children.push(render(c));
         }
       }
-      return h(ev.tag.origin, children);
+
+      const attr = {};
+      for (const key of Object.keys(ev.origin)) {
+        if (key === "children") {
+          continue;
+        }
+        attr[key] = path(ev, key).reduce(book).origin;
+      }
+      return h(ev.tag.origin, attr, children);
     }
 
     book.put(
