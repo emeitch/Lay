@@ -21,12 +21,14 @@ export default class DOM {
 
       const children = [];
       const cs = ev.get("children");
-      for (let i = 0; i < cs.origin.length; i++) {
-        const c = cs.get(i);
-        if (c instanceof Prim) {
-          children.push(c.origin);
-        } else {
-          children.push(render(c));
+      if (!cs.equals(v(null))) {
+        for (let i = 0; i < cs.origin.length; i++) {
+          const c = cs.get(i);
+          if (c instanceof Prim) {
+            children.push(c.origin);
+          } else {
+            children.push(render(c));
+          }
         }
       }
 

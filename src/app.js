@@ -83,7 +83,7 @@ function n(head, origin) {
 }
 
 function elm(head, attr, ...children) {
-  if (children.length > 0) {
+  if (children && children.length > 0) {
     Object.assign(attr, {children: n("children", children)});
   }
 
@@ -98,13 +98,58 @@ etags.forEach(etag => {
 
 DOM.setup(d);
 {
-  const dom = e.div({
-    children: path("Task", "all", ["map", func("tid",
-      e.div({},
-        path("tid", "title")
+  const dom = elm("section", {class: "todoapp"},
+    elm("div", {},
+      elm("header", {class: "header"},
+        elm("h1", {},
+          v("todos")
+        ),
+        elm("input", {class: "new-todo", placeholder: "What needs to be done?"})
+      ),
+      elm("section", {class: "main"},
+        elm("input", {class: "toggle-all", type: "checkbox"}),
+        elm("ul", {class: "todo-list",
+          children:
+            path("Task", "all", ["map", func("tid",
+              elm("li", {},
+                elm("div", {class: "view"},
+                  elm("input", {class: "toggle", type: "checkbox"}),
+                  elm("label", {}, path("tid", "title")),
+                  elm("button", {class: "destroy"})
+                ),
+                elm("input", {class: "edit", value: "buy the milk"})
+              )
+            )])
+          }
+        )
+      ),
+      elm("footer", {class: "footer"},
+        elm("span", {class: "todo-count"},
+          elm("strong", {}, v("3")),
+          elm("span", {}, v(" ")),
+          elm("span", {}, v("itmes")),
+          elm("span", {}, v(" left"))
+        ),
+        elm("ul", {class: "filters"},
+          elm("li", {},
+            elm("a", {href: "#/", class: "selected"},
+              v("All")
+            )
+          ),
+          elm("li", {},
+            elm("a", {href: "#/active"},
+              v("Active")
+            )
+          ),
+          elm("li", {},
+            elm("a", {href: "#/completed"},
+              v("Completed")
+            )
+          )
+        )
       )
-    )])
-  });
+    )
+  );
   d.put(d.get("DOM"), "dom", dom);
   d.run(path("DOM", "setup"));
 }
