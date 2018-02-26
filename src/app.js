@@ -100,7 +100,7 @@ DOM.setup(d);
 {
   const dom = elm("body", {},
     elm("section", {class: "todoapp"},
-      elm("div", {},
+      e.div({},
         elm("header", {class: "header"},
           elm("h1", {},
             v("todos")
@@ -113,7 +113,7 @@ DOM.setup(d);
             children:
               path("Task", "all", ["map", func("tid",
                 elm("li", {},
-                  elm("div", {class: "view"},
+                  e.div({class: "view"},
                     elm("input", {class: "toggle", type: "checkbox"}),
                     elm("label", {}, path("tid", "title")),
                     elm("button", {class: "destroy"})
