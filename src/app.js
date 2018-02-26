@@ -98,54 +98,73 @@ etags.forEach(etag => {
 
 DOM.setup(d);
 {
-  const dom = elm("section", {class: "todoapp"},
-    elm("div", {},
-      elm("header", {class: "header"},
-        elm("h1", {},
-          v("todos")
+  const dom = elm("body", {},
+    elm("section", {class: "todoapp"},
+      elm("div", {},
+        elm("header", {class: "header"},
+          elm("h1", {},
+            v("todos")
+          ),
+          elm("input", {class: "new-todo", placeholder: "What needs to be done?"})
         ),
-        elm("input", {class: "new-todo", placeholder: "What needs to be done?"})
-      ),
-      elm("section", {class: "main"},
-        elm("input", {class: "toggle-all", type: "checkbox"}),
-        elm("ul", {class: "todo-list",
-          children:
-            path("Task", "all", ["map", func("tid",
-              elm("li", {},
-                elm("div", {class: "view"},
-                  elm("input", {class: "toggle", type: "checkbox"}),
-                  elm("label", {}, path("tid", "title")),
-                  elm("button", {class: "destroy"})
-                ),
-                elm("input", {class: "edit", value: "buy the milk"})
+        elm("section", {class: "main"},
+          elm("input", {class: "toggle-all", type: "checkbox"}),
+          elm("ul", {class: "todo-list",
+            children:
+              path("Task", "all", ["map", func("tid",
+                elm("li", {},
+                  elm("div", {class: "view"},
+                    elm("input", {class: "toggle", type: "checkbox"}),
+                    elm("label", {}, path("tid", "title")),
+                    elm("button", {class: "destroy"})
+                  ),
+                  elm("input", {class: "edit", value: "buy the milk"})
+                )
+              )])
+            }
+          )
+        ),
+        elm("footer", {class: "footer"},
+          elm("span", {class: "todo-count"},
+            elm("strong", {}, v("3")),
+            elm("span", {}, v(" ")),
+            elm("span", {}, v("itmes")),
+            elm("span", {}, v(" left"))
+          ),
+          elm("ul", {class: "filters"},
+            elm("li", {},
+              elm("a", {href: "#/", class: "selected"},
+                v("All")
               )
-            )])
-          }
-        )
-      ),
-      elm("footer", {class: "footer"},
-        elm("span", {class: "todo-count"},
-          elm("strong", {}, v("3")),
-          elm("span", {}, v(" ")),
-          elm("span", {}, v("itmes")),
-          elm("span", {}, v(" left"))
-        ),
-        elm("ul", {class: "filters"},
-          elm("li", {},
-            elm("a", {href: "#/", class: "selected"},
-              v("All")
-            )
-          ),
-          elm("li", {},
-            elm("a", {href: "#/active"},
-              v("Active")
-            )
-          ),
-          elm("li", {},
-            elm("a", {href: "#/completed"},
-              v("Completed")
+            ),
+            elm("li", {},
+              elm("a", {href: "#/active"},
+                v("Active")
+              )
+            ),
+            elm("li", {},
+              elm("a", {href: "#/completed"},
+                v("Completed")
+              )
             )
           )
+        )
+      )
+    ),
+    elm("footer", {class: "info"},
+      elm("p", {},
+        v("Double-click to edit a todo")
+      ),
+      elm("p", {},
+        v("Created by "),
+        elm("a", {href: "https://github.com/emeitch"},
+          v("emeitch")
+        )
+      ),
+      elm("p", {},
+        v("Part of "),
+        elm("a", {href: "http://todomvc.com/"},
+          v("TodoMVC")
         )
       )
     )

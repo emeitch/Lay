@@ -50,7 +50,7 @@ export default class DOM {
         return new Act(() => {
           const projector = createProjector();
           document.addEventListener('DOMContentLoaded', function () {
-            projector.append(document.body, () => render(path("DOM", "dom").reduce(book)));
+            projector.replace(document.body, () => render(path("DOM", "dom").reduce(book)));
           });
         });
       }))
