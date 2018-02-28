@@ -96,59 +96,181 @@ function elm(head, ...children) {
 }
 
 const e = {};
-const etags = ["div"];
+const etags = [
+  "a",
+  "abbr",
+  "acronym",
+  "address",
+  "applet",
+  "area",
+  "article",
+  "aside",
+  "audio",
+  "b",
+  "base",
+  "basefont",
+  "bdi",
+  "bdo",
+  "big",
+  "blockquote",
+  "body",
+  "br",
+  "button",
+  "canvas",
+  "caption",
+  "center",
+  "cite",
+  "code",
+  "col",
+  "colgroup",
+  "datalist",
+  "dd",
+  "del",
+  "details",
+  "dfn",
+  "dialog",
+  "dir",
+  "div",
+  "dl",
+  "dt",
+  "em",
+  "embed",
+  "fieldset",
+  "figcaption",
+  "figure",
+  "font",
+  "footer",
+  "form",
+  "frame",
+  "frameset",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "head",
+  "header",
+  "hr",
+  "html",
+  "i",
+  "iframe",
+  "img",
+  "input",
+  "ins",
+  "kbd",
+  "keygen",
+  "label",
+  "legend",
+  "li",
+  "link",
+  "main",
+  "map",
+  "mark",
+  "menu",
+  "menuitem",
+  "meta",
+  "meter",
+  "nav",
+  "noframes",
+  "noscript",
+  "object",
+  "ol",
+  "optgroup",
+  "option",
+  "output",
+  "p",
+  "param",
+  "picture",
+  "pre",
+  "progress",
+  "q",
+  "rp",
+  "rt",
+  "ruby",
+  "s",
+  "samp",
+  "script",
+  "section",
+  "select",
+  "small",
+  "source",
+  "span",
+  "strike",
+  "strong",
+  "style",
+  "sub",
+  "summary",
+  "sup",
+  "table",
+  "tbody",
+  "td",
+  "textarea",
+  "tfoot",
+  "th",
+  "thead",
+  "time",
+  "title",
+  "tr",
+  "track",
+  "tt",
+  "u",
+  "ul",
+  "var",
+  "video",
+  "wbr"
+];
 etags.forEach(etag => {
   e[etag] = (...args) => elm(etag, ...args);
 });
 
 DOM.setup(d);
 {
-  const dom = elm("body", {},
-    elm("section", {class: "todoapp"},
+  const dom = e.body({},
+    e.section({class: "todoapp"},
       e.div(
-        elm("header", {class: "header"},
-          elm("h1",
+        e.header({class: "header"},
+          e.h1(
             v("todos")
           ),
-          elm("input", {class: "new-todo", placeholder: "What needs to be done?"})
+          e.input({class: "new-todo",
+            placeholder: "What needs to be done?"})
         ),
-        elm("section", {class: "main"},
-          elm("input", {class: "toggle-all", type: "checkbox"}),
-          elm("ul", {class: "todo-list",
+        e.section({class: "main"},
+          e.input({class: "toggle-all", type: "checkbox"}),
+          e.ul({class: "todo-list",
             children:
               path("Task", "all", ["map", func("tid",
-                elm("li",
+                e.li(
                   e.div({class: "view"},
-                    elm("input", {class: "toggle", type: "checkbox"}),
-                    elm("label", path("tid", "title")),
-                    elm("button", {class: "destroy"})
+                    e.input({class: "toggle", type: "checkbox"}),
+                    e.label(path("tid", "title")),
+                    e.button({class: "destroy"})
                   ),
-                  elm("input", {class: "edit", value: "buy the milk"})
+                  e.input({class: "edit", value: "buy the milk"})
                 )
               )])
             }
           )
         ),
-        elm("footer", {class: "footer"},
-          elm("span", {class: "todo-count"},
-            elm("strong", v("3")),
-            elm("span", v(" ")),
-            elm("span", v("itmes")),
-            elm("span", v(" left"))
+        e.footer({class: "footer"},
+          e.span({class: "todo-count"},
+            e.strong(v("3")),
+            e.span(v(" ")),
+            e.span(v("itmes")),
+            e.span(v(" left"))
           ),
-          elm("ul", {class: "filters"},
-            elm("li",
-              elm("a", {href: "#/", class: "selected"},
+          e.ul({class: "filters"},
+            e.li(
+              e.a({href: "#/", class: "selected"},
                 v("All")
               )
             ),
-            elm("li",
-              elm("a", {href: "#/active"},
+            e.li(
+              e.a({href: "#/active"},
                 v("Active")
               )
             ),
-            elm("li",
-              elm("a", {href: "#/completed"},
+            e.li(
+              e.a({href: "#/completed"},
                 v("Completed")
               )
             )
@@ -156,19 +278,19 @@ DOM.setup(d);
         )
       )
     ),
-    elm("footer", {class: "info"},
-      elm("p",
+    e.footer({class: "info"},
+      e.p(
         v("Double-click to edit a todo")
       ),
-      elm("p",
+      e.p(
         v("Created by "),
-        elm("a", {href: "https://github.com/emeitch"},
+        e.a({href: "https://github.com/emeitch"},
           v("emeitch")
         )
       ),
-      elm("p",
+      e.p(
         v("Part of "),
-        elm("a", {href: "http://todomvc.com/"},
+        e.a({href: "http://todomvc.com/"},
           v("TodoMVC")
         )
       )
