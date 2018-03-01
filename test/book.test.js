@@ -403,6 +403,17 @@ describe("Book", () => {
     });
   });
 
+  describe("#import", () => {
+    it("should add search target books", () => {
+      const lib = new Book();
+      const id2 = new UUID();
+      lib.put(id2, "foo", v(3));
+      book.import(lib);
+
+      assert(book.findLogs({key: sym("foo")}).length === 1);
+    });
+  });
+
   describe("#existsIDs", () => {
     it("should return new generated ids", () => {
       const o0 = book.new();

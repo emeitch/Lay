@@ -14,6 +14,7 @@ export default class Book {
     this.logs = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();
+    this.imports = parent ? [parent] : [];
   }
 
   log(logid) {
@@ -30,7 +31,13 @@ export default class Book {
       }
     });
 
-    const logs = this.parent ? this.parent.findLogs(cond) : [];
+    let logs = [];
+    for (const imported of this.imports) {
+      logs = imported.findLogs(cond);
+      if (logs.length > 0) {
+        break;
+      }
+    }
 
     // todo: 線形探索になっているので高速化する
     for (const [, log] of this.logs) {
@@ -144,6 +151,10 @@ export default class Book {
     }
 
     return undefined;
+  }
+
+  import(other) {
+    this.imports.push(other);
   }
 
   new(props) {
