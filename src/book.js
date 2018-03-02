@@ -196,10 +196,6 @@ export default class Book {
       return log.val;
     }
 
-    if (this.parent) {
-      return this.parent.get(name);
-    }
-
     return undefined;
   }
 
