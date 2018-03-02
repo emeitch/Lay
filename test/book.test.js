@@ -407,13 +407,13 @@ describe("Book", () => {
     it("should add search target books", () => {
       const lib = new Book();
       const id2 = new UUID();
-      lib.put(id2, "foo", v(3));
+      const log = lib.put(id2, "foo", v(3));
       lib.set("bar", v(4));
       book.import(lib);
 
       assert(book.findLogs({key: sym("foo")}).length === 1);
       assert.deepStrictEqual(book.get("bar"), v(4));
-
+      assert(book.logIDs().some(lid => lid.equals(log.logid)));
     });
   });
 

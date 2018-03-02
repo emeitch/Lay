@@ -293,7 +293,7 @@ export default class Book {
       logids.push(log.logid);
     }
 
-    return logids.concat(this.parent ? this.parent.logIDs() : []);
+    return logids.concat(this.imports.reduce((r, i) => r.concat(i.logIDs()), []));
   }
 }
 
