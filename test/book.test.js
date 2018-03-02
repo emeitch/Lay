@@ -412,6 +412,7 @@ describe("Book", () => {
       book.import(lib);
 
       assert(book.findLogs({key: sym("foo")}).length === 1);
+      assert(book.activeLogs(id2, sym("foo")).length === 1);
       assert.deepStrictEqual(book.get("bar"), v(4));
       assert(book.logIDs().some(lid => lid.equals(log.logid)));
     });

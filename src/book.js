@@ -109,10 +109,10 @@ export default class Book {
       return actives;
     }
 
-    if (this.parent) {
-      return this.parent.activeLogs(id, key, at);
+    for (const imported of this.imports) {
+      return imported.activeLogs(id, key, at);
     }
-
+    
     return [];
   }
 
