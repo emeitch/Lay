@@ -428,8 +428,13 @@ describe("Book", () => {
 
     context("set up onImport", () => {
       it("should run the returned act", () => {
+        let b = 0;
+        const alib = new Book();
+        alib.set("onImport", new Act(() => { b = 1; }));
+        const lib = new Book(alib);
+        assert.deepStrictEqual(b, 1);
+
         let a = 0;
-        const lib = new Book();
         lib.set("onImport", new Act(() => { a = 1; }));
         book.import(lib);
 

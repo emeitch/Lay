@@ -13,7 +13,10 @@ export default class Book {
     this.logs = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();
-    this.imports = imports;
+    this.imports = [];
+    for (const i of imports) {
+      this.import(i);
+    }
   }
 
   log(logid) {
