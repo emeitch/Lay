@@ -154,6 +154,11 @@ export default class Book {
 
   import(other) {
     this.imports.push(other);
+
+    const act = other.get("onImport");
+    if (act) {
+      this.run(act);
+    }
   }
 
   new(props) {

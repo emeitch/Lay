@@ -425,6 +425,17 @@ describe("Book", () => {
       assert.deepStrictEqual(book.get("bar"), v(4));
       assert(book.logIDs().some(lid => lid.equals(log.logid)));
     });
+
+    context("set up onImport", () => {
+      it("should run the returned act", () => {
+        let a = 0;
+        const lib = new Book();
+        lib.set("onImport", new Act(() => { a = 1; }));
+        book.import(lib);
+
+        assert.deepStrictEqual(a, 1);
+      });
+    });
   });
 
   describe("#existsIDs", () => {
