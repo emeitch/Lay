@@ -8,7 +8,7 @@ import { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
 
-export const stdlib = new Book(null);
+export const stdlib = new Book();
 
 {
   const obj = new UUID();

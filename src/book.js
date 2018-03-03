@@ -9,11 +9,11 @@ import { sym } from './sym';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
-  constructor(parent=null) {
+  constructor(...imports) {
     this.logs = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();
-    this.imports = parent ? [parent] : [];
+    this.imports = imports;
   }
 
   log(logid) {
