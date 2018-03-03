@@ -405,11 +405,20 @@ describe("Book", () => {
 
   describe("#import", () => {
     it("should add search target books", () => {
-      const lib = new Book();
+      const alib1 = new Book();
+      alib1.put(new UUID(), "bar", v(1));
+
+      const alib2 = new Book();
+      alib2.put(new UUID(), "baz", v(2));
+
+      const lib = new Book(alib1, alib2);
       const id2 = new UUID();
       const log = lib.put(id2, "foo", v(3));
       lib.set("bar", v(4));
       book.import(lib);
+
+      assert(book.findLogs({key: sym("bar")}).length === 1);
+      assert(book.findLogs({key: sym("baz")}).length === 1);
 
       assert(book.findLogs({key: sym("foo")}).length === 1);
       assert(book.activeLogs(id2, sym("foo")).length === 1);
