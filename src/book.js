@@ -112,7 +112,7 @@ export default class Book {
     for (const imported of this.imports) {
       return imported.activeLogs(id, key, at);
     }
-    
+
     return [];
   }
 
@@ -298,7 +298,4 @@ export default class Book {
 }
 
 export class Env extends Book {
-  putAct(...args) {
-    return this.parent.putAct(...args);
-  }
 }
