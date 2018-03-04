@@ -5,7 +5,7 @@ import { exp } from './exp';
 import { path } from './path';
 import { func, concat } from './func';
 import v from './v';
-import DOM, { e } from './dom';
+import { dom, e } from './dom';
 
 const d = new Book(stdlib);
 
@@ -73,9 +73,8 @@ d.existsIDs().forEach(i => {
   }
 }
 
-DOM.setup(d);
 {
-  const dom = e.body({},
+  const domtree = e.body({},
     e.section({class: "todoapp"},
       e.div(
         e.header({class: "header"},
@@ -147,6 +146,6 @@ DOM.setup(d);
       )
     )
   );
-  d.put(d.get("DOM"), "dom", dom);
-  d.run(path("DOM", "setup"));
+  d.set("dom", domtree);
+  d.import(dom);
 }

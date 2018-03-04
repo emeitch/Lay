@@ -1,62 +1,52 @@
 /* eslint-env browser */
 import { h, createProjector } from 'maquette';
 
+import Book from './book';
 import Prim from './prim';
-import UUID from './uuid';
 import Act from './act';
 import v from './v';
+import { exp } from './exp';
 import { sym } from './sym';
 import { path } from './path';
 import { func, LiftedNative } from './func';
 
-export default class DOM {
-  static setup(book) {
-    const DOM = new UUID();
-    book.set("DOM", DOM);
-
-    function render(ev) {
-      if (ev.equals(v(null))) {
-        return undefined;
-      }
-
-      const children = [];
-      const cs = ev.get("children");
-      if (!cs.equals(v(null))) {
-        for (let i = 0; i < cs.origin.length; i++) {
-          const c = cs.get(i);
-          if (c instanceof Prim) {
-            children.push(c.origin);
-          } else {
-            children.push(render(c));
-          }
-        }
-      }
-
-      const attr = {};
-      for (const key of Object.keys(ev.origin)) {
-        if (key === "children") {
-          continue;
-        }
-        attr[key] = path(ev, key).reduce(book).origin;
-      }
-      return h(ev.tag.origin, attr, children);
+export const dom = new Book();
+dom.set("onImport", exp(func(new LiftedNative(function() { return new Act(() => {
+  const book = this;
+  const render = ev => {
+    if (ev.equals(v(null))) {
+      return undefined;
     }
 
-    book.put(
-      DOM,
-      sym("setup"),
-      func(new LiftedNative(function() {
-        const book = this;
-        return new Act(() => {
-          const projector = createProjector();
-          document.addEventListener('DOMContentLoaded', function () {
-            projector.replace(document.body, () => render(path("DOM", "dom").reduce(book)));
-          });
-        });
-      }))
-    );
-  }
-}
+    const children = [];
+    const cs = ev.get("children");
+    if (!cs.equals(v(null))) {
+      for (let i = 0; i < cs.origin.length; i++) {
+        const c = cs.get(i);
+        if (c instanceof Prim) {
+          children.push(c.origin);
+        } else {
+          children.push(render(c));
+        }
+      }
+    }
+
+    const attr = {};
+    for (const key of Object.keys(ev.origin)) {
+      if (key === "children") {
+        continue;
+      }
+      attr[key] = path(ev, key).reduce(book).origin;
+    }
+    return h(ev.tag.origin, attr, children);
+  };
+
+  const projector = createProjector();
+  document.addEventListener('DOMContentLoaded', () => {
+    projector.replace(document.body, () => render(sym("dom").reduce(book).reduce(book)));
+  });
+});
+}))));
 
 function n(head, origin) {
   if (Array.isArray(origin)) {

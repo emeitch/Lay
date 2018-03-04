@@ -37,6 +37,7 @@ export default class Book {
     for (const imported of this.imports) {
       logs = imported.findLogs(cond);
       if (logs.length > 0) {
+        // todo: ここcontinueじゃない?
         break;
       }
     }
@@ -158,8 +159,9 @@ export default class Book {
   import(other) {
     this.imports.push(other);
 
-    const act = other.get("onImport");
-    if (act) {
+    const actexp = other.get("onImport");
+    if (actexp) {
+      const act = actexp.reduce(this);
       this.run(act);
     }
   }
@@ -305,4 +307,7 @@ export default class Book {
 }
 
 export class Env extends Book {
+  import(other) {
+    this.imports.push(other);
+  }
 }
