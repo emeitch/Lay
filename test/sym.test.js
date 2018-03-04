@@ -19,6 +19,14 @@ describe("Sym", () => {
       assert(sym("sym").reduce(book) === val);
     });
 
+    context("multi-stage refering", () => {
+      const val = v("sym val");
+      const book = new Book();
+      book.set("sym", sym("sym2"));
+      book.set("sym2", val);
+      assert(sym("sym").reduce(book) === val);
+    });
+
     context("unassigned", () => {
       it("should return the sym", () => {
         const s = sym("sym");

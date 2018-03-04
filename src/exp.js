@@ -1,5 +1,4 @@
 import Comp from './comp';
-import Book from './book';
 import { sym } from './sym';
 
 export default class Exp extends Comp {
@@ -25,16 +24,6 @@ export default class Exp extends Comp {
     }
 
     return f.apply(book, ...args);
-  }
-
-  reduce(book=new Book()) {
-    let prev = this;
-    let e = this.step(book);
-    while(!e.equals(prev)) {
-      prev = e;
-      e = e.step(book);
-    }
-    return e;
   }
 }
 

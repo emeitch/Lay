@@ -52,7 +52,13 @@ export default class Val {
   }
 
   reduce(book) {
-    return this.step(book);
+    let prev = this;
+    let e = this.step(book);
+    while(!e.equals(prev)) {
+      prev = e;
+      e = e.step(book);
+    }
+    return e;
   }
 
   replace(_matches) {
