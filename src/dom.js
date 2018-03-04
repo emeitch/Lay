@@ -43,7 +43,7 @@ dom.set("onImport", exp(func(new LiftedNative(function() { return new Act(() => 
 
   const projector = createProjector();
   document.addEventListener('DOMContentLoaded', () => {
-    projector.replace(document.body, () => render(sym("dom").reduce(book).reduce(book)));
+    projector.replace(document.body, () => render(sym("dom").reduce(book)));
   });
 });
 }))));
