@@ -35,10 +35,9 @@ export default class Book {
 
     let logs = [];
     for (const imported of this.imports) {
-      logs = imported.findLogs(cond);
-      if (logs.length > 0) {
-        // todo: ここcontinueじゃない?
-        break;
+      const ls = imported.findLogs(cond);
+      if (ls.length > 0) {
+        logs = logs.concat(ls);
       }
     }
 
@@ -256,7 +255,14 @@ export default class Book {
 
   putLog(log) {
     return this.doTransaction(putWithTransaction => {
-      return putWithTransaction(log);
+      const result = putWithTransaction(log);
+      const alogs = this.findActiveLogs({id: "onPut"});
+      for (const alog of alogs) {
+        const actexp = alog.val;
+        const act = actexp.reduce(this);
+        this.run(act, log);
+      }
+      return result;
     });
   }
 
@@ -281,7 +287,7 @@ export default class Book {
     return logs.map(log => log.id);
   }
 
-  run(e) {
+  run(e, arg) {
     let acts = e.reduce(this);
     if (acts instanceof Act) {
       acts = v([acts]);
@@ -290,7 +296,7 @@ export default class Book {
     if (acts instanceof Comp && Array.isArray(acts.origin)) {
       for (let act of acts.origin) {
         do {
-          act = act.proceed();
+          act = act.proceed(arg);
         } while(act.next);
       }
     }

@@ -111,8 +111,8 @@ export default class Act extends Val {
     return proc.bind(this)(arg);
   }
 
-  proceed() {
-    return this._proceedWithArg();
+  proceed(arg) {
+    return this._proceedWithArg(arg);
   }
 
   then(act) {

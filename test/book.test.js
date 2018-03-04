@@ -441,6 +441,35 @@ describe("Book", () => {
         assert.deepStrictEqual(a, 1);
       });
     });
+
+    context("set up onPut", () => {
+      it("should run the returned act", () => {
+        let b = 0;
+        const alib = new Book();
+        alib.set("onPut", new Act(log => {
+          if (log.key.equals(sym("foo"))) {
+            b += 1;
+          }
+        }));
+
+        const lib = new Book(alib);
+        let a = 0;
+        lib.set("onPut", new Act(log => {
+          if (log.key.equals(sym("foo"))) {
+            a += 1;
+          }
+        }));
+        book.import(lib);
+
+        book.put(new UUID(), "foo", v(1));
+        assert.deepStrictEqual(a, 1);
+        assert.deepStrictEqual(b, 1);
+
+        book.put(new UUID(), "foo", v(1));
+        assert.deepStrictEqual(a, 2);
+        assert.deepStrictEqual(b, 2);
+      });
+    });
   });
 
   describe("#existsIDs", () => {
