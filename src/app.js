@@ -148,13 +148,12 @@ d.existsIDs().forEach(i => {
     )
   );
 
+  d.set("dom", domtree);
+  
   setTimeout(() => {
-    d.set("dom", domtree);
-    setTimeout(() => {
-      const id = d.new();
-      d.put(id, "tag", "Task");
-      d.put(id, "title", v("buy the coffee"));
-      d.put(id, "state", "active");
-    }, 1000);
+    const id = d.new();
+    d.put(id, "tag", "Task");
+    d.put(id, "title", v("buy the coffee"));
+    d.put(id, "state", "active");
   }, 1000);
 }

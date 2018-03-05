@@ -10,50 +10,56 @@ import { sym } from './sym';
 import { path } from './path';
 import { func, LiftedNative } from './func';
 
-export const dom = new Book();
+function render(ev, book) {
+  if (ev.equals(v(null))) {
+    return undefined;
+  }
 
-const projector = createProjector();
+  const children = [];
+  const cs = ev.get("children");
+  if (!cs.equals(v(null))) {
+    for (let i = 0; i < cs.origin.length; i++) {
+      const c = cs.get(i);
+      if (c instanceof Prim) {
+        children.push(c.origin);
+      } else {
+        children.push(render(c, book));
+      }
+    }
+  }
+
+  const attr = {};
+  for (const key of Object.keys(ev.origin)) {
+    if (key === "children") {
+      continue;
+    }
+    attr[key] = path(ev, key).reduce(book).origin;
+  }
+  return h(ev.tag.origin, attr, children);
+}
+
 let contentLoaded = false;
+function replaceProjector(book) {
+  const domtree = sym("dom").reduce(book);
+  if (contentLoaded && !domtree.equals(sym("dom"))) {
+    projector.replace(document.body, () => render(domtree, book));
+  }
+}
+
+export const dom = new Book();
+const projector = createProjector();
 dom.set("onImport", exp(func(new LiftedNative(function() { return new Act(() => {
+  const book = this;
   document.addEventListener('DOMContentLoaded', () => {
     contentLoaded = true;
+    replaceProjector(book);
   });
 });
 }))));
 
 dom.set("onPut", exp(func(new LiftedNative(function() { return new Act(() => {
   const book = this;
-  const render = ev => {
-    if (ev.equals(v(null))) {
-      return undefined;
-    }
-
-    const children = [];
-    const cs = ev.get("children");
-    if (!cs.equals(v(null))) {
-      for (let i = 0; i < cs.origin.length; i++) {
-        const c = cs.get(i);
-        if (c instanceof Prim) {
-          children.push(c.origin);
-        } else {
-          children.push(render(c));
-        }
-      }
-    }
-
-    const attr = {};
-    for (const key of Object.keys(ev.origin)) {
-      if (key === "children") {
-        continue;
-      }
-      attr[key] = path(ev, key).reduce(book).origin;
-    }
-    return h(ev.tag.origin, attr, children);
-  };
-
-  if (contentLoaded) {
-    projector.replace(document.body, () => render(sym("dom").reduce(book)));
-  }
+  replaceProjector(book);
 });
 }))));
 
