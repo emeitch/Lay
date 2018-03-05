@@ -74,6 +74,7 @@ d.existsIDs().forEach(i => {
 }
 
 {
+  d.import(dom);
   const domtree = e.body({},
     e.section({class: "todoapp"},
       e.div(
@@ -146,6 +147,14 @@ d.existsIDs().forEach(i => {
       )
     )
   );
-  d.set("dom", domtree);
-  d.import(dom);
+
+  setTimeout(() => {
+    d.set("dom", domtree);
+    setTimeout(() => {
+      const id = d.new();
+      d.put(id, "tag", "Task");
+      d.put(id, "title", v("buy the coffee"));
+      d.put(id, "state", "active");
+    }, 1000);
+  }, 1000);
 }

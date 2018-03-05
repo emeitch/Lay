@@ -65,8 +65,9 @@ export default class Path extends Ref {
         }
       }
 
-      const env = new Env(book);
+      const env = new Env();
       env.set("self", val);
+      env.import(book); // todo: Env生成時にbookを指定するとselfのsetでonPutが走るので応急的にset後のimportで対応
 
       if (prop instanceof Case) {
         const e = exp(prop, ...args);

@@ -11,7 +11,17 @@ import { path } from './path';
 import { func, LiftedNative } from './func';
 
 export const dom = new Book();
+
+const projector = createProjector();
+let contentLoaded = false;
 dom.set("onImport", exp(func(new LiftedNative(function() { return new Act(() => {
+  document.addEventListener('DOMContentLoaded', () => {
+    contentLoaded = true;
+  });
+});
+}))));
+
+dom.set("onPut", exp(func(new LiftedNative(function() { return new Act(() => {
   const book = this;
   const render = ev => {
     if (ev.equals(v(null))) {
@@ -41,10 +51,9 @@ dom.set("onImport", exp(func(new LiftedNative(function() { return new Act(() => 
     return h(ev.tag.origin, attr, children);
   };
 
-  const projector = createProjector();
-  document.addEventListener('DOMContentLoaded', () => {
+  if (contentLoaded) {
     projector.replace(document.body, () => render(sym("dom").reduce(book)));
-  });
+  }
 });
 }))));
 

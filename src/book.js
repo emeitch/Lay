@@ -131,8 +131,9 @@ export default class Book {
 
     const tlogs = this.activeLogs(id, "tag");
     for (const tlog of tlogs) {
-      const env = new Env(this);
+      const env = new Env();
       env.set("self", id);
+      env.import(this); // todo: Env生成時にbookを指定するとselfのsetでonPutが走るので応急的にset後のimportで対応
 
       const p = tlog.val.reduce(env);
       const l = this.findLogWithTags(p, key);
