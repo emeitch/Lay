@@ -40,8 +40,9 @@ function render(ev, book) {
 
 let contentLoaded = false;
 function replaceProjector(book) {
-  const domtree = sym("dom").reduce(book);
-  if (contentLoaded && !domtree.equals(sym("dom"))) {
+  const placeholder = sym("dom");
+  const domtree = placeholder.reduce(book);
+  if (contentLoaded && !domtree.equals(placeholder)) {
     projector.replace(document.body, () => render(domtree, book));
   }
 }
