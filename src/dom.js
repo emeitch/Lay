@@ -49,20 +49,28 @@ function replaceProjector(book) {
 
 export const dom = new Book();
 const projector = createProjector();
-dom.set("onImport", exp(func(new LiftedNative(function() { return new Act(() => {
-  const book = this;
-  document.addEventListener('DOMContentLoaded', () => {
-    contentLoaded = true;
-    replaceProjector(book);
-  });
-});
-}))));
+dom.set(
+  "onImport",
+  exp(func(
+    new LiftedNative(function() { return new Act(() => {
+      const book = this;
+      document.addEventListener('DOMContentLoaded', () => {
+        contentLoaded = true;
+        replaceProjector(book);
+      });
+    });
+  })))
+);
 
-dom.set("onPut", exp(func(new LiftedNative(function() { return new Act(() => {
-  const book = this;
-  replaceProjector(book);
-});
-}))));
+dom.set(
+  "onPut",
+  exp(func(
+    new LiftedNative(function() { return new Act(() => {
+      const book = this;
+      replaceProjector(book);
+    });
+  })))
+);
 
 function n(head, origin) {
   if (Array.isArray(origin)) {
