@@ -21,6 +21,10 @@ export default class Val {
     return this.tag;
   }
 
+  get _toStr() {
+    return new Prim(this.origin.toString());
+  }
+
   get(k, book) {
     const key = k instanceof Sym ? k.origin : k;
 

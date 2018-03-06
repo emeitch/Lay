@@ -21,6 +21,12 @@ describe("Val", () => {
       });
     });
 
+    describe("#_toStr", () => {
+      it("should return string prim", () => {
+        assert.deepStrictEqual(val._toStr, v("0"));
+      });
+    });
+
     describe("#id", () => {
       it("should return oneslf by default behavior", () => {
         assert.deepStrictEqual(val.id, val);
