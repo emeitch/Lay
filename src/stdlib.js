@@ -63,6 +63,14 @@ export const stdlib = new Book();
       return v(narr);
     }))
   );
+
+  stdlib.put(
+    arr,
+    sym("count"),
+    func(new LiftedNative(function() {
+      return v(this.get("self").origin.length);
+    }))
+  );
 }
 
 {

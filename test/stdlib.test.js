@@ -64,6 +64,13 @@ describe("stdlib", () => {
         assert.deepStrictEqual(mapped, v([2, 3, 4]));
       });
     });
+
+    describe("count", () => {
+      it("should return size of array", () => {
+        const count = path(v([1, 2, 3]), sym("count")).reduce(book);
+        assert.deepStrictEqual(count, v(3));
+      });
+    });
   });
 
   context("accessing default Map methods", () => {
