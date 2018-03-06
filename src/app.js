@@ -104,7 +104,7 @@ d.existsIDs().forEach(i => {
         ),
         e.footer({class: "footer"},
           e.span({class: "todo-count"},
-            e.strong(v("3")),
+            e.strong(path("Task", "all", "count", "toStr")),
             e.span(v(" ")),
             e.span(v("items")),
             e.span(v(" left"))
@@ -149,7 +149,7 @@ d.existsIDs().forEach(i => {
   );
 
   d.set("dom", domtree);
-  
+
   setTimeout(() => {
     const id = d.new();
     d.put(id, "tag", "Task");
