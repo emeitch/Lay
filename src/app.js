@@ -106,7 +106,7 @@ d.existsIDs().forEach(i => {
           e.span({class: "todo-count"},
             e.strong(v("3")),
             e.span(v(" ")),
-            e.span(v("itmes")),
+            e.span(v("items")),
             e.span(v(" left"))
           ),
           e.ul({class: "filters"},
