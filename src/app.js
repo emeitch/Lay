@@ -45,6 +45,12 @@ d.existsIDs().forEach(i => {
 }
 
 {
+  const todos = d.new();
+  d.put(todos, "tag", "Todos");
+  d.put(todos, "state", "All");
+}
+
+{
   const vtasks = path("Task", "all");
 
   {
