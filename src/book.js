@@ -317,4 +317,10 @@ export class Env extends Book {
   import(other) {
     this.imports.push(other);
   }
+
+  // putLog(log) {
+  //   if (this.imports.length > 0) {
+  //     return this.imports[0].putLog(log);
+  //   }
+  // }
 }
