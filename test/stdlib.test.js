@@ -17,9 +17,13 @@ describe("stdlib", () => {
     book = new Book(stdlib);
   });
 
-  describe("and", () => {
-    it("should behave logical and", () => {
-      assert.deepStrictEqual(exp("and", v(1), v(2)).reduce(book), v(1));
+  describe("if", () => {
+    it("should test cond and reduce then exp or else exp", () => {
+      const t = exp("if", v(true), v(1), v(2)).reduce(book);
+      assert.deepStrictEqual(t, v(1));
+
+      const f = exp("if", v(false), v(1), v(2)).reduce(book);
+      assert.deepStrictEqual(f, v(2));
     });
   });
 

@@ -6,12 +6,35 @@ import Prim from './prim';
 import { CompArray, CompMap } from  './comp';
 import { sym } from './sym';
 import { exp } from './exp';
+import { kase, alt, grd, otherwise } from './case';
 import { func, LiftedNative } from './func';
 
 export const stdlib = new Book();
 
 {
-  stdlib.set("and", func("a", "b", "a"));
+  stdlib.set("if", func(
+    "cond",
+    "then",
+    "else",
+    exp(
+      kase(
+        alt(
+          "x",
+          [
+            grd(
+              exp(func("x", x => x), "x"),
+              "then"
+            ),
+            grd(
+              otherwise,
+              "else"
+            )
+          ]
+        )
+      ),
+      "cond"
+    )
+  ));
 }
 
 {
