@@ -331,6 +331,8 @@ export class Env extends Book {
   putLog(log) {
     if (this.imports.length > 0) {
       return this.imports[0].putLog(log);
+    } else {
+      return super.putLog(log);
     }
   }
 }

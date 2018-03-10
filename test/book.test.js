@@ -3,7 +3,7 @@ import assert from 'assert';
 import v from '../src/v';
 import UUID from '../src/uuid';
 import Log from '../src/log';
-import Book from '../src/book';
+import Book, { Env } from '../src/book';
 import Act from '../src/act';
 import { sym } from '../src/sym';
 import { transaction, invalidate } from '../src/ontology';
@@ -519,5 +519,29 @@ describe("Book", () => {
       assert.deepStrictEqual(b, 2);
     });
   });
+});
 
+describe("Book", () => {
+  let book;
+  let env;
+  beforeEach(() => {
+    book = new Book();
+    env = new Env();
+  });
+
+  describe("putLog", () => {
+    it("should put for first imported book", () => {
+      const id = new UUID();
+
+      env.put(id, "k1", v("v1"));
+      assert(book.findLogs({id: id}).length == 0);
+      assert(env.findLogs({id: id}).length == 1);
+
+      env.import(book);
+
+      env.put(id, "k2", v("v2"));
+      assert(book.findLogs({id: id}).length == 1);
+      assert(env.findLogs({id: id}).length == 2);
+    });
+  });
 });
