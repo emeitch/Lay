@@ -11,6 +11,10 @@ import { func, LiftedNative } from './func';
 export const stdlib = new Book();
 
 {
+  stdlib.set("and", func("a", "b", "a"));
+}
+
+{
   const obj = new UUID();
   stdlib.set("Object", obj);
 

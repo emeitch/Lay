@@ -17,6 +17,12 @@ describe("stdlib", () => {
     book = new Book(stdlib);
   });
 
+  describe("and", () => {
+    it("should behave logical and", () => {
+      assert.deepStrictEqual(exp("and", v(1), v(2)).reduce(book), v(1));
+    });
+  });
+
   context("accessing Object methods", () => {
     describe("all", () => {
       it("should return self instances", () => {
