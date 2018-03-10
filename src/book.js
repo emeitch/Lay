@@ -254,7 +254,7 @@ export default class Book {
     return block(putWithTransaction);
   }
 
-  putLog(log) {
+  _putLog(log) {
     return this.doTransaction(putWithTransaction => {
       const result = putWithTransaction(log);
       const alogs = this.findActiveLogs({id: "onPut"});
@@ -265,6 +265,10 @@ export default class Book {
       }
       return result;
     });
+  }
+
+  putLog(log) {
+    return this._putLog(log);
   }
 
   put(...args) {
@@ -318,9 +322,15 @@ export class Env extends Book {
     this.imports.push(other);
   }
 
-  // putLog(log) {
-  //   if (this.imports.length > 0) {
-  //     return this.imports[0].putLog(log);
-  //   }
-  // }
+  set(name, id) {
+    // todo: ユニーク制約をかけたい
+    const log = new Log(sym(name), assign, id);
+    this._putLog(log);
+  }
+
+  putLog(log) {
+    if (this.imports.length > 0) {
+      return this.imports[0].putLog(log);
+    }
+  }
 }

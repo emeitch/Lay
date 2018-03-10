@@ -48,16 +48,11 @@ d.existsIDs().forEach(i => {
   const todos = d.new();
   d.put(todos, "tag", "App");
   d.put(todos, "state", "All");
-  d.put(todos, "setState", func("s", path("self", ["set", "state", "s"])));
+  d.put(todos, "changeState", func("s", path("self", ["set", "state", "s"])));
 
   console.log(path(todos, "state").reduce(d));
-  console.log("----------");
-
-  console.log("book: ", d);
-  d.run(path(todos, ["setState", "Active"]));
-
-  console.log(d.findLogs({id: todos, key: "state"}));
-
+  console.log("chage state");
+  d.run(path(todos, ["changeState", "Active"]));
   console.log(path(todos, "state").reduce(d));
   console.log("----------");
 }
