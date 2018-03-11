@@ -149,6 +149,47 @@ describe("Act", () => {
       });
     });
 
+    describe("#then", () => {
+      it("should then next act", () => {
+        let firstFinished = false;
+        const first = new Act(() => { firstFinished = true; });
+
+        let secondFinished = false;
+        const second = new Act(() => { secondFinished = true; });
+
+        let thirdFinished = false;
+        const third = new Act(() => {
+          thirdFinished = true;
+          return "all finished";
+        });
+
+        let act = first._then(second)._then(third);
+
+        act = act.proceed();
+
+        assert(firstFinished === true);
+        assert(secondFinished === false);
+        assert(thirdFinished === false);
+
+        act = act.proceed();
+
+        assert(firstFinished === true);
+        assert(secondFinished === true);
+        assert(thirdFinished === false);
+
+        act = act.proceed();
+
+        assert(firstFinished === true);
+        assert(secondFinished === true);
+        assert(thirdFinished === true);
+
+        assert(act.fulfilled);
+        assert(act.val === "all finished");
+
+        assert.throws(() => { act.proceed(); }, /next act not found error/);
+      });
+    });
+
     context("with exception", () => {
       it("should then nested act", () => {
         const first = new Act(() => { throw "an error"; });
