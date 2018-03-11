@@ -111,7 +111,7 @@ d.existsIDs().forEach(i => {
                       onchange:
                         func("el",
                           path("Console",
-                          ["puts", v("foo")]))
+                          ["puts", "el"]))
                     }),
                     e.label(path("tid", "title")),
                     e.button({class: "destroy"})
