@@ -110,8 +110,14 @@ d.existsIDs().forEach(i => {
                       type: "checkbox",
                       onchange:
                         func("el",
-                          path("Console",
-                          ["puts", "tid"]))
+                          path(
+                            "Console",
+                            ["puts", "tid"],
+                            ["then",
+                              path("Console",
+                                ["puts", path("tid", "state")])]
+                          )
+                        )
                     }),
                     e.label(path("tid", "title")),
                     e.button({class: "destroy"})
