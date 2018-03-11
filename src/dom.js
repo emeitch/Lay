@@ -33,7 +33,14 @@ function render(ev, book) {
     if (key === "children") {
       continue;
     }
-    attr[key] = path(ev, key).reduce(book).origin;
+    if (key.match(/^on/)) {
+      attr[key] = _e => {
+        book.run(path(ev, [key, v("any")]).reduce(book));
+      };
+    } else {
+      attr[key] = path(ev, key).reduce(book).origin;
+    }
+
   }
   return h(ev.tag.origin, attr, children);
 }

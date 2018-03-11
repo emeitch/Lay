@@ -105,7 +105,14 @@ d.existsIDs().forEach(i => {
               path("Task", "all", ["map", func("tid",
                 e.li(
                   e.div({class: "view"},
-                    e.input({class: "toggle", type: "checkbox"}),
+                    e.input({
+                      class: "toggle",
+                      type: "checkbox",
+                      onchange:
+                        func("el",
+                          path("Console",
+                          ["puts", v("foo")]))
+                    }),
                     e.label(path("tid", "title")),
                     e.button({class: "destroy"})
                   ),
