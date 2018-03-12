@@ -53,6 +53,13 @@ describe("Val", () => {
       });
     });
 
+    describe("#_equals", () => {
+      it("should return equality for other vals", () => {
+        assert(v(0)._equals(v(0)));
+        assert(!v(0)._equals(v(1)));
+      });
+    });
+
     describe("#reducible", () => {
       it("should return true by default behavior", () => {
         assert.deepStrictEqual(val.reducible, true);

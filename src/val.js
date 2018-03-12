@@ -47,6 +47,10 @@ export default class Val {
     return _.isEqual(this, other);
   }
 
+  _equals(other) {
+    return this.equals(other);
+  }
+
   get reducible() {
     return true;
   }
