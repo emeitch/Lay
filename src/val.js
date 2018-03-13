@@ -47,8 +47,8 @@ export default class Val {
     return _.isEqual(this, other);
   }
 
-  _equals(other) {
-    return this.equals(other);
+  get _equals() {
+    return o => new Prim(this.equals(o));
   }
 
   get reducible() {

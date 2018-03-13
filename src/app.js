@@ -40,7 +40,14 @@ d.existsIDs().forEach(i => {
 
 {
   const Task = d.new();
-  d.put(Task, "complete", path("self", ["set", "state", "completed"]));
+  d.put(Task,
+    "toggle",
+    exp("if",
+      path("self", "state", ["equals", "active"]),
+      path("self", ["set", "state", "completed"]),
+      path("self", ["set", "state", "active"])
+    )
+  );
   d.set("Task", Task);
 }
 
@@ -61,7 +68,7 @@ d.existsIDs().forEach(i => {
   const vtasks = path("Task", "all");
 
   {
-    d.run(path(vtasks, ["map", func("tid", path("tid", "complete"))]));
+    d.run(path(vtasks, ["map", func("tid", path("tid", "toggle"))]));
   }
 
   {

@@ -4,6 +4,7 @@ import Val from './val';
 import Case from './case';
 import { exp } from './exp';
 import { sym } from './sym';
+import { func, LiftedNative } from './func';
 import v from './v';
 
 export default class Path extends Ref {
@@ -58,6 +59,9 @@ export default class Path extends Ref {
       }
 
       let prop = val.get(key.reduce(book), book);
+      if (prop instanceof Function) {
+        prop = func("x", new LiftedNative(prop));
+      }
       if (prop.equals(v(null))) {
         prop = val.get(key, book);
         if (prop.equals(v(null))) {
