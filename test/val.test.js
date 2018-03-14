@@ -55,8 +55,8 @@ describe("Val", () => {
 
     describe("#_equals", () => {
       it("should return equality for other vals", () => {
-        assert(v(0)._equals(v(0)));
-        assert(!v(0)._equals(v(1)));
+        assert.deepStrictEqual(v(0)._equals(v(0)), v(true));
+        assert.deepStrictEqual(v(0)._equals(v(1)), v(false));
       });
     });
 
