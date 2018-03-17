@@ -315,8 +315,8 @@ describe("Book", () => {
 
     context("contain a log with time and a log without time", () => {
       beforeEach(() => {
-        book.putLog(new Log(id, key, v("val0"), new Date(2017, 2)));
-        book.putLog(new Log(id, key, v("val1")));
+        book.putLog(new Log(id, key, v("val0")));
+        book.putLog(new Log(id, key, v("val1"), new Date(2017, 2)));
       });
 
       it("should return all logs order by applying time", () => {

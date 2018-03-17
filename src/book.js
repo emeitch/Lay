@@ -98,13 +98,8 @@ export default class Book {
     }
 
     const actives = Array.from(alogs.values()).sort((a, b) => {
-      if (a.at === null) {
-        return -1;
-      } else if (b.at === null) {
-        return 1;
-      } else {
-        return a.at.getTime() - b.at.getTime();
-      }
+      // todo: atが重複した場合に順序が制御されないのをどうにかする
+      return a.at.getTime() - b.at.getTime();
     });
 
     if (actives.length > 0) {
