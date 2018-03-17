@@ -3,7 +3,7 @@ import Book from './book';
 import { stdlib } from './stdlib';
 import { exp } from './exp';
 import { path } from './path';
-import { func, concat } from './func';
+import { func } from './func';
 import v from './v';
 import { dom, e } from './dom';
 
@@ -30,13 +30,13 @@ const d = new Book(stdlib);
   d.put(id, "state", "active");
 }
 
-d.existsIDs().forEach(i => {
-  const logs = d.findLogs({id: i});
-  logs.forEach(l => {
-    console.log(l.key.stringify(), ":", l.val.stringify());
-  });
-  console.log("----------");
-});
+// d.existsIDs().forEach(i => {
+//   const logs = d.findLogs({id: i});
+//   logs.forEach(l => {
+//     console.log(l.key.stringify(), ":", l.val.stringify());
+//   });
+//   console.log("----------");
+// });
 
 {
   const Task = d.new();
@@ -58,39 +58,39 @@ d.existsIDs().forEach(i => {
   d.put(todos, "changeState", func("s", path("self", ["set", "state", "s"])));
 
   console.log(path(todos, "state").reduce(d));
-  console.log("chage state");
+  console.log("change state");
   d.run(path(todos, ["changeState", "Active"]));
   console.log(path(todos, "state").reduce(d));
   console.log("----------");
 }
 
 {
-  const vtasks = path("Task", "all");
-
+  // const vtasks = path("Task", "all");
+  //
   // {
   //   d.run(path(vtasks, ["map", func("tid", path("tid", "toggle"))]));
   // }
-
-  {
-    d.run(path(vtasks, ["map", func("tid",
-      path(
-        "Console",
-        ["puts",
-          exp(concat,
-            v("tag: "),
-            path("tid", "tag"))],
-        ["then",
-          path("Console",
-            ["puts",
-              exp(concat,
-                v("state: "),
-                path("tid", "state"))])
-        ],
-        ["then",
-          path("Console", ["puts", v("-----------")])
-        ]
-    ))]));
-  }
+  //
+  // {
+  //   d.run(path(vtasks, ["map", func("tid",
+  //     path(
+  //       "Console",
+  //       ["puts",
+  //         exp(concat,
+  //           v("tag: "),
+  //           path("tid", "tag"))],
+  //       ["then",
+  //         path("Console",
+  //           ["puts",
+  //             exp(concat,
+  //               v("state: "),
+  //               path("tid", "state"))])
+  //       ],
+  //       ["then",
+  //         path("Console", ["puts", v("-----------")])
+  //       ]
+  //   ))]));
+  // }
 }
 
 {
