@@ -110,7 +110,9 @@ const d = new Book(stdlib);
           e.ul({class: "todo-list",
             children:
               path("Task", "all", ["map", func("tid",
-                e.li(
+                e.li({
+                    class: path("tid", "state"),
+                  },
                   e.div({class: "view"},
                     e.input({
                       class: "toggle",
