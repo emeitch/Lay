@@ -67,9 +67,9 @@ d.existsIDs().forEach(i => {
 {
   const vtasks = path("Task", "all");
 
-  {
-    d.run(path(vtasks, ["map", func("tid", path("tid", "toggle"))]));
-  }
+  // {
+  //   d.run(path(vtasks, ["map", func("tid", path("tid", "toggle"))]));
+  // }
 
   {
     d.run(path(vtasks, ["map", func("tid",
@@ -115,11 +115,14 @@ d.existsIDs().forEach(i => {
                     e.input({
                       class: "toggle",
                       type: "checkbox",
+                      checked: path("tid", "state", ["equals", "completed"]),
                       onchange:
                         func("el",
                           path(
-                            "Console",
-                            ["puts", "tid"],
+                            "tid", "toggle",
+                            ["then",
+                              path("Console",
+                                ["puts", "tid"])],
                             ["then",
                               path("Console",
                                 ["puts", path("tid", "state")])]
