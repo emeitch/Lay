@@ -120,12 +120,18 @@ d.existsIDs().forEach(i => {
                         func("el",
                           path(
                             "tid", "toggle",
-                            // ["then",
-                            //   path("Console",
-                            //     ["puts", "tid"])],
                             ["then",
                               path("Console",
-                                ["puts", path("tid", "state")])]
+                                ["puts", v("onchange:")])],
+                            ["then",
+                              path("Console",
+                                ["puts", "tid"])],
+                            ["then",
+                              path("Console",
+                                ["puts", path("tid", "state")])],
+                            ["then",
+                              path("Console",
+                                ["puts", v("-----------")])]
                           )
                         )
                     }),
