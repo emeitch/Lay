@@ -111,6 +111,7 @@ const d = new Book(stdlib);
             children:
               path("Task", "all", ["map", func("tid",
                 e.li({
+                    key: "tid",
                     class: path("tid", "state"),
                   },
                   e.div({class: "view"},

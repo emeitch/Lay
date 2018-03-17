@@ -45,15 +45,6 @@ function render(ev, book) {
   return h(ev.tag.origin, attr, children);
 }
 
-let contentLoaded = false;
-function replaceProjector(book) {
-  const placeholder = sym("dom");
-  const domtree = placeholder.reduce(book);
-  if (contentLoaded && !domtree.equals(placeholder)) {
-    projector.replace(document.body, () => render(domtree, book));
-  }
-}
-
 export const dom = new Book();
 const projector = createProjector();
 dom.set(
@@ -61,9 +52,14 @@ dom.set(
   exp(func(
     new LiftedNative(function() { return new Act(() => {
       const book = this;
+      function renderMaquette() {
+        const placeholder = sym("dom");
+        const domtree = placeholder.reduce(book);
+        return render(domtree, book);
+      }
+
       document.addEventListener('DOMContentLoaded', () => {
-        contentLoaded = true;
-        replaceProjector(book);
+        projector.append(document.body, renderMaquette);
       });
     });
   })))
@@ -73,8 +69,7 @@ dom.set(
   "onPut",
   exp(func(
     new LiftedNative(function() { return new Act(() => {
-      const book = this;
-      replaceProjector(book);
+      projector.scheduleRender();
     });
   })))
 );
