@@ -35,7 +35,7 @@ function render(ev, book) {
     }
     if (key.match(/^on/)) {
       attr[key] = _e => {
-        book.run(path(ev, [key, ev]).reduce(book));
+        return book.run(path(ev, [key, ev]).reduce(book));
       };
     } else {
       attr[key] = path(ev, key).reduce(book).origin;

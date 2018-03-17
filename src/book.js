@@ -298,13 +298,16 @@ export default class Book {
       acts = v([acts]);
     }
 
+    let act = null;
     if (acts instanceof Comp && Array.isArray(acts.origin)) {
-      for (let act of acts.origin) {
+      for (act of acts.origin) {
         do {
           act = act.proceed(arg);
         } while(act.next);
       }
     }
+
+    return act ? act.val : null;
   }
 
   logIDs() {
