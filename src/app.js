@@ -148,7 +148,18 @@ const d = new Book(stdlib);
         ),
         e.footer({class: "footer"},
           e.span({class: "todo-count"},
-            e.strong(path("Task", "all", "count", "toStr")),
+            e.strong(
+              path(
+                "Task",
+                "all",
+                ["filter",
+                  func("tid",
+                    path(
+                      "tid",
+                      "state",
+                      ["equals", "active"]))],
+                "count",
+                "toStr")),
             e.span(v(" ")),
             e.span(v("items")),
             e.span(v(" left"))
