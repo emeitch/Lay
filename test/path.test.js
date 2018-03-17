@@ -267,6 +267,9 @@ describe("Path", () => {
 
         book.set("foo", sym("bar"));
         assert.deepStrictEqual(path(id, "foo").reduce(book), v(2));
+
+        // todo: functionをfuncとして扱う項目のテスト。不要になったら除去する
+        assert.deepStrictEqual(path(id, "foo", ["equals", v(2)]).reduce(book), v(true));
       });
     });
   });
