@@ -3,7 +3,7 @@ import { sym } from './sym';
 import v from './v';
 
 export default class Log {
-  constructor(id, key, val=null, at_=null, in_=null) {
+  constructor(id, key, val=null, at_=new Date(), in_=null) {
     if (!id) {
       throw "id is required";
     }
