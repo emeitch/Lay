@@ -75,6 +75,13 @@ describe("stdlib", () => {
       });
     });
 
+    describe("filter", () => {
+      it("should filter arg func for items", () => {
+        const filtered = path(v([1, 2, 3]), ["filter", func("x", path("x", ["equals", v(2)]))]).reduce(book);
+        assert.deepStrictEqual(filtered, v([2]));
+      });
+    });
+
     describe("count", () => {
       it("should return size of array", () => {
         const count = path(v([1, 2, 3]), sym("count")).reduce(book);
