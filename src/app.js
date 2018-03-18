@@ -109,7 +109,7 @@ const d = new Book(stdlib);
             autofocus: v(true),
             placeholder: "What needs to be done?",
             value: path("todos", "newTaskTitle"),
-            onkeyup: func("ev",
+            onkeypress: func("ev",
               exp("if",
                 path("ev", "keyCode", ["equals", v(13)]),
                 path("Object",
@@ -135,7 +135,8 @@ const d = new Book(stdlib);
                 v(null)
               )
             ),
-            onchange: func("ev",
+            // todo: maquette利用の都合上、前回vdomと実DOMのプロパティが一緒でないと値の書き換えができないので、oninputで毎度newTaskTitleを書き換えている。後ほど是正したい。
+            oninput: func("ev",
               path(
                 "todos",
                 [

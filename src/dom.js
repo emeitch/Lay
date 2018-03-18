@@ -10,47 +10,6 @@ import { sym } from './sym';
 import { path } from './path';
 import { func, LiftedNative } from './func';
 
-function render(ev, book) {
-  if (ev.equals(v(null))) {
-    return undefined;
-  }
-
-  const children = [];
-  const cs = ev.get("children");
-  if (!cs.equals(v(null))) {
-    for (let i = 0; i < cs.origin.length; i++) {
-      const c = cs.get(i);
-      if (c instanceof Prim) {
-        children.push(c.origin);
-      } else {
-        children.push(render(c, book));
-      }
-    }
-  }
-
-  const attr = {};
-  for (const key of Object.keys(ev.origin)) {
-    if (key === "children") {
-      continue;
-    }
-    if (key.match(/^on/)) {
-      attr[key] = event => {
-        // todo: イベントデータの扱いがアドホックな対応なのであとで改修する
-        const eo = {
-          keyCode: event.keyCode,
-          value: event.srcElement.value
-        };
-        const e = v("Event", eo);
-        return book.run(path(ev, [key, e]).reduce(book));
-      };
-    } else {
-      attr[key] = path(ev, key).reduce(book).origin;
-    }
-
-  }
-  return h(ev.tag.origin, attr, children);
-}
-
 let dirty = false;
 let vdomCache = null;
 export const dom = new Book();
@@ -60,12 +19,52 @@ dom.set(
   exp(func(
     new LiftedNative(function() { return new Act(() => {
       const book = this;
+      function render(ev) {
+        if (ev.equals(v(null))) {
+          return undefined;
+        }
+
+        const children = [];
+        const cs = ev.get("children");
+        if (!cs.equals(v(null))) {
+          for (let i = 0; i < cs.origin.length; i++) {
+            const c = cs.get(i);
+            if (c instanceof Prim) {
+              children.push(c.origin);
+            } else {
+              children.push(render(c, book));
+            }
+          }
+        }
+
+        const attr = {};
+        for (const key of Object.keys(ev.origin)) {
+          if (key === "children") {
+            continue;
+          }
+          if (key.match(/^on/)) {
+            attr[key] = event => {
+              // todo: イベントデータの扱いがアドホックな対応なのであとで改修する
+              const eo = {
+                keyCode: event.keyCode,
+                value: event.target.value
+              };
+              const e = v("Event", eo);
+              return book.run(path(ev, [key, e]).reduce(book));
+            };
+          } else {
+            attr[key] = path(ev, key).reduce(book).origin;
+          }
+        }
+        return h(ev.tag.origin, attr, children);
+      }
+
       function renderMaquette() {
         if (dirty || !vdomCache) {
           const placeholder = sym("dom");
           const domtree = placeholder.reduce(book);
           dirty = false;
-          vdomCache = render(domtree, book);
+          vdomCache = render(domtree);
         }
         return vdomCache;
       }
