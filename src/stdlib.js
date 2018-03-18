@@ -43,6 +43,21 @@ export const stdlib = new Book();
 
   stdlib.put(
     obj,
+    "new",
+    func("props", new LiftedNative(function(props) {
+      return new Act(() => {
+        // todo: 本当はpの加工をしなくても良いようにしたい
+        const p = {};
+        for (const key in props.origin) {
+          p[key] = props.get(key);
+        }
+        this.new(p);
+      });
+    }))
+  );
+
+  stdlib.put(
+    obj,
     sym("set"),
     func("key", "val", new LiftedNative(function(key, val) {
       return this.putAct(this.get("self"), key, val);

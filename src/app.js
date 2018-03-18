@@ -5,7 +5,7 @@ import { exp } from './exp';
 import { path } from './path';
 import { func } from './func';
 import v from './v';
-import { dom, e } from './dom';
+import { dom, e, n } from './dom';
 
 const d = new Book(stdlib);
 
@@ -53,8 +53,10 @@ const d = new Book(stdlib);
 
 {
   const todos = d.new();
+  d.set("todos", todos);
   d.put(todos, "tag", "App");
   d.put(todos, "state", "All");
+  d.put(todos, "newTaskTitle", v(""));
   d.put(todos, "changeState", func("s", path("self", ["set", "state", "s"])));
 
   console.log(path(todos, "state").reduce(d));
@@ -105,7 +107,44 @@ const d = new Book(stdlib);
           e.input({
             class: "new-todo",
             autofocus: v(true),
-            placeholder: "What needs to be done?"
+            placeholder: "What needs to be done?",
+            value: path("todos", "newTaskTitle"),
+            onkeyup: func("ev",
+              exp("if",
+                path("ev", "keyCode", ["equals", v(13)]),
+                path("Object",
+                  [
+                    "new",
+                    n("dummy", {
+                      "tag": "Task",
+                      "title": path("ev", "value"),
+                      "state": "active"
+                    })
+                  ],
+                  [
+                    "then",
+                    path("todos",
+                      [
+                        "set",
+                        "newTaskTitle",
+                        v("")
+                      ]
+                    )
+                  ]
+                ),
+                v(null)
+              )
+            ),
+            onchange: func("ev",
+              path(
+                "todos",
+                [
+                  "set",
+                  "newTaskTitle",
+                  path("ev", "value")
+                ]
+              )
+            )
           })
         ),
         e.section({
@@ -215,10 +254,11 @@ const d = new Book(stdlib);
 
   d.set("dom", domtree);
 
-  setTimeout(() => {
-    const id = d.new();
-    d.put(id, "tag", "Task");
-    d.put(id, "title", v("buy the coffee"));
-    d.put(id, "state", "active");
-  }, 1000);
+  // setTimeout(() => {
+  //   d.new({
+  //     "tag": "Task",
+  //     "title": v("buy the coffee"),
+  //     "state": "active"
+  //   });
+  // }, 1000);
 }

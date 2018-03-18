@@ -34,8 +34,14 @@ function render(ev, book) {
       continue;
     }
     if (key.match(/^on/)) {
-      attr[key] = _e => {
-        return book.run(path(ev, [key, ev]).reduce(book));
+      attr[key] = event => {
+        // todo: イベントデータの扱いがアドホックな対応なのであとで改修する
+        const eo = {
+          keyCode: event.keyCode,
+          value: event.srcElement.value
+        };
+        const e = v("Event", eo);
+        return book.run(path(ev, [key, e]).reduce(book));
       };
     } else {
       attr[key] = path(ev, key).reduce(book).origin;
@@ -74,7 +80,7 @@ dom.set(
   })))
 );
 
-function n(head, origin) {
+export function n(head, origin) {
   if (Array.isArray(origin)) {
     return path("Array", ["new", head].concat(origin));
   } else {

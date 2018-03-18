@@ -283,7 +283,10 @@ export default class Book {
       return [];
     }
     const sname = sym(name.origin);
-    const logs = this.findActiveLogs({key: "tag", val: sname});
+    // todo: IDに評価されても、symのままでもうまく行くようにしてはいるが、微妙
+    const logs =
+      this.findActiveLogs({key: "tag", val: sname}).concat(
+        this.findActiveLogs({key: "tag", val: id}));
     return logs.map(log => log.id);
   }
 
