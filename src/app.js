@@ -102,8 +102,11 @@ const d = new Book(stdlib);
           e.h1(
             v("todos")
           ),
-          e.input({class: "new-todo",
-            placeholder: "What needs to be done?"})
+          e.input({
+            class: "new-todo",
+            autofocus: v(true),
+            placeholder: "What needs to be done?"
+          })
         ),
         e.section({
             class: "main",
