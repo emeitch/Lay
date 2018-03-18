@@ -8,7 +8,7 @@ import Act from './act';
 import { sym } from './sym';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
-export default class Book {
+export class Env {
   constructor(...imports) {
     this.logs = new Map();
     this.activeLogsCache = new Map();
@@ -153,12 +153,6 @@ export default class Book {
 
   import(other) {
     this.imports.push(other);
-
-    const actexp = other.get("onImport");
-    if (actexp) {
-      const act = actexp.reduce(this);
-      this.run(act);
-    }
   }
 
   new(props) {
@@ -249,21 +243,18 @@ export default class Book {
     return block(putWithTransaction);
   }
 
-  _putLog(log) {
+  doPutLog(log) {
     return this.doTransaction(putWithTransaction => {
-      const result = putWithTransaction(log);
-      const alogs = this.findActiveLogs({id: "onPut"});
-      for (const alog of alogs) {
-        const actexp = alog.val;
-        const act = actexp.reduce(this);
-        this.run(act, log);
-      }
-      return result;
+      return putWithTransaction(log);
     });
   }
 
   putLog(log) {
-    return this._putLog(log);
+    if (this.imports.length > 0) {
+      return this.imports[0].putLog(log);
+    }
+
+    return this.doPutLog(log);
   }
 
   put(...args) {
@@ -318,28 +309,29 @@ export default class Book {
   }
 }
 
-export class Env extends Book {
+export default class Book extends Env {
   import(other) {
-    this.imports.push(other);
+    super.import(other);
+
+    const actexp = other.get("onImport");
+    if (actexp) {
+      const act = actexp.reduce(this);
+      this.run(act);
+    }
   }
 
-  set(name, id) {
-    // todo: ユニーク制約をかけたい
-    const log = new Log(sym(name), assign, id);
-    this._putLog(log);
-  }
-
-  _putLog(log) {
-    return this.doTransaction(putWithTransaction => {
-      return putWithTransaction(log);
-    });
+  handleOnPut(log) {
+    const alogs = this.findActiveLogs({id: "onPut"});
+    for (const alog of alogs) {
+      const actexp = alog.val;
+      const act = actexp.reduce(this);
+      this.run(act, log);
+    }
   }
 
   putLog(log) {
-    if (this.imports.length > 0) {
-      return this.imports[0].putLog(log);
-    } else {
-      return this._putLog(log);
-    }
+    const result = this.doPutLog(log);
+    this.handleOnPut(log);
+    return result;
   }
 }
