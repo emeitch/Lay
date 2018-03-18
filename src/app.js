@@ -105,7 +105,10 @@ const d = new Book(stdlib);
           e.input({class: "new-todo",
             placeholder: "What needs to be done?"})
         ),
-        e.section({class: "main"},
+        e.section({
+            class: "main",
+            style: exp("if", path("Task", "all", "count", ["equals", v(0)]), v("display:none;"), v(""))
+          },
           e.input({class: "toggle-all", type: "checkbox"}),
           e.ul({class: "todo-list",
             children:
