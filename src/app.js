@@ -9,26 +9,26 @@ import { dom, e } from './dom';
 
 const d = new Book(stdlib);
 
-{
-  const id = d.new();
-  d.put(id, "tag", "Task");
-  d.put(id, "title", v("buy the milk"));
-  d.put(id, "state", "active");
-}
-
-{
-  const id = d.new();
-  d.put(id, "tag", "Task");
-  d.put(id, "title", v("buy the beer"));
-  d.put(id, "state", "active");
-}
-
-{
-  const id = d.new();
-  d.put(id, "tag", "Task");
-  d.put(id, "title", v("buy the wine"));
-  d.put(id, "state", "active");
-}
+// {
+//   const id = d.new();
+//   d.put(id, "tag", "Task");
+//   d.put(id, "title", v("buy the milk"));
+//   d.put(id, "state", "active");
+// }
+//
+// {
+//   const id = d.new();
+//   d.put(id, "tag", "Task");
+//   d.put(id, "title", v("buy the beer"));
+//   d.put(id, "state", "active");
+// }
+//
+// {
+//   const id = d.new();
+//   d.put(id, "tag", "Task");
+//   d.put(id, "title", v("buy the wine"));
+//   d.put(id, "state", "active");
+// }
 
 // d.existsIDs().forEach(i => {
 //   const logs = d.findLogs({id: i});
@@ -147,7 +147,10 @@ const d = new Book(stdlib);
             }
           )
         ),
-        e.footer({class: "footer"},
+        e.footer({
+            class: "footer",
+            style: exp("if", path("Task", "all", "count", ["equals", v(0)]), v("display:none;"), v(""))
+          },
           e.span({class: "todo-count"},
             e.strong(
               path(
