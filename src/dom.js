@@ -51,6 +51,8 @@ function render(ev, book) {
   return h(ev.tag.origin, attr, children);
 }
 
+let dirty = false;
+let vdomCache = null;
 export const dom = new Book();
 const projector = createProjector();
 dom.set(
@@ -59,9 +61,13 @@ dom.set(
     new LiftedNative(function() { return new Act(() => {
       const book = this;
       function renderMaquette() {
-        const placeholder = sym("dom");
-        const domtree = placeholder.reduce(book);
-        return render(domtree, book);
+        if (dirty || !vdomCache) {
+          const placeholder = sym("dom");
+          const domtree = placeholder.reduce(book);
+          dirty = false;
+          vdomCache = render(domtree, book);
+        }
+        return vdomCache;
       }
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -75,7 +81,7 @@ dom.set(
   "onPut",
   exp(func(
     new LiftedNative(function() { return new Act(() => {
-      projector.scheduleRender();
+      dirty = true;
     });
   })))
 );

@@ -329,11 +329,17 @@ export class Env extends Book {
     this._putLog(log);
   }
 
+  _putLog(log) {
+    return this.doTransaction(putWithTransaction => {
+      return putWithTransaction(log);
+    });
+  }
+
   putLog(log) {
     if (this.imports.length > 0) {
       return this.imports[0].putLog(log);
     } else {
-      return super.putLog(log);
+      return this._putLog(log);
     }
   }
 }
