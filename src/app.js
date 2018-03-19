@@ -9,35 +9,6 @@ import { dom, e, n } from './dom';
 
 const d = new Book(stdlib);
 
-// {
-//   const id = d.new();
-//   d.put(id, "tag", "Task");
-//   d.put(id, "title", v("buy the milk"));
-//   d.put(id, "state", "active");
-// }
-//
-// {
-//   const id = d.new();
-//   d.put(id, "tag", "Task");
-//   d.put(id, "title", v("buy the beer"));
-//   d.put(id, "state", "active");
-// }
-//
-// {
-//   const id = d.new();
-//   d.put(id, "tag", "Task");
-//   d.put(id, "title", v("buy the wine"));
-//   d.put(id, "state", "active");
-// }
-
-// d.existsIDs().forEach(i => {
-//   const logs = d.findLogs({id: i});
-//   logs.forEach(l => {
-//     console.log(l.key.stringify(), ":", l.val.stringify());
-//   });
-//   console.log("----------");
-// });
-
 {
   const Task = d.new();
   d.put(Task,
@@ -64,35 +35,6 @@ const d = new Book(stdlib);
   d.run(path(todos, ["changeState", "Active"]));
   console.log(path(todos, "state").reduce(d));
   console.log("----------");
-}
-
-{
-  // const vtasks = path("Task", "all");
-  //
-  // {
-  //   d.run(path(vtasks, ["map", func("tid", path("tid", "toggle"))]));
-  // }
-  //
-  // {
-  //   d.run(path(vtasks, ["map", func("tid",
-  //     path(
-  //       "Console",
-  //       ["puts",
-  //         exp(concat,
-  //           v("tag: "),
-  //           path("tid", "tag"))],
-  //       ["then",
-  //         path("Console",
-  //           ["puts",
-  //             exp(concat,
-  //               v("state: "),
-  //               path("tid", "state"))])
-  //       ],
-  //       ["then",
-  //         path("Console", ["puts", v("-----------")])
-  //       ]
-  //   ))]));
-  // }
 }
 
 {
@@ -254,12 +196,4 @@ const d = new Book(stdlib);
   );
 
   d.set("dom", domtree);
-
-  // setTimeout(() => {
-  //   d.new({
-  //     "tag": "Task",
-  //     "title": v("buy the coffee"),
-  //     "state": "active"
-  //   });
-  // }, 1000);
 }
