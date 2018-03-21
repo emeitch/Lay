@@ -1,5 +1,7 @@
 import assert from 'assert';
 
+import Book from '../src/book';
+import { path } from '../src/path';
 import Act from '../src/act';
 
 describe("Act", () => {
@@ -263,6 +265,19 @@ describe("Act", () => {
     it("should return string dump", () => {
       const act = new Act(a => a * a, undefined, 1);
       assert(act.stringify() === "<Act executor: function (a) {return a * a;}, status: PENDING, val: 1>");
+    });
+  });
+
+  describe("deepReduce", () => {
+    it("should reduce next and recovery", () => {
+      const act = new Act(() => 0).then(path(new Act(() => 1))).catch(path(new Act(() => 2)));
+      const deepReduced = act.deepReduce(new Book());
+
+      assert(!(act.next instanceof Act));
+      assert(deepReduced.next instanceof Act);
+
+      assert(!(act.recovery instanceof Act));
+      assert(deepReduced.recovery instanceof Act);
     });
   });
 });
