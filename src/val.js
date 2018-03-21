@@ -70,9 +70,13 @@ export default class Val {
   }
 
   deepReduce(book) {
-    return this.reduce(book);
+    let r = this.reduce(book);
+    if (!r.equals(this)) {
+      r = r.deepReduce(book);
+    }
+    return r;
   }
-
+  
   replace(_matches) {
     return this;
   }

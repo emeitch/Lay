@@ -82,10 +82,6 @@ export default class Path extends Ref {
     }
     return val;
   }
-
-  deepReduce(book) {
-    return this.reduce(book).deepReduce(book);
-  }
 }
 
 export function path(...args) {
