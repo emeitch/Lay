@@ -279,7 +279,7 @@ export class Env {
   }
 
   run(e, arg) {
-    let acts = e.reduce(this).deepReduce(this);
+    let acts = e.deepReduce(this);
     if (acts instanceof Act) {
       acts = v([acts]);
     }

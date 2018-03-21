@@ -50,11 +50,11 @@ dom.set(
                 value: event.target.value
               };
               const e = v("Event", eo);
-              const act = path(ev, [key, e]).reduce(book).deepReduce(book);
+              const act = path(ev, [key, e]).deepReduce(book);
               return book.run(act);
             };
           } else {
-            const val = path(ev, key).reduce(book).deepReduce(book);
+            const val = path(ev, key).deepReduce(book);
             attr[key] = val.origin;
           }
         }
@@ -64,7 +64,7 @@ dom.set(
       function renderMaquette() {
         if (dirty || !vdomCache) {
           const placeholder = sym("dom");
-          const domtree = placeholder.reduce(book).deepReduce(book);
+          const domtree = placeholder.deepReduce(book);
           dirty = false;
           vdomCache = render(domtree);
         }
