@@ -197,11 +197,3 @@ const d = new Book(stdlib);
 
   d.set("dom", domtree);
 }
-
-// const i = n({foo: path(v({bar: v(1)}), "bar")});
-// console.log(i);
-// console.log(i.step(d));
-// console.log(i.step(d).step(d));
-// console.log(i.step(d).step(d).step(d));
-// console.log(i.reduce(d));
-// console.log(i.reduce(d).deepReduce(d));
