@@ -210,7 +210,7 @@ export const stdlib = new Book();
     sym("puts"),
     func("val", new LiftedNative(function(val) {
       return new Act(() => {
-        console.log(val.origin);
+        console.log(val.deepReduce(this).origin);
       });
     }))
   );
