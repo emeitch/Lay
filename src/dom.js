@@ -9,6 +9,7 @@ import { exp } from './exp';
 import { sym } from './sym';
 import { path } from './path';
 import { func, LiftedNative } from './func';
+import { n } from './stdlib';
 
 let dirty = false;
 let vdomCache = null;
@@ -84,17 +85,6 @@ dom.set(
     });
   })))
 );
-
-export function n(...args) {
-  const origin = args.pop();
-  const head = args.pop() || v(null);
-  if (Array.isArray(origin)) {
-    return path("Array", ["new", head].concat(origin));
-  } else {
-    const maparr = Object.keys(origin).reduce((r, k) => r.concat([k, origin[k]]), []);
-    return path("Map", ["new", head].concat(maparr));
-  }
-}
 
 export function elm(head, ...children) {
   let attr = {};

@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { stdlib } from '../src/stdlib';
+import { stdlib, n } from '../src/stdlib';
 import v from '../src/v';
 import UUID from '../src/uuid';
 import Log from '../src/log';
@@ -172,6 +172,25 @@ describe("stdlib", () => {
         assert(logs.origin.some(l => l.equals(log1.logid)));
         assert(logs.origin.some(l => l.equals(log2.logid)));
       });
+    });
+  });
+
+  describe("n", () => {
+    it("should return array or map creation path", () => {
+      const arr = n("Arr", [v(10), v(11), v(12)]);
+      assert.deepStrictEqual(arr.constructor, Path);
+      assert.deepStrictEqual(arr.reduce(book).get(v(0)), v(10));
+      assert.deepStrictEqual(arr.reduce(book).get("tag"), sym("Arr"));
+
+      const map = n("Mp", {foo: v("bar"), fiz: v("buz")});
+      assert.deepStrictEqual(map.constructor, Path);
+      assert.deepStrictEqual(map.reduce(book).get("foo"), v("bar"));
+      assert.deepStrictEqual(map.reduce(book).get("tag"), sym("Mp"));
+
+      const nmap = n({foo: v("bar"), fiz: v("buz")});
+      assert.deepStrictEqual(nmap.constructor, Path);
+      assert.deepStrictEqual(nmap.reduce(book).get("foo"), v("bar"));
+      assert.deepStrictEqual(nmap.reduce(book).get("tag"), v(null));
     });
   });
 });
