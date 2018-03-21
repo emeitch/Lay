@@ -281,5 +281,16 @@ describe("Case", () => {
         assert.deepStrictEqual(e.reduce(), v(6));
       });
     });
+
+    context("0 arity func", () => {
+      it("should reduce the func", () => {
+        const f = Func.func(() => 2 * 3);
+        assert.deepStrictEqual(f.reduce(), v(6));
+
+        const f2 = Func.func("x", x => x * 3);
+        assert.deepStrictEqual(f2.reduce().constructor, Func);
+        assert.deepStrictEqual(exp(f2, v(4)).reduce(), v(12));
+      });
+    });
   });
 });

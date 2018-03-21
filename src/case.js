@@ -202,4 +202,12 @@ export class Func extends Case {
   get exp() {
     return this.alts[0].grds[0].exp;
   }
+
+  reduce(book) {
+    if (this.alts[0].pats.length === 0) {
+      return exp(this).reduce(book);
+    }
+
+    return super.reduce(book);
+  }
 }

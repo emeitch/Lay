@@ -5,7 +5,6 @@ import Book from './book';
 import Prim from './prim';
 import Act from './act';
 import v from './v';
-import { exp } from './exp';
 import { sym } from './sym';
 import { path } from './path';
 import { func, LiftedNative } from './func';
@@ -17,7 +16,7 @@ export const dom = new Book();
 const projector = createProjector();
 dom.set(
   "onImport",
-  exp(func(
+  func(
     new LiftedNative(function() { return new Act(() => {
       const book = this;
       function render(ev) {
@@ -74,16 +73,16 @@ dom.set(
         projector.append(document.body, renderMaquette);
       });
     });
-  })))
+  }))
 );
 
 dom.set(
   "onPut",
-  exp(func(
+  func(
     new LiftedNative(function() { return new Act(() => {
       dirty = true;
     });
-  })))
+  }))
 );
 
 export function elm(head, ...children) {
