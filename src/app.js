@@ -59,7 +59,7 @@ const d = new Book(stdlib);
                     "new",
                     n({
                       "tag": "Task",
-                      "title": path("ev", "value"),
+                      "title": path("ev", "value", "trim"),
                       "state": "active"
                     })
                   ],
