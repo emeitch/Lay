@@ -166,8 +166,6 @@ export class Env {
       }
     }
 
-    console.log(this);
-
     return id;
   }
 
