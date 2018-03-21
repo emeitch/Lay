@@ -62,7 +62,7 @@ dom.set(
       function renderMaquette() {
         if (dirty || !vdomCache) {
           const placeholder = sym("dom");
-          const domtree = placeholder.reduce(book);
+          const domtree = placeholder.reduce(book).deepReduce(book);
           dirty = false;
           vdomCache = render(domtree);
         }

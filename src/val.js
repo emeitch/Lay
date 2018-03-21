@@ -69,6 +69,10 @@ export default class Val {
     return e;
   }
 
+  deepReduce(book) {
+    return this.reduce(book);
+  }
+
   replace(_matches) {
     return this;
   }
@@ -105,6 +109,10 @@ export default class Val {
         return JSON.stringify(v);
       }
     }
+  }
+
+  stringify(_indent=0) {
+    return Val.stringify(this.origin, _indent);
   }
 }
 

@@ -45,8 +45,9 @@ export const stdlib = new Book();
   stdlib.put(
     obj,
     "new",
-    func("props", new LiftedNative(function(props) {
+    func("props", new LiftedNative(function(pe) {
       return new Act(() => {
+        const props = pe.reduce(this);
         // todo: 本当はpの加工をしなくても良いようにしたい
         const p = {};
         for (const key in props.origin) {
@@ -156,7 +157,7 @@ export const stdlib = new Book();
       const o = {};
       while(args.length > 0) {
         const key = args.shift();
-        const val = args.shift().reduce(this);
+        const val = args.shift();
         // todo: 独自tagが設定されてない場合のみval.originに最適化したい
         o[key.origin] = val instanceof Prim ? val.origin : val;
       }

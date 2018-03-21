@@ -128,6 +128,13 @@ export default class Act extends Val {
     return this.then(...args);
   }
 
+  deepReduce(book) {
+    return this.clone({
+      next: this.next ? this.next.reduce(book).deepReduce(book) : this.next,
+      recovery: this.recovery ? this.recovery.reduce(book).deepReduce(book) : this.recovery
+    });
+  }
+
   stringify(indent) {
     return `<Act executor: ${this.appendIndent(this.executor, indent)}, status: ${this.statusName}, val: ${this.val}>`;
   }

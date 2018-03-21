@@ -1,5 +1,5 @@
 import Val from './val';
-import { CompMap } from './comp';
+// import { CompMap } from './comp';
 import v from './v';
 import { sym } from './sym';
 import { exp } from './exp';
@@ -41,7 +41,7 @@ export class Native extends Val {
 }
 
 export class LiftedNative extends Native {
-  _apply(book, ...args) {
+  apply(book, ...args) {
     return this.origin.apply(book, args);
   }
 
@@ -50,7 +50,7 @@ export class LiftedNative extends Native {
   }
 }
 
-class CaseAlt extends CompMap {
+class CaseAlt extends Val {
   constructor(...args) {
     const pats = args.slice(0, -1).map(p => typeof(p) === "string" ? sym(p) : p);
     let grds = args[args.length-1];
@@ -99,7 +99,7 @@ export function alt(...args) {
   return new CaseAlt(...args);
 }
 
-class CaseGrd extends CompMap {
+class CaseGrd extends Val {
   constructor(cond, exp) {
     if (typeof(exp) === "string") {
       exp = sym(exp);
@@ -136,7 +136,7 @@ export function grd(cond, exp) {
 
 export const otherwise = v(true);
 
-export default class Case extends CompMap {
+export default class Case extends Val {
   static func(...args) {
     return new this(alt(...args));
   }

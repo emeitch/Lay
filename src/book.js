@@ -166,6 +166,8 @@ export class Env {
       }
     }
 
+    console.log(this);
+
     return id;
   }
 
@@ -274,15 +276,12 @@ export class Env {
       return [];
     }
     const sname = sym(name.origin);
-    // todo: IDに評価されても、symのままでもうまく行くようにしてはいるが、微妙
-    const logs =
-      this.findActiveLogs({key: "tag", val: sname}).concat(
-        this.findActiveLogs({key: "tag", val: id}));
+    const logs = this.findActiveLogs({key: "tag", val: sname});
     return logs.map(log => log.id);
   }
 
   run(e, arg) {
-    let acts = e.reduce(this);
+    let acts = e.reduce(this).deepReduce(this);
     if (acts instanceof Act) {
       acts = v([acts]);
     }

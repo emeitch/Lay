@@ -130,6 +130,11 @@ export class CompArray extends Comp {
     }
     return result;
   }
+
+  deepReduce(book) {
+    const org = this.origin.map(i => i.deepReduce ? i.deepReduce(book) : i);
+    return new this.constructor(org, this.head);
+  }
 }
 
 export class CompMap extends Comp {
@@ -149,5 +154,15 @@ export class CompMap extends Comp {
       Object.assign(result, m);
     }
     return result;
+  }
+
+  deepReduce(book) {
+    const org = {};
+    for (const key of Object.keys(this.origin)) {
+      const val = this.origin[key];
+      org[key] = val.deepReduce ? val.deepReduce(book) : val;
+    }
+
+    return new this.constructor(org, this.head);
   }
 }
