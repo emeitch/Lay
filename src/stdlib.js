@@ -182,7 +182,8 @@ export const stdlib = new Book();
     act,
     sym("then"),
     func("a", new LiftedNative(function(a) {
-      return this.get("self").then(a);
+      const act = this.get("self").deepReduce(this);
+      return act.then(a);
     }))
   );
 }

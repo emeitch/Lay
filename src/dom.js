@@ -50,10 +50,12 @@ dom.set(
                 value: event.target.value
               };
               const e = v("Event", eo);
-              return book.run(path(ev, [key, e]).reduce(book));
+              const act = path(ev, [key, e]).reduce(book).deepReduce(book);
+              return book.run(act);
             };
           } else {
-            attr[key] = path(ev, key).reduce(book).origin;
+            const val = path(ev, key).reduce(book).deepReduce(book);
+            attr[key] = val.origin;
           }
         }
         return h(ev.tag.origin, attr, children);
