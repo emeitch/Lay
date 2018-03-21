@@ -24,7 +24,7 @@ describe("v function", () => {
     });
   });
 
-  context("with complex value and construcor", () => {
+  context("with complex value and constructor", () => {
     it("should return a Comp", () => {
       const val = v("Foo", {a: 1, b: 2});
       assert(val instanceof Comp);
