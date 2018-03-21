@@ -113,6 +113,12 @@ describe("Val", () => {
         assert(!new Inherited2(0).match(val));
       });
     });
+
+    describe("#stringify", () => {
+      it("should return original value string", () => {
+        assert.deepStrictEqual(val.stringify(), "0");
+      });
+    });
   });
 
   context("direct construction", () => {
