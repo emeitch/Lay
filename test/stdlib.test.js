@@ -72,6 +72,14 @@ describe("stdlib", () => {
     });
   });
 
+  context("accessing Object methods", () => {
+    describe("trim", () => {
+      it("should trim the string", () => {
+        assert.deepStrictEqual(path(v("hoge   "), "trim").reduce(book), v("hoge"));
+      });
+    });
+  });
+
   context("accessing default Array methods", () => {
     describe("new", () => {
       it("should create a array", () => {

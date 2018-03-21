@@ -76,6 +76,19 @@ export const stdlib = new Book();
 }
 
 {
+  const str = new UUID();
+  stdlib.set("String", str);
+
+  stdlib.put(
+    str,
+    sym("trim"),
+    func(new LiftedNative(function() {
+      return v(this.get("self").origin.trim());
+    }))
+  );
+}
+
+{
   const arr = new UUID();
   stdlib.set("Array", arr);
 
