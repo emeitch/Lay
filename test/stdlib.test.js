@@ -43,6 +43,23 @@ describe("stdlib", () => {
       });
     });
 
+    describe("new", () => {
+      it("should return a instance creation act", () => {
+        book.set("Foo", book.new());
+        const act = path("Object", ["new", v({
+          tag: sym("Foo"),
+          foo: v("bar")
+        })]).reduce(book);
+
+        assert.deepStrictEqual(act.constructor, Act);
+
+        book.run(act);
+
+        assert.deepStrictEqual(path("Foo", "all", v(0), "foo").reduce(book), v("bar"));
+      });
+    });
+
+
     context("accessing Object's key", () => {
       it("should return the path", () => {
         const tagid = new UUID();
