@@ -190,6 +190,11 @@ describe("stdlib", () => {
       assert.deepStrictEqual(arr.reduce(book).get(v(0)), v(10));
       assert.deepStrictEqual(arr.reduce(book).get("tag"), sym("Arr"));
 
+      const narr = n([v(10), v(11), v(12)]);
+      assert.deepStrictEqual(narr.constructor, Path);
+      assert.deepStrictEqual(narr.reduce(book).get(v(0)), v(10));
+      assert.deepStrictEqual(narr.reduce(book).get("tag"), sym("Array"));
+
       const map = n("Mp", {foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(map.constructor, Path);
       assert.deepStrictEqual(map.reduce(book).get("foo"), v("bar"));
@@ -198,7 +203,7 @@ describe("stdlib", () => {
       const nmap = n({foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(nmap.constructor, Path);
       assert.deepStrictEqual(nmap.reduce(book).get("foo"), v("bar"));
-      assert.deepStrictEqual(nmap.reduce(book).get("tag"), v(null));
+      assert.deepStrictEqual(nmap.reduce(book).get("tag"), sym("Map"));
     });
   });
 });

@@ -96,7 +96,8 @@ export const stdlib = new Book();
     arr,
     sym("new"),
     func(new LiftedNative(function(...args) {
-      const head = args.shift();
+      const hsrc = args.shift();
+      const head = hsrc.equals(v(null)) ? undefined : hsrc;
       const o = [];
       while(args.length > 0) {
         const val = args.shift().reduce(this);
@@ -150,7 +151,8 @@ export const stdlib = new Book();
     map,
     sym("new"),
     func(new LiftedNative(function(...args) {
-      const head = args.shift();
+      const hsrc = args.shift();
+      const head = hsrc.equals(v(null)) ? undefined : hsrc;
       const o = {};
       while(args.length > 0) {
         const key = args.shift();
