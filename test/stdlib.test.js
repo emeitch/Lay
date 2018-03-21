@@ -123,7 +123,7 @@ describe("stdlib", () => {
       });
 
       it("should create a nested map", () => {
-        const m = path("Map", ["new", "Foo", "bar", v(1), "buz", path("Map", ["new", "Fiz", "faz", v(3)])]).reduce(book);
+        const m = path("Map", ["new", "Foo", "bar", v(1), "buz", path("Map", ["new", "Fiz", "faz", v(3)])]).deepReduce(book);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
       });
     });
