@@ -57,7 +57,7 @@ const d = new Book(stdlib);
                 path("Object",
                   [
                     "new",
-                    n("dummy", {
+                    n({
                       "tag": "Task",
                       "title": path("ev", "value"),
                       "state": "active"

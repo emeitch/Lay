@@ -85,12 +85,14 @@ dom.set(
   })))
 );
 
-export function n(head, origin) {
+export function n(...args) {
+  const origin = args.pop();
+  const head = args.pop() || v(null);
   if (Array.isArray(origin)) {
     return path("Array", ["new", head].concat(origin));
   } else {
-    const o = Object.keys(origin).reduce((r, k) => r.concat([k, origin[k]]), []);
-    return path("Map", ["new", head].concat(o));
+    const maparr = Object.keys(origin).reduce((r, k) => r.concat([k, origin[k]]), []);
+    return path("Map", ["new", head].concat(maparr));
   }
 }
 
