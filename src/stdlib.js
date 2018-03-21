@@ -101,7 +101,7 @@ export const stdlib = new Book();
       const head = hsrc.equals(v(null)) ? undefined : hsrc;
       const o = [];
       while(args.length > 0) {
-        const val = args.shift().reduce(this);
+        const val = args.shift();
         // todo: 独自tagが設定されてない場合のみval.originに最適化したい
         o.push(val instanceof Prim ? val.origin : val);
       }
