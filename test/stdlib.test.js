@@ -209,5 +209,21 @@ describe("stdlib", () => {
       assert.deepStrictEqual(nmap.reduce(book).get("foo"), v("bar"));
       assert.deepStrictEqual(nmap.reduce(book).get("tag"), sym("Map"));
     });
+
+    describe("reduce", () => {
+      it("should return a exp", () => {
+        const e = exp(plus, v(1), v(2));
+        const map = n({foo: e});
+        assert.deepStrictEqual(map.reduce(book).get("foo"), e);
+      });
+    });
+
+    describe("deepReduce", () => {
+      it("should return a exp", () => {
+        const e = exp(plus, v(1), v(2));
+        const map = n({foo: e});
+        assert.deepStrictEqual(map.deepReduce(book).get("foo"), v(3));
+      });
+    });
   });
 });
