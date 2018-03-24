@@ -124,13 +124,15 @@ export class Env {
       return log;
     }
 
+    const pattern = sym("self");
+    const target = id;
+    const result = {self: id};
+    const match = {pattern, target, result};
+    const matches = [match];
+    
     const tlogs = this.activeLogs(id, "tag");
     for (const tlog of tlogs) {
-      const env = new Env();
-      env.set("self", id);
-      env.import(this); // todo: Env生成時にbookを指定するとselfのsetでonPutが走るので応急的にset後のimportで対応
-
-      const p = tlog.val.reduce(env);
+      const p = tlog.val.replace(matches).reduce(this);
       const l = this.findLogWithTags(p, key);
       if (l) {
         return l;
