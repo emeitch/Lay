@@ -94,7 +94,18 @@ const d = new Book(stdlib);
             class: "main",
             style: exp("if", path("Task", "all", "count", ["equals", v(0)]), v("display:none;"), v(""))
           },
-          e.input({class: "toggle-all", type: "checkbox"}),
+          e.input({
+            class: "toggle-all",
+            type: "checkbox",
+            onchange:
+              func("el",
+                path(
+                  "Task",
+                  "all",
+                  ["map", func("tid", path("tid", "toggle"))]
+                )
+              )
+          }),
           e.ul({class: "todo-list",
             children:
               path("Task", "all", ["map", func("tid",
