@@ -73,11 +73,14 @@ export default class Path extends Ref {
       env.set("self", val);
       env.import(book); // todo: Env生成時にbookを指定するとselfのsetでonPutが走るので応急的にset後のimportで対応
 
+      const matches = [{result: {self: val}}];
       if (prop instanceof Case) {
-        const e = exp(prop, ...args);
-        val = e.reduce(env);
+        const c = prop.replace(matches);
+        const as = args.map(a => a.replace(matches));
+        const e = exp(c, ...as);
+        val = e.reduce(env).replace(matches);
       } else {
-        const replaced = prop.replace([{result: {self: val}}]);
+        const replaced = prop.replace(matches);
         val = replaced.reduce(book);
       }
     }
