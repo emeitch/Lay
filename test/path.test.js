@@ -83,28 +83,34 @@ describe("Path", () => {
       const id2 = new UUID();
       const key2 = new UUID();
       const key3 = new UUID();
-      const val3 = v("val0");
+      const refkey = new UUID();
+      const refval = v(1);
 
+      let p2;
+      let p3;
       beforeEach(() => {
         book.putLog(new Log(id, key, id2));
-        book.putLog(new Log(id2, key2, new Path(sym("self"), key3)));
+        book.putLog(new Log(id2, key2, new Path(sym("self"), refkey)));
+        book.putLog(new Log(id2, key3, exp(plus, new Path(sym("self"), refkey), v(2))));
         book.set("a", id);
-        p = new Path(sym("a"), key, key2);
+        p2 = new Path(sym("a"), key, key2);
+        p3 = new Path(sym("a"), key, key3);
       });
 
       context("referencing key exists", () => {
         beforeEach(() => {
-          book.putLog(new Log(id2, key3, val3));
+          book.putLog(new Log(id2, refkey, refval));
         });
 
         it("should return the val", () => {
-          assert.deepStrictEqual(p.reduce(book), val3);
+          assert.deepStrictEqual(p2.reduce(book), refval);
+          assert.deepStrictEqual(p3.reduce(book), v(3));
         });
       });
 
       context("referencing key don't exists", () => {
         it("should return path with reduced self", () => {
-          assert.deepStrictEqual(p.reduce(book), new Path(id2, key3));
+          assert.deepStrictEqual(p2.reduce(book), new Path(id2, refkey));
         });
       });
     });
