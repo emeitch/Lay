@@ -118,6 +118,25 @@ describe("Path", () => {
       });
     });
 
+    context("complex self referencing", () => {
+      const id1 = new UUID();
+      const id2 = new UUID();
+
+      beforeEach(() => {
+        book.put(id1, "foo", v(1));
+        book.put(id1, "bar", path("self", "foo"));
+
+        book.put(id2, "foo", v(2));
+        book.put(id2, "bar", path("self", "foo"));
+        book.put(id2, "buz", func("x", exp(plus, path(id1, "bar"), "x")));
+        book.put(id2, "biz", path("self", ["buz", v(3)]));
+      });
+
+      it("should refer correct self", () => {
+        assert.deepStrictEqual(path(id2, "biz").reduce(book), v(4));
+      });
+    });
+
     context("assigned sym path chain with self exp", () => {
       const id = new UUID();
       const key = new UUID();
