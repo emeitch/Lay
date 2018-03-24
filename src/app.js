@@ -97,6 +97,14 @@ const d = new Book(stdlib);
           e.input({
             class: "toggle-all",
             type: "checkbox",
+            checked: path(
+              "Task",
+              "all",
+              [
+                "every",
+                func("tid", path("tid", "state", ["equals", "completed"]))
+              ]
+            ),
             onchange:
               func("el",
                 path(
