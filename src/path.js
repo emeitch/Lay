@@ -1,5 +1,4 @@
 import Ref from './ref';
-import { Env } from './book';
 import Val from './val';
 import Case from './case';
 import { exp } from './exp';
@@ -69,16 +68,17 @@ export default class Path extends Ref {
         }
       }
 
-      const env = new Env();
-      env.set("self", val);
-      env.import(book); // todo: Env生成時にbookを指定するとselfのsetでonPutが走るので応急的にset後のimportで対応
+      const pattern = sym("self");
+      const target = val;
+      const result = {self: val};
+      const match = {pattern, target, result};
+      const matches = [match];
 
-      const matches = [{result: {self: val}}];
       if (prop instanceof Case) {
         const c = prop.replace(matches);
         const as = args.map(a => a.replace(matches));
         const e = exp(c, ...as);
-        val = e.reduce(env).replace(matches);
+        val = e.reduce(book).replace(matches);
       } else {
         const replaced = prop.replace(matches);
         val = replaced.reduce(book);

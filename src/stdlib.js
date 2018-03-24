@@ -61,18 +61,18 @@ export const stdlib = new Book();
   stdlib.put(
     obj,
     sym("set"),
-    func("key", "val", new LiftedNative(function(key, val) {
-      return this.putAct(this.get("self"), key, val);
-    }))
+    func("key", "val", exp(new LiftedNative(function(self, key, val) {
+      return this.putAct(self, key, val);
+    }), "self", "key", "val"))
   );
 
   // todo: allはClassオブジェクト用のメソッドにしたい
   stdlib.put(
     obj,
     sym("all"),
-    func(new LiftedNative(function() {
-      return v(this.taggedIDs(this.get("self")));
-    }))
+    exp(new LiftedNative(function(self) {
+      return v(this.taggedIDs(self));
+    }), "self")
   );
 }
 
@@ -83,9 +83,9 @@ export const stdlib = new Book();
   stdlib.put(
     str,
     sym("trim"),
-    func(new LiftedNative(function() {
-      return v(this.get("self").origin.trim());
-    }))
+    exp(new LiftedNative(function(self) {
+      return v(self.origin.trim());
+    }), "self")
   );
 }
 
@@ -112,35 +112,35 @@ export const stdlib = new Book();
   stdlib.put(
     arr,
     sym("map"),
-    func("fnc", new LiftedNative(function(fnc) {
-      const arr = this.get("self");
+    func("fnc", exp(new LiftedNative(function(self, fnc) {
+      const arr = self;
       const narr = arr.origin.map(o => {
         const e = exp(fnc, v(o));
         return e.reduce(this);
       });
       return v(narr);
-    }))
+    }), "self", "fnc"))
   );
 
   stdlib.put(
     arr,
     "filter",
-    func("fnc", new LiftedNative(function(fnc) {
-      const arr = this.get("self");
+    func("fnc", exp(new LiftedNative(function(self, fnc) {
+      const arr = self;
       const narr = arr.origin.filter(o => {
         const e = exp(fnc, v(o));
         return e.reduce(this).origin;
       });
       return v(narr);
-    }))
+    }), "self", "fnc"))
   );
 
   stdlib.put(
     arr,
     sym("count"),
-    func(new LiftedNative(function() {
-      return v(this.get("self").origin.length);
-    }))
+    exp(new LiftedNative(function(self) {
+      return v(self.origin.length);
+    }), "self")
   );
 }
 
@@ -168,9 +168,9 @@ export const stdlib = new Book();
   stdlib.put(
     map,
     sym("get"),
-    func("key", new LiftedNative(function(key) {
-      return this.get("self").get(key, this);
-    }))
+    func("key", exp(new LiftedNative(function(self, key) {
+      return self.get(key, this);
+    }), "self", "key"))
   );
 }
 
@@ -181,10 +181,10 @@ export const stdlib = new Book();
   stdlib.put(
     act,
     sym("then"),
-    func("a", new LiftedNative(function(a) {
-      const act = this.get("self").deepReduce(this);
-      return act.then(a);
-    }))
+    func("next", exp(new LiftedNative(function(self, next) {
+      const act = self.deepReduce(this);
+      return act.then(next);
+    }), "self", "next"))
   );
 }
 
