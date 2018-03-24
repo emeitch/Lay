@@ -8,7 +8,7 @@ import Act from './act';
 import { sym } from './sym';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
-export class Env {
+export default class Book {
   constructor(...imports) {
     this.logs = new Map();
     this.activeLogsCache = new Map();
@@ -129,7 +129,7 @@ export class Env {
     const result = {self: id};
     const match = {pattern, target, result};
     const matches = [match];
-    
+
     const tlogs = this.activeLogs(id, "tag");
     for (const tlog of tlogs) {
       const p = tlog.val.replace(matches).reduce(this);
@@ -153,8 +153,17 @@ export class Env {
     return undefined;
   }
 
+  handleOnInport(other) {
+    const actexp = other.get("onImport");
+    if (actexp) {
+      const act = actexp.reduce(this);
+      this.run(act);
+    }
+  }
+
   import(other) {
     this.imports.push(other);
+    this.handleOnInport(other);
   }
 
   new(props) {
@@ -251,12 +260,19 @@ export class Env {
     });
   }
 
-  putLog(log) {
-    if (this.imports.length > 0) {
-      return this.imports[0].putLog(log);
+  handleOnPut(log) {
+    const alogs = this.findActiveLogs({id: "onPut"});
+    for (const alog of alogs) {
+      const actexp = alog.val;
+      const act = actexp.reduce(this);
+      this.run(act, log);
     }
+  }
 
-    return this.doPutLog(log);
+  putLog(log) {
+    const result = this.doPutLog(log);
+    this.handleOnPut(log);
+    return result;
   }
 
   put(...args) {
@@ -305,32 +321,5 @@ export class Env {
     }
 
     return logids.concat(this.imports.reduce((r, i) => r.concat(i.logIDs()), []));
-  }
-}
-
-export default class Book extends Env {
-  import(other) {
-    super.import(other);
-
-    const actexp = other.get("onImport");
-    if (actexp) {
-      const act = actexp.reduce(this);
-      this.run(act);
-    }
-  }
-
-  handleOnPut(log) {
-    const alogs = this.findActiveLogs({id: "onPut"});
-    for (const alog of alogs) {
-      const actexp = alog.val;
-      const act = actexp.reduce(this);
-      this.run(act, log);
-    }
-  }
-
-  putLog(log) {
-    const result = this.doPutLog(log);
-    this.handleOnPut(log);
-    return result;
   }
 }
