@@ -124,6 +124,19 @@ export const stdlib = new Book();
 
   stdlib.put(
     arr,
+    sym("every"),
+    func("fnc", exp(new LiftedNative(function(self, fnc) {
+      const arr = self;
+      const result = arr.origin.every(o => {
+        const e = exp(fnc, v(o));
+        return e.reduce(this).origin;
+      });
+      return v(result);
+    }), "self", "fnc"))
+  );
+
+  stdlib.put(
+    arr,
     "filter",
     func("fnc", exp(new LiftedNative(function(self, fnc) {
       const arr = self;

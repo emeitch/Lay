@@ -100,6 +100,17 @@ describe("stdlib", () => {
       });
     });
 
+    describe("every", () => {
+      it("should all arg func returns true", () => {
+        const f = func("x", path("x", ["equals", v(2)]));
+        const e1 = path(v([2, 2, 2]), ["every", f]);
+        assert.deepStrictEqual(e1.reduce(book), v(true));
+
+        const e2 = path(v([2, 3, 2]), ["every", f]);
+        assert.deepStrictEqual(e2.reduce(book), v(false));
+      });
+    });
+
     describe("filter", () => {
       it("should filter arg func for items", () => {
         const filtered = path(v([1, 2, 3]), ["filter", func("x", path("x", ["equals", v(2)]))]).reduce(book);
