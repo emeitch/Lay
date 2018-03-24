@@ -88,13 +88,24 @@ describe("Path", () => {
       beforeEach(() => {
         book.putLog(new Log(id, key, id2));
         book.putLog(new Log(id2, key2, new Path(sym("self"), key3)));
-        book.putLog(new Log(id2, key3, val3));
         book.set("a", id);
         p = new Path(sym("a"), key, key2);
       });
 
-      it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(book), val3);
+      context("referencing key exists", () => {
+        beforeEach(() => {
+          book.putLog(new Log(id2, key3, val3));
+        });
+
+        it("should return the val", () => {
+          assert.deepStrictEqual(p.reduce(book), val3);
+        });
+      });
+
+      context("referencing key don't exists", () => {
+        it("should return path with reduced self", () => {
+          assert.deepStrictEqual(p.reduce(book), new Path(id2, key3));
+        });
       });
     });
 

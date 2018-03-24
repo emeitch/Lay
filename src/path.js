@@ -77,7 +77,8 @@ export default class Path extends Ref {
         const e = exp(prop, ...args);
         val = e.reduce(env);
       } else {
-        val = prop.reduce(env);
+        const replaced = prop.replace([{result: {self: val}}]);
+        val = replaced.reduce(book);
       }
     }
     return val;
