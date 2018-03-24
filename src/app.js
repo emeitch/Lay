@@ -102,15 +102,41 @@ const d = new Book(stdlib);
               "all",
               [
                 "every",
-                func("tid", path("tid", "state", ["equals", "completed"]))
+                func("tid",
+                  path("tid", "state", ["equals", "completed"]))
               ]
             ),
             onchange:
               func("el",
-                path(
-                  "Task",
-                  "all",
-                  ["map", func("tid", path("tid", "toggle"))]
+                exp(
+                  "if",
+                  path(
+                    "Task",
+                    "all",
+                    [
+                      "every",
+                      func("tid",
+                        path("tid", "state", ["equals", "completed"]))
+                    ]
+                  ),
+                  path(
+                    "Task",
+                    "all",
+                    [
+                      "map",
+                      func("tid",
+                        path("tid", ["set", "state", "active"]))
+                    ]
+                  ),
+                  path(
+                    "Task",
+                    "all",
+                    [
+                      "map",
+                      func("tid",
+                        path("tid", ["set", "state", "completed"]))
+                    ]
+                  )
                 )
               )
           }),
