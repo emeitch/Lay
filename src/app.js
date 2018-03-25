@@ -154,21 +154,7 @@ const d = new Book(stdlib);
                       checked: path("tid", "state", ["equals", "completed"]),
                       onchange:
                         func("el",
-                          path(
-                            "tid", "toggle",
-                            ["then",
-                              path("Console",
-                                ["puts", v("onchange:")])],
-                            ["then",
-                              path("Console",
-                                ["puts", "tid"])],
-                            ["then",
-                              path("Console",
-                                ["puts", path("tid", "state")])],
-                            ["then",
-                              path("Console",
-                                ["puts", v("-----------")])]
-                          )
+                          path("tid", "toggle")
                         )
                     }),
                     e.label(path("tid", "title")),
