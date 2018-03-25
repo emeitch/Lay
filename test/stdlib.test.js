@@ -80,6 +80,15 @@ describe("stdlib", () => {
     });
   });
 
+  context("accessing Boolean methods", () => {
+    describe("not", () => {
+      it("should reverse logic", () => {
+        assert.deepStrictEqual(path(v(true), "not").reduce(book), v(false));
+        assert.deepStrictEqual(path(v(false), "not").reduce(book), v(true));
+      });
+    });
+  });
+
   context("accessing default Array methods", () => {
     describe("new", () => {
       it("should create a array", () => {

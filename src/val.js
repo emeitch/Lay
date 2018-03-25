@@ -160,10 +160,6 @@ export class Prim extends Val {
     return false;
   }
 
-  get _not() {
-    return new Prim(!this.origin);
-  }
-
   stringify(_indent) {
     return JSON.stringify(this.origin);
   }

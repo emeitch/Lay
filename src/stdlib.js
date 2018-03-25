@@ -90,6 +90,19 @@ export const stdlib = new Book();
 }
 
 {
+  const bool = new UUID();
+  stdlib.set("Boolean", bool);
+
+  stdlib.put(
+    bool,
+    "not",
+    exp(new LiftedNative(function(self) {
+      return v(!self.origin);
+    }), "self")
+  );
+}
+
+{
   const arr = new UUID();
   stdlib.set("Array", arr);
 
