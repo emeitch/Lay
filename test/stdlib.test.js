@@ -72,7 +72,7 @@ describe("stdlib", () => {
     });
   });
 
-  context("accessing Object methods", () => {
+  context("accessing String methods", () => {
     describe("trim", () => {
       it("should trim the string", () => {
         assert.deepStrictEqual(path(v("hoge   "), "trim").reduce(book), v("hoge"));
