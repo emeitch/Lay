@@ -22,7 +22,7 @@ export default class Val {
   }
 
   get _toStr() {
-    return new Prim(this.origin.toString());
+    return new Prim(this.stringify());
   }
 
   get(k, book) {
@@ -76,7 +76,7 @@ export default class Val {
     }
     return r;
   }
-  
+
   replace(_matches) {
     return this;
   }
@@ -158,6 +158,10 @@ export class Sym extends Val {
 export class Prim extends Val {
   get reducible() {
     return false;
+  }
+
+  get _not() {
+    return new Prim(!this.origin);
   }
 
   stringify(_indent) {

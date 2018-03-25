@@ -217,6 +217,28 @@ const d = new Book(stdlib);
                 v("Completed")
               )
             )
+          ),
+          exp(
+            "if",
+            path(
+              "Task",
+              "all",
+              [
+                "filter",
+                func("tid",
+                  path("tid", "state", ["equals", "completed"]))
+              ],
+              "count",
+              ["equals", v(0)],
+              "not"
+            ),
+            e.button({
+                class: "clear-completed",
+                // onClick:
+              },
+              v("Clear completed")
+            ),
+            v(null)
           )
         )
       )
