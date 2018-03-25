@@ -151,7 +151,7 @@ export class CompMap extends Comp {
   get jsObj() {
     let ret = {};
     for (const key of Object.keys(this.origin)) {
-      const val = this[key];
+      const val = this.origin[key];
       ret[key] = val instanceof Val ? val.jsObj : val;
     }
     return ret;

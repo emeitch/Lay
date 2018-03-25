@@ -20,6 +20,13 @@ describe("Comp", () => {
       });
     });
 
+    describe("#jsObj", () => {
+      it("should return a js object", () => {
+        const c = v({a: "e", b: v([1, v({c: 2}), 3])});
+        assert.deepStrictEqual(c.jsObj, {a: "e", b: [1, {c: 2}, 3]});
+      });
+    });
+
     describe("#reducible", () => {
       it("should return false", () => {
         assert.deepStrictEqual(v({a: 1, b: 2}).reducible, false);
