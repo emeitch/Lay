@@ -245,7 +245,40 @@ const d = new Book(stdlib);
             ),
             e.button({
                 class: "clear-completed",
-                // onClick:
+                onclick: func("el",
+                  path(
+                    "Task",
+                    "all",
+                    [
+                      "filter",
+                      func(
+                        "tid",
+                        path(
+                          "tid",
+                          "state",
+                          [
+                            "equals",
+                            "completed"
+                          ]
+                        )
+                      )
+                    ],
+                    [
+                      "map",
+                      func(
+                        "tid",
+                        path(
+                          "tid",
+                          [
+                            "set",
+                            "exists",
+                            v(false)
+                          ]
+                        )
+                      )
+                    ]
+                  )
+                )
               },
               v("Clear completed")
             ),
