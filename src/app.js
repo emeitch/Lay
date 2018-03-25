@@ -209,7 +209,25 @@ const d = new Book(stdlib);
                 "count",
                 "toStr")),
             e.span(v(" ")),
-            e.span(v("items")),
+            e.span(
+              exp(
+                "if",
+                path(
+                  "Task",
+                  "all",
+                  ["filter",
+                    func("tid",
+                      path(
+                        "tid",
+                        "state",
+                        ["equals", "active"]))],
+                  "count",
+                  ["equals", v(1)]
+                ),
+                v("item"),
+                v("items")
+              )
+            ),
             e.span(v(" left"))
           ),
           e.ul({class: "filters"},
