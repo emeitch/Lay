@@ -19,6 +19,7 @@ const d = new Book(stdlib);
       path("self", ["set", "state", "active"])
     )
   );
+  d.put(Task, "editing", v(false));
   d.set("Task", Task);
 }
 
@@ -145,7 +146,19 @@ const d = new Book(stdlib);
               path("Task", "all", ["map", func("tid",
                 e.li({
                     key: "tid",
-                    class: path("tid", "state"),
+                    class: path(
+                      n([
+                        path("tid", "state"),
+                        exp(
+                          "if",
+                          path("tid", "editing"),
+                          "editing",
+                          v(null)
+                        )
+                      ]),
+                      ["filter", func("i", path("i", ["equals", v(null)], "not"))],
+                      ["join", v(" ")]
+                    )
                   },
                   e.div({class: "view"},
                     e.input({
@@ -157,7 +170,20 @@ const d = new Book(stdlib);
                           path("tid", "toggle")
                         )
                     }),
-                    e.label(path("tid", "title")),
+                    e.label({
+                        ondblclick: func("el",
+                          path(
+                            "tid",
+                            [
+                              "set",
+                              "editing",
+                              v(true)
+                            ]
+                          )
+                        )
+                      },
+                      path("tid", "title")
+                    ),
                     e.button({
                       class: "destroy",
                       onclick: func("el",
@@ -171,7 +197,20 @@ const d = new Book(stdlib);
                       )
                     })
                   ),
-                  e.input({class: "edit", value: "buy the milk"})
+                  e.input({
+                    class: "edit",
+                    value: "buy the milk",
+                    onblur: func("el",
+                      path(
+                        "tid",
+                        [
+                          "set",
+                          "editing",
+                          v(false)
+                        ]
+                      )
+                    )
+                  })
                 )
               )])
             }

@@ -168,6 +168,16 @@ export const stdlib = new Book();
       return v(self.origin.length);
     }), "self")
   );
+
+  stdlib.put(
+    arr,
+    "join",
+    func("sep", exp(new LiftedNative(function(self, sep) {
+      const arr = self.deepReduce(this);
+      const s = sep.deepReduce(this);
+      return v(arr.jsObj.join(s.jsObj));
+    }), "self", "sep"))
+  );
 }
 
 {

@@ -116,6 +116,12 @@ export class CompArray extends Comp {
     super(origin, head || sym("Array"));
   }
 
+  get jsObj() {
+    return this.origin.map(val => {
+      return val instanceof Val ? val.jsObj : val;
+    });
+  }
+
   collate(val) {
     if (!this.sameType(val) || val.fields.length !== this.fields.length) {
       return super.collate(val);
@@ -140,6 +146,15 @@ export class CompArray extends Comp {
 export class CompMap extends Comp {
   constructor(origin, head) {
     super(origin, head || sym("Map"));
+  }
+
+  get jsObj() {
+    let ret = {};
+    for (const key of Object.keys(this.origin)) {
+      const val = this[key];
+      ret[key] = val instanceof Val ? val.jsObj : val;
+    }
+    return ret;
   }
 
   collate(val) {

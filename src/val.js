@@ -25,6 +25,10 @@ export default class Val {
     return new Prim(this.stringify());
   }
 
+  get jsObj() {
+    return this.origin;
+  }
+
   get(k, book) {
     const key = k instanceof Sym ? k.origin : k;
 
