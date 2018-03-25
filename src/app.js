@@ -172,7 +172,18 @@ const d = new Book(stdlib);
                         )
                     }),
                     e.label(path("tid", "title")),
-                    e.button({class: "destroy"})
+                    e.button({
+                      class: "destroy",
+                      onclick: func("el",
+                        path("tid",
+                          [
+                            "set",
+                            "exists",
+                            v(false)
+                          ]
+                        )
+                      )
+                    })
                   ),
                   e.input({class: "edit", value: "buy the milk"})
                 )

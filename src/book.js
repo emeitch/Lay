@@ -168,7 +168,7 @@ export default class Book {
 
   new(props) {
     const id = new UUID();
-    this.put(id, "exists");
+    this.put(id, "exists", v(true));
 
     if (props) {
       for (const key of Object.keys(props)) {
@@ -293,7 +293,10 @@ export default class Book {
     }
     const sname = sym(name.origin);
     const logs = this.findActiveLogs({key: "tag", val: sname});
-    return logs.map(log => log.id);
+    return logs.filter(log => {
+      const es = this.findActiveLogs({id: log.id, key: "exists"});
+      return es.length > 0 && es[es.length-1].val.origin;
+    }).map(log => log.id);
   }
 
   run(e, arg) {
