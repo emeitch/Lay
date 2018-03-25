@@ -27,6 +27,12 @@ describe("Val", () => {
       });
     });
 
+    describe("#jsObj", () => {
+      it("should return the origin", () => {
+        assert.deepStrictEqual(val.jsObj, 0);
+      });
+    });
+
     describe("#id", () => {
       it("should return oneslf by default behavior", () => {
         assert.deepStrictEqual(val.id, val);
