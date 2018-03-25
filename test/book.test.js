@@ -354,16 +354,38 @@ describe("Book", () => {
   });
 
   describe("#taggedIDs", () => {
-    it("should return tagged id list", () => {
-      const t1 = book.new();
-      book.set("T1", t1);
-      const id1 = book.new({"tag": "T1"});
-      const id2 = book.new({"tag": "T1"});
+    let t1;
 
-      assert.deepStrictEqual(book.taggedIDs(t1), [id1, id2]);
+    let id0;
+    let id1;
+    let id2;
+    beforeEach(() => {
+      t1 = book.new();
+      book.set("T1", t1);
+
+      id0 = book.new({"tag": "T1"});
+      id1 = book.new({"tag": "T1"});
+      id2 = book.new({"tag": "T1"});
+    });
+
+    it("should return tagged id list", () => {
+      assert.deepStrictEqual(book.taggedIDs(t1), [id0, id1, id2]);
 
       const t2 = book.new();
       assert.deepStrictEqual(book.taggedIDs(t2), []);
+    });
+
+    context("set exists false", () => {
+      beforeEach(() => {
+        book.put(id1, "exists", v(false));
+      });
+
+      it("should return new generated ids", () => {
+        const ids = book.taggedIDs(t1);
+        assert(ids.length === 2);
+        assert(ids[0] === id0);
+        assert(ids[1] === id2);
+      });
     });
   });
 
