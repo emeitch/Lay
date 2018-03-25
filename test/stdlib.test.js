@@ -133,6 +133,13 @@ describe("stdlib", () => {
         assert.deepStrictEqual(count, v(3));
       });
     });
+
+    describe("join", () => {
+      it("should return joined string", () => {
+        const joined = path(v(["1", "2", "3"]), ["join", ","]).reduce(book);
+        assert.deepStrictEqual(joined, v("1,2,3"));
+      });
+    });
   });
 
   context("accessing default Map methods", () => {
