@@ -1,5 +1,6 @@
 /* eslint-env browser */
 import Book from './book';
+import Act from './act';
 import { stdlib, n } from './stdlib';
 import { exp } from './exp';
 import { path } from './path';
@@ -177,7 +178,7 @@ const d = new Book(stdlib);
                             [
                               "set",
                               "editing",
-                              v(true)
+                              path("tid", "title")
                             ]
                           )
                         )
@@ -199,7 +200,18 @@ const d = new Book(stdlib);
                   ),
                   e.input({
                     class: "edit",
-                    value: "buy the milk",
+                    value: path("tid", "editing"),
+                    afterUpdate: exp(
+                      "if",
+                      path("tid", "editing"),
+                      new Act(env => {
+                        const e = env.element;
+                        setTimeout(() => {
+                          e.focus();
+                        }, 0);
+                      }),
+                      new Act(() => {})
+                    ),
                     onblur: func("el",
                       path(
                         "tid",

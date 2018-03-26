@@ -53,6 +53,12 @@ dom.set(
               const act = path(ev, [key, e]).deepReduce(book);
               return book.run(act);
             };
+          } else if (key.match(/^after/)) {
+            attr[key] = element => {
+              const env = {element};
+              const act = path(ev, key).deepReduce(book);
+              return book.run(new Act(() => env).then(act));
+            };
           } else {
             const val = path(ev, key).deepReduce(book);
             attr[key] = val.origin;
