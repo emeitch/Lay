@@ -59,7 +59,8 @@ export default class Path extends Ref {
 
       let prop = val.get(key.reduce(book), book);
       if (prop instanceof Function) {
-        prop = func(new LiftedNative(prop));
+        const f = prop.bind(val);
+        prop = func(new LiftedNative(f));
       }
       if (prop.equals(v(null))) {
         prop = val.get(key, book);

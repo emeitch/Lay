@@ -152,7 +152,7 @@ const d = new Book(stdlib);
                         path("tid", "state"),
                         exp(
                           "if",
-                          path("tid", "editing"),
+                          path("tid", "editing", ["equals", v(false)], "not"),
                           "editing",
                           v(null)
                         )

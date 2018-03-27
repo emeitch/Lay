@@ -52,7 +52,9 @@ export default class Val {
   }
 
   get _equals() {
-    return o => new Prim(this.equals(o));
+    return function(o) {
+      return new Prim(this.equals(o));
+    };
   }
 
   get reducible() {
