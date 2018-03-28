@@ -20,7 +20,7 @@ const d = new Book(stdlib);
       path("self", ["set", "state", "active"])
     )
   );
-  d.put(Task, "editing", v(false));
+  d.put(Task, "editing", v(null));
   d.set("Task", Task);
 }
 
@@ -152,7 +152,7 @@ const d = new Book(stdlib);
                         path("tid", "state"),
                         exp(
                           "if",
-                          path("tid", "editing", ["equals", v(false)], "not"),
+                          path("tid", "editing", ["equals", v(null)], "not"),
                           "editing",
                           v(null)
                         )
@@ -200,10 +200,15 @@ const d = new Book(stdlib);
                   ),
                   e.input({
                     class: "edit",
-                    value: path("tid", "editing"),
+                    value: exp(
+                      "if",
+                      path("tid", "editing", ["equals", v(null)]),
+                      "hoge",
+                      path("tid", "editing")
+                    ),
                     afterUpdate: exp(
                       "if",
-                      path("tid", "editing"),
+                      path("tid", "editing", ["equals", v(null)], "not"),
                       new Act(env => {
                         const e = env.element;
                         setTimeout(() => {
@@ -218,7 +223,7 @@ const d = new Book(stdlib);
                         [
                           "set",
                           "editing",
-                          v(false)
+                          v(null)
                         ]
                       )
                     )
