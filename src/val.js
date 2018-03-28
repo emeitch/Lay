@@ -44,7 +44,7 @@ export default class Val {
       return val;
     }
 
-    return new Prim(null);
+    return undefined;
   }
 
   equals(other) {

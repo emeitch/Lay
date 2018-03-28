@@ -46,8 +46,8 @@ describe("Val", () => {
       });
 
       context("not exists key", () => {
-        it("should return null val", () => {
-          assert.deepStrictEqual(val.get("notExists"), v(null));
+        it("should return undefined", () => {
+          assert.deepStrictEqual(val.get("notExists"), undefined);
         });
       });
     });

@@ -20,13 +20,13 @@ dom.set(
     new LiftedNative(function() { return new Act(() => {
       const book = this;
       function render(ev) {
-        if (ev.equals(v(null))) {
+        if (ev === undefined) {
           return undefined;
         }
 
         const children = [];
         const cs = ev.get("children");
-        if (!cs.equals(v(null))) {
+        if (cs !== undefined) {
           for (let i = 0; i < cs.origin.length; i++) {
             const c = cs.get(i);
             if (c instanceof Prim) {
