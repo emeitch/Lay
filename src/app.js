@@ -209,12 +209,7 @@ const d = new Book(stdlib);
                     afterUpdate: exp(
                       "if",
                       path("tid", "editing", ["equals", v(null)], "not"),
-                      new Act(env => {
-                        const e = env.element;
-                        setTimeout(() => {
-                          e.focus();
-                        }, 0);
-                      }),
+                      path("focusAfterAct"),
                       new Act(() => {})
                     ),
                     onblur: func("el",

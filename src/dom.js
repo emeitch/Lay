@@ -93,6 +93,16 @@ dom.set(
   }))
 );
 
+dom.set(
+  "focusAfterAct",
+  new Act(env => {
+    const e = env.element;
+    setTimeout(() => {
+      e.focus();
+    }, 0);
+  })
+);
+
 export function elm(head, ...children) {
   let attr = {};
   if (children[0].constructor === Object) {
