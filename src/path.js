@@ -4,7 +4,6 @@ import Case from './case';
 import { exp } from './exp';
 import { sym } from './sym';
 import { func, LiftedNative } from './func';
-import v from './v';
 
 export default class Path extends Ref {
   constructor(...ids) {
@@ -62,9 +61,9 @@ export default class Path extends Ref {
         const f = prop.bind(val);
         prop = func(new LiftedNative(f));
       }
-      if (prop.equals(v(null))) {
+      if (prop === undefined) {
         prop = val.get(key, book);
-        if (prop.equals(v(null))) {
+        if (prop === undefined) {
           return super.step(book);
         }
       }
