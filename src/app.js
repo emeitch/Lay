@@ -109,7 +109,7 @@ const d = new Book(stdlib);
               ]
             ),
             onchange:
-              func("el",
+                func("ev",
                 exp(
                   "if",
                   path(
@@ -167,12 +167,12 @@ const d = new Book(stdlib);
                       type: "checkbox",
                       checked: path("tid", "state", ["equals", "completed"]),
                       onchange:
-                        func("el",
+                        func("ev",
                           path("tid", "toggle")
                         )
                     }),
                     e.label({
-                        ondblclick: func("el",
+                        ondblclick: func("ev",
                           path(
                             "tid",
                             [
@@ -187,7 +187,7 @@ const d = new Book(stdlib);
                     ),
                     e.button({
                       class: "destroy",
-                      onclick: func("el",
+                      onclick: func("ev",
                         path("tid",
                           [
                             "set",
@@ -314,7 +314,7 @@ const d = new Book(stdlib);
             ),
             e.button({
                 class: "clear-completed",
-                onclick: func("el",
+                onclick: func("ev",
                   path(
                     "Task",
                     "all",
