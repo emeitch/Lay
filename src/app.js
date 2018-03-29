@@ -212,13 +212,27 @@ const d = new Book(stdlib);
                       path("focusAfterAct"),
                       new Act(() => {})
                     ),
-                    onblur: func("el",
+                    onblur: func("ev",
                       path(
                         "tid",
                         [
                           "set",
-                          "editing",
-                          v(null)
+                          "title",
+                          path(
+                            "ev",
+                            "value"
+                          )
+                        ],
+                        [
+                          "then",
+                          path(
+                            "tid",
+                            [
+                              "set",
+                              "editing",
+                              v(null)
+                            ]
+                          )
                         ]
                       )
                     )
