@@ -214,7 +214,7 @@ const d = new Book(stdlib);
                     value: path("tid", "editingTitle"),
                     afterUpdate: exp(
                       "if",
-                      path("tid", "editing", ["equals", v(null)], "not"),
+                      path("tid", "editing"),
                       path("focusAfterAct"),
                       new Act(() => {})
                     ),
