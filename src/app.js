@@ -20,7 +20,7 @@ const d = new Book(stdlib);
       path("self", ["set", "state", "active"])
     )
   );
-  d.put(Task, "editing", v(null));
+  d.put(Task, "editing", v(false));
   d.set("Task", Task);
 }
 
@@ -152,7 +152,7 @@ const d = new Book(stdlib);
                         path("tid", "state"),
                         exp(
                           "if",
-                          path("tid", "editing", ["equals", v(null)], "not"),
+                          path("tid", "editing"),
                           "editing",
                           v(null)
                         )
@@ -178,7 +178,18 @@ const d = new Book(stdlib);
                             [
                               "set",
                               "editing",
-                              path("tid", "title")
+                              v("true")
+                            ],
+                            [
+                              "then",
+                              path(
+                                "tid",
+                                [
+                                  "set",
+                                  "editingTitle",
+                                  path("tid", "title")
+                                ]
+                              )
                             ]
                           )
                         )
@@ -200,17 +211,40 @@ const d = new Book(stdlib);
                   ),
                   e.input({
                     class: "edit",
-                    value: exp(
-                      "if",
-                      path("tid", "editing", ["equals", v(null)]),
-                      "hoge",
-                      path("tid", "editing")
-                    ),
+                    value: path("tid", "editingTitle"),
                     afterUpdate: exp(
                       "if",
                       path("tid", "editing", ["equals", v(null)], "not"),
                       path("focusAfterAct"),
                       new Act(() => {})
+                    ),
+                    onkeypress: func("ev",
+                      exp("if",
+                        path("ev", "keyCode", ["equals", v(13)]),
+                        path(
+                          "tid",
+                          [
+                            "set",
+                            "title",
+                            path(
+                              "ev",
+                              "value"
+                            )
+                          ],
+                          [
+                            "then",
+                            path(
+                              "tid",
+                              [
+                                "set",
+                                "editing",
+                                v(false)
+                              ]
+                            )
+                          ]
+                        ),
+                        v(null)
+                      )
                     ),
                     onblur: func("ev",
                       path(
@@ -230,9 +264,19 @@ const d = new Book(stdlib);
                             [
                               "set",
                               "editing",
-                              v(null)
+                              v(false)
                             ]
                           )
+                        ]
+                      )
+                    ),
+                    oninput: func("ev",
+                      path(
+                        "tid",
+                        [
+                          "set",
+                          "editingTitle",
+                          path("ev", "value")
                         ]
                       )
                     )
