@@ -228,7 +228,8 @@ const d = new Book(stdlib);
                             "title",
                             path(
                               "ev",
-                              "value"
+                              "value",
+                              "trim"
                             )
                           ],
                           [
@@ -254,7 +255,8 @@ const d = new Book(stdlib);
                           "title",
                           path(
                             "ev",
-                            "value"
+                            "value",
+                            "trim"
                           )
                         ],
                         [
