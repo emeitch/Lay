@@ -221,55 +221,95 @@ const d = new Book(stdlib);
                     onkeypress: func("ev",
                       exp("if",
                         path("ev", "keyCode", ["equals", v(13)]),
-                        path(
-                          "tid",
-                          [
-                            "set",
-                            "title",
-                            path(
-                              "ev",
-                              "value",
-                              "trim"
+                        exp(
+                          func(
+                            "t",
+                            exp(
+                              "if",
+                              path("t", ["equals", v("")]),
+                              path(
+                                path("tid",
+                                  [
+                                    "set",
+                                    "exists",
+                                    v(false)
+                                  ]
+                                )
+                              ),
+                              path(
+                                "tid",
+                                [
+                                  "set",
+                                  "title",
+                                  "t"
+                                ],
+                                [
+                                  "then",
+                                  path(
+                                    "tid",
+                                    [
+                                      "set",
+                                      "editing",
+                                      v(false)
+                                    ]
+                                  )
+                                ]
+                              )
                             )
-                          ],
-                          [
-                            "then",
-                            path(
-                              "tid",
-                              [
-                                "set",
-                                "editing",
-                                v(false)
-                              ]
-                            )
-                          ]
-                        ),
-                        v(null)
-                      )
-                    ),
-                    onblur: func("ev",
-                      path(
-                        "tid",
-                        [
-                          "set",
-                          "title",
+                          ),
                           path(
                             "ev",
                             "value",
                             "trim"
                           )
-                        ],
-                        [
-                          "then",
-                          path(
-                            "tid",
-                            [
-                              "set",
-                              "editing",
-                              v(false)
-                            ]
+                        ),
+                        v(null)
+                      )
+                    ),
+                    onblur: func(
+                      "ev",
+                      exp(
+                        func(
+                          "t",
+                          exp(
+                            "if",
+                            path("t", ["equals", v("")]),
+                            path(
+                              path(
+                                "tid",
+                                [
+                                  "set",
+                                  "exists",
+                                  v(false)
+                                ]
+                              )
+                            ),
+                            path(
+                              "tid",
+                              [
+                                "set",
+                                "title",
+                                "t"
+                              ],
+                              [
+                                "then",
+                                path(
+                                  "tid",
+                                  [
+                                    "set",
+                                    "editing",
+                                    v(false)
+                                  ]
+                                )
+                              ]
+                            )
                           )
-                        ]
+                        ),
+                        path(
+                          "ev",
+                          "value",
+                          "trim"
+                        )
                       )
                     ),
                     oninput: func("ev",
