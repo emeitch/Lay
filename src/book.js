@@ -168,7 +168,6 @@ export default class Book {
 
   new(props) {
     const id = new UUID();
-    this.put(id, "exists", v(true));
 
     if (props) {
       for (const key of Object.keys(props)) {
@@ -176,6 +175,8 @@ export default class Book {
         this.put(id, key, val);
       }
     }
+
+    this.put(id, "exists", v(true));
 
     return id;
   }
@@ -312,7 +313,7 @@ export default class Book {
           console.error("Not Act Instance", act);
           return null;
         }
-        
+
         do {
           act = act.proceed(arg);
         } while(act.next);

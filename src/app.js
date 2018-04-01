@@ -554,4 +554,22 @@ const d = new Book(stdlib);
   d.set("DOMContentLoaded", func("win",
     path("todos", ["changeStateByHash", path("win", "location", "hash")])
   ));
+  d.set("onPut", new Act(log => {
+    const taskClassName = "Task";
+    const taskClass = path(taskClassName).deepReduce(d);
+    const isTaskVal = path(log.id, "tag", ["equals", taskClass]).deepReduce(d);
+    const keys = ["tag", "exists", "title", "state"];
+    if (isTaskVal.origin && keys.includes(log.key.origin)) {
+      const storageKey = "todos-lay";
+      const storage = JSON.parse(window.localStorage.getItem(storageKey)) || [];
+      // console.log(storage);
+      console.log("=============");
+      console.log(log);
+      console.log(log.object(d));
+      storage.push(log.object(d));
+      // console.log(storage);
+      console.log("=============");
+      window.localStorage.setItem(storageKey, JSON.stringify(storage));
+    }
+  }));
 }

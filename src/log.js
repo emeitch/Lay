@@ -19,6 +19,17 @@ export default class Log {
     this.at = at_;
     this.in = in_;
   }
+
+  object(book) {
+    return {
+      // logid: this.logid,
+      id: this.id,
+      key: this.key,
+      val: this.val.deepReduce(book),
+      at: this.at.toJSON(),
+      in: this.in
+    };
+  }
 }
 
 export const n = (...args) => {
