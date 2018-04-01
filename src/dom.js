@@ -6,6 +6,7 @@ import Prim from './prim';
 import Act from './act';
 import v from './v';
 import { sym } from './sym';
+import { exp } from './exp';
 import { path } from './path';
 import { func, LiftedNative } from './func';
 import { n } from './stdlib';
@@ -93,6 +94,15 @@ dom.set(
       }
 
       document.addEventListener('DOMContentLoaded', () => {
+        const placeholder = sym("DOMContentLoaded");
+        const win = v({
+          location: {
+            hash: window.location.hash
+          }
+        });
+        const act = exp(placeholder, win).deepReduce(book);
+        book.run(act);
+
         projector.append(document.body, renderMaquette);
       });
     });
