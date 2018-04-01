@@ -69,25 +69,32 @@ const d = new Book(stdlib);
             onkeypress: func("ev",
               exp("if",
                 path("ev", "keyCode", ["equals", v(13)]),
-                path("Object",
-                  [
-                    "new",
-                    n({
-                      "tag": "Task",
-                      "title": path("ev", "value", "trim"),
-                      "state": "active"
-                    })
-                  ],
-                  [
-                    "then",
-                    path("todos",
-                      [
-                        "set",
-                        "newTaskTitle",
-                        v("")
-                      ]
-                    )
-                  ]
+                exp(
+                  "if",
+                  path("ev", "value", "trim", ["equals", v("")]),
+                  v(null),
+                  path(
+                    "Object",
+                    [
+                      "new",
+                      n({
+                        "tag": "Task",
+                        "title": path("ev", "value", "trim"),
+                        "state": "active"
+                      })
+                    ],
+                    [
+                      "then",
+                      path(
+                        "todos",
+                        [
+                          "set",
+                          "newTaskTitle",
+                          v("")
+                        ]
+                      )
+                    ]
+                  )
                 ),
                 v(null)
               )
