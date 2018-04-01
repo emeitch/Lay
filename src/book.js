@@ -308,6 +308,11 @@ export default class Book {
     let act = null;
     if (acts instanceof Comp && Array.isArray(acts.origin)) {
       for (act of acts.origin) {
+        if (!(act instanceof Act)) {
+          console.error("Not Act Instance", act);
+          return null;
+        }
+        
         do {
           act = act.proceed(arg);
         } while(act.next);
