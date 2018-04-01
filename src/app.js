@@ -28,15 +28,9 @@ const d = new Book(stdlib);
   const todos = d.new();
   d.set("todos", todos);
   d.put(todos, "tag", "App");
-  d.put(todos, "state", "All");
+  d.put(todos, "state", "all");
   d.put(todos, "newTaskTitle", v(""));
   d.put(todos, "changeState", func("s", path("self", ["set", "state", "s"])));
-
-  console.log(path(todos, "state").reduce(d));
-  console.log("change state");
-  d.run(path(todos, ["changeState", "Active"]));
-  console.log(path(todos, "state").reduce(d));
-  console.log("----------");
 }
 
 {
@@ -144,7 +138,22 @@ const d = new Book(stdlib);
           }),
           e.ul({class: "todo-list",
             children:
-              path("Task", "all", ["map", func("tid",
+              path("Task", "all",
+                [
+                  "filter", func("tid",
+                  exp(
+                    "if",
+                    path("todos", "state", ["equals", "all"]),
+                    v(true),
+                    exp(
+                      "if",
+                      path("todos", "state", ["equals", "active"]),
+                      path("tid", "state", ["equals", "active"]),
+                      path("tid", "state", ["equals", "completed"])
+                    )
+                  )
+                )],
+                ["map", func("tid",
                 e.li({
                     key: "tid",
                     class: path(
@@ -396,17 +405,65 @@ const d = new Book(stdlib);
           ),
           e.ul({class: "filters"},
             e.li(
-              e.a({href: "#/", class: "selected"},
+              e.a(
+                {
+                  href: "#/",
+                  class: exp(
+                    "if",
+                    path("todos", "state", ["equals", "all"]),
+                    "selected",
+                    "none"
+                  ),
+                  onclick: path(
+                    "todos",
+                    [
+                      "changeState",
+                      "all"
+                    ]
+                  )
+                },
                 v("All")
               )
             ),
             e.li(
-              e.a({href: "#/active"},
+              e.a(
+                {
+                  href: "#/active",
+                  class: exp(
+                    "if",
+                    path("todos", "state", ["equals", "active"]),
+                    "selected",
+                    "none"
+                  ),
+                  onclick: path(
+                    "todos",
+                    [
+                      "changeState",
+                      "active"
+                    ]
+                  )
+                },
                 v("Active")
               )
             ),
             e.li(
-              e.a({href: "#/completed"},
+              e.a(
+                {
+                  href: "#/completed",
+                  class: exp(
+                    "if",
+                    path("todos", "state", ["equals", "completed"]),
+                    "selected",
+                    "none"
+                  ),
+                  onclick: path(
+                    "todos",
+                    [
+                      "changeState",
+                      "completed"
+                    ]
+                  )
+                },
                 v("Completed")
               )
             )
