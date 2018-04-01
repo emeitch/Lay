@@ -35,13 +35,13 @@ const d = new Book(stdlib);
     "hash",
     exp(
       "if",
-      path("hash", ["equals", v("#/")]),
-      path("todos", ["changeState", "all"]),
+      path("hash", ["equals", v("#/active")]),
+      path("todos", ["changeState", "active"]),
       exp(
         "if",
-        path("hash", ["equals", v("#/active")]),
-        path("todos", ["changeState", "active"]),
-        path("todos", ["changeState", "completed"])
+        path("hash", ["equals", v("#/completed")]),
+        path("todos", ["changeState", "completed"]),
+        path("todos", ["changeState", "all"])
       )
     )
   ));
