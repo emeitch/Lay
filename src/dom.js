@@ -42,17 +42,32 @@ dom.set(
           if (key === "children") {
             continue;
           }
+
           if (key.match(/^on/)) {
-            attr[key] = event => {
+            const callback = event => {
               // todo: イベントデータの扱いがアドホックな対応なのであとで改修する
               const eo = {
                 keyCode: event.keyCode,
-                value: event.target.value
+                value: event.target.value,
+                location: {
+                  hash: window.location.hash
+                }
               };
               const e = v("Event", eo);
               const act = path(ev, [key, e]).deepReduce(book);
               return book.run(act);
             };
+
+            if (ev.tag.equals(sym("body"))) {
+              window[key] = (...args) => {
+                const res = callback(...args);
+                dirty = true;
+                projector.scheduleRender();
+                return res;
+              };
+            } else {
+              attr[key] = callback;
+            }
           } else if (key.match(/^after/)) {
             attr[key] = element => {
               const env = {element};

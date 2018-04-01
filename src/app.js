@@ -31,11 +31,30 @@ const d = new Book(stdlib);
   d.put(todos, "state", "all");
   d.put(todos, "newTaskTitle", v(""));
   d.put(todos, "changeState", func("s", path("self", ["set", "state", "s"])));
+  d.put(todos, "changeStateByHash", func(
+    "hash",
+    exp(
+      "if",
+      path("hash", ["equals", v("#/")]),
+      path("todos", ["changeState", "all"]),
+      exp(
+        "if",
+        path("hash", ["equals", v("#/active")]),
+        path("todos", ["changeState", "active"]),
+        path("todos", ["changeState", "completed"])
+      )
+    )
+  ));
 }
 
 {
   d.import(dom);
-  const domtree = e.body({},
+  const domtree = e.body(
+    {
+      onhashchange: func("ev",
+        path("todos", ["changeStateByHash", path("ev", "location", "hash")])
+      )
+    },
     e.section({class: "todoapp"},
       e.div(
         e.header({class: "header"},
@@ -413,13 +432,6 @@ const d = new Book(stdlib);
                     path("todos", "state", ["equals", "all"]),
                     "selected",
                     "none"
-                  ),
-                  onclick: path(
-                    "todos",
-                    [
-                      "changeState",
-                      "all"
-                    ]
                   )
                 },
                 v("All")
@@ -434,13 +446,6 @@ const d = new Book(stdlib);
                     path("todos", "state", ["equals", "active"]),
                     "selected",
                     "none"
-                  ),
-                  onclick: path(
-                    "todos",
-                    [
-                      "changeState",
-                      "active"
-                    ]
                   )
                 },
                 v("Active")
@@ -455,13 +460,6 @@ const d = new Book(stdlib);
                     path("todos", "state", ["equals", "completed"]),
                     "selected",
                     "none"
-                  ),
-                  onclick: path(
-                    "todos",
-                    [
-                      "changeState",
-                      "completed"
-                    ]
                   )
                 },
                 v("Completed")
