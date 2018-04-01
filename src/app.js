@@ -218,6 +218,33 @@ const d = new Book(stdlib);
                       path("focusAfterAct"),
                       new Act(() => {})
                     ),
+                    onkeydown: func(
+                      "ev",
+                      exp(
+                        "if",
+                        path("ev", "keyCode", ["equals", v(27)]),
+                        path(
+                          "tid",
+                          [
+                            "set",
+                            "editingTitle",
+                            path("tid", "title")
+                          ],
+                          [
+                            "then",
+                            path(
+                              "tid",
+                              [
+                                "set",
+                                "editing",
+                                v(false)
+                              ]
+                            )
+                          ]
+                        ),
+                        v(null)
+                      )
+                    ),
                     onkeypress: func("ev",
                       exp("if",
                         path("ev", "keyCode", ["equals", v(13)]),
