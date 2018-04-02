@@ -124,6 +124,13 @@ export default class Val {
   stringify(_indent=0) {
     return Val.stringify(this.origin, _indent);
   }
+
+  object(_book) {
+    return {
+      tag: this.tag.object(_book),
+      origin: this.origin
+    };
+  }
 }
 
 /*********************************************************************/
@@ -156,6 +163,10 @@ export class Sym extends Val {
   }
 
   stringify(_indent) {
+    return this.origin;
+  }
+
+  object(_book) {
     return this.origin;
   }
 }

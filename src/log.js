@@ -21,11 +21,12 @@ export default class Log {
   }
 
   object(book) {
+    const val = this.val.deepReduce(book);
     return {
       // logid: this.logid,
-      id: this.id,
-      key: this.key,
-      val: this.val.deepReduce(book),
+      id: this.id.object(book),
+      key: this.key.object(book),
+      val: (this.key.equals(sym("tag")) ? book.name(val) : val).object(book),
       at: this.at.toJSON(),
       in: this.in
     };
