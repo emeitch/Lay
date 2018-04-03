@@ -15,8 +15,8 @@ export default class UUID extends ID {
     return uuid;
   }
 
-  constructor() {
-    super(UUID.generateString());
+  constructor(uuid = UUID.generateString()) {
+    super(uuid);
   }
 
   prefix() {
