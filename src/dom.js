@@ -4,6 +4,7 @@ import { h, createProjector } from 'maquette';
 import Book from './book';
 import Prim from './prim';
 import Act from './act';
+import UUID from './uuid';
 import v from './v';
 import { sym } from './sym';
 import { exp } from './exp';
@@ -126,6 +127,22 @@ dom.set(
       e.focus();
     }, 0);
   })
+);
+
+const localStorage = new UUID();
+dom.set("localStorage", localStorage);
+dom.put(
+  localStorage,
+  "read",
+  func(
+    "key",
+    new LiftedNative(function(key) {
+      const k = key.deepReduce(this);
+      return new Act(() => {
+        return window.localStorage.getItem(k.origin);
+      });
+    })
+  )
 );
 
 export function elm(head, ...children) {

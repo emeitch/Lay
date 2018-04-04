@@ -107,7 +107,10 @@ export default class Book {
     }
 
     for (const imported of this.imports) {
-      return imported.activeLogs(id, key, at);
+      const logs = imported.activeLogs(id, key, at);
+      if (logs.length > 0) {
+        return logs;
+      }
     }
 
     return [];

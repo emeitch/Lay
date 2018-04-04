@@ -7,7 +7,6 @@ import { path } from './path';
 import { func } from './func';
 import v from './v';
 import { dom, e } from './dom';
-import { parse } from './store';
 
 const d = new Book(stdlib);
 
@@ -555,14 +554,8 @@ const d = new Book(stdlib);
   d.set("DOMContentLoaded", func("win",
     path(
       "todos", ["changeStateByHash", path("win", "location", "hash")],
-      ["then", new Act(() => {
-        const storageKey = "todos-lay";
-        const storage = JSON.parse(window.localStorage.getItem(storageKey)) || [];
-        const logs = parse(storage);
-        for (const log of logs) {
-          d.doPutLog(log);
-        }
-      })]
+      ["then", path("localStorage", ["read", v("todos-lay")])],
+      ["then", exp("load")]
     )
   ));
   d.set("onPut", new Act(log => {

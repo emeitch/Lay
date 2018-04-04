@@ -9,6 +9,7 @@ import { exp } from './exp';
 import { kase, alt, grd, otherwise } from './case';
 import { func, LiftedNative } from './func';
 import { path } from './path';
+import { parse } from './store';
 
 export const stdlib = new Book();
 
@@ -36,6 +37,17 @@ export const stdlib = new Book();
       "cond"
     )
   ));
+
+  stdlib.set("load", func(new LiftedNative(function() {
+    const book = this;
+    return new Act(logsStr => {
+      const jsobj = JSON.parse(logsStr) || [];
+      const logs = parse(jsobj);
+      for (const log of logs) {
+        book.doPutLog(log);
+      }
+    });
+  })));
 }
 
 {
@@ -219,7 +231,8 @@ export const stdlib = new Book();
     sym("then"),
     func("next", exp(new LiftedNative(function(self, next) {
       const act = self.deepReduce(this);
-      return act.then(next);
+      const nact = next.deepReduce(this);
+      return act.then(nact);
     }), "self", "next"))
   );
 }
