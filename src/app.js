@@ -558,16 +558,21 @@ const d = new Book(stdlib);
       ["then", exp("load")]
     )
   ));
-  d.set("onPut", new Act(log => {
-    const taskClassName = "Task";
-    const taskClass = path(taskClassName).deepReduce(d);
-    const isTaskVal = path(log.id, "tag", ["equals", taskClass]).deepReduce(d);
-    const keys = ["tag", "exists", "title", "state"];
-    if (isTaskVal.origin && keys.includes(log.key.origin)) {
-      const storageKey = "todos-lay";
-      const storage = JSON.parse(window.localStorage.getItem(storageKey)) || [];
-      storage.push(log.object(d));
-      window.localStorage.setItem(storageKey, JSON.stringify(storage));
-    }
-  }));
+  d.set("onPut", path(
+    new Act(log => {
+      const taskClassName = "Task";
+      const taskClass = path(taskClassName).deepReduce(d);
+      const isTaskVal = path(log.id, "tag", ["equals", taskClass]).deepReduce(d);
+      const keys = ["tag", "exists", "title", "state"];
+      if (isTaskVal.origin && keys.includes(log.key.origin)) {
+        const storageKey = "todos-lay";
+        const storage = JSON.parse(window.localStorage.getItem(storageKey)) || [];
+        storage.push(log.object(d));
+        return JSON.stringify(storage);
+      } else {
+        return null;
+      }
+    }),
+    ["then", path("localStorage", ["write", v("todos-lay")])]
+  ));
 }

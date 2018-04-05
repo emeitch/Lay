@@ -145,6 +145,22 @@ dom.put(
   )
 );
 
+dom.put(
+  localStorage,
+  "write",
+  func(
+    "key",
+    new LiftedNative(function(key) {
+      const k = key.deepReduce(this);
+      return new Act(str => {
+        if (typeof(str) === "string") {
+          window.localStorage.setItem(k.origin, str);
+        }
+      });
+    })
+  )
+);
+
 export function elm(head, ...children) {
   let attr = {};
   if (children[0].constructor === Object) {
