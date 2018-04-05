@@ -48,6 +48,22 @@ export const stdlib = new Book();
       }
     });
   })));
+
+  stdlib.set("filterLog", func("pattern", new LiftedNative(function(pattern) {
+    const book = this;
+    const p = pattern.deepReduce(book).origin;
+    return new Act(log => {
+      for (const tag of Object.keys(p)) {
+        const keys = p[tag];
+        const logtag = book.name(path(log.id, "tag").deepReduce(book));
+        if (logtag.origin === tag && keys.includes(log.key.origin)) {
+          return log;
+        } else {
+          return null;
+        }
+      }
+    });
+  })));
 }
 
 {

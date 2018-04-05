@@ -559,12 +559,9 @@ const d = new Book(stdlib);
     )
   ));
   d.set("onPut", path(
-    new Act(log => {
-      const taskClassName = "Task";
-      const taskClass = path(taskClassName).deepReduce(d);
-      const isTaskVal = path(log.id, "tag", ["equals", taskClass]).deepReduce(d);
-      const keys = ["tag", "exists", "title", "state"];
-      if (isTaskVal.origin && keys.includes(log.key.origin)) {
+    exp("filterLog", v({"Task": ["tag", "exists", "title", "state"]})),
+    ["then", new Act(log => {
+      if (log) {
         const storageKey = "todos-lay";
         const storage = JSON.parse(window.localStorage.getItem(storageKey)) || [];
         storage.push(log.object(d));
@@ -572,7 +569,7 @@ const d = new Book(stdlib);
       } else {
         return null;
       }
-    }),
+    })],
     ["then", path("localStorage", ["write", v("todos-lay")])]
   ));
 }
