@@ -20,7 +20,7 @@ function parseVal(raw) {
     }
   }
 
-  throw "can not identify a val: ${raw}";
+  throw `can not identify a val: ${raw}`;
 }
 
 export function parse(raws) {
