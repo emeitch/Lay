@@ -560,16 +560,7 @@ const d = new Book(stdlib);
   ));
   d.set("onPut", path(
     exp("filterLog", v({"Task": ["tag", "exists", "title", "state"]})),
-    ["then", new Act(log => {
-      if (log) {
-        const storageKey = "todos-lay";
-        const storage = JSON.parse(window.localStorage.getItem(storageKey)) || [];
-        storage.push(log.object(d));
-        return JSON.stringify(storage);
-      } else {
-        return null;
-      }
-    })],
+    ["then", path("localStorage", "appendLog")],
     ["then", path("localStorage", ["write", v("todos-lay")])]
   ));
 }

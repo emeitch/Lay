@@ -144,7 +144,24 @@ dom.put(
     })
   )
 );
-
+dom.put(
+  localStorage,
+  "appendLog",
+  func(
+    new LiftedNative(function() {
+      return new Act(log => {
+        if (log) {
+          const storageKey = "todos-lay";
+          const storage = JSON.parse(window.localStorage.getItem(storageKey)) || [];
+          storage.push(log.object(this));
+          return JSON.stringify(storage);
+        } else {
+          return null;
+        }
+      });
+    })
+  )
+);
 dom.put(
   localStorage,
   "write",
