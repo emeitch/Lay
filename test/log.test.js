@@ -3,6 +3,7 @@ import assert from 'assert';
 import UUID from '../src/uuid';
 import Log, { n } from '../src/log';
 import { sym } from '../src/sym';
+import Book from '../src/book';
 
 describe("Log", () => {
   const id = new UUID();
@@ -34,6 +35,28 @@ describe("Log", () => {
       assert.deepStrictEqual(l.id, sym("foo"));
       assert.deepStrictEqual(l.key, sym("bar"));
       assert.deepStrictEqual(l.val, sym("baz"));
+    });
+  });
+
+  describe("object", () => {
+    it("should return js object", () => {
+      {
+        const log = new Log("id", "key", "val");
+        const lobj = log.object(new Book());
+        assert.deepStrictEqual(lobj.id, "id");
+        assert.deepStrictEqual(lobj.key, "key");
+        assert.deepStrictEqual(lobj.val, "val");
+      }
+      {
+        const prt = new UUID();
+        const log = new Log("id", "tag", prt);
+        const book = new Book();
+        book.set("Foo", prt);
+        const lobj = log.object(book);
+        assert.deepStrictEqual(lobj.id, "id");
+        assert.deepStrictEqual(lobj.key, "tag");
+        assert.deepStrictEqual(lobj.val, "Foo");
+      }
     });
   });
 });
