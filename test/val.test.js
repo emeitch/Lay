@@ -125,6 +125,12 @@ describe("Val", () => {
         assert.deepStrictEqual(val.stringify(), "0");
       });
     });
+
+    describe("#object", () => {
+      it("should return origin value", () => {
+        assert.deepStrictEqual(val.object({foo: "dummy"}), {"origin": 0, "tag": "ExtendedVal"});
+      });
+    });
   });
 
   context("direct construction", () => {
