@@ -540,6 +540,13 @@ describe("Book", () => {
       assert.deepStrictEqual(a, 2);
       assert.deepStrictEqual(b, 2);
     });
+
+    context("with not act val", () => {
+      it("should return null", () => {
+        const book = new Book();
+        assert.throws(() => book.run(v([1])), /not Act instance:/);
+      });
+    });
   });
 });
 
