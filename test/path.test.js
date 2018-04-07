@@ -154,6 +154,14 @@ describe("Path", () => {
       });
     });
 
+    context("access js object property", () => {
+      describe("equals", () => {
+        const book = new Book();
+        const p = path(v(3), ["equals", exp(plus, v(1), v(2))]);
+        assert(p.reduce(book).origin);
+      });
+    });
+
     context("access a key only its tag has the key", () => {
       const id = new UUID();
 
