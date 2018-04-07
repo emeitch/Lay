@@ -185,13 +185,13 @@ export default class Book {
   }
 
   existsIDs() {
-    const logs = this.findLogs({key: sym("exists")});
+    const logs = this.findActiveLogs({key: sym("exists")});
     const ids = _.uniq(logs.map(l => l.id));
     return ids;
   }
 
   transactionID(log) {
-    const tlogs = this.findLogs({id: log.logid, key: transaction});
+    const tlogs = this.findActiveLogs({id: log.logid, key: transaction});
 
     if (tlogs.length === 0) {
       return null;
@@ -203,7 +203,7 @@ export default class Book {
   }
 
   get(name) {
-    const logs = this.findLogs({id: sym(name), key: assign});
+    const logs = this.findActiveLogs({id: sym(name), key: assign});
     const log = logs[logs.length-1];
     if (log) {
       return log.val;
