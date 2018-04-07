@@ -5,9 +5,9 @@
 - New Data Oriented Programming
 - New Reactive Programming
 
-## TodoMVC(Lay v0.1)
+## TodoMVC (Lay v0.1)
 
-### Example page
+### Example Page
 https://emeitch.github.io/Lay/todomvc/
 
 ### Application Source Code
