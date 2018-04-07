@@ -55,8 +55,9 @@ export const stdlib = new Book();
     return new Act(log => {
       for (const tag of Object.keys(p)) {
         const keys = p[tag];
-        const logtag = book.name(path(log.id, "tag").deepReduce(book));
-        if (logtag.origin === tag && keys.includes(log.key.origin)) {
+        const logtag = path(log.id, "tag").deepReduce(book);
+        const tagname = book.name(path(log.id, "tag").deepReduce(book));
+        if ((logtag.origin === tag || tagname.origin === tag) && keys.includes(log.key.origin)) {
           return log;
         } else {
           return null;

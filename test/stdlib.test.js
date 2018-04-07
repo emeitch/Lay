@@ -50,6 +50,36 @@ describe("stdlib", () => {
     });
   });
 
+
+  describe("filterLog", () => {
+    it("should filter act arg log by pattern", () => {
+      const id = new UUID();
+      const key = sym("key");
+      const val = v(0);
+      book.put(id, "tag", "Obj");
+      const act = new Act(() => {
+        return new Log(id, key, val);
+      });
+      let passedLog;
+      const act2 = new Act(log => {
+        passedLog = log;
+      });
+      book.run(path(act, ["then", exp("filterLog", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
+      assert(passedLog !== null);
+
+
+      book.set("Obj", new UUID()); // tag assigned
+      book.run(path(act, ["then", exp("filterLog", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
+      assert(passedLog !== null);
+
+      book.run(path(act, ["then", exp("filterLog", v({"Other": ["key"]}))], ["then", act2]).deepReduce(book));
+      assert(passedLog === null);
+
+      book.run(path(act, ["then", exp("filterLog", v({"Obj": ["other"]}))], ["then", act2]).deepReduce(book));
+      assert(passedLog === null);
+    });
+  });
+
   context("accessing Object methods", () => {
     describe("all", () => {
       it("should return self instances", () => {
