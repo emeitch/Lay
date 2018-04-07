@@ -144,7 +144,6 @@ export const stdlib = new Book();
       const o = [];
       while(args.length > 0) {
         const val = args.shift();
-        // todo: 独自tagが設定されてない場合のみval.originに最適化したい
         o.push(val instanceof Prim ? val.origin : val);
       }
       return new CompArray(o, head);
@@ -223,7 +222,6 @@ export const stdlib = new Book();
       while(args.length > 0) {
         const key = args.shift();
         const val = args.shift();
-        // todo: 独自tagが設定されてない場合のみval.originに最適化したい
         o[key.origin] = val instanceof Prim ? val.origin : val;
       }
       return new CompMap(o, head);
