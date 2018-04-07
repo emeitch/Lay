@@ -27,6 +27,29 @@ describe("stdlib", () => {
     });
   });
 
+  describe("load", () => {
+    it("should load prev act json string val to book", () => {
+      const id = new UUID();
+      const key = sym("key");
+      const val = v(0);
+      const act = new Act(() => {
+        return JSON.stringify([
+          new Log(id, key, val).object(book),
+        ]);
+      });
+      book.run(path(act, ["then", exp("load")]).deepReduce(book));
+      const log = book.findLogs({id})[0];
+      assert.deepStrictEqual(log.key, key);
+      assert.deepStrictEqual(log.val, val);
+    });
+
+    it("should nothing to do without prev act json string", () => {
+      const length = book.logs.length;
+      book.run(exp("load").deepReduce(book));
+      assert(length == book.logs.length);
+    });
+  });
+
   context("accessing Object methods", () => {
     describe("all", () => {
       it("should return self instances", () => {

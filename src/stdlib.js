@@ -41,7 +41,7 @@ export const stdlib = new Book();
   stdlib.set("load", func(new LiftedNative(function() {
     const book = this;
     return new Act(logsStr => {
-      const jsobj = JSON.parse(logsStr) || [];
+      const jsobj = logsStr ? JSON.parse(logsStr) : [];
       const logs = parse(jsobj);
       for (const log of logs) {
         book.doPutLog(log);
