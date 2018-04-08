@@ -58,6 +58,9 @@ export default class Path extends Ref {
 
       let prop = val.get(key.reduce(book), book);
       if (prop instanceof Function) {
+        // LiftedNativeの基本仕様はthisでbookを渡すだが
+        // 組み込みのメソッドの場合、thisで自身を参照したいケースが大半で
+        // bookを渡すわけにいかないので、自身の値をbindする
         const f = prop.bind(val);
         const nf = (...args) => f(...(args.map(a => a.reduce(book))));
         prop = func(new LiftedNative(nf));
