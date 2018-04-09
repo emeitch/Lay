@@ -550,7 +550,8 @@ const d = new Book(stdlib);
     )
   );
 
-  d.set("dom", domtree);
+  const doc = path("document").deepReduce(d);
+  d.put(doc, "body", domtree);
   d.set("DOMContentLoaded", func("win",
     path(
       "todos", ["changeStateByHash", path("win", "location", "hash")],

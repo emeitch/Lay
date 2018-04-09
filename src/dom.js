@@ -15,6 +15,7 @@ import { n } from './stdlib';
 let dirty = false;
 let vdomCache = null;
 export const dom = new Book();
+dom.set("document", new UUID());
 const projector = createProjector();
 dom.set(
   "onImport",
@@ -86,7 +87,7 @@ dom.set(
 
       function renderMaquette() {
         if (dirty || !vdomCache) {
-          const placeholder = sym("dom");
+          const placeholder = path("document", "body");
           const domtree = placeholder.deepReduce(book);
           dirty = false;
           vdomCache = render(domtree);
