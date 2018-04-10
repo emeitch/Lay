@@ -15,7 +15,9 @@ import { n } from './stdlib';
 let dirty = false;
 let vdomCache = null;
 export const dom = new Book();
-dom.set("document", new UUID());
+const doc = new UUID();
+dom.set("document", doc);
+dom.put(doc, "eventListeners", new UUID());
 const projector = createProjector();
 dom.set(
   "onImport",
@@ -95,8 +97,8 @@ dom.set(
         return vdomCache;
       }
 
-      document.addEventListener('DOMContentLoaded', () => {
-        const placeholder = sym("DOMContentLoaded");
+      document.addEventListener("DOMContentLoaded", () => {
+        const placeholder = path("document", "eventListeners", "DOMContentLoaded");
         const win = v({
           location: {
             hash: window.location.hash
