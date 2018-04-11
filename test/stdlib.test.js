@@ -210,6 +210,12 @@ describe("stdlib", () => {
         book.set("a", exp);
         assert.deepStrictEqual(path("a").deepReduce(book), v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
       });
+
+      context("illegal arguments", () => {
+        it("should throw error", () => {
+          assert.throws(() => path("Map", ["new", "Foo", "bar", v(1), "buz"]).reduce(book), /short arguments error/);
+        });
+      });
     });
 
     describe("get", () => {

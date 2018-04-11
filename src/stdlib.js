@@ -220,6 +220,9 @@ export const stdlib = new Book();
       const head = hsrc.equals(v(null)) ? undefined : hsrc;
       const o = {};
       while(args.length > 0) {
+        if (args.length == 1) {
+          throw "short arguments error";
+        }
         const key = args.shift();
         const val = args.shift();
         o[key.origin] = val instanceof Prim ? val.origin : val;
