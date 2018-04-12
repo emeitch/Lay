@@ -102,12 +102,12 @@ export default class Comp extends Val {
     return val.constructor === this.constructor && val.head.equals(this.head);
   }
 
-  collate(val) {
-    if (!this.sameType(val)) {
-      return super.collate(val);
+  collate(target) {
+    if (!this.sameType(target)) {
+      return super.collate(target);
     }
 
-    return this.origin.collate(Comp.valFrom(val.origin));
+    return this.origin.collate(Comp.valFrom(target.origin));
   }
 }
 
@@ -122,19 +122,19 @@ export class CompArray extends Comp {
     });
   }
 
-  collate(val) {
-    if (!this.sameType(val) || val.fields.length !== this.fields.length) {
-      return super.collate(val);
+  collate(target) {
+    if (!this.sameType(target) || target.fields.length !== this.fields.length) {
+      return super.collate(target);
     }
 
     const result = {};
     let i = 0;
     for (const pat of this.fields) {
-      const m = pat.collate(Comp.valFrom(val.fields[i]));
-      Object.assign(result, m);
+      const m = pat.collate(Comp.valFrom(target.fields[i]));
+      Object.assign(result, m.result);
       i++;
     }
-    return result;
+    return { pattern: this, target, result };
   }
 
   deepReduce(book) {
@@ -157,18 +157,18 @@ export class CompMap extends Comp {
     return ret;
   }
 
-  collate(val) {
-    if (!this.sameType(val)) {
-      return super.collate(val);
+  collate(target) {
+    if (!this.sameType(target)) {
+      return super.collate(target);
     }
 
     const result = {};
     for (const key of Object.keys(this.fields)) {
       const pat = this.fields[key];
-      const m = pat.collate(Comp.valFrom(val.fields[key]));
-      Object.assign(result, m);
+      const m = pat.collate(Comp.valFrom(target.fields[key]));
+      Object.assign(result, m.result);
     }
-    return result;
+    return { pattern: this, target, result };
   }
 
   deepReduce(book) {

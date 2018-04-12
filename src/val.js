@@ -91,8 +91,13 @@ export default class Val {
     return this.replace(matches);
   }
 
-  collate(val) {
-    return this.equals(val) ? {__it__: val} : null;
+  replaceSelfBy(val) {
+    return this.replace([val.match(new Sym("self"))]);
+  }
+
+  collate(target) {
+    const result = this.equals(target) ? { __it__: target } : null;
+    return { pattern: this, target, result };
   }
 
   match(pattern) {
@@ -139,9 +144,13 @@ export class Sym extends Val {
     return false;
   }
 
-  collate(val) {
+  collate(target) {
     return {
-      [this.origin]: val
+      pattern: this,
+      target,
+      result: {
+        [this.origin]: target
+      }
     };
   }
 

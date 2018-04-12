@@ -49,8 +49,8 @@ describe("Sym", () => {
 
   describe("#collate", () => {
     it("should return a matching book", () => {
-      const result = sym("sym1").collate(v("any"));
-      assert.deepStrictEqual(result.sym1, v("any"));
+      const match = sym("sym1").collate(v("any"));
+      assert.deepStrictEqual(match.result.sym1, v("any"));
     });
   });
 });

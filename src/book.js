@@ -127,15 +127,9 @@ export default class Book {
       return log;
     }
 
-    const pattern = sym("self");
-    const target = id;
-    const result = {self: id};
-    const match = {pattern, target, result};
-    const matches = [match];
-
     const tlogs = this.activeLogs(id, "tag");
     for (const tlog of tlogs) {
-      const p = tlog.val.replace(matches).reduce(this);
+      const p = tlog.val.replaceSelfBy(id).reduce(this);
       const l = this.findLogWithTags(p, key);
       if (l) {
         return l;

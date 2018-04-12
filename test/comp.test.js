@@ -66,10 +66,10 @@ describe("Comp", () => {
     describe("#collate", () => {
       context("unmatched other val", () => {
         it("should return null", () => {
-          assert.deepStrictEqual(v({a: 1}).collate(v([1])), null);
-          assert.deepStrictEqual(v([1]).collate(v({a: 1})), null);
-          assert.deepStrictEqual(v("Foo", {a: 1}).collate(v({a: 1})), null);
-          assert.deepStrictEqual(v("Foo", [1]).collate(v([1])), null);
+          assert.deepStrictEqual(v({a: 1}).collate(v([1])).result, null);
+          assert.deepStrictEqual(v([1]).collate(v({a: 1})).result, null);
+          assert.deepStrictEqual(v("Foo", {a: 1}).collate(v({a: 1})).result, null);
+          assert.deepStrictEqual(v("Foo", [1]).collate(v([1])).result, null);
         });
       });
     });

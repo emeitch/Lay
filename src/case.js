@@ -154,28 +154,27 @@ export default class Case extends Val {
     return new this.constructor(...alts);
   }
 
+  matches(patterns, targets) {
+    if (patterns.length === 0) {
+      return targets.map(target => ({
+        target,
+        result: {__it__: target}
+      }));
+    }
+
+    return patterns.map((pattern, i) => {
+      const target = targets[i];
+      if (target) {
+        return target.match(pattern);
+      } else {
+        return {pattern};
+      }
+    });
+  }
+
   apply(book, ...args) {
     for (const alt of this.alts) {
-      let matches;
-      if (alt.pats.length > 0) {
-        matches = alt.pats.map((pattern, i) => {
-          const target = args[i];
-          if (target) {
-            const result = target.match(pattern);
-            return {pattern, target, result};
-          } else {
-            return {pattern};
-          }
-        });
-      } else {
-        matches = args.map(target => {
-          return {
-            target,
-            result: {__it__: target}
-          };
-        });
-      }
-
+      const matches = this.matches(alt.pats, args);
       if (matches.every(match => match.result !== null)) {
         const nalt = alt.replaceAsTop(matches);
         if (nalt.pats.length > 0) {

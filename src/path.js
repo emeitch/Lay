@@ -72,19 +72,13 @@ export default class Path extends Ref {
         }
       }
 
-      const pattern = sym("self");
-      const target = val;
-      const result = {self: val};
-      const match = {pattern, target, result};
-      const matches = [match];
-
       if (prop instanceof Case) {
-        const c = prop.replace(matches);
-        const as = args.map(a => a.replace(matches));
+        const c = prop.replaceSelfBy(val);
+        const as = args.map(a => a.replaceSelfBy(val));
         const e = exp(c, ...as);
-        val = e.reduce(book).replace(matches);
+        val = e.reduce(book).replaceSelfBy(val);
       } else {
-        const replaced = prop.replace(matches);
+        const replaced = prop.replaceSelfBy(val);
         val = replaced.reduce(book);
       }
     }
