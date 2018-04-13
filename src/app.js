@@ -28,6 +28,7 @@ const d = new Book(stdlib);
   const todos = d.new();
   d.set("todos", todos);
   d.put(todos, "tag", "App");
+  d.put(todos, "var", v("0.1.0"));
   d.put(todos, "state", "all");
   d.put(todos, "newTaskTitle", v(""));
   d.put(todos, "changeState", func("s", path("self", ["set", "state", "s"])));

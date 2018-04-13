@@ -269,6 +269,11 @@ export const stdlib = new Book();
 }
 
 {
+  const app = new UUID();
+  stdlib.set("App", app);
+}
+
+{
   const cnsl = new UUID();
   stdlib.set("Console", cnsl);
 
