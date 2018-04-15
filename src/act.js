@@ -21,9 +21,9 @@ export default class Act extends Val {
     this.next = next;
     this.recovery = recovery;
     this.proceedOn = {
-      [ActStatus.PENDING]: this._proceedOnPending,
-      [ActStatus.FULFILLED]: this._proceedOnFulFilled,
-      [ActStatus.REJECTED]: this._proceedOnRejected,
+      [ActStatus.PENDING]: this.proceedOnPending,
+      [ActStatus.FULFILLED]: this.proceedOnFulFilled,
+      [ActStatus.REJECTED]: this.proceedOnRejected,
     };
   }
 
@@ -71,7 +71,7 @@ export default class Act extends Val {
     return this.clone({status: ActStatus.REJECTED, val});
   }
 
-  _proceedOnPending(arg) {
+  proceedOnPending(arg) {
     let val;
     try {
       val = this.executor(arg);
@@ -82,18 +82,18 @@ export default class Act extends Val {
     return this.resolve(val);
   }
 
-  _proceedOnFulFilled(_arg) {
+  proceedOnFulFilled(_arg) {
     if (!this.next) {
       throw "next act not found error";
     }
 
-    return this.next._proceedWithArg(this.val);
+    return this.next.proceedWithArg(this.val);
   }
 
-  _proceedOnRejected(_arg) {
+  proceedOnRejected(_arg) {
     if (this.recovery) {
       const act = this.recovery.then(this.next);
-      return act._proceedWithArg(this.val);
+      return act.proceedWithArg(this.val);
     }
 
     if (!this.next) {
@@ -103,7 +103,7 @@ export default class Act extends Val {
     return this.next.reject(this.val);
   }
 
-  _proceedWithArg(arg) {
+  proceedWithArg(arg) {
     const proc = this.proceedOn[this.status];
     if (!proc) {
       throw `can't proceed for unknown status: "${this.status}"`;
@@ -112,7 +112,7 @@ export default class Act extends Val {
   }
 
   proceed(arg) {
-    return this._proceedWithArg(arg);
+    return this.proceedWithArg(arg);
   }
 
   then(act) {
