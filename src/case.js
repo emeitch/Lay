@@ -5,16 +5,6 @@ import { sym } from './sym';
 import { exp } from './exp';
 
 export class Native extends Val {
-  _apply(book, ...args) {
-    if (args.some(arg => arg.reducible)) {
-      return exp(this, ...args);
-    }
-
-    const oargs = args.map(a => a.origin);
-    const orig = this.origin.apply(book, oargs);
-    return v(orig);
-  }
-
   apply(book, ...args) {
     for (let i = 0; i < args.length; i++) {
       const a = args[i];
@@ -27,7 +17,13 @@ export class Native extends Val {
       }
     }
 
-    return this._apply(book, ...args);
+    if (args.some(arg => arg.reducible)) {
+      return exp(this, ...args);
+    }
+
+    const oargs = args.map(a => a.origin);
+    const orig = this.origin.apply(book, oargs);
+    return v(orig);
   }
 
   replaceAsTop(matches) {
