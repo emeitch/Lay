@@ -4,7 +4,7 @@ import v from '../src/v';
 import Path, { path } from '../src/path';
 import UUID from '../src/uuid';
 import { sym } from '../src/sym';
-import { exp } from '../src/exp';
+import Exp, { exp } from '../src/exp';
 import { func, plus, concat } from '../src/func';
 import Log from '../src/log';
 import Book from '../src/book';
@@ -156,9 +156,22 @@ describe("Path", () => {
 
     context("access js object property", () => {
       describe("equals", () => {
-        const book = new Book();
-        const p = path(v(3), ["equals", exp(plus, v(1), v(2))]);
-        assert(p.reduce(book).origin);
+        it("should return equality", () => {
+          const book = new Book();
+          const p = path(v(3), ["equals", exp(plus, v(1), v(2))]);
+          assert.deepStrictEqual(p.reduce(book), v(true));
+        });
+
+        context("partial reduce", () => {
+          it("should return a exp", () => {
+            const id = new UUID();
+            const p = path(v(3), ["equals", path(id, "bar")]);
+            assert.deepStrictEqual(p.reduce(book).constructor, Exp);
+
+            book.put(id, "bar", v(3));
+            assert.deepStrictEqual(p.reduce(book), v(true));
+          });
+        });
       });
     });
 

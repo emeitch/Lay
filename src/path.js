@@ -62,7 +62,14 @@ export default class Path extends Ref {
         // 組み込みのメソッドの場合、thisで自身を参照したいケースが大半で
         // bookを渡すわけにいかないので、自身の値をbindする
         const f = prop.bind(val);
-        const nf = (...args) => f(...(args.map(a => a.reduce(book))));
+        const nf = (...args) => {
+          const as = args.map(a => a.reduce(book));
+          if (as.some(a => a.reducible)) {
+            return exp(new LiftedNative(nf), ...as);
+          }
+
+          return f(...as);
+        };
         prop = func(new LiftedNative(nf));
       }
       if (prop === undefined) {
