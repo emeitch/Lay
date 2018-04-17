@@ -294,7 +294,7 @@ export function n(...args) {
   if (Array.isArray(origin)) {
     return path("Array", ["new", head].concat(origin));
   } else {
-    const maparr = Object.keys(origin).reduce((r, k) => r.concat([k, origin[k]]), []);
+    const maparr = Object.keys(origin).reduce((r, k) => r.concat([k, v(origin[k])]), []);
     return path("Map", ["new", head].concat(maparr));
   }
 }
