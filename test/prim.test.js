@@ -1,11 +1,13 @@
 import assert from 'assert';
 import { sym } from '../src/sym';
+import { prim } from '../src/prim';
 import v from '../src/v';
 
 describe("Prim", () => {
   context("primitive value", () => {
     describe("#id", () => {
       it("should return oneself", () => {
+        assert.deepStrictEqual(prim(1).id, new prim(1));
         assert.deepStrictEqual(v(1).id, v(1));
         assert.deepStrictEqual(v("foo").id, v("foo"));
         assert.deepStrictEqual(v(true).id, v(true));

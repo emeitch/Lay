@@ -264,7 +264,7 @@ describe("Act", () => {
   describe("stringify", () => {
     it("should return string dump", () => {
       const act = new Act(a => a * a, undefined, 1);
-      assert(act.stringify() === "<Act executor: function (a) {return a * a;}, status: PENDING, val: 1>");
+      assert(act.stringify().match(/<Act executor: function/));
     });
   });
 

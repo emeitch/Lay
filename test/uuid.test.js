@@ -1,6 +1,15 @@
 import assert from 'assert';
 
+import Ref from '../src/ref';
 import UUID, { uuid } from '../src/uuid';
+
+describe("Ref", () => {
+  describe("get", () => {
+    it("should throw error", () => {
+      assert.throws(() => new Ref().stringify(), /Ref is abstruct class/);
+    });
+  });
+});
 
 describe("UUID", () => {
   describe("#stringify", () => {

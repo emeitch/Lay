@@ -266,10 +266,10 @@ describe("Func", () => {
   describe("stringify", () => {
     it("should return string dump", () => {
       const n = new Native(a => a * a);
-      assert(n.stringify() === "<Native function (a) {return a * a;}>");
+      assert(n.stringify().match(/<Native function/));
 
       const ln = new LiftedNative(val => val.origin * val.origin);
-      assert(ln.stringify() === "<LiftedNative function (val) {return val.origin * val.origin;}>");
+      assert(ln.stringify().match(/<LiftedNative function/));
     });
   });
 
