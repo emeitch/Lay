@@ -6,7 +6,7 @@ module.exports = {
     path: __dirname + "/build"
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         include: /src\//,

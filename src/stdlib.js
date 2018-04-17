@@ -297,7 +297,7 @@ export function n(...args) {
   } else {
     const maparr = Object.keys(origin).reduce((r, k) => {
       const o = origin[k];
-      const val = o instanceof Val ? o : v(o);
+      const val = o instanceof Val || typeof(o) === "string" ? o : v(o);
       return r.concat([k, val]);
     }, []);
     return path("Map", ["new", head].concat(maparr));
