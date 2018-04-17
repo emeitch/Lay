@@ -1,3 +1,4 @@
+import Val from './val';
 import v from './v';
 import UUID from './uuid';
 import Act from './act';
@@ -294,7 +295,11 @@ export function n(...args) {
   if (Array.isArray(origin)) {
     return path("Array", ["new", head].concat(origin));
   } else {
-    const maparr = Object.keys(origin).reduce((r, k) => r.concat([k, v(origin[k])]), []);
+    const maparr = Object.keys(origin).reduce((r, k) => {
+      const o = origin[k];
+      const val = o instanceof Val ? o : v(o);
+      return r.concat([k, val]);
+    }, []);
     return path("Map", ["new", head].concat(maparr));
   }
 }

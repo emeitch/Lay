@@ -299,6 +299,11 @@ describe("stdlib", () => {
       assert.deepStrictEqual(nested.constructor, Path);
       assert.deepStrictEqual(nested.reduce(book).get("foo"), v({bar: v("baz")}));
       assert.deepStrictEqual(nested.reduce(book).get("tag"), sym("Map"));
+
+      const nested2 = n({foo: n({bar: v("baz")}), fiz: v("buz")});
+      assert.deepStrictEqual(nested2.constructor, Path);
+      assert.deepStrictEqual(nested2.deepReduce(book).get("foo"), v({bar: v("baz")}));
+      assert.deepStrictEqual(nested2.deepReduce(book).get("tag"), sym("Map"));
     });
 
     describe("reduce", () => {
