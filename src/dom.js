@@ -24,13 +24,13 @@ dom.set(
   func(
     new LiftedNative(function() { return new Act(() => {
       const book = this;
-      function render(ev) {
-        if (ev === undefined) {
+      function render(elm) {
+        if (elm === undefined) {
           return undefined;
         }
 
         const children = [];
-        const cs = ev.get("children");
+        const cs = elm.get("children");
         if (cs !== undefined) {
           for (let i = 0; i < cs.origin.length; i++) {
             const c = cs.get(i);
@@ -43,27 +43,27 @@ dom.set(
         }
 
         const attr = {};
-        for (const key of Object.keys(ev.origin)) {
+        for (const key of Object.keys(elm.origin)) {
           if (key === "children") {
             continue;
           }
 
           if (key.match(/^on/)) {
-            const callback = event => {
+            const callback = ev => {
               // todo: イベントデータの扱いがアドホックな対応なのであとで改修する
               const eo = {
-                keyCode: event.keyCode,
-                value: event.target.value,
+                keyCode: ev.keyCode,
+                value: ev.target.value,
                 location: {
                   hash: window.location.hash
                 }
               };
-              const e = v("Event", eo);
-              const act = path(ev, [key, e]).deepReduce(book);
+              const event = v("Event", eo);
+              const act = path(elm, [key, event]).deepReduce(book);
               return book.run(act);
             };
 
-            if (ev.tag.equals(sym("body"))) {
+            if (elm.tag.equals(sym("body"))) {
               window[key] = (...args) => {
                 const res = callback(...args);
                 dirty = true;
@@ -76,15 +76,15 @@ dom.set(
           } else if (key.match(/^after/)) {
             attr[key] = element => {
               const env = {element};
-              const act = path(ev, key).deepReduce(book);
+              const act = path(elm, key).deepReduce(book);
               return book.run(new Act(() => env).then(act));
             };
           } else {
-            const val = path(ev, key).deepReduce(book);
+            const val = path(elm, key).deepReduce(book);
             attr[key] = val.origin;
           }
         }
-        return h(ev.tag.origin, attr, children);
+        return h(elm.tag.origin, attr, children);
       }
 
       function renderMaquette() {
