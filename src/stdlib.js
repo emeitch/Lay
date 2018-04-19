@@ -54,11 +54,11 @@ export const stdlib = new Book();
     const book = this;
     const p = pattern.deepReduce(book).origin;
     return new Act(log => {
-      for (const tag of Object.keys(p)) {
-        const keys = p[tag];
-        const logtag = path(log.id, "tag").deepReduce(book);
-        const tagname = book.name(path(log.id, "tag").deepReduce(book));
-        if ((logtag.origin === tag || tagname.origin === tag) && keys.includes(log.key.origin)) {
+      for (const klass of Object.keys(p)) {
+        const keys = p[klass];
+        const logclass = path(log.id, "class").deepReduce(book);
+        const classname = book.name(path(log.id, "class").deepReduce(book));
+        if ((logclass.origin === klass || classname.origin === klass) && keys.includes(log.key.origin)) {
           return log;
         } else {
           return null;
@@ -101,7 +101,7 @@ export const stdlib = new Book();
     obj,
     sym("all"),
     exp(new LiftedNative(function(self) {
-      return v(this.taggedIDs(self));
+      return v(this.instanceIDs(self));
     }), "self")
   );
 }

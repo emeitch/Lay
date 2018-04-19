@@ -34,10 +34,10 @@ describe("Comp", () => {
       });
     });
 
-    describe("#tag", () => {
-      it("should return tag sym", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2}).tag, sym("Map"));
-        assert.deepStrictEqual(v([1, 2, 3]).tag, sym("Array"));
+    describe("#class", () => {
+      it("should return class sym", () => {
+        assert.deepStrictEqual(v({a: 1, b: 2}).class, sym("Map"));
+        assert.deepStrictEqual(v([1, 2, 3]).class, sym("Array"));
       });
     });
 

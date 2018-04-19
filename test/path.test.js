@@ -175,29 +175,29 @@ describe("Path", () => {
       });
     });
 
-    context("access a key only its tag has the key", () => {
+    context("access a key only its class has the key", () => {
       const id = new UUID();
 
       beforeEach(() => {
-        const tagid1 = new UUID();
-        const tagid2 = new UUID();
-        const tagid3 = new UUID();
+        const classid1 = new UUID();
+        const classid2 = new UUID();
+        const classid3 = new UUID();
 
-        book.set("parent1", tagid1);
-        book.set("parent2", tagid2);
-        book.set("grandparent", tagid3);
+        book.set("parent1", classid1);
+        book.set("parent2", classid2);
+        book.set("grandparent", classid3);
 
-        book.put(id, sym("tag"), sym("parent1"));
-        book.put(id, sym("tag"), sym("parent2"));
-        book.put(tagid2, sym("tag"), sym("grandparent"));
+        book.put(id, sym("class"), sym("parent1"));
+        book.put(id, sym("class"), sym("parent2"));
+        book.put(classid2, sym("class"), sym("grandparent"));
 
-        book.put(tagid1, sym("foo"), v(1));
-        book.put(tagid2, sym("foo"), v(2));
-        book.put(tagid2, sym("bar"), v(3));
-        book.put(tagid3, sym("baz"), v(4));
+        book.put(classid1, sym("foo"), v(1));
+        book.put(classid2, sym("foo"), v(2));
+        book.put(classid2, sym("bar"), v(3));
+        book.put(classid3, sym("baz"), v(4));
       });
 
-      it("should return the tag's val", () => {
+      it("should return the class's val", () => {
         const p1 = new Path(id, sym("foo"));
         assert.deepStrictEqual(p1.reduce(book), v(1));
 
@@ -209,52 +209,52 @@ describe("Path", () => {
       });
     });
 
-    context("path referencing tag", () => {
+    context("path referencing class", () => {
       const id = new UUID();
 
       beforeEach(() => {
-        const tagid1 = new UUID();
+        const classid1 = new UUID();
 
-        book.set("parent1", tagid1);
+        book.set("parent1", classid1);
 
-        book.put(id, sym("tag"), path(sym("self"), sym("baz")));
+        book.put(id, sym("class"), path(sym("self"), sym("baz")));
         book.put(id, sym("baz"), sym("parent1"));
 
-        book.put(tagid1, sym("foo"), v("bar"));
+        book.put(classid1, sym("foo"), v("bar"));
       });
 
-      it("should return the tag's val", () => {
+      it("should return the class's val", () => {
         const p1 = new Path(id, sym("foo"));
         assert.deepStrictEqual(p1.reduce(book), v("bar"));
       });
     });
 
-    context("tag by path with args", () => {
+    context("class by path with args", () => {
       const id = new UUID();
 
       beforeEach(() => {
-        const tagid1 = new UUID();
+        const classid1 = new UUID();
 
-        book.set("parent1", tagid1);
+        book.set("parent1", classid1);
 
-        book.put(id, sym("tag"), path(sym("self"), [sym("baz"), sym("parent1")]));
+        book.put(id, sym("class"), path(sym("self"), [sym("baz"), sym("parent1")]));
         book.put(id, sym("baz"), func("arg", sym("arg")));
 
-        book.put(tagid1, sym("foo"), v("bar"));
+        book.put(classid1, sym("foo"), v("bar"));
       });
 
-      it("should return the tag's val", () => {
+      it("should return the class's val", () => {
         const p1 = new Path(id, sym("foo"));
         assert.deepStrictEqual(p1.reduce(book), v("bar"));
       });
     });
 
-    context("with tag but it dosen't have the key", () => {
+    context("with class but it dosen't have the key", () => {
       const id = new UUID();
 
       beforeEach(() => {
-        const tagid = new UUID();
-        book.put(id, "tag", tagid);
+        const classid = new UUID();
+        book.put(id, "class", classid);
       });
 
       it("should return the path", () => {

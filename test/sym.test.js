@@ -19,7 +19,7 @@ describe("Sym", () => {
       assert(sym("sym").reduce(book) === val);
     });
 
-    context("multi-stage refering", () => {
+    context("multi-sclasse refering", () => {
       const val = v("sym val");
       const book = new Book();
       book.set("sym", sym("sym2"));

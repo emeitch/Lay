@@ -26,7 +26,7 @@ export default class Log {
       logid: this.logid.object(book),
       id: this.id.object(book),
       key: this.key.object(book),
-      val: (this.key.equals(sym("tag")) ? book.name(val) : val).object(book),
+      val: (this.key.equals(sym("class")) ? book.name(val) : val).object(book),
       at: this.at.toJSON(),
       in: this.in
     };

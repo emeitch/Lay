@@ -69,7 +69,7 @@ export default class Comp extends Val {
     return this.origin;
   }
 
-  get tag() {
+  get class() {
     return this.head;
   }
 

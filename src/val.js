@@ -13,12 +13,12 @@ export default class Val {
     return this;
   }
 
-  get tag() {
+  get class() {
     return new Sym(this.constructor.name);
   }
 
-  get _tag() {
-    return this.tag;
+  get _class() {
+    return this.class;
   }
 
   get _toStr() {
@@ -33,7 +33,7 @@ export default class Val {
     const key = k instanceof Sym ? k.origin : k;
 
     if (book) {
-      const proto = this.tag.reduce(book);
+      const proto = this.class.reduce(book);
       if (!(proto instanceof Sym)) {
         return proto.get(key, book);
       }
@@ -132,7 +132,7 @@ export default class Val {
 
   object(_book) {
     return {
-      tag: this.tag.object(_book),
+      class: this.class.object(_book),
       origin: this.origin
     };
   }
@@ -190,7 +190,7 @@ export class Prim extends Val {
     return JSON.stringify(this.origin);
   }
 
-  get tag() {
+  get class() {
     if (this.origin === null) {
       return new Sym("Null");
     }

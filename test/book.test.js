@@ -176,14 +176,14 @@ describe("Book", () => {
         book.put(id, "foo", v("bar"));
       });
 
-      it("should return tag's prop", () => {
+      it("should return class's prop", () => {
         assert.deepStrictEqual(v(1).get("foo", book), v("bar"));
       });
 
       it("should return id's prop", () => {
         assert.deepStrictEqual(id.get("foo", book), v("bar"));
-        assert.deepStrictEqual(id.get("tag", book), sym("UUID"));
-        assert.deepStrictEqual(id.get("tag"), sym("UUID"));
+        assert.deepStrictEqual(id.get("class", book), sym("UUID"));
+        assert.deepStrictEqual(id.get("class"), sym("UUID"));
       });
     });
   });
@@ -353,7 +353,7 @@ describe("Book", () => {
     });
   });
 
-  describe("#taggedIDs", () => {
+  describe("#instanceIDs", () => {
     let t1;
 
     let id0;
@@ -363,16 +363,16 @@ describe("Book", () => {
       t1 = book.new();
       book.set("T1", t1);
 
-      id0 = book.new({"tag": "T1"});
-      id1 = book.new({"tag": "T1"});
-      id2 = book.new({"tag": "T1"});
+      id0 = book.new({"class": "T1"});
+      id1 = book.new({"class": "T1"});
+      id2 = book.new({"class": "T1"});
     });
 
-    it("should return tagged id list", () => {
-      assert.deepStrictEqual(book.taggedIDs(t1), [id0, id1, id2]);
+    it("should return classged id list", () => {
+      assert.deepStrictEqual(book.instanceIDs(t1), [id0, id1, id2]);
 
       const t2 = book.new();
-      assert.deepStrictEqual(book.taggedIDs(t2), []);
+      assert.deepStrictEqual(book.instanceIDs(t2), []);
     });
 
     context("set exists false", () => {
@@ -381,7 +381,7 @@ describe("Book", () => {
       });
 
       it("should return new generated ids", () => {
-        const ids = book.taggedIDs(t1);
+        const ids = book.instanceIDs(t1);
         assert(ids.length === 2);
         assert(ids[0] === id0);
         assert(ids[1] === id2);

@@ -9,17 +9,17 @@ describe("parse", () => {
   it("should parse raw logs", () => {
     const raws = [
       {
-        logid: {tag: "UUID", origin: "logid1"},
-        id: {tag: "UUID", origin: "uuidexample"},
+        logid: {class: "UUID", origin: "logid1"},
+        id: {class: "UUID", origin: "uuidexample"},
         key: "key1",
-        val: {tag: "Number", origin: 1},
+        val: {class: "Number", origin: 1},
         at: "2018-04-01T00:00:00z"
       },
       {
-        logid: {tag: "UUID", origin: "logid2"},
-        id: {tag: "UUID", origin: "uuidexample"},
+        logid: {class: "UUID", origin: "logid2"},
+        id: {class: "UUID", origin: "uuidexample"},
         key: "key2",
-        val: {tag: "String", origin: "2"},
+        val: {class: "String", origin: "2"},
         at: "2018-04-02T00:00:00z"
       },
     ];
@@ -31,7 +31,7 @@ describe("parse", () => {
   });
 
   it("should raise error unparsed raw logs", () => {
-    assert.throws(() => parse([{id: {tag: "Dummy"}}]), /can not identify a val:/);
+    assert.throws(() => parse([{id: {class: "Dummy"}}]), /can not identify a val:/);
     assert.throws(() => parse([{id: 1}]), /can not identify a val:/);
 
   });

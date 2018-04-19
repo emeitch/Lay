@@ -8,14 +8,14 @@ function parseVal(raw) {
   if (type === "string") {
     return new Sym(raw);
   } else if (type === "object") {
-    if (raw.tag === "Number" ||
-        raw.tag === "String" ||
-        raw.tag === "Boolean" ||
-        raw.tag === "Null" ||
-        raw.tag === "CompArray" ||
-        raw.tag === "CompMap") {
+    if (raw.class === "Number" ||
+        raw.class === "String" ||
+        raw.class === "Boolean" ||
+        raw.class === "Null" ||
+        raw.class === "CompArray" ||
+        raw.class === "CompMap") {
       return new Prim(raw.origin);
-    } else if (raw.tag === "UUID") {
+    } else if (raw.class === "UUID") {
       return new UUID(raw.origin);
     }
   }

@@ -24,12 +24,12 @@ describe("Prim", () => {
       });
     });
 
-    describe("#tag", () => {
-      it("should return tag sym", () => {
-        assert.deepStrictEqual(v(1).tag, sym("Number"));
-        assert.deepStrictEqual(v("foo").tag, sym("String"));
-        assert.deepStrictEqual(v(true).tag, sym("Boolean"));
-        assert.deepStrictEqual(v(null).tag, sym("Null"));
+    describe("#class", () => {
+      it("should return class sym", () => {
+        assert.deepStrictEqual(v(1).class, sym("Number"));
+        assert.deepStrictEqual(v("foo").class, sym("String"));
+        assert.deepStrictEqual(v(true).class, sym("Boolean"));
+        assert.deepStrictEqual(v(null).class, sym("Null"));
       });
     });
   });
