@@ -1,5 +1,4 @@
 import Val from './val';
-// import { CompMap } from './comp';
 import v from './v';
 import { sym } from './sym';
 import { exp } from './exp';
