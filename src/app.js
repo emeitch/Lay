@@ -15,9 +15,9 @@ const d = new Book(stdlib);
   d.put(Task,
     "toggle",
     exp("if",
-      path("self", "state", ["equals", "active"]),
-      path("self", ["set", "state", "completed"]),
-      path("self", ["set", "state", "active"])
+      path("self", "state", ["equals", n("active")]),
+      path("self", ["set", "state", n("completed")]),
+      path("self", ["set", "state", n("active")])
     )
   );
   d.put(Task, "editing", v(false));
@@ -29,7 +29,7 @@ const d = new Book(stdlib);
   d.set("todos", todos);
   d.put(todos, "class", "App");
   d.put(todos, "var", v("0.2.0"));
-  d.put(todos, "state", "all");
+  d.put(todos, "state", n("all"));
   d.put(todos, "newTaskTitle", v(""));
   d.put(todos, "changeState", func("s", path("self", ["set", "state", "s"])));
   d.put(todos, "changeStateByHash", func(
@@ -37,12 +37,12 @@ const d = new Book(stdlib);
     exp(
       "if",
       path("hash", ["equals", v("#/active")]),
-      path("todos", ["changeState", "active"]),
+      path("todos", ["changeState", n("active")]),
       exp(
         "if",
         path("hash", ["equals", v("#/completed")]),
-        path("todos", ["changeState", "completed"]),
-        path("todos", ["changeState", "all"])
+        path("todos", ["changeState", n("completed")]),
+        path("todos", ["changeState", n("all")])
       )
     )
   ));
@@ -82,7 +82,7 @@ const d = new Book(stdlib);
                       n({
                         "class": "Task",
                         "title": path("ev", "value", "trim"),
-                        "state": "active"
+                        "state": n("active")
                       })
                     ],
                     [
@@ -127,7 +127,7 @@ const d = new Book(stdlib);
               [
                 "every",
                 func("tid",
-                  path("tid", "state", ["equals", "completed"]))
+                  path("tid", "state", ["equals", n("completed")]))
               ]
             ),
             onchange:
@@ -140,7 +140,7 @@ const d = new Book(stdlib);
                     [
                       "every",
                       func("tid",
-                        path("tid", "state", ["equals", "completed"]))
+                        path("tid", "state", ["equals", n("completed")]))
                     ]
                   ),
                   path(
@@ -149,7 +149,7 @@ const d = new Book(stdlib);
                     [
                       "map",
                       func("tid",
-                        path("tid", ["set", "state", "active"]))
+                        path("tid", ["set", "state", n("active")]))
                     ]
                   ),
                   path(
@@ -158,7 +158,7 @@ const d = new Book(stdlib);
                     [
                       "map",
                       func("tid",
-                        path("tid", ["set", "state", "completed"]))
+                        path("tid", ["set", "state", n("completed")]))
                     ]
                   )
                 )
@@ -171,13 +171,13 @@ const d = new Book(stdlib);
                   "filter", func("tid",
                   exp(
                     "if",
-                    path("todos", "state", ["equals", "all"]),
+                    path("todos", "state", ["equals", n("all")]),
                     v(true),
                     exp(
                       "if",
-                      path("todos", "state", ["equals", "active"]),
-                      path("tid", "state", ["equals", "active"]),
-                      path("tid", "state", ["equals", "completed"])
+                      path("todos", "state", ["equals", n("active")]),
+                      path("tid", "state", ["equals", n("active")]),
+                      path("tid", "state", ["equals", n("completed")])
                     )
                   )
                 )],
@@ -186,7 +186,7 @@ const d = new Book(stdlib);
                     key: "tid",
                     class: path(
                       n([
-                        path("tid", "state"),
+                        path("tid", "state", "head"),
                         exp(
                           "if",
                           path("tid", "editing"),
@@ -202,7 +202,7 @@ const d = new Book(stdlib);
                     e.input({
                       class: "toggle",
                       type: "checkbox",
-                      checked: path("tid", "state", ["equals", "completed"]),
+                      checked: path("tid", "state", ["equals", n("completed")]),
                       onchange:
                         func("ev",
                           path("tid", "toggle")
@@ -406,7 +406,7 @@ const d = new Book(stdlib);
                     path(
                       "tid",
                       "state",
-                      ["equals", "active"]))],
+                      ["equals", n("active")]))],
                 "count",
                 "toStr")),
             e.span(v(" ")),
@@ -421,7 +421,7 @@ const d = new Book(stdlib);
                       path(
                         "tid",
                         "state",
-                        ["equals", "active"]))],
+                        ["equals", n("active")]))],
                   "count",
                   ["equals", v(1)]
                 ),
@@ -438,7 +438,7 @@ const d = new Book(stdlib);
                   href: "#/",
                   class: exp(
                     "if",
-                    path("todos", "state", ["equals", "all"]),
+                    path("todos", "state", ["equals", n("all")]),
                     "selected",
                     "none"
                   )
@@ -452,7 +452,7 @@ const d = new Book(stdlib);
                   href: "#/active",
                   class: exp(
                     "if",
-                    path("todos", "state", ["equals", "active"]),
+                    path("todos", "state", ["equals", n("active")]),
                     "selected",
                     "none"
                   )
@@ -466,7 +466,7 @@ const d = new Book(stdlib);
                   href: "#/completed",
                   class: exp(
                     "if",
-                    path("todos", "state", ["equals", "completed"]),
+                    path("todos", "state", ["equals", n("completed")]),
                     "selected",
                     "none"
                   )
@@ -483,7 +483,7 @@ const d = new Book(stdlib);
               [
                 "filter",
                 func("tid",
-                  path("tid", "state", ["equals", "completed"]))
+                  path("tid", "state", ["equals", n("completed")]))
               ],
               "count",
               ["equals", v(0)],
@@ -504,7 +504,7 @@ const d = new Book(stdlib);
                           "state",
                           [
                             "equals",
-                            "completed"
+                            n("completed")
                           ]
                         )
                       )

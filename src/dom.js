@@ -63,7 +63,7 @@ dom.set(
               return book.run(act);
             };
 
-            if (elm.class.equals(sym("body"))) {
+            if (elm.head.equals(sym("body"))) {
               window[key] = (...args) => {
                 const res = callback(...args);
                 dirty = true;
@@ -84,7 +84,7 @@ dom.set(
             attr[key] = val.origin;
           }
         }
-        return h(elm.class.origin, attr, children);
+        return h(elm.head.origin, attr, children);
       }
 
       function renderMaquette() {

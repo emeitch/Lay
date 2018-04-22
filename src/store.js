@@ -2,6 +2,8 @@ import Prim from './prim';
 import Sym from './sym';
 import UUID from './uuid';
 import Log from './log';
+import Comp from './comp';
+import v from './v';
 
 function parseVal(raw) {
   const type = typeof(raw);
@@ -11,10 +13,15 @@ function parseVal(raw) {
     if (raw.class === "Number" ||
         raw.class === "String" ||
         raw.class === "Boolean" ||
-        raw.class === "Null" ||
-        raw.class === "CompArray" ||
-        raw.class === "CompMap") {
+        raw.class === "Null") {
       return new Prim(raw.origin);
+    } else if (raw.class === "Comp") {
+      return new Comp(raw.origin, new Sym(raw.head));
+    } else if (
+      raw.class === "Array" ||
+      raw.class === "Map"
+    ) {
+      return v(raw.head, raw.origin);
     } else if (raw.class === "UUID") {
       return new UUID(raw.origin);
     }

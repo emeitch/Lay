@@ -141,7 +141,7 @@ export const stdlib = new Book();
     sym("new"),
     func(new LiftedNative(function(...args) {
       const head = args.shift();
-      const origin = args.shift() || {};
+      const origin = args.shift() || null;
       return new Comp(origin, head);
     }))
   );

@@ -1,5 +1,6 @@
 import assert from 'assert';
 
+import Book from '../src/book';
 import Hash from '../src/hash';
 import { sym } from '../src/sym';
 import v from '../src/v';
@@ -41,6 +42,39 @@ describe("Comp", () => {
       });
     });
 
+    describe("#object", () => {
+      it("should return class sym", () => {
+        const book = new Book();
+
+        assert.deepStrictEqual(v({a: 1, b: 2}).object(book), {
+          class: "Map",
+          origin: {
+            a: 1,
+            b: 2
+          }
+        });
+        assert.deepStrictEqual(v([1, 2, 3]).object(book), {
+          class: "Array",
+          origin: [1, 2, 3]
+        });
+
+
+        assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(book), {
+          class: "Map",
+          head: "foo",
+          origin: {
+            a: 1,
+            b: 2
+          }
+        });
+        assert.deepStrictEqual(v("bar", [1, 2, 3]).object(book), {
+          class: "Array",
+          head: "bar",
+          origin: [1, 2, 3]
+        });
+      });
+    });
+
     describe("#merge", () => {
       it("should return merged comp", () => {
         const val = v({a: 1, b: 2});
@@ -77,9 +111,9 @@ describe("Comp", () => {
 
   describe("stringify", () => {
     it("should return string dump", () => {
-      assert(v({a: [1, 2], b: "bar"}).stringify() === "Map {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
+      assert(v({a: [1, 2], b: "bar"}).stringify() === "{\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
 
-      assert(v({a: [v(1), v(2)], b: v("bar")}).stringify() === "Map {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
+      assert(v({a: [v(1), v(2)], b: v("bar")}).stringify() === "{\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
 
       assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).stringify() === "Foo {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
     });

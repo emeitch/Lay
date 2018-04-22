@@ -4,6 +4,8 @@ import Prim from './prim';
 import Hash from './hash';
 import Sym, { sym } from './sym';
 
+const NullVal = new Prim(null);
+
 export default class Comp extends Val {
   static valFrom(...args) {
     const origin = args.pop();
@@ -45,11 +47,11 @@ export default class Comp extends Val {
 
   constructor(origin, head) {
     super(origin);
-    this.head = head;
+    this.head = head || NullVal;
   }
 
   stringify(_indent=0) {
-    const head = this.head.stringify() + " ";
+    const head = !this.head.equals(NullVal) ? this.head.stringify() + " " : "";
     return head + Val.stringify(this.origin, _indent);
   }
 
@@ -69,14 +71,13 @@ export default class Comp extends Val {
     return this.origin;
   }
 
-  get class() {
-    return this.head;
-  }
-
   get(k, book) {
     const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
 
-    if (this.origin.hasOwnProperty(key)) {
+    if (
+      this.origin !== null
+      && this.origin.hasOwnProperty(key)
+    ) {
       return this.constructor.valFrom(this.origin[key]);
     }
 
@@ -84,7 +85,7 @@ export default class Comp extends Val {
       return this.head.get(key);
     }
 
-    if (k === "head") {
+    if (key === "head") {
       return this.head;
     }
 
@@ -103,7 +104,10 @@ export default class Comp extends Val {
   }
 
   sameType(val) {
-    return val.constructor === this.constructor && val.head.equals(this.head);
+    return (
+      val.constructor === this.constructor
+      && val.head.equals(this.head)
+    );
   }
 
   collate(target) {
@@ -113,11 +117,19 @@ export default class Comp extends Val {
 
     return this.origin.collate(Comp.valFrom(target.origin));
   }
+
+  object(book) {
+    const o = super.object(book);
+    if (!this.head.equals(NullVal)) {
+      Object.assign(o, {head: this.head.object(book)});
+    }
+    return o;
+  }
 }
 
 export class CompArray extends Comp {
-  constructor(origin, head) {
-    super(origin, head || sym("Array"));
+  get class() {
+     return sym("Array");
   }
 
   get jsObj() {
@@ -148,8 +160,8 @@ export class CompArray extends Comp {
 }
 
 export class CompMap extends Comp {
-  constructor(origin, head) {
-    super(origin, head || sym("Map"));
+  get class() {
+     return sym("Map");
   }
 
   get jsObj() {
