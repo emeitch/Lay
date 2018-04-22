@@ -1,8 +1,6 @@
-import Prim from './prim';
 import Sym from './sym';
 import UUID from './uuid';
 import Log from './log';
-import Comp from './comp';
 import v from './v';
 
 function parseVal(raw) {
@@ -14,10 +12,9 @@ function parseVal(raw) {
         raw.class === "String" ||
         raw.class === "Boolean" ||
         raw.class === "Null") {
-      return new Prim(raw.origin);
-    } else if (raw.class === "Comp") {
-      return new Comp(raw.origin, new Sym(raw.head));
+      return v(raw.origin);
     } else if (
+      raw.class === "Comp" ||
       raw.class === "Array" ||
       raw.class === "Map"
     ) {
