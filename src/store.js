@@ -13,15 +13,23 @@ function parseVal(raw) {
         raw.class === "Boolean" ||
         raw.class === "Null") {
       return v(raw.origin);
-    } else if (
-      raw.class === "Comp" ||
-      raw.class === "Array" ||
-      raw.class === "Map"
-    ) {
-      return v(raw.head, raw.origin);
+    } else if (raw.class === "Comp") {
+      return v(raw.head, parseVal(raw.origin));
+    } else if (raw.class === "Array") {
+      return v(raw.head, raw.origin.map(i => parseVal(i)));
+    } else if (raw.class === "Map") {
+      return v(raw.head, parseVal(raw.origin));
     } else if (raw.class === "UUID") {
       return new UUID(raw.origin);
+    } else {
+      return raw;
     }
+  } else if (
+    type === "number" ||
+    type === "boolean" ||
+    type === "null"
+  ) {
+    return raw;
   }
 
   throw `can not identify a val: ${raw}`;
