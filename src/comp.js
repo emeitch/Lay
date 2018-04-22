@@ -84,6 +84,10 @@ export default class Comp extends Val {
       return this.head.get(key);
     }
 
+    if (k === "head") {
+      return this.head;
+    }
+
     return super.get(k, book);
   }
 

@@ -4,7 +4,7 @@ import UUID from './uuid';
 import Act from './act';
 import Book from './book';
 import Prim from './prim';
-import { CompArray, CompMap } from  './comp';
+import Comp, { CompArray, CompMap } from  './comp';
 import { sym } from './sym';
 import { exp } from './exp';
 import { kase, alt, grd, otherwise } from './case';
@@ -129,6 +129,21 @@ export const stdlib = new Book();
     exp(new LiftedNative(function(self) {
       return v(!self.origin);
     }), "self")
+  );
+}
+
+{
+  const comp = new UUID();
+  stdlib.set("Comp", comp);
+
+  stdlib.put(
+    comp,
+    sym("new"),
+    func(new LiftedNative(function(...args) {
+      const head = args.shift();
+      const origin = args.shift() || {};
+      return new Comp(origin, head);
+    }))
   );
 }
 
@@ -294,12 +309,19 @@ export function n(...args) {
   const head = args.pop() || v(null);
   if (Array.isArray(origin)) {
     return path("Array", ["new", head].concat(origin));
-  } else {
+  } if (origin instanceof Object && !(origin instanceof Val)) {
     const maparr = Object.keys(origin).reduce((r, k) => {
       const o = origin[k];
       const val = o instanceof Val || typeof(o) === "string" ? o : v(o);
       return r.concat([k, val]);
     }, []);
     return path("Map", ["new", head].concat(maparr));
+  } else {
+    if (head instanceof Val && head.equals(v(null))) {
+      const h = origin;
+      return path("Comp", ["new", h]);
+    } else {
+      return path("Comp", ["new", head, origin]);
+    }
   }
 }
