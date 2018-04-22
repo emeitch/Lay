@@ -30,7 +30,7 @@ export default class Comp extends Val {
       if (Array.isArray(origin)) {
         orgn = origin.map(val => val instanceof Prim ? val.origin : val);
         return new CompArray(orgn, head);
-      } else if (type === "object" && origin.constructor === Object) {
+      } else if (type === "object" && origin && origin.constructor === Object) {
         orgn = {};
         for (const key of Object.keys(origin)) {
           const val = origin[key];

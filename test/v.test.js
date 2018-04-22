@@ -51,11 +51,20 @@ describe("v function", () => {
   });
 
   context("with premitive complex value", () => {
-    it("should return a empty Comp", () => {
+    it("should return a Comp with head", () => {
       const val = v("Foo", 1);
       assert.deepStrictEqual(val, new Comp(1, sym("Foo")));
       assert.deepStrictEqual(val.head, sym("Foo"));
       assert.deepStrictEqual(val.fields, 1);
+    });
+  });
+
+  context("with null premitive complex value", () => {
+    it("should return a head only Comp", () => {
+      const val = v("Foo", null);
+      assert.deepStrictEqual(val, new Comp(null, sym("Foo")));
+      assert.deepStrictEqual(val.head, sym("Foo"));
+      assert.deepStrictEqual(val.fields, null);
     });
   });
 
