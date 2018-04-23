@@ -43,7 +43,13 @@ describe("parse", () => {
         val: {class: "Array", head: "foo", origin: [{class: "Map", head: "bar", origin: {a: 1, b: 2}}]},
         at: "2018-04-02T00:00:00z"
       },
-
+      {
+        logid: {class: "UUID", origin: "logid4"},
+        id: {class: "UUID", origin: "uuidexample"},
+        key: "key5",
+        val: {class: "Map", head: "foo", origin: {a: {class: "Array", head: "bar", origin: [1, 2, 3]}}},
+        at: "2018-04-02T00:00:00z"
+      },
     ];
     const logs = parse(raws);
     assert.deepStrictEqual(logs[0].id, new UUID("uuidexample"));
@@ -53,6 +59,7 @@ describe("parse", () => {
     assert.deepStrictEqual(logs[2].val, v("foo", 3));
     assert.deepStrictEqual(logs[3].val, v([1, 2, 3]));
     assert.deepStrictEqual(logs[4].val, v("foo", [v("bar", {a: 1, b: 2})]));
+    assert.deepStrictEqual(logs[5].val, v("foo", {a: v("bar", [1, 2, 3])}));
   });
 
   it("should raise error unparsed raw logs", () => {

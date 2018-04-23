@@ -18,7 +18,11 @@ function parseVal(raw) {
     } else if (raw.class === "Array") {
       return v(raw.head, raw.origin.map(i => parseVal(i)));
     } else if (raw.class === "Map") {
-      return v(raw.head, parseVal(raw.origin));
+      const org = {};
+      for (const key of Object.keys(raw.origin)) {
+        org[key] = parseVal(raw.origin[key]);
+      }
+      return v(raw.head, org);
     } else if (raw.class === "UUID") {
       return new UUID(raw.origin);
     } else {
