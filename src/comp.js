@@ -67,8 +67,8 @@ export default class Comp extends Val {
     return false;
   }
 
-  get fields() {
-    return this.origin;
+  get field() {
+    return Comp.valFrom(this.origin);
   }
 
   get(k, book) {
@@ -139,14 +139,14 @@ export class CompArray extends Comp {
   }
 
   collate(target) {
-    if (!this.sameType(target) || target.fields.length !== this.fields.length) {
+    if (!this.sameType(target) || this.origin.length !== this.origin.length) {
       return super.collate(target);
     }
 
     const result = {};
     let i = 0;
-    for (const pat of this.fields) {
-      const m = pat.collate(Comp.valFrom(target.fields[i]));
+    for (const pat of this.origin) {
+      const m = pat.collate(Comp.valFrom(target.origin[i]));
       Object.assign(result, m.result);
       i++;
     }
@@ -179,9 +179,9 @@ export class CompMap extends Comp {
     }
 
     const result = {};
-    for (const key of Object.keys(this.fields)) {
-      const pat = this.fields[key];
-      const m = pat.collate(Comp.valFrom(target.fields[key]));
+    for (const key of Object.keys(this.origin)) {
+      const pat = this.origin[key];
+      const m = pat.collate(Comp.valFrom(target.origin[key]));
       Object.assign(result, m.result);
     }
     return { pattern: this, target, result };

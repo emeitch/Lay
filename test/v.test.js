@@ -29,14 +29,12 @@ describe("v function", () => {
       const val = v("Foo", {a: 1, b: 2});
       assert(val instanceof Comp);
       assert.deepStrictEqual(val.head, sym("Foo"));
-      assert.deepStrictEqual(val.fields, {a: 1, b: 2});
       assert.deepStrictEqual(val.origin, {a: 1, b: 2});
       assert.deepStrictEqual(val.get("a"), v(1));
 
       const val2 = v("Foo", [1, 2]);
       assert(val2 instanceof Comp);
       assert.deepStrictEqual(val2.head, sym("Foo"));
-      assert.deepStrictEqual(val2.fields, [1, 2]);
       assert.deepStrictEqual(val2.origin, [1, 2]);
       assert.deepStrictEqual(val2.get(0), v(1));
     });
@@ -46,7 +44,7 @@ describe("v function", () => {
     it("should return a empty Comp", () => {
       const val = v("Foo", {});
       assert.deepStrictEqual(val.head, sym("Foo"));
-      assert.deepStrictEqual(val.fields, {});
+      assert.deepStrictEqual(val.origin, {});
     });
   });
 
@@ -55,7 +53,7 @@ describe("v function", () => {
       const val = v("Foo", 1);
       assert.deepStrictEqual(val, new Comp(1, sym("Foo")));
       assert.deepStrictEqual(val.head, sym("Foo"));
-      assert.deepStrictEqual(val.fields, 1);
+      assert.deepStrictEqual(val.origin, 1);
     });
   });
 
@@ -64,7 +62,7 @@ describe("v function", () => {
       const val = v("Foo", null);
       assert.deepStrictEqual(val, new Comp(null, sym("Foo")));
       assert.deepStrictEqual(val.head, sym("Foo"));
-      assert.deepStrictEqual(val.fields, null);
+      assert.deepStrictEqual(val.origin, null);
     });
   });
 
@@ -73,7 +71,6 @@ describe("v function", () => {
       const val = v("Foo", {a: v("Bar", {b: 1, c: 2})});
       assert(val instanceof Comp);
       assert.deepStrictEqual(val.head, sym("Foo"));
-      assert.deepStrictEqual(val.fields, {a: v("Bar", {b: 1, c: 2})});
       assert.deepStrictEqual(val.origin, {a: v("Bar", {b: 1, c: 2})});
       assert.deepStrictEqual(val.get("a"), v("Bar", {b: 1, c: 2}));
     });
