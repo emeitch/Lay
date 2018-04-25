@@ -284,6 +284,7 @@ describe("stdlib", () => {
       const narr = n([v(10), v(11), v(12)]);
       assert.deepStrictEqual(narr.constructor, Path);
       assert.deepStrictEqual(narr.reduce(book).get(v(0)), v(10));
+      assert.deepStrictEqual(narr.reduce(book).get("head"), v(null));
       assert.deepStrictEqual(narr.reduce(book).get("class"), sym("Array"));
 
       const map = n("Mp", {foo: v("bar"), fiz: v("buz")});
