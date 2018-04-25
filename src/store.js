@@ -4,6 +4,7 @@ import Log from './log';
 import v from './v';
 
 function parseVal(raw) {
+  const head = !raw || raw.head === undefined ? null : parseVal(raw.head);
   const type = typeof(raw);
   if (type === "string") {
     return new Sym(raw);
@@ -14,15 +15,15 @@ function parseVal(raw) {
         raw.class === "Null") {
       return v(raw.origin);
     } else if (raw.class === "Comp") {
-      return v(raw.head, raw.origin);
+      return v(head, raw.origin);
     } else if (raw.class === "Array") {
-      return v(raw.head, raw.origin.map(i => parseVal(i)));
+      return v(head, raw.origin.map(i => parseVal(i)));
     } else if (raw.class === "Map") {
       const org = {};
       for (const key of Object.keys(raw.origin)) {
         org[key] = parseVal(raw.origin[key]);
       }
-      return v(raw.head, org);
+      return v(head, org);
     } else if (raw.class === "UUID") {
       return new UUID(raw.origin);
     } else {

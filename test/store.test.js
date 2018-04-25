@@ -26,7 +26,7 @@ describe("parse", () => {
         logid: {class: "UUID", origin: "logid3"},
         id: {class: "UUID", origin: "uuidexample"},
         key: "key3",
-        val: {class: "Comp", head: "foo", origin: 3},
+        val: {class: "Comp", head: {class: "String", origin: "foo"}, origin: 3},
         at: "2018-04-02T00:00:00z"
       },
       {
@@ -40,14 +40,14 @@ describe("parse", () => {
         logid: {class: "UUID", origin: "logid4"},
         id: {class: "UUID", origin: "uuidexample"},
         key: "key4",
-        val: {class: "Array", head: "foo", origin: [{class: "Map", head: "bar", origin: {a: 1, b: 2}}]},
+        val: {class: "Array", head: {class: "String", origin: "foo"}, origin: [{class: "Map", head: {class: "String", origin: "bar"}, origin: {a: 1, b: 2}}]},
         at: "2018-04-02T00:00:00z"
       },
       {
         logid: {class: "UUID", origin: "logid4"},
         id: {class: "UUID", origin: "uuidexample"},
         key: "key5",
-        val: {class: "Map", head: "foo", origin: {a: {class: "Array", head: "bar", origin: [1, 2, 3]}}},
+        val: {class: "Map", head: {class: "String", origin: "foo"}, origin: {a: {class: "Array", head: {class: "String", origin: "bar"}, origin: [1, 2, 3]}}},
         at: "2018-04-02T00:00:00z"
       },
     ];
