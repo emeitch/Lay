@@ -2,9 +2,25 @@ import assert from 'assert';
 
 import v from '../src/v';
 import Book from '../src/book';
-import { sym } from '../src/sym';
+import Sym, { sym } from '../src/sym';
 
 describe("Sym", () => {
+  describe("sym func", () => {
+    it("should return sym val", () => {
+      assert.deepStrictEqual(sym("foo"), new Sym("foo"));
+    });
+
+    context("not string arg", () => {
+      it("should return null", () => {
+        assert.deepStrictEqual(sym(), null);
+        assert.deepStrictEqual(sym(undefined), null);
+        assert.deepStrictEqual(sym(null), null);
+        assert.deepStrictEqual(sym(1), null);
+        assert.deepStrictEqual(sym(true), null);
+      });
+    });
+  });
+
   describe("#reducible", () => {
     it("should return false", () => {
       assert.deepStrictEqual(sym("foo").reducible, false);

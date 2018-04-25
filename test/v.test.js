@@ -2,7 +2,6 @@ import assert from 'assert';
 
 import Prim from '../src/prim';
 import Comp from '../src/comp';
-import { sym } from '../src/sym';
 
 import v from '../src/v';
 
@@ -28,13 +27,13 @@ describe("v function", () => {
     it("should return a Comp", () => {
       const val = v("Foo", {a: 1, b: 2});
       assert(val instanceof Comp);
-      assert.deepStrictEqual(val.head, sym("Foo"));
+      assert.deepStrictEqual(val.head, v("Foo"));
       assert.deepStrictEqual(val.origin, {a: 1, b: 2});
       assert.deepStrictEqual(val.get("a"), v(1));
 
       const val2 = v("Foo", [1, 2]);
       assert(val2 instanceof Comp);
-      assert.deepStrictEqual(val2.head, sym("Foo"));
+      assert.deepStrictEqual(val2.head, v("Foo"));
       assert.deepStrictEqual(val2.origin, [1, 2]);
       assert.deepStrictEqual(val2.get(0), v(1));
     });
@@ -43,7 +42,7 @@ describe("v function", () => {
   context("with empty complex value as enum value", () => {
     it("should return a empty Comp", () => {
       const val = v("Foo", {});
-      assert.deepStrictEqual(val.head, sym("Foo"));
+      assert.deepStrictEqual(val.head, v("Foo"));
       assert.deepStrictEqual(val.origin, {});
     });
   });
@@ -51,8 +50,8 @@ describe("v function", () => {
   context("with premitive complex value", () => {
     it("should return a Comp with head", () => {
       const val = v("Foo", 1);
-      assert.deepStrictEqual(val, new Comp(1, sym("Foo")));
-      assert.deepStrictEqual(val.head, sym("Foo"));
+      assert.deepStrictEqual(val, new Comp(1, v("Foo")));
+      assert.deepStrictEqual(val.head, v("Foo"));
       assert.deepStrictEqual(val.origin, 1);
     });
   });
@@ -60,8 +59,8 @@ describe("v function", () => {
   context("with null premitive complex value", () => {
     it("should return a head only Comp", () => {
       const val = v("Foo", null);
-      assert.deepStrictEqual(val, new Comp(null, sym("Foo")));
-      assert.deepStrictEqual(val.head, sym("Foo"));
+      assert.deepStrictEqual(val, new Comp(null, v("Foo")));
+      assert.deepStrictEqual(val.head, v("Foo"));
       assert.deepStrictEqual(val.origin, null);
     });
   });
@@ -70,7 +69,7 @@ describe("v function", () => {
     it("should return a Comp", () => {
       const val = v("Foo", {a: v("Bar", {b: 1, c: 2})});
       assert(val instanceof Comp);
-      assert.deepStrictEqual(val.head, sym("Foo"));
+      assert.deepStrictEqual(val.head, v("Foo"));
       assert.deepStrictEqual(val.origin, {a: v("Bar", {b: 1, c: 2})});
       assert.deepStrictEqual(val.get("a"), v("Bar", {b: 1, c: 2}));
     });

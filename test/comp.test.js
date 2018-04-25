@@ -61,7 +61,10 @@ describe("Comp", () => {
 
         assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(book), {
           class: "Map",
-          head: "foo",
+          head: {
+            class: "String",
+            origin: "foo"
+          },
           origin: {
             a: 1,
             b: 2
@@ -69,7 +72,10 @@ describe("Comp", () => {
         });
         assert.deepStrictEqual(v("bar", [1, 2, 3]).object(book), {
           class: "Array",
-          head: "bar",
+          head: {
+            class: "String",
+            origin: "bar"
+          },
           origin: [1, 2, 3]
         });
       });
@@ -122,7 +128,7 @@ describe("Comp", () => {
 
       assert(v({a: [v(1), v(2)], b: v("bar")}).stringify() === "{\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
 
-      assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).stringify() === "Foo {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
+      assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).stringify() === "\"Foo\" {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
     });
   });
 });

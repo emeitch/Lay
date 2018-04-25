@@ -9,8 +9,8 @@ const NullVal = new Prim(null);
 export default class Comp extends Val {
   static valFrom(...args) {
     const origin = args.pop();
-    const hsrc = args.pop();
-    const head = hsrc instanceof Val ? hsrc : sym(hsrc);
+    const hsrc = args.pop() || null;
+    const head = !hsrc || hsrc instanceof Val ? hsrc : new Prim(hsrc);
     const type = typeof(origin);
 
     if (!head && origin instanceof Val) {

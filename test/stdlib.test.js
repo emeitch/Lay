@@ -278,7 +278,7 @@ describe("stdlib", () => {
       const arr = n("Arr", [v(10), v(11), v(12)]);
       assert.deepStrictEqual(arr.constructor, Path);
       assert.deepStrictEqual(arr.reduce(book).get(v(0)), v(10));
-      assert.deepStrictEqual(arr.reduce(book).get("head"), sym("Arr"));
+      assert.deepStrictEqual(arr.reduce(book).get("head"), v("Arr"));
       assert.deepStrictEqual(arr.reduce(book).get("class"), sym("Array"));
 
       const narr = n([v(10), v(11), v(12)]);
@@ -289,7 +289,7 @@ describe("stdlib", () => {
       const map = n("Mp", {foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(map.constructor, Path);
       assert.deepStrictEqual(map.reduce(book).get("foo"), v("bar"));
-      assert.deepStrictEqual(map.reduce(book).get("head"), sym("Mp"));
+      assert.deepStrictEqual(map.reduce(book).get("head"), v("Mp"));
       assert.deepStrictEqual(map.reduce(book).get("class"), sym("Map"));
 
       const nmap = n({foo: v("bar"), fiz: v("buz")});
@@ -309,12 +309,12 @@ describe("stdlib", () => {
 
       const headonly = n("foo");
       assert.deepStrictEqual(headonly.constructor, Path);
-      assert.deepStrictEqual(headonly.deepReduce(book).get("head"), sym("foo"));
+      assert.deepStrictEqual(headonly.deepReduce(book).get("head"), v("foo"));
 
       const withhead = n("bar", v(1));
       assert.deepStrictEqual(withhead.constructor, Path);
-      assert.deepStrictEqual(withhead.deepReduce(book).get("head"), sym("bar"));
-      assert.deepStrictEqual(path(withhead.deepReduce(book), "head").deepReduce(book), sym("bar"));
+      assert.deepStrictEqual(withhead.deepReduce(book).get("head"), v("bar"));
+      assert.deepStrictEqual(path(withhead.deepReduce(book), "head").deepReduce(book), v("bar"));
     });
 
     describe("reduce", () => {

@@ -156,7 +156,7 @@ export const stdlib = new Book();
     sym("new"),
     func(new LiftedNative(function(...args) {
       const hsrc = args.shift();
-      const head = hsrc.equals(v(null)) ? undefined : hsrc;
+      const head = hsrc.equals(v(null)) ? undefined : v(hsrc.origin);
       const o = [];
       while(args.length > 0) {
         const val = args.shift();
@@ -233,7 +233,7 @@ export const stdlib = new Book();
     sym("new"),
     func(new LiftedNative(function(...args) {
       const hsrc = args.shift();
-      const head = hsrc.equals(v(null)) ? undefined : hsrc;
+      const head = hsrc.equals(v(null)) ? undefined : v(hsrc.origin);
       const o = {};
       while(args.length > 0) {
         if (args.length == 1) {
@@ -306,7 +306,8 @@ export const stdlib = new Book();
 
 export function n(...args) {
   const origin = args.pop();
-  const head = args.pop() || v(null);
+  const hsrc = args.pop();
+  const head = hsrc ? v(hsrc) : v(null);
   if (Array.isArray(origin)) {
     return path("Array", ["new", head].concat(origin));
   } if (origin instanceof Object && !(origin instanceof Val)) {
@@ -318,7 +319,7 @@ export function n(...args) {
     return path("Map", ["new", head].concat(maparr));
   } else {
     if (head instanceof Val && head.equals(v(null))) {
-      const h = origin;
+      const h = v(origin);
       return path("Comp", ["new", h]);
     } else {
       return path("Comp", ["new", head, origin]);
