@@ -15,7 +15,7 @@ function parseVal(raw) {
         raw.class === "Null") {
       return v(raw.origin);
     } else if (raw.class === "Comp") {
-      return v(head, raw.origin);
+      return v(head, parseVal(raw.origin));
     } else if (raw.class === "Array") {
       return v(head, raw.origin.map(i => parseVal(i)));
     } else if (raw.class === "Map") {
