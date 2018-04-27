@@ -6,7 +6,13 @@ import v from './v';
 function parseVal(raw) {
   const head = !raw || raw.head === undefined ? null : parseVal(raw.head);
   const type = typeof(raw);
-  if (type === "string") {
+  if (
+    raw === null ||
+    type === "number" ||
+    type === "boolean"
+  ) {
+    return raw;
+  } else if (type === "string") {
     return new Sym(raw);
   } else if (type === "object") {
     if (raw.class === "Number" ||
@@ -29,12 +35,6 @@ function parseVal(raw) {
     } else {
       return raw;
     }
-  } else if (
-    type === "number" ||
-    type === "boolean" ||
-    type === "null"
-  ) {
-    return raw;
   }
 
   throw `can not identify a val: ${raw}`;
