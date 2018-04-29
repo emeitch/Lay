@@ -81,6 +81,5 @@ describe("parse", () => {
   it("should raise error unparsed raw logs", () => {
     assert.throws(() => parse([{id: {class: "Dummy"}}]), /can not identify a val:/);
     assert.throws(() => parse([{id: 1}]), /can not identify a val:/);
-
   });
 });
