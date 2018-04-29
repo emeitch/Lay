@@ -32,8 +32,6 @@ function parseVal(raw) {
       return v(head, org);
     } else if (raw.class === "UUID") {
       return new UUID(raw.origin);
-    } else {
-      return raw;
     }
   }
 
