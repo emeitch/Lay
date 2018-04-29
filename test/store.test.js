@@ -1,9 +1,9 @@
 import assert from 'assert';
 
-import { parse } from '../src/store';
 import UUID from '../src/uuid';
 import v from '../src/v';
 import { sym } from '../src/sym';
+import { parse } from '../src/store';
 
 describe("parse", () => {
   it("should parse raw logs", () => {
