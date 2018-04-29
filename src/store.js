@@ -22,9 +22,9 @@ function parseVal(raw) {
       return v(raw.origin);
     } else if (raw.class === "Comp") {
       return v(head, parseVal(raw.origin));
-    } else if (raw.class === "Array") {
+    } else if (raw.class === "CompArray") {
       return v(head, raw.origin.map(i => parseVal(i)));
-    } else if (raw.class === "Map") {
+    } else if (raw.class === "CompMap") {
       const org = {};
       for (const key of Object.keys(raw.origin)) {
         org[key] = parseVal(raw.origin[key]);
