@@ -55,7 +55,7 @@ describe("Log", () => {
         const lobj = log.object(book);
         assert.deepStrictEqual(lobj.id, {class: "String", origin: "id"});
         assert.deepStrictEqual(lobj.key, {class: "String", origin: "class"});
-        assert.deepStrictEqual(lobj.val, {class: "String", origin: "Foo"});
+        assert.deepStrictEqual(lobj.val, "Foo");
       }
     });
   });
