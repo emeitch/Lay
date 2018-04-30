@@ -63,7 +63,7 @@ dom.set(
               return book.run(act);
             };
 
-            if (elm.head.equals(sym("body"))) {
+            if (elm.head.equals(v("body"))) {
               window[key] = (...args) => {
                 const res = callback(...args);
                 dirty = true;
