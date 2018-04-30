@@ -87,7 +87,7 @@ describe("stdlib", () => {
         const id1 = book.new({"class": "Foo"});
         const id2 = book.new({"class": "Foo"});
 
-        const ids = path("Foo", "all").reduce(book);
+        const ids = path(sym("Foo"), "all").reduce(book);
         assert.deepStrictEqual(ids.get(0), id1);
         assert.deepStrictEqual(ids.get(1), id2);
 
@@ -100,7 +100,7 @@ describe("stdlib", () => {
       it("should return a instance creation act", () => {
         book.set("Foo", book.new());
         const act = path("Object", ["new", v({
-          class: sym("Foo"),
+          class: "Foo",
           foo: v("bar")
         })]).reduce(book);
 
@@ -108,7 +108,7 @@ describe("stdlib", () => {
 
         book.run(act);
 
-        assert.deepStrictEqual(path("Foo", "all", v(0), "foo").reduce(book), v("bar"));
+        assert.deepStrictEqual(path(sym("Foo"), "all", v(0), "foo").reduce(book), v("bar"));
       });
     });
 
@@ -119,7 +119,7 @@ describe("stdlib", () => {
         const id = new UUID();
         book.put(id, "class", classid);
 
-        const p = new Path(id, [sym("set"), sym("foo"), v("val")]);
+        const p = new Path(id, ["set", "foo", v("val")]);
         assert.deepStrictEqual(p.reduce(book).constructor, Act);
       });
     });
@@ -145,26 +145,26 @@ describe("stdlib", () => {
   context("accessing default Array methods", () => {
     describe("new", () => {
       it("should create a array", () => {
-        const m = path("Array", ["new", "Foo", v(1), v(2), v(3)]).reduce(book);
+        const m = path(sym("Array"), ["new", "Foo", v(1), v(2), v(3)]).reduce(book);
         assert.deepStrictEqual(m, v("Foo", [1, 2, 3]));
       });
 
       it("should create a nested array", () => {
-        const m = path("Array", ["new", "Foo", v(1), v(2), path("Array", ["new", "Fiz", v(3), v(4)])]).deepReduce(book);
+        const m = path(sym("Array"), ["new", "Foo", v(1), v(2), path(sym("Array"), ["new", "Fiz", v(3), v(4)])]).deepReduce(book);
         assert.deepStrictEqual(m, v("Foo", [v(1), v(2), v("Fiz", [v(3), v(4)])]));
       });
     });
 
     describe("map", () => {
       it("should map arg func for items", () => {
-        const mapped = path(v([1, 2, 3]), [sym("map"), func("x", exp(plus, "x", v(1)))]).reduce(book);
+        const mapped = path(v([1, 2, 3]), ["map", func("x", exp(plus, sym("x"), v(1)))]).reduce(book);
         assert.deepStrictEqual(mapped, v([2, 3, 4]));
       });
     });
 
     describe("every", () => {
       it("should all arg func returns true", () => {
-        const f = func("x", path("x", ["equals", v(2)]));
+        const f = func("x", path(sym("x"), ["equals", v(2)]));
         const e1 = path(v([2, 2, 2]), ["every", f]);
         assert.deepStrictEqual(e1.reduce(book), v(true));
 
@@ -175,14 +175,14 @@ describe("stdlib", () => {
 
     describe("filter", () => {
       it("should filter arg func for items", () => {
-        const filtered = path(v([1, 2, 3]), ["filter", func("x", path("x", ["equals", v(2)]))]).reduce(book);
+        const filtered = path(v([1, 2, 3]), ["filter", func("x", path(sym("x"), ["equals", v(2)]))]).reduce(book);
         assert.deepStrictEqual(filtered, v([2]));
       });
     });
 
     describe("count", () => {
       it("should return size of array", () => {
-        const count = path(v([1, 2, 3]), sym("count")).reduce(book);
+        const count = path(v([1, 2, 3]), "count").reduce(book);
         assert.deepStrictEqual(count, v(3));
       });
     });
@@ -198,29 +198,29 @@ describe("stdlib", () => {
   context("accessing default Map methods", () => {
     describe("new", () => {
       it("should create a map", () => {
-        const m = path("Map", ["new", "Foo", "bar", v(1), "buz", v(2)]).reduce(book);
+        const m = path(sym("Map"), ["new", "Foo", "bar", v(1), "buz", v(2)]).reduce(book);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v(2)}));
       });
 
       it("should create a nested map", () => {
-        const exp = path("Map", ["new", "Foo", "bar", v(1), "buz", path("Map", ["new", "Fiz", "faz", v(3)])]);
+        const exp = path(sym("Map"), ["new", "Foo", "bar", v(1), "buz", path(sym("Map"), ["new", "Fiz", "faz", v(3)])]);
         const m = exp.deepReduce(book);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
 
         book.set("a", exp);
-        assert.deepStrictEqual(path("a").deepReduce(book), v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
+        assert.deepStrictEqual(path(sym("a")).deepReduce(book), v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
       });
 
       context("illegal arguments", () => {
         it("should throw error", () => {
-          assert.throws(() => path("Map", ["new", "Foo", "bar", v(1), "buz"]).reduce(book), /short arguments error/);
+          assert.throws(() => path(sym("Map"), ["new", "Foo", "bar", v(1), "buz"]).reduce(book), /short arguments error/);
         });
       });
     });
 
     describe("get", () => {
       it("should return the property", () => {
-        const val = path(v({a: 1, b: 2}), [sym("get"), sym("b")]).reduce(book);
+        const val = path(v({a: 1, b: 2}), ["get", "b"]).reduce(book);
         assert.deepStrictEqual(val, v(2));
       });
     });
@@ -229,7 +229,7 @@ describe("stdlib", () => {
   context("accessing Console methods", () => {
     describe("puts", () => {
       it("should return a Act", () => {
-        const o = path("Console", [sym("puts"), v("foo")]).reduce(book);
+        const o = path(sym("Console"), ["puts", v("foo")]).reduce(book);
 
         // stub
         const orig = console.log;
@@ -260,13 +260,13 @@ describe("stdlib", () => {
   context("accessing Log methods", () => {
     describe("all", () => {
       it("should return all logs", () => {
-        const log1 = new Log(new UUID(), sym("foo"), v("hoge"));
+        const log1 = new Log(new UUID(), "foo", v("hoge"));
         book.putLog(log1);
 
-        const log2 = new Log(new UUID(), sym("bar"), v("fuga"));
+        const log2 = new Log(new UUID(), "bar", v("fuga"));
         book.putLog(log2);
 
-        const logs = path("Log", "all").reduce(book);
+        const logs = path(sym("Log"), "all").reduce(book);
         assert(logs.origin.some(l => l.equals(log1.logid)));
         assert(logs.origin.some(l => l.equals(log2.logid)));
       });

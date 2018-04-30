@@ -30,7 +30,7 @@ export default class Val {
   }
 
   get(k, book) {
-    const key = k instanceof Sym ? k.origin : k;
+    const key = k instanceof Prim ? k.origin : k;
 
     if (book) {
       const proto = this.class.reduce(book);

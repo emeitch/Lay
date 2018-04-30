@@ -42,7 +42,7 @@ describe("Val", () => {
     describe("#get", () => {
       it("should return underscore prefix _key's val", () => {
         assert.deepStrictEqual(val.get("class"), sym("ExtendedVal"));
-        assert.deepStrictEqual(val.get(sym("class")), sym("ExtendedVal"));
+        assert.deepStrictEqual(val.get(v("class")), sym("ExtendedVal"));
       });
 
       context("not exists key", () => {

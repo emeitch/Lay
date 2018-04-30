@@ -90,19 +90,19 @@ export const stdlib = new Book();
 
   stdlib.put(
     obj,
-    sym("set"),
+    "set",
     func("key", "val", exp(new LiftedNative(function(self, key, val) {
       return this.putAct(self, key, val);
-    }), "self", "key", "val"))
+    }), sym("self"), "key", "val"))
   );
 
   // todo: allはClassオブジェクト用のメソッドにしたい
   stdlib.put(
     obj,
-    sym("all"),
+    "all",
     exp(new LiftedNative(function(self) {
       return v(this.instanceIDs(self));
-    }), "self")
+    }), sym("self"))
   );
 }
 
@@ -112,10 +112,10 @@ export const stdlib = new Book();
 
   stdlib.put(
     str,
-    sym("trim"),
+    "trim",
     exp(new LiftedNative(function(self) {
       return v(self.origin.trim());
-    }), "self")
+    }), sym("self"))
   );
 }
 
@@ -128,7 +128,7 @@ export const stdlib = new Book();
     "not",
     exp(new LiftedNative(function(self) {
       return v(!self.origin);
-    }), "self")
+    }), sym("self"))
   );
 }
 
@@ -138,7 +138,7 @@ export const stdlib = new Book();
 
   stdlib.put(
     comp,
-    sym("new"),
+    "new",
     func(new LiftedNative(function(...args) {
       const head = args.shift();
       const origin = args.shift() || null;
@@ -153,7 +153,7 @@ export const stdlib = new Book();
 
   stdlib.put(
     arr,
-    sym("new"),
+    "new",
     func(new LiftedNative(function(...args) {
       const hsrc = args.shift();
       const head = hsrc.equals(v(null)) ? undefined : v(hsrc.origin);
@@ -168,7 +168,7 @@ export const stdlib = new Book();
 
   stdlib.put(
     arr,
-    sym("map"),
+    "map",
     func("fnc", exp(new LiftedNative(function(self, fnc) {
       const arr = self;
       const narr = arr.origin.map(o => {
@@ -176,12 +176,12 @@ export const stdlib = new Book();
         return e.reduce(this);
       });
       return v(narr);
-    }), "self", "fnc"))
+    }), sym("self"), "fnc"))
   );
 
   stdlib.put(
     arr,
-    sym("every"),
+    "every",
     func("fnc", exp(new LiftedNative(function(self, fnc) {
       const arr = self;
       const result = arr.origin.every(o => {
@@ -189,7 +189,7 @@ export const stdlib = new Book();
         return e.reduce(this).origin;
       });
       return v(result);
-    }), "self", "fnc"))
+    }), sym("self"), "fnc"))
   );
 
   stdlib.put(
@@ -202,15 +202,15 @@ export const stdlib = new Book();
         return e.reduce(this).origin;
       });
       return v(narr);
-    }), "self", "fnc"))
+    }), sym("self"), "fnc"))
   );
 
   stdlib.put(
     arr,
-    sym("count"),
+    "count",
     exp(new LiftedNative(function(self) {
       return v(self.origin.length);
-    }), "self")
+    }), sym("self"))
   );
 
   stdlib.put(
@@ -220,7 +220,7 @@ export const stdlib = new Book();
       const arr = self.deepReduce(this);
       const s = sep.deepReduce(this);
       return v(arr.jsObj.join(s.jsObj));
-    }), "self", "sep"))
+    }), sym("self"), "sep"))
   );
 }
 
@@ -230,7 +230,7 @@ export const stdlib = new Book();
 
   stdlib.put(
     map,
-    sym("new"),
+    "new",
     func(new LiftedNative(function(...args) {
       const hsrc = args.shift();
       const head = hsrc.equals(v(null)) ? undefined : v(hsrc.origin);
@@ -249,10 +249,10 @@ export const stdlib = new Book();
 
   stdlib.put(
     map,
-    sym("get"),
+    "get",
     func("key", exp(new LiftedNative(function(self, key) {
       return self.get(key, this);
-    }), "self", "key"))
+    }), sym("self"), "key"))
   );
 }
 
@@ -262,12 +262,12 @@ export const stdlib = new Book();
 
   stdlib.put(
     act,
-    sym("then"),
+    "then",
     func("next", exp(new LiftedNative(function(self, next) {
       const act = self.deepReduce(this);
       const nact = next.deepReduce(this);
       return act.then(nact);
-    }), "self", "next"))
+    }), sym("self"), "next"))
   );
 }
 
@@ -277,7 +277,7 @@ export const stdlib = new Book();
 
   stdlib.put(
     log,
-    sym("all"),
+    "all",
     func(new LiftedNative(function() {
       return v(this.logIDs());
     }))
@@ -295,7 +295,7 @@ export const stdlib = new Book();
 
   stdlib.put(
     cnsl,
-    sym("puts"),
+    "puts",
     func("val", new LiftedNative(function(val) {
       return new Act(() => {
         console.log(val.deepReduce(this).origin);
@@ -309,20 +309,20 @@ export function n(...args) {
   const hsrc = args.pop();
   const head = hsrc ? v(hsrc) : v(null);
   if (Array.isArray(origin)) {
-    return path("Array", ["new", head].concat(origin));
+    return path(sym("Array"), ["new", head].concat(origin));
   } if (origin instanceof Object && !(origin instanceof Val)) {
     const maparr = Object.keys(origin).reduce((r, k) => {
       const o = origin[k];
       const val = o instanceof Val || typeof(o) === "string" ? o : v(o);
       return r.concat([k, val]);
     }, []);
-    return path("Map", ["new", head].concat(maparr));
+    return path(sym("Map"), ["new", head].concat(maparr));
   } else {
     if (head instanceof Val && head.equals(v(null))) {
       const h = v(origin);
-      return path("Comp", ["new", h]);
+      return path(sym("Comp"), ["new", h]);
     } else {
-      return path("Comp", ["new", head, origin]);
+      return path(sym("Comp"), ["new", head, origin]);
     }
   }
 }

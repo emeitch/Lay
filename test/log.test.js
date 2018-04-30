@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import UUID from '../src/uuid';
 import Log, { n } from '../src/log';
-import { sym } from '../src/sym';
+import v from '../src/v';
 import Book from '../src/book';
 
 describe("Log", () => {
@@ -32,9 +32,9 @@ describe("Log", () => {
 
     context("js string", () => {
       const l = new Log("foo", "bar", "baz");
-      assert.deepStrictEqual(l.id, sym("foo"));
-      assert.deepStrictEqual(l.key, sym("bar"));
-      assert.deepStrictEqual(l.val, sym("baz"));
+      assert.deepStrictEqual(l.id, v("foo"));
+      assert.deepStrictEqual(l.key, v("bar"));
+      assert.deepStrictEqual(l.val, v("baz"));
     });
   });
 
@@ -43,9 +43,9 @@ describe("Log", () => {
       {
         const log = new Log("id", "key", "val");
         const lobj = log.object(new Book());
-        assert.deepStrictEqual(lobj.id, "id");
-        assert.deepStrictEqual(lobj.key, "key");
-        assert.deepStrictEqual(lobj.val, "val");
+        assert.deepStrictEqual(lobj.id, {class: "String", origin: "id"});
+        assert.deepStrictEqual(lobj.key, {class: "String", origin: "key"});
+        assert.deepStrictEqual(lobj.val, {class: "String", origin: "val"});
       }
       {
         const prt = new UUID();
@@ -53,9 +53,9 @@ describe("Log", () => {
         const book = new Book();
         book.set("Foo", prt);
         const lobj = log.object(book);
-        assert.deepStrictEqual(lobj.id, "id");
-        assert.deepStrictEqual(lobj.key, "class");
-        assert.deepStrictEqual(lobj.val, "Foo");
+        assert.deepStrictEqual(lobj.id, {class: "String", origin: "id"});
+        assert.deepStrictEqual(lobj.key, {class: "String", origin: "class"});
+        assert.deepStrictEqual(lobj.val, {class: "String", origin: "Foo"});
       }
     });
   });

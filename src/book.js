@@ -5,7 +5,6 @@ import UUID from './uuid';
 import Log from './log';
 import Comp from './comp';
 import Act from './act';
-import { sym } from './sym';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
@@ -27,7 +26,7 @@ export default class Book {
     const cond = {};
     Object.keys(condition).forEach(k => {
       if (typeof(condition[k]) === "string") {
-        cond[k] = sym(condition[k]);
+        cond[k] = v(condition[k]);
       } else {
         cond[k] = condition[k];
       }
@@ -53,7 +52,7 @@ export default class Book {
   }
 
   cacheIndex(id, key) {
-    key = typeof(key) === "string" ? sym(key) : v(key);
+    key = v(key);
     return Val.stringify(id) + "__" + Val.stringify(key);
   }
 
@@ -179,7 +178,7 @@ export default class Book {
   }
 
   existsIDs() {
-    const logs = this.findActiveLogs({key: sym("exists")});
+    const logs = this.findActiveLogs({key: v("exists")});
     const ids = _.uniq(logs.map(l => l.id));
     return ids;
   }
@@ -197,7 +196,7 @@ export default class Book {
   }
 
   get(name) {
-    const logs = this.findActiveLogs({id: sym(name), key: assign});
+    const logs = this.findActiveLogs({id: v(name), key: assign});
     const log = logs[logs.length-1];
     if (log) {
       return log.val;
@@ -208,7 +207,7 @@ export default class Book {
 
   set(name, id) {
     // todo: ユニーク制約をかけたい
-    const log = new Log(sym(name), assign, id);
+    const log = new Log(v(name), assign, id);
     this.putLog(log);
   }
 
@@ -289,7 +288,7 @@ export default class Book {
     if (name.origin === null) {
       return [];
     }
-    const sname = sym(name.origin);
+    const sname = v(name.origin);
     const logs = this.findActiveLogs({key: "class", val: sname});
     return logs.filter(log => {
       const es = this.findActiveLogs({id: log.id, key: "exists"});

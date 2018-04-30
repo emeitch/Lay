@@ -1,6 +1,7 @@
 /* eslint-env browser */
 import Book from './book';
 import Act from './act';
+import { sym } from './sym';
 import { stdlib, n } from './stdlib';
 import { exp } from './exp';
 import { path } from './path';
@@ -15,9 +16,9 @@ const d = new Book(stdlib);
   d.put(Task,
     "toggle",
     exp("if",
-      path("self", "state", ["equals", n("active")]),
-      path("self", ["set", "state", n("completed")]),
-      path("self", ["set", "state", n("active")])
+      path(sym("self"), "state", ["equals", n("active")]),
+      path(sym("self"), ["set", "state", n("completed")]),
+      path(sym("self"), ["set", "state", n("active")])
     )
   );
   d.put(Task, "editing", v(false));
@@ -31,7 +32,7 @@ const d = new Book(stdlib);
   d.put(todos, "var", v("0.2.0"));
   d.put(todos, "state", n("all"));
   d.put(todos, "newTaskTitle", v(""));
-  d.put(todos, "changeState", func("s", path("self", ["set", "state", "s"])));
+  d.put(todos, "changeState", func("s", path(sym("self"), ["set", "state", "s"])));
   d.put(todos, "changeStateByHash", func(
     "hash",
     exp(

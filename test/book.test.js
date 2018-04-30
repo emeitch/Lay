@@ -137,7 +137,7 @@ describe("Book", () => {
 
     context("name assigned", () => {
       beforeEach(() => {
-        book.set(sym("i"), id);
+        book.set(v("i"), id);
         book.set("k", key);
         book.set("v", val);
       });
@@ -172,7 +172,7 @@ describe("Book", () => {
   describe("Val#get", () => {
     context("prototype assigned", () => {
       beforeEach(() => {
-        book.set(sym("Number"), id);
+        book.set("Number", id);
         book.put(id, "foo", v("bar"));
       });
 
@@ -190,8 +190,8 @@ describe("Book", () => {
 
   describe("#name", () => {
     it("should return assigned name", () => {
-      book.set(sym("Foo"), id);
-      assert.deepStrictEqual(book.name(id), sym("Foo"));
+      book.set("Foo", id);
+      assert.deepStrictEqual(book.name(id), v("Foo"));
       assert.deepStrictEqual(book.name(new UUID()), v(null));
     });
   });
@@ -394,7 +394,7 @@ describe("Book", () => {
       const id = book.new();
       assert(id.constructor === UUID);
 
-      const logs = book.activeLogs(id, sym("exists"));
+      const logs = book.activeLogs(id, v("exists"));
       assert(logs.length > 0);
     });
 
@@ -406,11 +406,11 @@ describe("Book", () => {
           baz: "baz"
         });
 
-        assert.deepStrictEqual(id.get(sym("foo"), book), v(1));
-        assert.deepStrictEqual(id.get(sym("bar"), book), v("bar"));
-        assert.deepStrictEqual(id.get(sym("baz"), book), sym("baz"));
+        assert.deepStrictEqual(id.get(v("foo"), book), v(1));
+        assert.deepStrictEqual(id.get(v("bar"), book), v("bar"));
+        assert.deepStrictEqual(id.get(v("baz"), book), v("baz"));
 
-        assert(book.findLogs({key: sym("foo")}).length === 1);
+        assert(book.findLogs({key: v("foo")}).length === 1);
       });
     });
   });
@@ -419,9 +419,9 @@ describe("Book", () => {
     it("should return the logs with sym completion", () => {
       book.put(id, "foo", v(1));
 
-      assert(book.findLogs({key: sym("foo")}).length === 1);
+      assert(book.findLogs({key: v("foo")}).length === 1);
       assert(book.findLogs({key: "foo"}).length === 1);
-      assert(book.findLogs({key: v("foo")}).length === 0);
+      assert(book.findLogs({key: sym("foo")}).length === 0);
     });
   });
 
@@ -439,11 +439,11 @@ describe("Book", () => {
       lib.set("bar", v(4));
       book.import(lib);
 
-      assert(book.findLogs({key: sym("bar")}).length === 1);
-      assert(book.findLogs({key: sym("baz")}).length === 1);
+      assert(book.findLogs({key: v("bar")}).length === 1);
+      assert(book.findLogs({key: v("baz")}).length === 1);
 
-      assert(book.findLogs({key: sym("foo")}).length === 1);
-      assert(book.activeLogs(id2, sym("foo")).length === 1);
+      assert(book.findLogs({key: v("foo")}).length === 1);
+      assert(book.activeLogs(id2, v("foo")).length === 1);
       assert.deepStrictEqual(book.get("bar"), v(4));
       assert(book.logIDs().some(lid => lid.equals(log.logid)));
     });
@@ -469,15 +469,15 @@ describe("Book", () => {
         let b = 0;
         const alib = new Book();
         alib.set("onPut", new Act(log => {
-          if (log.key.equals(sym("foo"))) {
+          if (log.key.equals(v("foo"))) {
             b += 1;
           }
         }));
 
-        const lib = new Book(alib);
         let a = 0;
+        const lib = new Book(alib);
         lib.set("onPut", new Act(log => {
-          if (log.key.equals(sym("foo"))) {
+          if (log.key.equals(v("foo"))) {
             a += 1;
           }
         }));

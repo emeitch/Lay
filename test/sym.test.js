@@ -10,6 +10,12 @@ describe("Sym", () => {
       assert.deepStrictEqual(sym("foo"), new Sym("foo"));
     });
 
+    context("arg is a sym", () => {
+      it("should return arg", () => {
+        assert.deepStrictEqual(sym(sym("foo")), sym("foo"));
+      });
+    });
+
     context("not string arg", () => {
       it("should return null", () => {
         assert.deepStrictEqual(sym(), null);

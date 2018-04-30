@@ -20,8 +20,8 @@ describe("Path", () => {
   });
 
   describe("constructor", () => {
-    it("should complete sym", () => {
-      assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), new Path(sym("foo"), [sym("bar"), sym("buz")], sym("fiz")));
+    it("should complete prim string", () => {
+      assert.deepStrictEqual(new Path(sym("foo"), ["bar", "buz"], "fiz"), new Path(sym("foo"), [v("bar"), v("buz")], v("fiz")));
     });
   });
 
@@ -124,12 +124,12 @@ describe("Path", () => {
 
       beforeEach(() => {
         book.put(id1, "foo", v(1));
-        book.put(id1, "bar", path("self", "foo"));
+        book.put(id1, "bar", path(sym("self"), "foo"));
 
         book.put(id2, "foo", v(2));
-        book.put(id2, "bar", path("self", "foo"));
+        book.put(id2, "bar", path(sym("self"), "foo"));
         book.put(id2, "buz", func("x", exp(plus, path(id1, "bar"), "x")));
-        book.put(id2, "biz", path("self", ["buz", v(3)]));
+        book.put(id2, "biz", path(sym("self"), ["buz", v(3)]));
       });
 
       it("should refer correct self", () => {
@@ -187,24 +187,24 @@ describe("Path", () => {
         book.set("parent2", classid2);
         book.set("grandparent", classid3);
 
-        book.put(id, sym("class"), sym("parent1"));
-        book.put(id, sym("class"), sym("parent2"));
-        book.put(classid2, sym("class"), sym("grandparent"));
+        book.put(id, "class", sym("parent1"));
+        book.put(id, "class", sym("parent2"));
+        book.put(classid2, "class", sym("grandparent"));
 
-        book.put(classid1, sym("foo"), v(1));
-        book.put(classid2, sym("foo"), v(2));
-        book.put(classid2, sym("bar"), v(3));
-        book.put(classid3, sym("baz"), v(4));
+        book.put(classid1, "foo", v(1));
+        book.put(classid2, "foo", v(2));
+        book.put(classid2, "bar", v(3));
+        book.put(classid3, "baz", v(4));
       });
 
       it("should return the class's val", () => {
-        const p1 = new Path(id, sym("foo"));
+        const p1 = new Path(id, "foo");
         assert.deepStrictEqual(p1.reduce(book), v(1));
 
-        const p2 = new Path(id, sym("bar"));
+        const p2 = new Path(id, "bar");
         assert.deepStrictEqual(p2.reduce(book), v(3));
 
-        const p3 = new Path(id, sym("baz"));
+        const p3 = new Path(id, "baz");
         assert.deepStrictEqual(p3.reduce(book), v(4));
       });
     });
@@ -217,14 +217,14 @@ describe("Path", () => {
 
         book.set("parent1", classid1);
 
-        book.put(id, sym("class"), path(sym("self"), sym("baz")));
-        book.put(id, sym("baz"), sym("parent1"));
+        book.put(id, "class", path(sym("self"), "baz"));
+        book.put(id, "baz", sym("parent1"));
 
-        book.put(classid1, sym("foo"), v("bar"));
+        book.put(classid1, "foo", v("bar"));
       });
 
       it("should return the class's val", () => {
-        const p1 = new Path(id, sym("foo"));
+        const p1 = new Path(id, "foo");
         assert.deepStrictEqual(p1.reduce(book), v("bar"));
       });
     });
@@ -237,14 +237,14 @@ describe("Path", () => {
 
         book.set("parent1", classid1);
 
-        book.put(id, sym("class"), path(sym("self"), [sym("baz"), sym("parent1")]));
-        book.put(id, sym("baz"), func("arg", sym("arg")));
+        book.put(id, "class", path(sym("self"), ["baz", sym("parent1")]));
+        book.put(id, "baz", func("arg", sym("arg")));
 
-        book.put(classid1, sym("foo"), v("bar"));
+        book.put(classid1, "foo", v("bar"));
       });
 
       it("should return the class's val", () => {
-        const p1 = new Path(id, sym("foo"));
+        const p1 = new Path(id, "foo");
         assert.deepStrictEqual(p1.reduce(book), v("bar"));
       });
     });
@@ -308,15 +308,15 @@ describe("Path", () => {
         book.put(id, "foo", v(1));
         assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
 
-        book.set("foo", sym("bar"));
+        book.set("foo", v("bar"));
         assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
 
         book.put(id, "bar", v(2));
-        assert.deepStrictEqual(path(id, "foo").reduce(book), v(2));
+        assert.deepStrictEqual(path(id, sym("foo")).reduce(book), v(2));
       });
     });
 
-    context("reducible sym key and sym assign last", () => {
+    context("reducible key and assign last", () => {
       it("should political reduce", () => {
         const id = new UUID();
         book.put(id, "foo", v(1));
@@ -325,11 +325,11 @@ describe("Path", () => {
         book.put(id, "bar", v(2));
         assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
 
-        book.set("foo", sym("bar"));
-        assert.deepStrictEqual(path(id, "foo").reduce(book), v(2));
+        book.set("foo", v("bar"));
+        assert.deepStrictEqual(path(id, sym("foo")).reduce(book), v(2));
 
         // todo: functionをfuncとして扱う項目のテスト。不要になったら除去する
-        assert.deepStrictEqual(path(id, "foo", ["equals", v(2)]).reduce(book), v(true));
+        assert.deepStrictEqual(path(id, sym("foo"), ["equals", v(2)]).reduce(book), v(true));
       });
     });
   });
