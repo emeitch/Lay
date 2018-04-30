@@ -5,6 +5,7 @@ import UUID from './uuid';
 import Log from './log';
 import Comp from './comp';
 import Act from './act';
+import { sym } from './sym';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
@@ -213,7 +214,7 @@ export default class Book {
 
   name(id) {
     const logs = this.findActiveLogs({key: assign, val: id});
-    return logs.length > 0 ? logs[0].id : v(null);
+    return logs.length > 0 ? sym(logs[0].id.origin) : v(null);
   }
 
   syncCache(log) {
@@ -288,7 +289,7 @@ export default class Book {
     if (name.origin === null) {
       return [];
     }
-    const sname = v(name.origin);
+    const sname = sym(name.origin);
     const logs = this.findActiveLogs({key: "class", val: sname});
     return logs.filter(log => {
       const es = this.findActiveLogs({id: log.id, key: "exists"});

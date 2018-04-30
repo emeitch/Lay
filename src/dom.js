@@ -89,7 +89,7 @@ dom.set(
 
       function renderMaquette() {
         if (dirty || !vdomCache) {
-          const placeholder = path("document", "body");
+          const placeholder = path(sym("document"), "body");
           const domtree = placeholder.deepReduce(book);
           dirty = false;
           vdomCache = render(domtree);
@@ -98,7 +98,7 @@ dom.set(
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-        const placeholder = path("document", "eventListeners", "DOMContentLoaded");
+        const placeholder = path(sym("document"), "eventListeners", "DOMContentLoaded");
         const win = v({
           location: {
             hash: window.location.hash

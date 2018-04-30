@@ -15,7 +15,7 @@ const d = new Book(stdlib);
   const Task = d.new();
   d.put(Task,
     "toggle",
-    exp("if",
+    exp(sym("if"),
       path(sym("self"), "state", ["equals", n("active")]),
       path(sym("self"), ["set", "state", n("completed")]),
       path(sym("self"), ["set", "state", n("active")])
@@ -32,22 +32,22 @@ const d = new Book(stdlib);
   d.put(todos, "var", v("0.2.0"));
   d.put(todos, "state", n("all"));
   d.put(todos, "newTaskTitle", v(""));
-  d.put(todos, "changeState", func("s", path(sym("self"), ["set", "state", "s"])));
+  d.put(todos, "changeState", func("s", path(sym("self"), ["set", "state", sym("s")])));
   d.put(todos, "changeStateByHash", func(
     "hash",
     exp(
-      "if",
-      path("hash", ["equals", v("#/active")]),
-      path("todos", ["changeState", n("active")]),
+      sym("if"),
+      path(sym("hash"), ["equals", v("#/active")]),
+      path(sym("todos"), ["changeState", n("active")]),
       exp(
-        "if",
-        path("hash", ["equals", v("#/completed")]),
-        path("todos", ["changeState", n("completed")]),
-        path("todos", ["changeState", n("all")])
+        sym("if"),
+        path(sym("hash"), ["equals", v("#/completed")]),
+        path(sym("todos"), ["changeState", n("completed")]),
+        path(sym("todos"), ["changeState", n("all")])
       )
     )
   ));
-  d.run(path("Console", ["puts", path(todos, "var")]));
+  d.run(path(sym("Console"), ["puts", path(todos, "var")]));
 }
 
 {
@@ -55,7 +55,7 @@ const d = new Book(stdlib);
   const domtree = e.body(
     {
       onhashchange: func("ev",
-        path("todos", ["changeStateByHash", path("ev", "location", "hash")])
+        path(sym("todos"), ["changeStateByHash", path(sym("ev"), "location", "hash")])
       )
     },
     e.section({class: "todoapp"},
@@ -68,28 +68,28 @@ const d = new Book(stdlib);
             class: "new-todo",
             autofocus: v(true),
             placeholder: "What needs to be done?",
-            value: path("todos", "newTaskTitle"),
+            value: path(sym("todos"), "newTaskTitle"),
             onkeypress: func("ev",
-              exp("if",
-                path("ev", "keyCode", ["equals", v(13)]),
+              exp(sym("if"),
+                path(sym("ev"), "keyCode", ["equals", v(13)]),
                 exp(
-                  "if",
-                  path("ev", "value", "trim", ["equals", v("")]),
+                  sym("if"),
+                  path(sym("ev"), "value", "trim", ["equals", v("")]),
                   v(null),
                   path(
-                    "Object",
+                    sym("Object"),
                     [
                       "new",
                       n({
-                        "class": "Task",
-                        "title": path("ev", "value", "trim"),
-                        "state": n("active")
+                        "class": sym("Task"),
+                        "title": path(sym("ev"), "value", "trim"),
+                        "state": n("active"),
                       })
                     ],
                     [
                       "then",
                       path(
-                        "todos",
+                        sym("todos"),
                         [
                           "set",
                           "newTaskTitle",
@@ -105,11 +105,11 @@ const d = new Book(stdlib);
             // todo: maquette利用の都合上、前回vdomと実DOMのプロパティが一緒でないと値の書き換えができないので、oninputで毎度newTaskTitleを書き換えている。後ほど是正したい。
             oninput: func("ev",
               path(
-                "todos",
+                sym("todos"),
                 [
                   "set",
                   "newTaskTitle",
-                  path("ev", "value")
+                  path(sym("ev"), "value")
                 ]
               )
             )
@@ -117,49 +117,49 @@ const d = new Book(stdlib);
         ),
         e.section({
             class: "main",
-            style: exp("if", path("Task", "all", "count", ["equals", v(0)]), v("display:none;"), v(""))
+            style: exp(sym("if"), path(sym("Task"), "all", "count", ["equals", v(0)]), v("display:none;"), v(""))
           },
           e.input({
             class: "toggle-all",
             type: "checkbox",
             checked: path(
-              "Task",
+              sym("Task"),
               "all",
               [
                 "every",
                 func("tid",
-                  path("tid", "state", ["equals", n("completed")]))
+                  path(sym("tid"), "state", ["equals", n("completed")]))
               ]
             ),
             onchange:
                 func("ev",
                 exp(
-                  "if",
+                  sym("if"),
                   path(
-                    "Task",
+                    sym("Task"),
                     "all",
                     [
                       "every",
                       func("tid",
-                        path("tid", "state", ["equals", n("completed")]))
+                        path(sym("tid"), "state", ["equals", n("completed")]))
                     ]
                   ),
                   path(
-                    "Task",
+                    sym("Task"),
                     "all",
                     [
                       "map",
                       func("tid",
-                        path("tid", ["set", "state", n("active")]))
+                        path(sym("tid"), ["set", "state", n("active")]))
                     ]
                   ),
                   path(
-                    "Task",
+                    sym("Task"),
                     "all",
                     [
                       "map",
                       func("tid",
-                        path("tid", ["set", "state", n("completed")]))
+                        path(sym("tid"), ["set", "state", n("completed")]))
                     ]
                   )
                 )
@@ -167,35 +167,35 @@ const d = new Book(stdlib);
           }),
           e.ul({class: "todo-list",
             children:
-              path("Task", "all",
+              path(sym("Task"), "all",
                 [
                   "filter", func("tid",
                   exp(
-                    "if",
-                    path("todos", "state", ["equals", n("all")]),
+                    sym("if"),
+                    path(sym("todos"), "state", ["equals", n("all")]),
                     v(true),
                     exp(
-                      "if",
-                      path("todos", "state", ["equals", n("active")]),
-                      path("tid", "state", ["equals", n("active")]),
-                      path("tid", "state", ["equals", n("completed")])
+                      sym("if"),
+                      path(sym("todos"), "state", ["equals", n("active")]),
+                      path(sym("tid"), "state", ["equals", n("active")]),
+                      path(sym("tid"), "state", ["equals", n("completed")])
                     )
                   )
                 )],
                 ["map", func("tid",
                 e.li({
-                    key: "tid",
+                    key: sym("tid"),
                     class: path(
                       n([
-                        path("tid", "state", "head"),
+                        path(sym("tid"), "state", "head"),
                         exp(
-                          "if",
-                          path("tid", "editing"),
+                          sym("if"),
+                          path(sym("tid"), "editing"),
                           "editing",
                           v(null)
                         )
                       ]),
-                      ["filter", func("i", path("i", ["equals", v(null)], "not"))],
+                      ["filter", func("i", path(sym("i"), ["equals", v(null)], "not"))],
                       ["join", v(" ")]
                     )
                   },
@@ -203,16 +203,16 @@ const d = new Book(stdlib);
                     e.input({
                       class: "toggle",
                       type: "checkbox",
-                      checked: path("tid", "state", ["equals", n("completed")]),
+                      checked: path(sym("tid"), "state", ["equals", n("completed")]),
                       onchange:
                         func("ev",
-                          path("tid", "toggle")
+                          path(sym("tid"), "toggle")
                         )
                     }),
                     e.label({
                         ondblclick: func("ev",
                           path(
-                            "tid",
+                            sym("tid"),
                             [
                               "set",
                               "editing",
@@ -221,23 +221,23 @@ const d = new Book(stdlib);
                             [
                               "then",
                               path(
-                                "tid",
+                                sym("tid"),
                                 [
                                   "set",
                                   "editingTitle",
-                                  path("tid", "title")
+                                  path(sym("tid"), "title")
                                 ]
                               )
                             ]
                           )
                         )
                       },
-                      path("tid", "title")
+                      path(sym("tid"), "title")
                     ),
                     e.button({
                       class: "destroy",
                       onclick: func("ev",
-                        path("tid",
+                        path(sym("tid"),
                           [
                             "set",
                             "exists",
@@ -249,29 +249,29 @@ const d = new Book(stdlib);
                   ),
                   e.input({
                     class: "edit",
-                    value: path("tid", "editingTitle"),
+                    value: path(sym("tid"), "editingTitle"),
                     afterUpdate: exp(
-                      "if",
-                      path("tid", "editing"),
-                      path("focusAfterAct"),
+                      sym("if"),
+                      path(sym("tid"), "editing"),
+                      path(sym("focusAfterAct")),
                       new Act(() => {})
                     ),
                     onkeydown: func(
                       "ev",
                       exp(
-                        "if",
-                        path("ev", "keyCode", ["equals", v(27)]),
+                        sym("if"),
+                        path(sym("ev"), "keyCode", ["equals", v(27)]),
                         path(
-                          "tid",
+                          sym("tid"),
                           [
                             "set",
                             "editingTitle",
-                            path("tid", "title")
+                            path(sym("tid"), "title")
                           ],
                           [
                             "then",
                             path(
-                              "tid",
+                              sym("tid"),
                               [
                                 "set",
                                 "editing",
@@ -284,16 +284,17 @@ const d = new Book(stdlib);
                       )
                     ),
                     onkeypress: func("ev",
-                      exp("if",
-                        path("ev", "keyCode", ["equals", v(13)]),
+                      exp(
+                        sym("if"),
+                        path(sym("ev"), "keyCode", ["equals", v(13)]),
                         exp(
                           func(
                             "t",
                             exp(
-                              "if",
-                              path("t", ["equals", v("")]),
+                              sym("if"),
+                              path(sym("t"), ["equals", v("")]),
                               path(
-                                path("tid",
+                                path(sym("tid"),
                                   [
                                     "set",
                                     "exists",
@@ -302,16 +303,16 @@ const d = new Book(stdlib);
                                 )
                               ),
                               path(
-                                "tid",
+                                sym("tid"),
                                 [
                                   "set",
                                   "title",
-                                  "t"
+                                  sym("t")
                                 ],
                                 [
                                   "then",
                                   path(
-                                    "tid",
+                                    sym("tid"),
                                     [
                                       "set",
                                       "editing",
@@ -323,7 +324,7 @@ const d = new Book(stdlib);
                             )
                           ),
                           path(
-                            "ev",
+                            sym("ev"),
                             "value",
                             "trim"
                           )
@@ -337,11 +338,11 @@ const d = new Book(stdlib);
                         func(
                           "t",
                           exp(
-                            "if",
-                            path("t", ["equals", v("")]),
+                            sym("if"),
+                            path(sym("t"), ["equals", v("")]),
                             path(
                               path(
-                                "tid",
+                                sym("tid"),
                                 [
                                   "set",
                                   "exists",
@@ -350,16 +351,16 @@ const d = new Book(stdlib);
                               )
                             ),
                             path(
-                              "tid",
+                              sym("tid"),
                               [
                                 "set",
                                 "title",
-                                "t"
+                                sym("t")
                               ],
                               [
                                 "then",
                                 path(
-                                  "tid",
+                                  sym("tid"),
                                   [
                                     "set",
                                     "editing",
@@ -371,7 +372,7 @@ const d = new Book(stdlib);
                           )
                         ),
                         path(
-                          "ev",
+                          sym("ev"),
                           "value",
                           "trim"
                         )
@@ -379,11 +380,11 @@ const d = new Book(stdlib);
                     ),
                     oninput: func("ev",
                       path(
-                        "tid",
+                        sym("tid"),
                         [
                           "set",
                           "editingTitle",
-                          path("ev", "value")
+                          path(sym("ev"), "value")
                         ]
                       )
                     )
@@ -395,17 +396,17 @@ const d = new Book(stdlib);
         ),
         e.footer({
             class: "footer",
-            style: exp("if", path("Task", "all", "count", ["equals", v(0)]), v("display:none;"), v(""))
+            style: exp(sym("if"), path(sym("Task"), "all", "count", ["equals", v(0)]), v("display:none;"), v(""))
           },
           e.span({class: "todo-count"},
             e.strong(
               path(
-                "Task",
+                sym("Task"),
                 "all",
                 ["filter",
                   func("tid",
                     path(
-                      "tid",
+                      sym("tid"),
                       "state",
                       ["equals", n("active")]))],
                 "count",
@@ -413,14 +414,14 @@ const d = new Book(stdlib);
             e.span(v(" ")),
             e.span(
               exp(
-                "if",
+                sym("if"),
                 path(
-                  "Task",
+                  sym("Task"),
                   "all",
                   ["filter",
                     func("tid",
                       path(
-                        "tid",
+                        sym("tid"),
                         "state",
                         ["equals", n("active")]))],
                   "count",
@@ -438,8 +439,8 @@ const d = new Book(stdlib);
                 {
                   href: "#/",
                   class: exp(
-                    "if",
-                    path("todos", "state", ["equals", n("all")]),
+                    sym("if"),
+                    path(sym("todos"), "state", ["equals", n("all")]),
                     "selected",
                     "none"
                   )
@@ -452,8 +453,8 @@ const d = new Book(stdlib);
                 {
                   href: "#/active",
                   class: exp(
-                    "if",
-                    path("todos", "state", ["equals", n("active")]),
+                    sym("if"),
+                    path(sym("todos"), "state", ["equals", n("active")]),
                     "selected",
                     "none"
                   )
@@ -466,8 +467,8 @@ const d = new Book(stdlib);
                 {
                   href: "#/completed",
                   class: exp(
-                    "if",
-                    path("todos", "state", ["equals", n("completed")]),
+                    sym("if"),
+                    path(sym("todos"), "state", ["equals", n("completed")]),
                     "selected",
                     "none"
                   )
@@ -477,14 +478,14 @@ const d = new Book(stdlib);
             )
           ),
           exp(
-            "if",
+            sym("if"),
             path(
-              "Task",
+              sym("Task"),
               "all",
               [
                 "filter",
                 func("tid",
-                  path("tid", "state", ["equals", n("completed")]))
+                  path(sym("tid"), "state", ["equals", n("completed")]))
               ],
               "count",
               ["equals", v(0)],
@@ -494,14 +495,14 @@ const d = new Book(stdlib);
                 class: "clear-completed",
                 onclick: func("ev",
                   path(
-                    "Task",
+                    sym("Task"),
                     "all",
                     [
                       "filter",
                       func(
                         "tid",
                         path(
-                          "tid",
+                          sym("tid"),
                           "state",
                           [
                             "equals",
@@ -515,7 +516,7 @@ const d = new Book(stdlib);
                       func(
                         "tid",
                         path(
-                          "tid",
+                          sym("tid"),
                           [
                             "set",
                             "exists",
@@ -553,19 +554,19 @@ const d = new Book(stdlib);
     )
   );
 
-  const doc = path("document").deepReduce(d);
+  const doc = path(sym("document")).deepReduce(d);
   d.put(doc, "body", domtree);
-  const eventListeners = path("document", "eventListeners").deepReduce(d);
+  const eventListeners = path(sym("document"), "eventListeners").deepReduce(d);
   d.put(eventListeners, "DOMContentLoaded", func("win",
     path(
-      "todos", ["changeStateByHash", path("win", "location", "hash")],
-      ["then", path("localStorage", ["read", v("todos-lay")])],
-      ["then", exp("load")]
+      sym("todos"), ["changeStateByHash", path(sym("win"), "location", "hash")],
+      ["then", path(sym("localStorage"), ["read", v("todos-lay")])],
+      ["then", exp(sym("load"))]
     )
   ));
   d.set("onPut", path(
-    exp("filterLog", v({"Task": ["class", "exists", "title", "state"]})),
-    ["then", path("localStorage", "appendLog")],
-    ["then", path("localStorage", ["write", v("todos-lay")])]
+    exp(sym("filterLog"), v({"Task": ["class", "exists", "title", "state"]})),
+    ["then", path(sym("localStorage"), "appendLog")],
+    ["then", path(sym("localStorage"), ["write", v("todos-lay")])]
   ));
 }
