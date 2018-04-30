@@ -363,9 +363,9 @@ describe("Book", () => {
       t1 = book.new();
       book.set("T1", t1);
 
-      id0 = book.new({"class": "T1"});
-      id1 = book.new({"class": "T1"});
-      id2 = book.new({"class": "T1"});
+      id0 = book.new({"class": sym("T1")});
+      id1 = book.new({"class": sym("T1")});
+      id2 = book.new({"class": sym("T1")});
     });
 
     it("should return classged id list", () => {
