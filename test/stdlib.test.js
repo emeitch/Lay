@@ -84,8 +84,8 @@ describe("stdlib", () => {
     describe("all", () => {
       it("should return self instances", () => {
         book.set("Foo", book.new());
-        const id1 = book.new({"class": "Foo"});
-        const id2 = book.new({"class": "Foo"});
+        const id1 = book.new({"class": sym("Foo")});
+        const id2 = book.new({"class": sym("Foo")});
 
         const ids = path(sym("Foo"), "all").reduce(book);
         assert.deepStrictEqual(ids.get(0), id1);
