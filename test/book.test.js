@@ -191,7 +191,7 @@ describe("Book", () => {
   describe("#name", () => {
     it("should return assigned name", () => {
       book.set("Foo", id);
-      assert.deepStrictEqual(book.name(id), v("Foo"));
+      assert.deepStrictEqual(book.name(id), sym("Foo"));
       assert.deepStrictEqual(book.name(new UUID()), v(null));
     });
   });
