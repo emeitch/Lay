@@ -100,7 +100,7 @@ describe("stdlib", () => {
       it("should return a instance creation act", () => {
         book.set("Foo", book.new());
         const act = path("Object", ["new", v({
-          class: "Foo",
+          class: sym("Foo"),
           foo: v("bar")
         })]).reduce(book);
 
