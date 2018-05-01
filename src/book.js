@@ -214,7 +214,7 @@ export default class Book {
 
   name(id) {
     const logs = this.findActiveLogs({key: assign, val: id});
-    return logs.length > 0 ? sym(logs[0].id.origin) : v(null);
+    return logs.length > 0 ? logs[0].id : v(null);
   }
 
   syncCache(log) {

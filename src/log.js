@@ -1,4 +1,5 @@
 import UUID from './uuid';
+import { sym } from './sym';
 import v from './v';
 
 export default class Log {
@@ -25,7 +26,7 @@ export default class Log {
       logid: this.logid.object(book),
       id: this.id.object(book),
       key: this.key.object(book),
-      val: (this.key.equals(v("class")) ? book.name(val) : val).object(book),
+      val: (this.key.equals(v("class")) ? sym(book.name(val).origin) : val).object(book),
       at: this.at.toJSON(),
       in: this.in
     };
