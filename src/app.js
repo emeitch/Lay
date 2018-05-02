@@ -28,7 +28,7 @@ const d = new Book(stdlib);
 {
   const todos = d.new();
   d.set("todos", todos);
-  d.put(todos, "class", "App");
+  d.put(todos, "class", sym("App"));
   d.put(todos, "var", v("0.2.0"));
   d.put(todos, "state", n("all"));
   d.put(todos, "newTaskTitle", v(""));
