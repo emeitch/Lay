@@ -93,7 +93,7 @@ export const stdlib = new Book();
     "set",
     func("key", "val", exp(new LiftedNative(function(self, key, val) {
       return this.putAct(self, key, val);
-    }), sym("self"), "key", "val"))
+    }), sym("self"), sym("key"), sym("val")))
   );
 
   // todo: allはClassオブジェクト用のメソッドにしたい
@@ -176,7 +176,7 @@ export const stdlib = new Book();
         return e.reduce(this);
       });
       return v(narr);
-    }), sym("self"), "fnc"))
+    }), sym("self"), sym("fnc")))
   );
 
   stdlib.put(
@@ -189,7 +189,7 @@ export const stdlib = new Book();
         return e.reduce(this).origin;
       });
       return v(result);
-    }), sym("self"), "fnc"))
+    }), sym("self"), sym("fnc")))
   );
 
   stdlib.put(
@@ -202,7 +202,7 @@ export const stdlib = new Book();
         return e.reduce(this).origin;
       });
       return v(narr);
-    }), sym("self"), "fnc"))
+    }), sym("self"), sym("fnc")))
   );
 
   stdlib.put(
@@ -220,7 +220,7 @@ export const stdlib = new Book();
       const arr = self.deepReduce(this);
       const s = sep.deepReduce(this);
       return v(arr.jsObj.join(s.jsObj));
-    }), sym("self"), "sep"))
+    }), sym("self"), sym("sep")))
   );
 }
 
@@ -252,7 +252,7 @@ export const stdlib = new Book();
     "get",
     func("key", exp(new LiftedNative(function(self, key) {
       return self.get(key, this);
-    }), sym("self"), "key"))
+    }), sym("self"), sym("key")))
   );
 }
 
@@ -267,7 +267,7 @@ export const stdlib = new Book();
       const act = self.deepReduce(this);
       const nact = next.deepReduce(this);
       return act.then(nact);
-    }), sym("self"), "next"))
+    }), sym("self"), sym("next")))
   );
 }
 
