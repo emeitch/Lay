@@ -47,22 +47,30 @@ describe("Comp", () => {
         const book = new Book();
 
         assert.deepStrictEqual(v({a: 1, b: 2}).object(book), {
-          class: "Map",
+          class: {
+            origin: "Map"
+          },
           origin: {
             a: 1,
             b: 2
           }
         });
         assert.deepStrictEqual(v([1, 2, 3]).object(book), {
-          class: "Array",
+          class: {
+            origin: "Array"
+          },
           origin: [1, 2, 3]
         });
 
 
         assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(book), {
-          class: "Map",
+          class: {
+            origin: "Map"
+          },
           head: {
-            class: "String",
+            class: {
+              origin: "String"
+            },
             origin: "foo"
           },
           origin: {
@@ -71,9 +79,13 @@ describe("Comp", () => {
           }
         });
         assert.deepStrictEqual(v("bar", [1, 2, 3]).object(book), {
-          class: "Array",
+          class: {
+            origin: "Array"
+          },
           head: {
-            class: "String",
+            class: {
+              origin: "String"
+            },
             origin: "bar"
           },
           origin: [1, 2, 3]

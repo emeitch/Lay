@@ -128,7 +128,7 @@ describe("Val", () => {
 
     describe("#object", () => {
       it("should return origin value", () => {
-        assert.deepStrictEqual(val.object({foo: "dummy"}), {"origin": 0, "class": "ExtendedVal"});
+        assert.deepStrictEqual(val.object({foo: "dummy"}), {"origin": 0, "class": {origin: "ExtendedVal"}});
       });
     });
   });

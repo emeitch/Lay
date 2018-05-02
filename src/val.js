@@ -176,7 +176,9 @@ export class Sym extends Val {
   }
 
   object(_book) {
-    return this.origin;
+    return {
+      origin: this.origin
+    };
   }
 }
 

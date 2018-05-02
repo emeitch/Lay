@@ -30,7 +30,7 @@ describe("stdlib", () => {
   describe("load", () => {
     it("should load prev act json string val to book", () => {
       const id = new UUID();
-      const key = sym("key");
+      const key = v("key");
       const val = v(0);
       const act = new Act(() => {
         return JSON.stringify([

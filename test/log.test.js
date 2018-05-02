@@ -43,9 +43,9 @@ describe("Log", () => {
       {
         const log = new Log("id", "key", "val");
         const lobj = log.object(new Book());
-        assert.deepStrictEqual(lobj.id, {class: "String", origin: "id"});
-        assert.deepStrictEqual(lobj.key, {class: "String", origin: "key"});
-        assert.deepStrictEqual(lobj.val, {class: "String", origin: "val"});
+        assert.deepStrictEqual(lobj.id, {class: {origin: "String"}, origin: "id"});
+        assert.deepStrictEqual(lobj.key, {class: {origin: "String"}, origin: "key"});
+        assert.deepStrictEqual(lobj.val, {class: {origin: "String"}, origin: "val"});
       }
       {
         const prt = new UUID();
@@ -53,9 +53,9 @@ describe("Log", () => {
         const book = new Book();
         book.set("Foo", prt);
         const lobj = log.object(book);
-        assert.deepStrictEqual(lobj.id, {class: "String", origin: "id"});
-        assert.deepStrictEqual(lobj.key, {class: "String", origin: "class"});
-        assert.deepStrictEqual(lobj.val, "Foo");
+        assert.deepStrictEqual(lobj.id, {class: {origin: "String"}, origin: "id"});
+        assert.deepStrictEqual(lobj.key, {class: {origin: "String"}, origin: "class"});
+        assert.deepStrictEqual(lobj.val, {origin: "Foo"});
       }
     });
   });

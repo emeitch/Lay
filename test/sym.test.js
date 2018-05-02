@@ -69,6 +69,12 @@ describe("Sym", () => {
     });
   });
 
+  describe("#object", () => {
+    it("should return a persistent object without class", () => {
+      assert.deepStrictEqual(sym("foo").object(), {origin: "foo"});
+    });
+  });
+
   describe("#collate", () => {
     it("should return a matching book", () => {
       const match = sym("sym1").collate(v("any"));

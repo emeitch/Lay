@@ -1,6 +1,6 @@
-import Sym from './sym';
 import UUID from './uuid';
 import Log from './log';
+import { sym } from './sym';
 import v from './v';
 
 function parseVal(raw) {
@@ -9,28 +9,33 @@ function parseVal(raw) {
   if (
     raw === null ||
     type === "number" ||
+    type === "string" ||
     type === "boolean"
   ) {
     return raw;
-  } else if (type === "string") {
-    return new Sym(raw);
   } else if (type === "object") {
-    if (raw.class === "Number" ||
-        raw.class === "String" ||
-        raw.class === "Boolean" ||
-        raw.class === "Null") {
+    if (!raw.class) {
+      return sym(raw.origin);
+    }
+
+    const klass = parseVal(raw.class);
+    if (
+        klass.origin === "Number" ||
+        klass.origin === "String" ||
+        klass.origin === "Boolean" ||
+        klass.origin === "Null") {
       return v(raw.origin);
-    } else if (raw.class === "Comp") {
+    } else if (klass.origin === "Comp") {
       return v(head, parseVal(raw.origin));
-    } else if (raw.class === "CompArray") {
+    } else if (klass.origin === "CompArray") {
       return v(head, raw.origin.map(i => parseVal(i)));
-    } else if (raw.class === "CompMap") {
+    } else if (klass.origin === "CompMap") {
       const org = {};
       for (const key of Object.keys(raw.origin)) {
         org[key] = parseVal(raw.origin[key]);
       }
       return v(head, org);
-    } else if (raw.class === "UUID") {
+    } else if (klass.origin === "UUID") {
       return new UUID(raw.origin);
     }
   }
