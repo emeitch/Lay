@@ -32,5 +32,12 @@ describe("Prim", () => {
         assert.deepStrictEqual(v(null).class, sym("Null"));
       });
     });
+
+    describe("#object", () => {
+      assert.deepStrictEqual(v(1).object(), 1);
+      assert.deepStrictEqual(v("foo").object(), "foo");
+      assert.deepStrictEqual(v(true).object(), true);
+      assert.deepStrictEqual(v(null).object(), null);
+    });
   });
 });

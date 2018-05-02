@@ -200,4 +200,8 @@ export class Prim extends Val {
     const type = typeof(this.origin);
     return new Sym(type[0].toUpperCase() + type.substring(1));
   }
+
+  object(_book) {
+    return this.origin;
+  }
 }

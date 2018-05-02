@@ -10,57 +10,57 @@ describe("parse", () => {
       {
         logid: {class: {origin: "UUID"}, origin: "logid1"},
         id: {class: {origin: "UUID"}, origin: "uuidexample"},
-        key: {class: {origin: "String"}, origin: "key0"},
-        val: {class: {origin: "Number"}, origin: 1},
+        key: "key0",
+        val: 1,
         at: "2018-04-01T00:00:00z"
       },
       {
         logid: {class: {origin: "UUID"}, origin: "logid2"},
         id: {class: {origin: "UUID"}, origin: "uuidexample"},
-        key: {class: {origin: "String"}, origin: "key1"},
-        val: {class: {origin: "String"}, origin: "2"},
+        key: "key1",
+        val: "2",
         at: "2018-04-02T00:00:00z"
       },
       {
         logid: {class: {origin: "UUID"}, origin: "logid3"},
         id: {class: {origin: "UUID"}, origin: "uuidexample"},
-        key: {class: {origin: "String"}, origin: "key2"},
-        val: {class: {origin: "Comp"}, head: {class: {origin: "String"}, origin: "foo"}, origin: 3},
+        key: "key2",
+        val: {class: {origin: "Comp"}, head: "foo", origin: 3},
         at: "2018-04-02T00:00:00z"
       },
       {
         logid: {class: {origin: "UUID"}, origin: "logid4"},
         id: {class: {origin: "UUID"}, origin: "uuidexample"},
-        key: {class: {origin: "String"}, origin: "key3"},
+        key: "key3",
         val: {class: {origin: "CompArray"}, origin: [1, 2, 3]},
         at: "2018-04-02T00:00:00z"
       },
       {
         logid: {class: {origin: "UUID"}, origin: "logid4"},
         id: {class: {origin: "UUID"}, origin: "uuidexample"},
-        key: {class: {origin: "String"}, origin: "key4"},
-        val: {class: {origin: "CompArray"}, head: {class: {origin: "String"}, origin: "foo"}, origin: [{class: {origin: "CompMap"}, head: {class: {origin: "String"}, origin: "bar"}, origin: {a: 1, b: 2}}]},
+        key: "key4",
+        val: {class: {origin: "CompArray"}, head: "foo", origin: [{class: {origin: "CompMap"}, head: "bar", origin: {a: 1, b: 2}}]},
         at: "2018-04-02T00:00:00z"
       },
       {
         logid: {class: {origin: "UUID"}, origin: "logid4"},
         id: {class: {origin: "UUID"}, origin: "uuidexample"},
-        key: {class: {origin: "String"}, origin: "key5"},
-        val: {class: {origin: "CompMap"}, head: {class: {origin: "String"}, origin: "foo"}, origin: {a: {class: {origin: "CompArray"}, head: {class: {origin: "String"}, origin: "bar"}, origin: [1, 2, 3]}}},
+        key: "key5",
+        val: {class: {origin: "CompMap"}, head: "foo", origin: {a: {class: {origin: "CompArray"}, head: "bar", origin: [1, 2, 3]}}},
         at: "2018-04-02T00:00:00z"
       },
       {
         logid: {class: {origin: "UUID"}, origin: "logid4"},
         id: {class: {origin: "UUID"}, origin: "uuidexample"},
-        key: {class: {origin: "String"}, origin: "key6"},
-        val: {class: {origin: "Comp"}, head: {class: {origin: "String"}, origin: "foo"}, origin: {class: {origin: "Comp"}, head: {class: {origin: "String"}, origin: "bar"}, origin: 1} },
+        key: "key6",
+        val: {class: {origin: "Comp"}, head: "foo", origin: {class: {origin: "Comp"}, head: "bar", origin: 1} },
         at: "2018-04-02T00:00:00z"
       },
       {
         logid: {class: {origin: "UUID"}, origin: "logid4"},
         id: {class: {origin: "UUID"}, origin: "uuidexample"},
-        key: {class: {origin: "String"}, origin: "key7"},
-        val: {class: {origin: "Comp"}, head: {class: {origin: "String"}, origin: "foo"}, origin: null },
+        key: "key7",
+        val: {class: {origin: "Comp"}, head: "foo", origin: null },
         at: "2018-04-02T00:00:00z"
       },
     ];

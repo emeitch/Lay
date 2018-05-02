@@ -13,19 +13,15 @@ function parseVal(raw) {
     type === "boolean"
   ) {
     return raw;
-  } else if (type === "object") {
+  }
+
+  if (type === "object") {
     if (!raw.class) {
       return sym(raw.origin);
     }
 
     const klass = parseVal(raw.class);
-    if (
-        klass.origin === "Number" ||
-        klass.origin === "String" ||
-        klass.origin === "Boolean" ||
-        klass.origin === "Null") {
-      return v(raw.origin);
-    } else if (klass.origin === "Comp") {
+    if (klass.origin === "Comp") {
       return v(head, parseVal(raw.origin));
     } else if (klass.origin === "CompArray") {
       return v(head, raw.origin.map(i => parseVal(i)));

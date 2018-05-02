@@ -67,12 +67,7 @@ describe("Comp", () => {
           class: {
             origin: "Map"
           },
-          head: {
-            class: {
-              origin: "String"
-            },
-            origin: "foo"
-          },
+          head: "foo",
           origin: {
             a: 1,
             b: 2
@@ -82,12 +77,7 @@ describe("Comp", () => {
           class: {
             origin: "Array"
           },
-          head: {
-            class: {
-              origin: "String"
-            },
-            origin: "bar"
-          },
+          head: "bar",
           origin: [1, 2, 3]
         });
       });
