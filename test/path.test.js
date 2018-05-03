@@ -95,7 +95,7 @@ describe("Path", () => {
         book.putLog(new Log(id2, key3, new Path(sym("self"), [key4, new Path(sym("self"), refkey)])));
         book.putLog(new Log(id2, key4, func("x", exp(plus, "x", new Path(sym("self"), refkey)))));
         book.set("a", id);
-        p2 = new Path(sym("a"), key, key2);
+        p2 = new Path("a", key, key2);
         p3 = new Path(id2, key3);
       });
 
