@@ -10,15 +10,11 @@ export default class Path extends Ref {
   constructor(...ids) {
     ids = ids.map((id, index) => {
       if (typeof(id) === "string") {
-        if (index === 0) {
-          return sym(id);
-        } else {
-          return v(id);
-        }
+        return index === 0 ? sym(id) : v(id);
       } else if (Array.isArray(id)) {
         return id.map(i => {
           if (typeof(i) === "string") {
-            return v(i);
+            return index === 0 ? sym(i) : v(i);
           } else {
             return i;
           }
@@ -49,7 +45,13 @@ export default class Path extends Ref {
   }
 
   step(book) {
-    let val = this.receiver.reduce(book);
+    let val;
+    if (Array.isArray(this.receiver)) {
+      val = exp(...this.receiver).reduce(book);
+    } else {
+      val = this.receiver.reduce(book);
+    }
+
     for (const elm of this.keys) {
       let key;
       let args = [];
@@ -91,6 +93,7 @@ export default class Path extends Ref {
         val = replaced.reduce(book);
       }
     }
+
     return val;
   }
 }

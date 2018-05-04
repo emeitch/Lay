@@ -89,14 +89,19 @@ describe("Path", () => {
 
       let p2;
       let p3;
+      let p4;
       beforeEach(() => {
         book.putLog(new Log(id, key, id2));
         book.putLog(new Log(id2, key2, new Path(sym("self"), refkey)));
         book.putLog(new Log(id2, key3, new Path(sym("self"), [key4, new Path(sym("self"), refkey)])));
         book.putLog(new Log(id2, key4, func("x", exp(plus, "x", new Path(sym("self"), refkey)))));
+
         book.set("a", id);
         p2 = new Path("a", key, key2);
         p3 = new Path(id2, key3);
+
+        book.set("foo", func("x", exp(plus, "x", v(1))));
+        p4 = new Path(["foo", v(2)]);
       });
 
       context("referencing key exists", () => {
@@ -107,6 +112,7 @@ describe("Path", () => {
         it("should return the val", () => {
           assert.deepStrictEqual(p2.reduce(book), refval);
           assert.deepStrictEqual(p3.reduce(book), v(4));
+          assert.deepStrictEqual(p4.reduce(book), v(3));
         });
       });
 
