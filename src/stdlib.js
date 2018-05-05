@@ -5,7 +5,6 @@ import Act from './act';
 import Book from './book';
 import Prim from './prim';
 import Comp, { CompArray, CompMap } from  './comp';
-import { sym } from './sym';
 import { exp } from './exp';
 import { kase, alt, grd, otherwise } from './case';
 import { func, LiftedNative } from './func';
@@ -93,7 +92,7 @@ export const stdlib = new Book();
     "set",
     func("key", "val", exp(new LiftedNative(function(self, key, val) {
       return this.putAct(self, key, val);
-    }), sym("self"), sym("key"), sym("val")))
+    }), "self", "key", "val"))
   );
 
   // todo: allはClassオブジェクト用のメソッドにしたい
@@ -102,7 +101,7 @@ export const stdlib = new Book();
     "all",
     exp(new LiftedNative(function(self) {
       return v(this.instanceIDs(self));
-    }), sym("self"))
+    }), "self")
   );
 }
 
@@ -115,7 +114,7 @@ export const stdlib = new Book();
     "trim",
     exp(new LiftedNative(function(self) {
       return v(self.origin.trim());
-    }), sym("self"))
+    }), "self")
   );
 }
 
@@ -128,7 +127,7 @@ export const stdlib = new Book();
     "not",
     exp(new LiftedNative(function(self) {
       return v(!self.origin);
-    }), sym("self"))
+    }), "self")
   );
 }
 
@@ -176,7 +175,7 @@ export const stdlib = new Book();
         return e.reduce(this);
       });
       return v(narr);
-    }), sym("self"), sym("fnc")))
+    }), "self", "fnc"))
   );
 
   stdlib.put(
@@ -189,7 +188,7 @@ export const stdlib = new Book();
         return e.reduce(this).origin;
       });
       return v(result);
-    }), sym("self"), sym("fnc")))
+    }), "self", "fnc"))
   );
 
   stdlib.put(
@@ -202,7 +201,7 @@ export const stdlib = new Book();
         return e.reduce(this).origin;
       });
       return v(narr);
-    }), sym("self"), sym("fnc")))
+    }), "self", "fnc"))
   );
 
   stdlib.put(
@@ -210,7 +209,7 @@ export const stdlib = new Book();
     "count",
     exp(new LiftedNative(function(self) {
       return v(self.origin.length);
-    }), sym("self"))
+    }), "self")
   );
 
   stdlib.put(
@@ -220,7 +219,7 @@ export const stdlib = new Book();
       const arr = self.deepReduce(this);
       const s = sep.deepReduce(this);
       return v(arr.jsObj.join(s.jsObj));
-    }), sym("self"), sym("sep")))
+    }), "self", "sep"))
   );
 }
 
@@ -252,7 +251,7 @@ export const stdlib = new Book();
     "get",
     func("key", exp(new LiftedNative(function(self, key) {
       return self.get(key, this);
-    }), sym("self"), sym("key")))
+    }), "self", "key"))
   );
 }
 
@@ -267,7 +266,7 @@ export const stdlib = new Book();
       const act = self.deepReduce(this);
       const nact = next.deepReduce(this);
       return act.then(nact);
-    }), sym("self"), sym("next")))
+    }), "self", "next"))
   );
 }
 
@@ -309,20 +308,20 @@ export function n(...args) {
   const hsrc = args.pop();
   const head = hsrc ? v(hsrc) : v(null);
   if (Array.isArray(origin)) {
-    return path(sym("Array"), ["new", head].concat(origin));
+    return path("Array", ["new", head].concat(origin));
   } if (origin instanceof Object && !(origin instanceof Val)) {
     const maparr = Object.keys(origin).reduce((r, k) => {
       const o = origin[k];
       const val = o instanceof Val || typeof(o) === "string" ? o : v(o);
       return r.concat([k, val]);
     }, []);
-    return path(sym("Map"), ["new", head].concat(maparr));
+    return path("Map", ["new", head].concat(maparr));
   } else {
     if (head instanceof Val && head.equals(v(null))) {
       const h = v(origin);
-      return path(sym("Comp"), ["new", h]);
+      return path("Comp", ["new", h]);
     } else {
-      return path(sym("Comp"), ["new", head, origin]);
+      return path("Comp", ["new", head, origin]);
     }
   }
 }
