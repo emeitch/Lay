@@ -6,7 +6,6 @@ import Prim from './prim';
 import Act from './act';
 import UUID from './uuid';
 import v from './v';
-import { sym } from './sym';
 import { exp } from './exp';
 import { path } from './path';
 import { func, LiftedNative } from './func';
@@ -89,7 +88,7 @@ dom.set(
 
       function renderMaquette() {
         if (dirty || !vdomCache) {
-          const placeholder = path(sym("document"), "body");
+          const placeholder = path("document", "body");
           const domtree = placeholder.deepReduce(book);
           dirty = false;
           vdomCache = render(domtree);
@@ -98,7 +97,7 @@ dom.set(
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-        const placeholder = path(sym("document"), "eventListeners", "DOMContentLoaded");
+        const placeholder = path("document", "eventListeners", "DOMContentLoaded");
         const win = v({
           location: {
             hash: window.location.hash
