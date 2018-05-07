@@ -24,12 +24,12 @@ describe("Prim", () => {
       });
     });
 
-    describe("#class", () => {
-      it("should return class sym", () => {
-        assert.deepStrictEqual(v(1).class, sym("Number"));
-        assert.deepStrictEqual(v("foo").class, sym("String"));
-        assert.deepStrictEqual(v(true).class, sym("Boolean"));
-        assert.deepStrictEqual(v(null).class, sym("Null"));
+    describe("#type", () => {
+      it("should return type sym", () => {
+        assert.deepStrictEqual(v(1).type, sym("Number"));
+        assert.deepStrictEqual(v("foo").type, sym("String"));
+        assert.deepStrictEqual(v(true).type, sym("Boolean"));
+        assert.deepStrictEqual(v(null).type, sym("Null"));
       });
     });
 

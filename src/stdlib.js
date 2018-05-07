@@ -53,11 +53,11 @@ export const stdlib = new Book();
     const book = this;
     const p = pattern.deepReduce(book).origin;
     return new Act(log => {
-      for (const klass of Object.keys(p)) {
-        const keys = p[klass];
-        const logclass = path(log.id, "class").deepReduce(book);
-        const classname = book.name(path(log.id, "class").deepReduce(book));
-        if ((logclass.origin === klass || classname.origin === klass) && keys.includes(log.key.origin)) {
+      for (const type of Object.keys(p)) {
+        const keys = p[type];
+        const logtype = path(log.id, "type").deepReduce(book);
+        const typename = book.name(logtype);
+        if ((logtype.origin === type || typename.origin === type) && keys.includes(log.key.origin)) {
           return log;
         } else {
           return null;

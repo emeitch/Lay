@@ -49,12 +49,12 @@ describe("Log", () => {
       }
       {
         const prt = new UUID();
-        const log = new Log("id", "class", prt);
+        const log = new Log("id", "type", prt);
         const book = new Book();
         book.set("Foo", prt);
         const lobj = log.object(book);
         assert.deepStrictEqual(lobj.id, "id");
-        assert.deepStrictEqual(lobj.key, "class");
+        assert.deepStrictEqual(lobj.key, "type");
         assert.deepStrictEqual(lobj.val, {origin: "Foo"});
       }
     });

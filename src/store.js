@@ -16,11 +16,11 @@ function parseVal(raw) {
   }
 
   if (type === "object") {
-    if (!raw.class) {
+    if (!raw.type) {
       return sym(raw.origin);
     }
 
-    const klass = parseVal(raw.class);
+    const klass = parseVal(raw.type);
     if (klass.origin === "Comp") {
       return v(head, parseVal(raw.origin));
     } else if (klass.origin === "CompArray") {

@@ -28,7 +28,7 @@ const d = new Book(stdlib);
 {
   const todos = d.new();
   d.set("todos", todos);
-  d.put(todos, "class", sym("App"));
+  d.put(todos, "type", sym("App"));
   d.put(todos, "var", v("0.2.0"));
   d.put(todos, "state", n("all"));
   d.put(todos, "newTaskTitle", v(""));
@@ -81,7 +81,7 @@ const d = new Book(stdlib);
                     [
                       "new",
                       n({
-                        "class": sym("Task"),
+                        "type": sym("Task"),
                         "title": path("ev", "value", "trim"),
                         "state": n("active"),
                       })
@@ -565,7 +565,7 @@ const d = new Book(stdlib);
     )
   ));
   d.set("onPut", path(
-    exp("filterLog", v({"Task": ["class", "exists", "title", "state"]})),
+    exp("filterLog", v({"Task": ["type", "exists", "title", "state"]})),
     ["then", path("localStorage", "appendLog")],
     ["then", path("localStorage", ["write", v("todos-lay")])]
   ));

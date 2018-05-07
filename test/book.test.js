@@ -176,14 +176,14 @@ describe("Book", () => {
         book.put(id, "foo", v("bar"));
       });
 
-      it("should return class's prop", () => {
+      it("should return type's prop", () => {
         assert.deepStrictEqual(v(1).get("foo", book), v("bar"));
       });
 
       it("should return id's prop", () => {
         assert.deepStrictEqual(id.get("foo", book), v("bar"));
-        assert.deepStrictEqual(id.get("class", book), sym("UUID"));
-        assert.deepStrictEqual(id.get("class"), sym("UUID"));
+        assert.deepStrictEqual(id.get("type", book), sym("UUID"));
+        assert.deepStrictEqual(id.get("type"), sym("UUID"));
       });
     });
   });
@@ -363,12 +363,12 @@ describe("Book", () => {
       t1 = book.new();
       book.set("T1", t1);
 
-      id0 = book.new({"class": sym("T1")});
-      id1 = book.new({"class": sym("T1")});
-      id2 = book.new({"class": sym("T1")});
+      id0 = book.new({"type": sym("T1")});
+      id1 = book.new({"type": sym("T1")});
+      id2 = book.new({"type": sym("T1")});
     });
 
-    it("should return classged id list", () => {
+    it("should return type object id list", () => {
       assert.deepStrictEqual(book.instanceIDs(t1), [id0, id1, id2]);
 
       const t2 = book.new();

@@ -128,7 +128,7 @@ export default class Comp extends Val {
 }
 
 export class CompArray extends Comp {
-  get class() {
+  get type() {
      return sym("Array");
   }
 
@@ -160,7 +160,7 @@ export class CompArray extends Comp {
 }
 
 export class CompMap extends Comp {
-  get class() {
+  get type() {
      return sym("Map");
   }
 

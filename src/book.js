@@ -127,7 +127,7 @@ export default class Book {
       return log;
     }
 
-    const tlogs = this.activeLogs(id, "class");
+    const tlogs = this.activeLogs(id, "type");
     for (const tlog of tlogs) {
       const p = tlog.val.replaceSelfBy(id).reduce(this);
       const l = this.findLogWithClasss(p, key);
@@ -290,7 +290,7 @@ export default class Book {
       return [];
     }
     const sname = sym(name.origin);
-    const logs = this.findActiveLogs({key: "class", val: sname});
+    const logs = this.findActiveLogs({key: "type", val: sname});
     return logs.filter(log => {
       const es = this.findActiveLogs({id: log.id, key: "exists"});
       return es.length > 0 && es[es.length-1].val.origin;

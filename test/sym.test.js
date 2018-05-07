@@ -41,7 +41,7 @@ describe("Sym", () => {
       assert(sym("sym").reduce(book) === val);
     });
 
-    context("multi-sclasse refering", () => {
+    context("multi-step refering", () => {
       const val = v("sym val");
       const book = new Book();
       book.set("sym", sym("sym2"));
@@ -70,7 +70,7 @@ describe("Sym", () => {
   });
 
   describe("#object", () => {
-    it("should return a persistent object without class", () => {
+    it("should return a persistent object without type", () => {
       assert.deepStrictEqual(sym("foo").object(), {origin: "foo"});
     });
   });

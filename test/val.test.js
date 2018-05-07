@@ -15,9 +15,9 @@ describe("Val", () => {
       });
     });
 
-    describe("#class", () => {
-      it("should return class sym", () => {
-        assert.deepStrictEqual(val.class, sym("ExtendedVal"));
+    describe("#type", () => {
+      it("should return type sym", () => {
+        assert.deepStrictEqual(val.type, sym("ExtendedVal"));
       });
     });
 
@@ -41,8 +41,8 @@ describe("Val", () => {
 
     describe("#get", () => {
       it("should return underscore prefix _key's val", () => {
-        assert.deepStrictEqual(val.get("class"), sym("ExtendedVal"));
-        assert.deepStrictEqual(val.get(v("class")), sym("ExtendedVal"));
+        assert.deepStrictEqual(val.get("type"), sym("ExtendedVal"));
+        assert.deepStrictEqual(val.get(v("type")), sym("ExtendedVal"));
       });
 
       context("not exists key", () => {
@@ -128,7 +128,7 @@ describe("Val", () => {
 
     describe("#object", () => {
       it("should return origin value", () => {
-        assert.deepStrictEqual(val.object({foo: "dummy"}), {"origin": 0, "class": {origin: "ExtendedVal"}});
+        assert.deepStrictEqual(val.object({foo: "dummy"}), {"origin": 0, "type": {origin: "ExtendedVal"}});
       });
     });
   });

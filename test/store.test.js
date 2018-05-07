@@ -8,59 +8,59 @@ describe("parse", () => {
   it("should parse raw logs", () => {
     const raws = [
       {
-        logid: {class: {origin: "UUID"}, origin: "logid1"},
-        id: {class: {origin: "UUID"}, origin: "uuidexample"},
+        logid: {type: {origin: "UUID"}, origin: "logid1"},
+        id: {type: {origin: "UUID"}, origin: "uuidexample"},
         key: "key0",
         val: 1,
         at: "2018-04-01T00:00:00z"
       },
       {
-        logid: {class: {origin: "UUID"}, origin: "logid2"},
-        id: {class: {origin: "UUID"}, origin: "uuidexample"},
+        logid: {type: {origin: "UUID"}, origin: "logid2"},
+        id: {type: {origin: "UUID"}, origin: "uuidexample"},
         key: "key1",
         val: "2",
         at: "2018-04-02T00:00:00z"
       },
       {
-        logid: {class: {origin: "UUID"}, origin: "logid3"},
-        id: {class: {origin: "UUID"}, origin: "uuidexample"},
+        logid: {type: {origin: "UUID"}, origin: "logid3"},
+        id: {type: {origin: "UUID"}, origin: "uuidexample"},
         key: "key2",
-        val: {class: {origin: "Comp"}, head: "foo", origin: 3},
+        val: {type: {origin: "Comp"}, head: "foo", origin: 3},
         at: "2018-04-02T00:00:00z"
       },
       {
-        logid: {class: {origin: "UUID"}, origin: "logid4"},
-        id: {class: {origin: "UUID"}, origin: "uuidexample"},
+        logid: {type: {origin: "UUID"}, origin: "logid4"},
+        id: {type: {origin: "UUID"}, origin: "uuidexample"},
         key: "key3",
-        val: {class: {origin: "CompArray"}, origin: [1, 2, 3]},
+        val: {type: {origin: "CompArray"}, origin: [1, 2, 3]},
         at: "2018-04-02T00:00:00z"
       },
       {
-        logid: {class: {origin: "UUID"}, origin: "logid4"},
-        id: {class: {origin: "UUID"}, origin: "uuidexample"},
+        logid: {type: {origin: "UUID"}, origin: "logid4"},
+        id: {type: {origin: "UUID"}, origin: "uuidexample"},
         key: "key4",
-        val: {class: {origin: "CompArray"}, head: "foo", origin: [{class: {origin: "CompMap"}, head: "bar", origin: {a: 1, b: 2}}]},
+        val: {type: {origin: "CompArray"}, head: "foo", origin: [{type: {origin: "CompMap"}, head: "bar", origin: {a: 1, b: 2}}]},
         at: "2018-04-02T00:00:00z"
       },
       {
-        logid: {class: {origin: "UUID"}, origin: "logid4"},
-        id: {class: {origin: "UUID"}, origin: "uuidexample"},
+        logid: {type: {origin: "UUID"}, origin: "logid4"},
+        id: {type: {origin: "UUID"}, origin: "uuidexample"},
         key: "key5",
-        val: {class: {origin: "CompMap"}, head: "foo", origin: {a: {class: {origin: "CompArray"}, head: "bar", origin: [1, 2, 3]}}},
+        val: {type: {origin: "CompMap"}, head: "foo", origin: {a: {type: {origin: "CompArray"}, head: "bar", origin: [1, 2, 3]}}},
         at: "2018-04-02T00:00:00z"
       },
       {
-        logid: {class: {origin: "UUID"}, origin: "logid4"},
-        id: {class: {origin: "UUID"}, origin: "uuidexample"},
+        logid: {type: {origin: "UUID"}, origin: "logid4"},
+        id: {type: {origin: "UUID"}, origin: "uuidexample"},
         key: "key6",
-        val: {class: {origin: "Comp"}, head: "foo", origin: {class: {origin: "Comp"}, head: "bar", origin: 1} },
+        val: {type: {origin: "Comp"}, head: "foo", origin: {type: {origin: "Comp"}, head: "bar", origin: 1} },
         at: "2018-04-02T00:00:00z"
       },
       {
-        logid: {class: {origin: "UUID"}, origin: "logid4"},
-        id: {class: {origin: "UUID"}, origin: "uuidexample"},
+        logid: {type: {origin: "UUID"}, origin: "logid4"},
+        id: {type: {origin: "UUID"}, origin: "uuidexample"},
         key: "key7",
-        val: {class: {origin: "Comp"}, head: "foo", origin: null },
+        val: {type: {origin: "Comp"}, head: "foo", origin: null },
         at: "2018-04-02T00:00:00z"
       },
     ];
@@ -78,7 +78,7 @@ describe("parse", () => {
   });
 
   it("should raise error unparsed raw logs", () => {
-    assert.throws(() => parse([{id: {class: {origin: "Dummy"}}}]), /can not identify a val:/);
+    assert.throws(() => parse([{id: {type: {origin: "Dummy"}}}]), /can not identify a val:/);
     assert.throws(() => parse([{id: 1}]), /can not identify a val:/);
   });
 });

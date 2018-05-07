@@ -56,7 +56,7 @@ describe("stdlib", () => {
       const id = new UUID();
       const key = sym("key");
       const val = v(0);
-      book.put(id, "class", "Obj");
+      book.put(id, "type", "Obj");
       const act = new Act(() => {
         return new Log(id, key, val);
       });
@@ -68,7 +68,7 @@ describe("stdlib", () => {
       assert(passedLog !== null);
 
 
-      book.set("Obj", new UUID()); // class assigned
+      book.set("Obj", new UUID()); // type assigned
       book.run(path(act, ["then", exp("filterLog", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
       assert(passedLog !== null);
 
@@ -84,8 +84,8 @@ describe("stdlib", () => {
     describe("all", () => {
       it("should return self instances", () => {
         book.set("Foo", book.new());
-        const id1 = book.new({"class": sym("Foo")});
-        const id2 = book.new({"class": sym("Foo")});
+        const id1 = book.new({"type": sym("Foo")});
+        const id2 = book.new({"type": sym("Foo")});
 
         const ids = path(sym("Foo"), "all").reduce(book);
         assert.deepStrictEqual(ids.get(0), id1);
@@ -100,7 +100,7 @@ describe("stdlib", () => {
       it("should return a instance creation act", () => {
         book.set("Foo", book.new());
         const act = path("Object", ["new", v({
-          class: sym("Foo"),
+          type: sym("Foo"),
           foo: v("bar")
         })]).reduce(book);
 
@@ -115,9 +115,9 @@ describe("stdlib", () => {
 
     context("accessing Object's key", () => {
       it("should return the path", () => {
-        const classid = new UUID();
+        const typeid = new UUID();
         const id = new UUID();
-        book.put(id, "class", classid);
+        book.put(id, "type", typeid);
 
         const p = new Path(id, ["set", "foo", v("val")]);
         assert.deepStrictEqual(p.reduce(book).constructor, Act);
@@ -279,34 +279,34 @@ describe("stdlib", () => {
       assert.deepStrictEqual(arr.constructor, Path);
       assert.deepStrictEqual(arr.reduce(book).get(v(0)), v(10));
       assert.deepStrictEqual(arr.reduce(book).get("head"), v("Arr"));
-      assert.deepStrictEqual(arr.reduce(book).get("class"), sym("Array"));
+      assert.deepStrictEqual(arr.reduce(book).get("type"), sym("Array"));
 
       const narr = n([v(10), v(11), v(12)]);
       assert.deepStrictEqual(narr.constructor, Path);
       assert.deepStrictEqual(narr.reduce(book).get(v(0)), v(10));
       assert.deepStrictEqual(narr.reduce(book).get("head"), v(null));
-      assert.deepStrictEqual(narr.reduce(book).get("class"), sym("Array"));
+      assert.deepStrictEqual(narr.reduce(book).get("type"), sym("Array"));
 
       const map = n("Mp", {foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(map.constructor, Path);
       assert.deepStrictEqual(map.reduce(book).get("foo"), v("bar"));
       assert.deepStrictEqual(map.reduce(book).get("head"), v("Mp"));
-      assert.deepStrictEqual(map.reduce(book).get("class"), sym("Map"));
+      assert.deepStrictEqual(map.reduce(book).get("type"), sym("Map"));
 
       const nmap = n({foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(nmap.constructor, Path);
       assert.deepStrictEqual(nmap.reduce(book).get("foo"), v("bar"));
-      assert.deepStrictEqual(nmap.reduce(book).get("class"), sym("Map"));
+      assert.deepStrictEqual(nmap.reduce(book).get("type"), sym("Map"));
 
       const nested = n({foo: {bar: v("baz")}, fiz: v("buz")});
       assert.deepStrictEqual(nested.constructor, Path);
       assert.deepStrictEqual(nested.reduce(book).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested.reduce(book).get("class"), sym("Map"));
+      assert.deepStrictEqual(nested.reduce(book).get("type"), sym("Map"));
 
       const nested2 = n({foo: n({bar: v("baz")}), fiz: v("buz")});
       assert.deepStrictEqual(nested2.constructor, Path);
       assert.deepStrictEqual(nested2.deepReduce(book).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested2.deepReduce(book).get("class"), sym("Map"));
+      assert.deepStrictEqual(nested2.deepReduce(book).get("type"), sym("Map"));
 
       const headonly = n("foo");
       assert.deepStrictEqual(headonly.constructor, Path);

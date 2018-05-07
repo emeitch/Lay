@@ -35,19 +35,19 @@ describe("Comp", () => {
       });
     });
 
-    describe("#class", () => {
-      it("should return class sym", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2}).class, sym("Map"));
-        assert.deepStrictEqual(v([1, 2, 3]).class, sym("Array"));
+    describe("#type", () => {
+      it("should return type sym", () => {
+        assert.deepStrictEqual(v({a: 1, b: 2}).type, sym("Map"));
+        assert.deepStrictEqual(v([1, 2, 3]).type, sym("Array"));
       });
     });
 
     describe("#object", () => {
-      it("should return class sym", () => {
+      it("should return js object", () => {
         const book = new Book();
 
         assert.deepStrictEqual(v({a: 1, b: 2}).object(book), {
-          class: {
+          type: {
             origin: "Map"
           },
           origin: {
@@ -56,7 +56,7 @@ describe("Comp", () => {
           }
         });
         assert.deepStrictEqual(v([1, 2, 3]).object(book), {
-          class: {
+          type: {
             origin: "Array"
           },
           origin: [1, 2, 3]
@@ -64,7 +64,7 @@ describe("Comp", () => {
 
 
         assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(book), {
-          class: {
+          type: {
             origin: "Map"
           },
           head: "foo",
@@ -74,7 +74,7 @@ describe("Comp", () => {
           }
         });
         assert.deepStrictEqual(v("bar", [1, 2, 3]).object(book), {
-          class: {
+          type: {
             origin: "Array"
           },
           head: "bar",
