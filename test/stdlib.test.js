@@ -114,6 +114,22 @@ describe("stdlib", () => {
 
 
     context("accessing Object's key", () => {
+      describe("#def", () => {
+        it("should return the Act which run set action", () => {
+          const typeid = new UUID();
+          const id = new UUID();
+          book.put(id, "type", typeid);
+
+          const p = new Path(id, ["def", "foo", exp(plus, v(1), v(2))]);
+          const a = p.reduce(book);
+          assert.deepStrictEqual(a.constructor, Act);
+          book.run(a);
+
+          const l = book.activeLog(id, "foo");
+          assert.deepStrictEqual(l.val, exp(plus, v(1), v(2)));
+        });
+      });
+
       describe("#set", () => {
         it("should return the Act which run set action", () => {
           const typeid = new UUID();
@@ -124,7 +140,9 @@ describe("stdlib", () => {
           const a = p.reduce(book);
           assert.deepStrictEqual(a.constructor, Act);
           book.run(a);
-          assert.deepStrictEqual(path(id, "foo").reduce(book), v(3));
+
+          const l = book.activeLog(id, "foo");
+          assert.deepStrictEqual(l.val, v(3));
         });
       });
     });
