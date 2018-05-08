@@ -114,13 +114,18 @@ describe("stdlib", () => {
 
 
     context("accessing Object's key", () => {
-      it("should return the path", () => {
-        const typeid = new UUID();
-        const id = new UUID();
-        book.put(id, "type", typeid);
+      describe("#set", () => {
+        it("should return the Act which run set action", () => {
+          const typeid = new UUID();
+          const id = new UUID();
+          book.put(id, "type", typeid);
 
-        const p = new Path(id, ["set", "foo", v("val")]);
-        assert.deepStrictEqual(p.reduce(book).constructor, Act);
+          const p = new Path(id, ["set", "foo", exp(plus, v(1), v(2))]);
+          const a = p.reduce(book);
+          assert.deepStrictEqual(a.constructor, Act);
+          book.run(a);
+          assert.deepStrictEqual(path(id, "foo").reduce(book), v(3));
+        });
       });
     });
   });
