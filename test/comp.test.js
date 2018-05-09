@@ -101,7 +101,7 @@ describe("Comp", () => {
       it("should return arg index val", () => {
         const val = v({a: 1, b: 2});
         assert.deepStrictEqual(val.get("a"), v(1));
-        assert.deepStrictEqual(val.get(sym("a")), v(1));
+        assert.deepStrictEqual(val.get(v("a")), v(1));
       });
     });
 
