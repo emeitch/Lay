@@ -3,7 +3,6 @@ import assert from 'assert';
 import v from '../src/v';
 import Path, { path } from '../src/path';
 import UUID from '../src/uuid';
-import { sym } from '../src/sym';
 import Exp, { exp } from '../src/exp';
 import { func, plus, concat } from '../src/func';
 import Log from '../src/log';
@@ -21,7 +20,7 @@ describe("Path", () => {
 
   describe("constructor", () => {
     it("should complete prim string", () => {
-      assert.deepStrictEqual(new Path(sym("foo"), ["bar", "buz"], "fiz"), new Path(sym("foo"), [v("bar"), v("buz")], v("fiz")));
+      assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), new Path("foo", [v("bar"), v("buz")], v("fiz")));
     });
   });
 
@@ -69,7 +68,7 @@ describe("Path", () => {
       beforeEach(() => {
         book.putLog(new Log(id, key, val));
         book.set("a", id);
-        p = new Path(sym("a"), key);
+        p = new Path("a", key);
       });
 
       it("should return the val", () => {
@@ -92,9 +91,9 @@ describe("Path", () => {
       let p4;
       beforeEach(() => {
         book.putLog(new Log(id, key, id2));
-        book.putLog(new Log(id2, key2, new Path(sym("self"), refkey)));
-        book.putLog(new Log(id2, key3, new Path(sym("self"), [key4, new Path(sym("self"), refkey)])));
-        book.putLog(new Log(id2, key4, func("x", exp(plus, "x", new Path(sym("self"), refkey)))));
+        book.putLog(new Log(id2, key2, new Path("self", refkey)));
+        book.putLog(new Log(id2, key3, new Path("self", [key4, new Path("self", refkey)])));
+        book.putLog(new Log(id2, key4, func("x", exp(plus, "x", new Path("self", refkey)))));
 
         book.set("a", id);
         p2 = new Path("a", key, key2);
@@ -130,12 +129,12 @@ describe("Path", () => {
 
       beforeEach(() => {
         book.put(id1, "foo", v(1));
-        book.put(id1, "bar", path(sym("self"), "foo"));
+        book.put(id1, "bar", path("self", "foo"));
 
         book.put(id2, "foo", v(2));
-        book.put(id2, "bar", path(sym("self"), "foo"));
+        book.put(id2, "bar", path("self", "foo"));
         book.put(id2, "buz", func("x", exp(plus, path(id1, "bar"), "x")));
-        book.put(id2, "biz", path(sym("self"), ["buz", v(3)]));
+        book.put(id2, "biz", path("self", ["buz", v(3)]));
       });
 
       it("should refer correct self", () => {
@@ -150,7 +149,7 @@ describe("Path", () => {
       const val2 = v(2);
 
       beforeEach(() => {
-        book.putLog(new Log(id, key, func("x", exp(plus, new Path(sym("self"), key2), "x"))));
+        book.putLog(new Log(id, key, func("x", exp(plus, new Path("self", key2), "x"))));
         book.putLog(new Log(id, key2, val2));
         p = new Path(id, [key, v(3)]);
       });
@@ -193,9 +192,9 @@ describe("Path", () => {
         book.set("parent2", typeid2);
         book.set("grandparent", typeid3);
 
-        book.put(id, "type", sym("parent1"));
-        book.put(id, "type", sym("parent2"));
-        book.put(typeid2, "type", sym("grandparent"));
+        book.put(id, "type", path("parent1"));
+        book.put(id, "type", path("parent2"));
+        book.put(typeid2, "type", path("grandparent"));
 
         book.put(typeid1, "foo", v(1));
         book.put(typeid2, "foo", v(2));
@@ -223,8 +222,8 @@ describe("Path", () => {
 
         book.set("parent1", typeid1);
 
-        book.put(id, "type", path(sym("self"), "baz"));
-        book.put(id, "baz", sym("parent1"));
+        book.put(id, "type", path("self", "baz"));
+        book.put(id, "baz", path("parent1"));
 
         book.put(typeid1, "foo", v("bar"));
       });
@@ -243,8 +242,8 @@ describe("Path", () => {
 
         book.set("parent1", typeid1);
 
-        book.put(id, "type", path(sym("self"), ["baz", sym("parent1")]));
-        book.put(id, "baz", func("arg", sym("arg")));
+        book.put(id, "type", path("self", ["baz", path("parent1")]));
+        book.put(id, "baz", func("arg", path("arg")));
 
         book.put(typeid1, "foo", v("bar"));
       });
@@ -264,7 +263,7 @@ describe("Path", () => {
       });
 
       it("should return the path", () => {
-        const p = new Path(id, sym("foo"));
+        const p = new Path(id, "foo");
         assert.deepStrictEqual(p.reduce(book), p);
       });
     });
@@ -274,7 +273,7 @@ describe("Path", () => {
         const c = v({a: {b: {c: "d"}}});
 
         {
-          const p = new Path(c, sym("a"), sym("b"));
+          const p = new Path(c, "a", "b");
           assert.deepStrictEqual(p.reduce(book), v({c: "d"}));
         }
 
@@ -289,7 +288,7 @@ describe("Path", () => {
       it("should replace path args", () => {
         const id = new UUID();
         book.put(id, v("foo"), func("a", exp(concat, v("f"), "a")));
-        const e = exp(func("x", new Path(id, [v("foo"), sym("x")])), v("bar"));
+        const e = exp(func("x", new Path(id, [v("foo"), path("x")])), v("bar"));
         assert.deepStrictEqual(e.reduce(book), v("fbar"));
       });
     });
@@ -307,42 +306,11 @@ describe("Path", () => {
         assert.deepStrictEqual(p.reduce(book), p);
       });
     });
-
-    context("reducible sym key and sym assgin first", () => {
-      it("should political reduce", () => {
-        const id = new UUID();
-        book.put(id, "foo", v(1));
-        assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
-
-        book.set("foo", v("bar"));
-        assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
-
-        book.put(id, "bar", v(2));
-        assert.deepStrictEqual(path(id, sym("foo")).reduce(book), v(2));
-      });
-    });
-
-    context("reducible key and assign last", () => {
-      it("should political reduce", () => {
-        const id = new UUID();
-        book.put(id, "foo", v(1));
-        assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
-
-        book.put(id, "bar", v(2));
-        assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
-
-        book.set("foo", v("bar"));
-        assert.deepStrictEqual(path(id, sym("foo")).reduce(book), v(2));
-
-        // todo: functionをfuncとして扱う項目のテスト。不要になったら除去する
-        assert.deepStrictEqual(path(id, sym("foo"), ["equals", v(2)]).reduce(book), v(true));
-      });
-    });
   });
 
   describe("stringify", () => {
     it("should return string dump", () => {
-      const p = new Path(sym("self"), v("foo"));
+      const p = new Path("self", v("foo"));
       assert(p.stringify() === "Path [\n  self, \n  \"foo\"\n]");
     });
   });
