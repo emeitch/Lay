@@ -1,6 +1,7 @@
 import UUID from './uuid';
 import Log from './log';
 import { sym } from './sym';
+import { path } from './path';
 import v from './v';
 
 function parseVal(raw) {
@@ -13,6 +14,10 @@ function parseVal(raw) {
     type === "boolean"
   ) {
     return raw;
+  }
+
+  if (Array.isArray(raw)) {
+    return raw.map(i => parseVal(i));
   }
 
   if (type === "object") {
@@ -33,6 +38,8 @@ function parseVal(raw) {
       return v(head, org);
     } else if (klass.origin === "UUID") {
       return new UUID(raw.origin);
+    } else if (klass.origin === "Path") {
+      return path(...parseVal(raw.origin));
     }
   }
 

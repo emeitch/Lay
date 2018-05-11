@@ -5,7 +5,7 @@ import UUID from './uuid';
 import Log from './log';
 import Comp from './comp';
 import Act from './act';
-import { sym } from './sym';
+import { path } from './path';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
@@ -289,7 +289,7 @@ export default class Book {
     if (name.origin === null) {
       return [];
     }
-    const sname = sym(name.origin);
+    const sname = path(name.origin);
     const logs = this.findActiveLogs({key: "type", val: sname});
     return logs.filter(log => {
       const es = this.findActiveLogs({id: log.id, key: "exists"});

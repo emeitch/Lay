@@ -84,8 +84,8 @@ describe("stdlib", () => {
     describe("all", () => {
       it("should return self instances", () => {
         book.set("Foo", book.new());
-        const id1 = book.new({"type": sym("Foo")});
-        const id2 = book.new({"type": sym("Foo")});
+        const id1 = book.new({"type": path("Foo")});
+        const id2 = book.new({"type": path("Foo")});
 
         const ids = path(sym("Foo"), "all").reduce(book);
         assert.deepStrictEqual(ids.get(0), id1);
@@ -100,7 +100,7 @@ describe("stdlib", () => {
       it("should return a instance creation act", () => {
         book.set("Foo", book.new());
         const act = path("Object", ["new", v({
-          type: sym("Foo"),
+          type: path("Foo"),
           foo: v("bar")
         })]).reduce(book);
 
@@ -108,7 +108,7 @@ describe("stdlib", () => {
 
         book.run(act);
 
-        assert.deepStrictEqual(path(sym("Foo"), "all", v(0), "foo").reduce(book), v("bar"));
+        assert.deepStrictEqual(path("Foo", "all", v(0), "foo").reduce(book), v("bar"));
       });
     });
 
