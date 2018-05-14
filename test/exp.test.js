@@ -6,7 +6,7 @@ import UUID from '../src/uuid';
 import Path from '../src/path';
 import { exp } from '../src/exp';
 import Book from '../src/book';
-import { sym } from '../src/sym';
+import { path } from '../src/path';
 
 describe("Exp", () => {
   describe("#step", () => {
@@ -47,12 +47,12 @@ describe("Exp", () => {
       it("should evalutate one step the expression", () => {
         const book = new Book();
         book.set("plus0", plus);
-        book.set("plus1", sym("plus0"));
+        book.set("plus1", path("plus0"));
 
         const e = exp("plus1", v(1), v(2));
 
         const e2 = e.step(book);
-        assert.deepStrictEqual(e2, exp("plus0", v(1), v(2)));
+        assert.deepStrictEqual(e2, exp(path("plus0"), v(1), v(2)));
 
         const e3 = e2.step(book);
         assert.deepStrictEqual(e3, exp(plus, v(1), v(2)));
