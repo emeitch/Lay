@@ -101,7 +101,8 @@ describe("stdlib", () => {
         book.set("Foo", book.new());
         const act = path("Object", ["new", v({
           type: path("Foo"),
-          foo: v("bar")
+          foo: v("bar"),
+          bar: path([plus, v(1), v(2)])
         })]).reduce(book);
 
         assert.deepStrictEqual(act.constructor, Act);
@@ -109,6 +110,8 @@ describe("stdlib", () => {
         book.run(act);
 
         assert.deepStrictEqual(path("Foo", "all", v(0), "foo").reduce(book), v("bar"));
+
+        assert.deepStrictEqual(path("Foo", "all", v(0), "bar").reduce(book), v(3));
       });
     });
 
