@@ -8,7 +8,7 @@ import Book from '../src/book';
 import Act from '../src/act';
 import Path, { path } from '../src/path';
 import { func, plus } from '../src/func';
-import { exp } from '../src/exp';
+import { exp, formula } from '../src/exp';
 import { sym } from '../src/sym';
 
 describe("stdlib", () => {
@@ -84,8 +84,8 @@ describe("stdlib", () => {
     describe("all", () => {
       it("should return self instances", () => {
         book.set("Foo", book.new());
-        const id1 = book.new({"type": path("Foo")});
-        const id2 = book.new({"type": path("Foo")});
+        const id1 = book.new({"type": formula(path("Foo"))});
+        const id2 = book.new({"type": formula(path("Foo"))});
 
         const ids = path("Foo", "all").reduce(book);
         assert.deepStrictEqual(ids.get(0), id1);
@@ -100,18 +100,25 @@ describe("stdlib", () => {
       it("should return a instance creation act", () => {
         book.set("Foo", book.new());
         const act = path("Object", ["new", v({
-          type: path("Foo"),
-          foo: v("bar"),
-          bar: path([plus, v(1), v(2)])
+          type: formula(path("Foo")),
+          foo: v("foo"),
+          bar: path([plus, v(1), v(2)]),
+          buz: formula(path([plus, v(1), v(2)]))
         })]).reduce(book);
 
         assert.deepStrictEqual(act.constructor, Act);
 
         book.run(act);
 
-        assert.deepStrictEqual(path("Foo", "all", v(0), "foo").reduce(book), v("bar"));
+        const obj = path("Foo", "all", v(0)).reduce(book);
+        assert.deepStrictEqual(obj.get("foo", book), v("foo"));
+        assert.deepStrictEqual(path(obj, "foo").reduce(book), v("foo"));
 
-        assert.deepStrictEqual(path("Foo", "all", v(0), "bar").reduce(book), v(3));
+        assert.deepStrictEqual(obj.get("bar", book), v(3));
+        assert.deepStrictEqual(path(obj, "bar").reduce(book), v(3));
+
+        assert.deepStrictEqual(obj.get("buz", book), path([plus, v(1), v(2)]));
+        assert.deepStrictEqual(path(obj, "buz").reduce(book), v(3));
       });
     });
 

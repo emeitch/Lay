@@ -30,3 +30,10 @@ export default class Exp extends Val {
 export function exp(...args) {
   return new Exp(...args);
 }
+
+export class Formula extends Val {
+}
+
+export function formula(...args) {
+  return new Formula(...args);
+}

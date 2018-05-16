@@ -2,7 +2,7 @@
 import Book from './book';
 import Act from './act';
 import { stdlib, n } from './stdlib';
-import { exp } from './exp';
+import { exp, formula } from './exp';
 import { path } from './path';
 import { func } from './func';
 import v from './v';
@@ -80,7 +80,7 @@ const d = new Book(stdlib);
                     [
                       "new",
                       n({
-                        "type": path("Task"),
+                        "type": formula(path("Task")),
                         "title": path("ev", "value", "trim"),
                         "state": n("active"),
                       })
