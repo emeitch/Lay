@@ -5,7 +5,7 @@ import UUID from './uuid';
 import Log from './log';
 import Comp from './comp';
 import Act from './act';
-import { Formula } from './exp';
+import Lid from './lid';
 import { path } from './path';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
@@ -170,7 +170,7 @@ export default class Book {
     if (props) {
       for (const key of Object.keys(props)) {
         const value = v(props[key]).reduce(this);
-        const val = value instanceof Formula ? value.origin : value;
+        const val = value instanceof Lid ? value.origin : value;
         this.put(id, key, val);
       }
     }

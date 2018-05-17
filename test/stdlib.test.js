@@ -8,7 +8,8 @@ import Book from '../src/book';
 import Act from '../src/act';
 import Path, { path } from '../src/path';
 import { func, plus } from '../src/func';
-import { exp, formula } from '../src/exp';
+import { exp } from '../src/exp';
+import { lid } from '../src/lid';
 import { sym } from '../src/sym';
 
 describe("stdlib", () => {
@@ -84,8 +85,8 @@ describe("stdlib", () => {
     describe("all", () => {
       it("should return self instances", () => {
         book.set("Foo", book.new());
-        const id1 = book.new({"type": formula(path("Foo"))});
-        const id2 = book.new({"type": formula(path("Foo"))});
+        const id1 = book.new({"type": lid(path("Foo"))});
+        const id2 = book.new({"type": lid(path("Foo"))});
 
         const ids = path("Foo", "all").reduce(book);
         assert.deepStrictEqual(ids.get(0), id1);
@@ -100,10 +101,10 @@ describe("stdlib", () => {
       it("should return a instance creation act", () => {
         book.set("Foo", book.new());
         const act = path("Object", ["new", v({
-          type: formula(path("Foo")),
+          type: lid(path("Foo")),
           foo: v("foo"),
           bar: path([plus, v(1), v(2)]),
-          buz: formula(path([plus, v(1), v(2)]))
+          buz: lid(path([plus, v(1), v(2)]))
         })]).reduce(book);
 
         assert.deepStrictEqual(act.constructor, Act);
