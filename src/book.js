@@ -169,8 +169,7 @@ export default class Book {
 
     if (props) {
       for (const key of Object.keys(props)) {
-        const value = v(props[key]).reduce(this);
-        const val = value instanceof Lid ? value.origin : value;
+        const val = v(props[key]).reduce(this);
         this.put(id, key, val);
       }
     }
