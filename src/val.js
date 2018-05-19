@@ -104,6 +104,10 @@ export default class Val {
     return pattern.collate(this);
   }
 
+  unpack() {
+    return this;
+  }
+
   appendIndent(str, indent=0) {
     return str.toString().replace(/\n/g, "\n"+" ".repeat(indent));
   }
