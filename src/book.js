@@ -276,7 +276,11 @@ export default class Book {
   }
 
   put(...args) {
-    const log = new Log(...args);
+    const as = args.map((e, i) => {
+      const valIndex = 2;
+      return i === valIndex && e instanceof Lid ? e.origin : e;
+    });
+    const log = new Log(...as);
     return this.putLog(log);
   }
 

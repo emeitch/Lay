@@ -154,6 +154,14 @@ describe("stdlib", () => {
 
           const l = book.activeLog(id, "foo");
           assert.deepStrictEqual(l.val, v(3));
+
+          const p2 = new Path(id, ["set", "bar", lid(exp(plus, v(1), v(2)))]);
+          const a2 = p2.reduce(book);
+          assert.deepStrictEqual(a2.constructor, Act);
+          book.run(a2);
+
+          const l2 = book.activeLog(id, "bar");
+          assert.deepStrictEqual(l2.val, exp(plus, v(1), v(2)));
         });
       });
     });
