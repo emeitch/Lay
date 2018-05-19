@@ -7,7 +7,7 @@ import Book from '../src/book';
 import Act from '../src/act';
 import { path } from '../src/path';
 import { sym } from '../src/sym';
-import { lid } from '../src/lid';
+import { pack } from '../src/pack';
 import { transaction, invalidate } from '../src/ontology';
 
 describe("Book", () => {
@@ -365,9 +365,9 @@ describe("Book", () => {
       t1 = book.new();
       book.set("T1", t1);
 
-      id0 = book.new({"type": lid(path("T1"))});
-      id1 = book.new({"type": lid(path("T1"))});
-      id2 = book.new({"type": lid(path("T1"))});
+      id0 = book.new({"type": pack(path("T1"))});
+      id1 = book.new({"type": pack(path("T1"))});
+      id2 = book.new({"type": pack(path("T1"))});
     });
 
     it("should return type object id list", () => {

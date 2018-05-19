@@ -9,7 +9,7 @@ import Act from '../src/act';
 import Path, { path } from '../src/path';
 import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
-import { lid } from '../src/lid';
+import { pack } from '../src/pack';
 import { sym } from '../src/sym';
 
 describe("stdlib", () => {
@@ -85,8 +85,8 @@ describe("stdlib", () => {
     describe("all", () => {
       it("should return self instances", () => {
         book.set("Foo", book.new());
-        const id1 = book.new({"type": lid(path("Foo"))});
-        const id2 = book.new({"type": lid(path("Foo"))});
+        const id1 = book.new({"type": pack(path("Foo"))});
+        const id2 = book.new({"type": pack(path("Foo"))});
 
         const ids = path("Foo", "all").reduce(book);
         assert.deepStrictEqual(ids.get(0), id1);
@@ -101,10 +101,10 @@ describe("stdlib", () => {
       it("should return a instance creation act", () => {
         book.set("Foo", book.new());
         const act = path("Object", ["new", v({
-          type: lid(path("Foo")),
+          type: pack(path("Foo")),
           foo: v("foo"),
           bar: path([plus, v(1), v(2)]),
-          buz: lid(path([plus, v(1), v(2)]))
+          buz: pack(path([plus, v(1), v(2)]))
         })]).reduce(book);
 
         assert.deepStrictEqual(act.constructor, Act);
@@ -155,7 +155,7 @@ describe("stdlib", () => {
           const l = book.activeLog(id, "foo");
           assert.deepStrictEqual(l.val, v(3));
 
-          const p2 = new Path(id, ["set", "bar", lid(exp(plus, v(1), v(2)))]);
+          const p2 = new Path(id, ["set", "bar", pack(exp(plus, v(1), v(2)))]);
           const a2 = p2.reduce(book);
           assert.deepStrictEqual(a2.constructor, Act);
           book.run(a2);

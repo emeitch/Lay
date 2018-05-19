@@ -3,7 +3,7 @@ import Book from './book';
 import Act from './act';
 import { stdlib, n } from './stdlib';
 import { exp } from './exp';
-import { lid } from './lid';
+import { pack } from './pack';
 import { path } from './path';
 import { func } from './func';
 import v from './v';
@@ -81,7 +81,7 @@ const d = new Book(stdlib);
                     [
                       "new",
                       n({
-                        "type": lid(path("Task")),
+                        "type": pack(path("Task")),
                         "title": path("ev", "value", "trim"),
                         "state": n("active"),
                       })
