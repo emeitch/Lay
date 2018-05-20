@@ -1,5 +1,4 @@
 import UUID from './uuid';
-import { path } from './path';
 import v from './v';
 
 export default class Log {
@@ -21,12 +20,11 @@ export default class Log {
   }
 
   object(book) {
-    const val = this.val.deepReduce(book);
     return {
       logid: this.logid.object(book),
       id: this.id.object(book),
       key: this.key.object(book),
-      val: (this.key.equals(v("type")) ? path(book.name(val).origin) : val).object(book),
+      val: this.val.object(book),
       at: this.at.toJSON(),
       in: this.in
     };
