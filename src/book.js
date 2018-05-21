@@ -121,7 +121,7 @@ export default class Book {
     return actives[actives.length-1];
   }
 
-  findLogWithClasss(id, key) {
+  findLogWithType(id, key) {
     const log = this.activeLog(id, key);
     if (log) {
       return log;
@@ -130,7 +130,7 @@ export default class Book {
     const tlogs = this.activeLogs(id, "type");
     for (const tlog of tlogs) {
       const p = tlog.val.replaceSelfBy(id).reduce(this);
-      const l = this.findLogWithClasss(p, key);
+      const l = this.findLogWithType(p, key);
       if (l) {
         return l;
       }

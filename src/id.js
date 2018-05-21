@@ -11,7 +11,7 @@ export default class ID extends Ref {
 
   get(key, book) {
     if (book) {
-      const log = book.findLogWithClasss(this, key);
+      const log = book.findLogWithType(this, key);
       if (log) {
         return log.val;
       }
