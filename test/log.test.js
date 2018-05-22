@@ -61,6 +61,12 @@ describe("Log", () => {
         assert.deepStrictEqual(lobj.key, "type");
         assert.deepStrictEqual(lobj.val, {type: {origin: "Path"}, origin: [sym("Foo")]});
       }
+      {
+        const book = new Book();
+        const log = new Log("id", pack(path("view", "x")), 3.0);
+        const lobj = log.object(book);
+        assert.deepStrictEqual(lobj.key, {type: {origin: "Path"}, origin: [sym("view"), v("x")]});
+      }
     });
   });
 });

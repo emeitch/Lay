@@ -13,7 +13,7 @@ export default class Log {
 
     this.logid = logid;
     this.id = v(id);
-    this.key = v(key);
+    this.key = v(key).unpack();
     this.val = v(val).unpack();
     this.at = at_;
     this.in = in_;
