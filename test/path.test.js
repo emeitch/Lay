@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import v from '../src/v';
 import Path, { path } from '../src/path';
+import { pack } from '../src/pack';
 import UUID from '../src/uuid';
 import Exp, { exp } from '../src/exp';
 import { func, plus, concat } from '../src/func';
@@ -290,6 +291,23 @@ describe("Path", () => {
         book.put(id, v("foo"), func("a", exp(concat, v("f"), "a")));
         const e = exp(func("x", new Path(id, [v("foo"), path("x")])), v("bar"));
         assert.deepStrictEqual(e.reduce(book), v("fbar"));
+      });
+    });
+
+    context("key with context", () => {
+      it("should return val by the path key", () => {
+        const id = new UUID();
+        const context = new UUID();
+        const key = path(context, "x");
+        book.put(id, pack(key), 3.0);
+
+        const p = path(id, key);
+        assert.deepStrictEqual(key.reduce(book), key);
+        assert.deepStrictEqual(p.reduce(book), v(3.0));
+
+        book.put(context, "x", "context-key");
+        assert.deepStrictEqual(key.reduce(book), v("context-key"));
+        assert.deepStrictEqual(p.reduce(book), v(3.0));
       });
     });
 

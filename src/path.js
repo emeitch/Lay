@@ -63,7 +63,7 @@ export default class Path extends Ref {
         key = elm;
       }
 
-      let prop = val.get(key.reduce(book), book);
+      let prop = val.get(key, book);
       if (prop instanceof Function) {
         // LiftedNativeの基本仕様はthisでbookを渡すだが
         // 組み込みのメソッドの場合、thisで自身を参照したいケースが大半で
