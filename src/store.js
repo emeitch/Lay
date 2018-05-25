@@ -2,6 +2,7 @@ import UUID from './uuid';
 import Log from './log';
 import { sym } from './sym';
 import { path } from './path';
+import { ctx } from './ctx';
 import v from './v';
 
 function parseVal(raw) {
@@ -40,6 +41,8 @@ function parseVal(raw) {
       return new UUID(raw.origin);
     } else if (klass.origin === "Path") {
       return path(...parseVal(raw.origin));
+    } else if (klass.origin === "Ctx") {
+      return ctx(...parseVal(raw.origin));
     }
   }
 

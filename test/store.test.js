@@ -3,6 +3,7 @@ import assert from 'assert';
 import UUID from '../src/uuid';
 import { sym } from '../src/sym';
 import { path } from '../src/path';
+import { ctx } from '../src/ctx';
 import v from '../src/v';
 import { parse } from '../src/store';
 
@@ -78,6 +79,13 @@ describe("parse", () => {
         key: "key9",
         val: {origin: "Foo"},
         at: "2018-04-02T00:00:00z"
+      },
+      {
+        logid: {type: {origin: "UUID"}, origin: "logid4"},
+        id: {type: {origin: "UUID"}, origin: "uuidexample"},
+        key: "key10",
+        val: {type: {origin: "Ctx"}, origin: [{type: {origin: "UUID"}, origin: "foo"}, "foo"]},
+        at: "2018-04-02T00:00:00z"
       }
     ];
     const logs = parse(raws);
@@ -93,6 +101,7 @@ describe("parse", () => {
     assert.deepStrictEqual(logs[7].val, v("foo", null));
     assert.deepStrictEqual(logs[8].val, path("Foo"));
     assert.deepStrictEqual(logs[9].val, sym("Foo"));
+    assert.deepStrictEqual(logs[10].val, ctx(new UUID("foo"), "bar"));
   });
 
   it("should raise error unparsed raw logs", () => {
