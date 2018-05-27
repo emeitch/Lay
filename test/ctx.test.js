@@ -14,4 +14,24 @@ describe("Ctx", () => {
       });
     });
   });
+
+  describe("#object", () => {
+    it("should return js object", () => {
+      const i = new UUID("dummy");
+      const c = ctx(i, "foo");
+      assert.deepStrictEqual(c.object(), {
+        type: {
+          origin: "Ctx"
+        },
+        origin: [
+          {
+            type: {
+              origin: "UUID"
+            },
+            origin: "dummy"
+          },
+          "foo"
+        ]});
+    });
+  });
 });
