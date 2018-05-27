@@ -84,7 +84,7 @@ describe("parse", () => {
         logid: {type: {origin: "UUID"}, origin: "logid4"},
         id: {type: {origin: "UUID"}, origin: "uuidexample"},
         key: "key10",
-        val: {type: {origin: "Ctx"}, origin: [{type: {origin: "UUID"}, origin: "foo"}, "foo"]},
+        val: {type: {origin: "Ctx"}, origin: [{type: {origin: "UUID"}, origin: "foo"}, "bar"]},
         at: "2018-04-02T00:00:00z"
       }
     ];
