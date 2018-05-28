@@ -2,7 +2,6 @@ import assert from 'assert';
 
 import UUID from '../src/uuid';
 import Log, { n } from '../src/log';
-import { sym } from '../src/sym';
 import { path } from '../src/path';
 import { pack } from '../src/pack';
 import v from '../src/v';
@@ -59,13 +58,22 @@ describe("Log", () => {
         const lobj = log.object(book);
         assert.deepStrictEqual(lobj.id, "id");
         assert.deepStrictEqual(lobj.key, "type");
-        assert.deepStrictEqual(lobj.val, {type: {origin: "Path"}, origin: [sym("Foo")]});
+        assert.deepStrictEqual(lobj.val, {type: {origin: "Path"}, origin: [{origin: "Foo"}]});
       }
       {
         const book = new Book();
         const log = new Log("id", pack(path("view", "x")), 3.0);
         const lobj = log.object(book);
-        assert.deepStrictEqual(lobj.key, {type: {origin: "Path"}, origin: [sym("view"), v("x")]});
+        assert.deepStrictEqual(lobj.key, {
+          type: {
+            origin: "Path"
+          },
+          origin: [
+            {
+              origin: "view"
+            },
+            "x"
+          ]});
       }
     });
   });

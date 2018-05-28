@@ -96,6 +96,13 @@ export default class Path extends Ref {
 
     return val;
   }
+
+  object(_book) {
+    const base = super.object(_book);
+    return Object.assign({}, base, {
+      origin: this.origin.map(i => i.object(_book))
+    });
+  }
 }
 
 export function path(...args) {

@@ -321,6 +321,28 @@ describe("Path", () => {
     });
   });
 
+  describe("object", () => {
+    it("should return js object dump", () => {
+      const id = new UUID("foo");
+      const p = path(id, "bar", "buz");
+      assert.deepStrictEqual(p.object(), {
+        type: {
+          origin: "Path"
+        },
+        origin: [
+          {
+            type: {
+              origin: "UUID"
+            },
+            origin: "foo"
+          },
+          "bar",
+          "buz"
+        ]
+      });
+    });
+  });
+
   describe("stringify", () => {
     it("should return string dump", () => {
       const p = new Path("self", v("foo"));
