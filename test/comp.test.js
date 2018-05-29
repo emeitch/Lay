@@ -124,6 +124,22 @@ describe("Comp", () => {
     });
   });
 
+  describe("object", () => {
+    it("should return JS Object dump", () => {
+      assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(), {
+        type: {
+          origin: "Array"
+        },
+        origin: [
+          1,
+          "foo",
+          true,
+          null
+        ]
+      });
+    });
+  });
+
   describe("stringify", () => {
     it("should return string dump", () => {
       assert(v({a: [1, 2], b: "bar"}).stringify() === "{\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
