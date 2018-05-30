@@ -137,6 +137,16 @@ describe("Comp", () => {
           null
         ]
       });
+
+      assert.deepStrictEqual(v({foo: 1, bar: "2"}).object(), {
+        type: {
+          origin: "Map"
+        },
+        origin: {
+          foo: 1,
+          bar: "2"
+        }
+      });
     });
   });
 
