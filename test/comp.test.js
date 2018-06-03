@@ -55,13 +55,13 @@ describe("Comp", () => {
             b: 2
           }
         });
+
         assert.deepStrictEqual(v([1, 2, 3]).object(book), {
           type: {
             origin: "Array"
           },
           origin: [1, 2, 3]
         });
-
 
         assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(book), {
           type: {
@@ -73,12 +73,69 @@ describe("Comp", () => {
             b: 2
           }
         });
+
         assert.deepStrictEqual(v("bar", [1, 2, 3]).object(book), {
           type: {
             origin: "Array"
           },
           head: "bar",
           origin: [1, 2, 3]
+        });
+
+        assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(), {
+          type: {
+            origin: "Array"
+          },
+          origin: [
+            1,
+            "foo",
+            true,
+            null
+          ]
+        });
+
+        assert.deepStrictEqual(v({foo: 1, bar: {buz: "2"}}).object(), {
+          type: {
+            origin: "Map"
+          },
+          origin: {
+            foo: 1,
+            bar: {
+              buz: "2"
+            }
+          }
+        });
+
+        assert.deepStrictEqual(v({foo: 1, bar: ["2", false, null]}).object(), {
+          type: {
+            origin: "Map"
+          },
+          origin: {
+            foo: 1,
+            bar: [
+              "2",
+              false,
+              null
+            ]
+          }
+        });
+
+        assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(), {
+          type: {
+            origin: "Array"
+          },
+          origin: [
+            "foo",
+            {
+              type: {
+                origin: "Map"
+              },
+              origin: {
+                bar: 1,
+                buz: false
+              }
+            }
+          ]
         });
       });
     });
@@ -120,76 +177,6 @@ describe("Comp", () => {
           assert.deepStrictEqual(v("Foo", {a: 1}).collate(v({a: 1})).result, null);
           assert.deepStrictEqual(v("Foo", [1]).collate(v([1])).result, null);
         });
-      });
-    });
-  });
-
-  describe("object", () => {
-    it("should return JS Object dump", () => {
-      assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(), {
-        type: {
-          origin: "Array"
-        },
-        origin: [
-          1,
-          "foo",
-          true,
-          null
-        ]
-      });
-
-      assert.deepStrictEqual(v({foo: 1, bar: "2"}).object(), {
-        type: {
-          origin: "Map"
-        },
-        origin: {
-          foo: 1,
-          bar: "2"
-        }
-      });
-
-      assert.deepStrictEqual(v({foo: 1, bar: {buz: "2"}}).object(), {
-        type: {
-          origin: "Map"
-        },
-        origin: {
-          foo: 1,
-          bar: {
-            buz: "2"
-          }
-        }
-      });
-
-      assert.deepStrictEqual(v({foo: 1, bar: ["2", false, null]}).object(), {
-        type: {
-          origin: "Map"
-        },
-        origin: {
-          foo: 1,
-          bar: [
-            "2",
-            false,
-            null
-          ]
-        }
-      });
-
-      assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(), {
-        type: {
-          origin: "Array"
-        },
-        origin: [
-          "foo",
-          {
-            type: {
-              origin: "Map"
-            },
-            origin: {
-              bar: 1,
-              buz: false
-            }
-          }
-        ]
       });
     });
   });
