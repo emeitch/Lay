@@ -173,6 +173,24 @@ describe("Comp", () => {
           ]
         }
       });
+
+      assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(), {
+        type: {
+          origin: "Array"
+        },
+        origin: [
+          "foo",
+          {
+            type: {
+              origin: "Map"
+            },
+            origin: {
+              bar: 1,
+              buz: false
+            }
+          }
+        ]
+      });
     });
   });
 
