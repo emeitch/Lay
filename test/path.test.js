@@ -306,6 +306,25 @@ describe("Path", () => {
       });
     });
 
+    context("context object", () => {
+      it("should return val by specified context object", () => {
+        const id = new UUID();
+
+        const holder1 = new UUID();
+        const context1 = new UUID();
+        book.put(holder1, id, context1);
+        book.put(context1, "x", v(1));
+
+        const holder2 = new UUID();
+        const context2 = new UUID();
+        book.put(holder2, id, context2);
+        book.put(context2, "x", v(2));
+
+        assert.deepStrictEqual(path(holder1, id, "x").reduce(book), v(1));
+        assert.deepStrictEqual(path(holder2, id, "x").reduce(book), v(2));
+      });
+    });
+
     context("unknown path", () => {
       const id = new UUID();
       const unknownKey1 = new UUID();
