@@ -32,31 +32,12 @@ describe("Book", () => {
         assert(log.id === id);
         assert(log.key === key);
         assert(log.val === val);
-        assert(log.in === null);
         assert(book.log(log.logid) === log);
       });
 
       it("should append a transaction log", () => {
         const tlogs = book.findLogs({id: log.logid, key: transaction});
         assert(tlogs.length === 1);
-      });
-    });
-
-    context("with location", () => {
-      const location = new UUID();
-
-      let log;
-      beforeEach(() => {
-        log = new Log(id, key, val, null, location);
-        book.putLog(log);
-      });
-
-      it("should append a log with location", () => {
-        assert(log.id === id);
-        assert(log.key === key);
-        assert(log.val === val);
-        assert(log.in === location);
-        assert(book.log(log.logid) === log);
       });
     });
 

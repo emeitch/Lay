@@ -2,7 +2,7 @@ import UUID from './uuid';
 import v from './v';
 
 export default class Log {
-  constructor(id, key, val=null, at_=new Date(), in_=null, logid=new UUID()) {
+  constructor(id, key, val=null, at_=new Date(), logid=new UUID()) {
     if (!id) {
       throw "id is required";
     }
@@ -16,7 +16,6 @@ export default class Log {
     this.key = v(key).unpack();
     this.val = v(val).unpack();
     this.at = at_;
-    this.in = in_;
   }
 
   object(book) {
@@ -25,8 +24,7 @@ export default class Log {
       id: this.id.object(book),
       key: this.key.object(book),
       val: this.val.object(book),
-      at: this.at.toJSON(),
-      in: this.in
+      at: this.at.toJSON()
     };
   }
 }
