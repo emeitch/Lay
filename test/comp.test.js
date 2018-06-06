@@ -46,6 +46,22 @@ describe("Comp", () => {
       it("should return js object", () => {
         const book = new Book();
 
+        assert.deepStrictEqual(v("foo", 1).object(book), {
+          type: {
+            origin: "Comp"
+          },
+          head: "foo",
+          origin: 1
+        });
+
+        assert.deepStrictEqual(v("foo", null).object(book), {
+          type: {
+            origin: "Comp"
+          },
+          head: "foo",
+          origin: null
+        });
+
         assert.deepStrictEqual(v({a: 1, b: 2}).object(book), {
           type: {
             origin: "Map"

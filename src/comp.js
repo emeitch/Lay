@@ -117,6 +117,14 @@ export default class Comp extends Val {
 
     return this.origin.collate(Comp.valFrom(target.origin));
   }
+
+  object(book) {
+    const o = super.object(book);
+    if (!this.head.equals(NullVal)) {
+      Object.assign(o, {head: this.head.object(book)});
+    }
+    return o;
+  }
 }
 
 export class CompArray extends Comp {
@@ -152,11 +160,6 @@ export class CompArray extends Comp {
 
   object(book) {
     const o = super.object(book);
-    if (!this.head.equals(NullVal)) {
-      Object.assign(o, {
-        head: this.head.object(book)
-      });
-    }
     return Object.assign(o, {
       origin: this.origin.map(o => o instanceof Val ? o.object(book) : o)
     });
@@ -199,13 +202,5 @@ export class CompMap extends Comp {
     }
 
     return new this.constructor(org, this.head);
-  }
-
-  object(book) {
-    const o = super.object(book);
-    if (!this.head.equals(NullVal)) {
-      Object.assign(o, {head: this.head.object(book)});
-    }
-    return o;
   }
 }
