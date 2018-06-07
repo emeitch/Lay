@@ -18,6 +18,10 @@ export default class Log {
     this.at = at_;
   }
 
+  get in() {
+    return this.id;
+  }
+
   object(book) {
     return {
       logid: this.logid.object(book),

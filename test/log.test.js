@@ -23,6 +23,12 @@ describe("Log", () => {
     });
   });
 
+  describe("#in", () => {
+    it("should return a uuid", () => {
+      assert.deepStrictEqual(log.in, id);
+    });
+  });
+
   describe("constructor", () => {
     it("should require a id", () => {
       assert.throws(() => new Log(), /id is required/);
