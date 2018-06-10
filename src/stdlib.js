@@ -82,7 +82,7 @@ export const stdlib = new Book();
         for (const key in props.origin) {
           p[key] = props.get(key);
         }
-        this.new(p);
+        return this.new(p);
       });
     }))
   );

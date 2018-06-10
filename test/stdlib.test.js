@@ -109,9 +109,15 @@ describe("stdlib", () => {
 
         assert.deepStrictEqual(act.constructor, Act);
 
-        book.run(act);
+        let ov;
+        const act2 = act.then(new Act(id => {
+          ov = id;
+        }));
+
+        book.run(act2);
 
         const obj = path("Foo", "all", v(0)).reduce(book);
+        assert.deepStrictEqual(ov, obj);
         assert.deepStrictEqual(obj.get("foo", book), v("foo"));
         assert.deepStrictEqual(path(obj, "foo").reduce(book), v("foo"));
 
