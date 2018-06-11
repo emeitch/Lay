@@ -312,7 +312,7 @@ export default class Book {
 
         do {
           act = act.proceed(arg);
-        } while(act.next);
+        } while(act.next || act.recovery);
       }
     }
 

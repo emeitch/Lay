@@ -524,6 +524,22 @@ describe("Book", () => {
       assert.deepStrictEqual(b, 2);
     });
 
+    context("with error act", () => {
+      it("should recovery error", () => {
+        const book = new Book();
+
+        let err;
+        const act = new Act(() => {
+          throw "error";
+        }).catch(new Act(e => {
+          err = e;
+        }));
+
+        book.run(act);
+        assert.deepStrictEqual(err, "error");
+      });
+    });
+
     context("with not act val", () => {
       it("should return null", () => {
         const book = new Book();
