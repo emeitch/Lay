@@ -115,6 +115,10 @@ export default class Act extends Val {
     return this.proceedWithArg(arg);
   }
 
+  canProceed() {
+    return this.next || this.recovery;
+  }
+
   then(act) {
     const next = this.next ? this.next.then(act) : act;
     return this.clone({next});
