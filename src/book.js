@@ -284,6 +284,16 @@ export default class Book {
     });
   }
 
+  setAct(...args) {
+    return new Act(() => {
+      const log = new Log(...args);
+      for (const l of this.activeLogs(log.id, log.key)) {
+         this.put(l.logid, invalidate);
+      }
+      return this.putLog(log);
+    });
+  }
+
   instanceIDs(id) {
     const name = this.name(id);
     if (name.origin === null) {

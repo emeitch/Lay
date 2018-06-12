@@ -168,6 +168,18 @@ describe("stdlib", () => {
 
           const l2 = book.activeLog(id, "bar");
           assert.deepStrictEqual(l2.val, exp(plus, v(1), v(2)));
+
+          const p3 = new Path(id, ["set", "bar", pack(exp(plus, v(2), v(1)))]);
+          const a3 = p3.reduce(book);
+          book.run(a3);
+
+          const p4 = new Path(id, ["set", "bar", pack(exp(plus, v(3), v(2)))]);
+          const a4 = p4.reduce(book);
+          book.run(a4);
+
+          const logs = book.activeLogs(id, "bar");
+          assert.deepStrictEqual(logs[0].val, exp(plus, v(3), v(2)));
+          assert.deepStrictEqual(logs.length, 1); // invalidated old logs
         });
       });
     });
