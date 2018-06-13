@@ -91,7 +91,7 @@ export const stdlib = new Book();
     obj,
     "def",
     func("key", "val", exp(new LiftedNative(function(self, key, val) {
-      return this.putAct(self, key.reduce(this), val);
+      return this.setAct(self, key.reduce(this), val);
     }), "self", "key", "val"))
   );
 

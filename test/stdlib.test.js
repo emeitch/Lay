@@ -144,6 +144,14 @@ describe("stdlib", () => {
 
           const l = book.activeLog(id, "foo");
           assert.deepStrictEqual(l.val, exp(plus, v(1), v(2)));
+
+          const p2 = new Path(id, ["def", "foo", exp(plus, v(2), v(3))]);
+          const a2 = p2.reduce(book);
+          book.run(a2);
+
+          const logs = book.activeLogs(id, "foo");
+          assert.deepStrictEqual(logs[0].val, exp(plus, v(2), v(3)));
+          assert.deepStrictEqual(logs.length, 1); // invalidated old logs
         });
       });
 
