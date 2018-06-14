@@ -131,6 +131,31 @@ describe("stdlib", () => {
 
 
     context("accessing Object's key", () => {
+      describe("#add", () => {
+        it("should return the Act which run add action", () => {
+          const typeid = new UUID();
+          const id = new UUID();
+          book.put(id, "type", typeid);
+
+          const p = new Path(id, ["add", "foo", v(1)]);
+          const a = p.reduce(book);
+          assert.deepStrictEqual(a.constructor, Act);
+          book.run(a);
+
+          const l = book.activeLog(id, "foo");
+          assert.deepStrictEqual(l.val, v(1));
+
+          const p2 = new Path(id, ["add", "foo", v(2)]);
+          const a2 = p2.reduce(book);
+          book.run(a2);
+
+          const logs = book.activeLogs(id, "foo");
+          assert.deepStrictEqual(logs.length, 2);
+          assert.deepStrictEqual(logs[0].val, v(1));
+          assert.deepStrictEqual(logs[1].val, v(2));
+        });
+      });
+
       describe("#def", () => {
         it("should return the Act which run set action", () => {
           const typeid = new UUID();
