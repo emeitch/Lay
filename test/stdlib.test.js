@@ -215,6 +215,23 @@ describe("stdlib", () => {
           assert.deepStrictEqual(logs.length, 1); // invalidated old logs
         });
       });
+
+      describe("#get", () => {
+        it("should return a val for key", () => {
+          const id = new UUID();
+
+          const p = new Path(id, ["add", "foo", v(4)]);
+          const a = p.reduce(book);
+          book.run(a);
+
+          const p2 = new Path(id, ["add", "foo", v(5)]);
+          const a2 = p2.reduce(book);
+          book.run(a2);
+
+          const val = new Path(id, ["get", "foo"]);
+          assert.deepStrictEqual(val.reduce(book), v(4));
+        });
+      });
     });
   });
 
