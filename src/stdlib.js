@@ -120,6 +120,16 @@ export const stdlib = new Book();
     }), "self", "key"))
   );
 
+  stdlib.put(
+    obj,
+    "getAtIndex",
+    func("key", "index", exp(new LiftedNative(function(self, key, index) {
+      const logs = this.activeLogs(self, key.reduce(this));
+      const i = index.reduce(this).origin;
+      return logs[i].val;
+    }), "self", "key", "index"))
+  );
+
   // todo: allはClassオブジェクト用のメソッドにしたい
   stdlib.put(
     obj,

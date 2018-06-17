@@ -232,6 +232,26 @@ describe("stdlib", () => {
           assert.deepStrictEqual(val.reduce(book), v(4));
         });
       });
+
+      describe("#getAtIndex", () => {
+        it("should return a val for key and index", () => {
+          const id = new UUID();
+
+          const p = new Path(id, ["add", "foo", v(4)]);
+          const a = p.reduce(book);
+          book.run(a);
+
+          const p2 = new Path(id, ["add", "foo", v(5)]);
+          const a2 = p2.reduce(book);
+          book.run(a2);
+
+          const val = new Path(id, ["getAtIndex", "foo", v(0)]);
+          assert.deepStrictEqual(val.reduce(book), v(4));
+
+          const val2 = new Path(id, ["getAtIndex", "foo", v(1)]);
+          assert.deepStrictEqual(val2.reduce(book), v(5));
+        });
+      });
     });
   });
 
