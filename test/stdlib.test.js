@@ -231,6 +231,19 @@ describe("stdlib", () => {
           const val = new Path(id, ["get", "foo"]);
           assert.deepStrictEqual(val.reduce(book), v(4));
         });
+
+        context("exp val", () => {
+          it("should retrun a reduced val", () => {
+            const id = new UUID();
+
+            const p = new Path(id, ["add", "foo", exp(plus, v(1), v(2))]);
+            const a = p.reduce(book);
+            book.run(a);
+
+            const val = new Path(id, ["get", "foo"]);
+            assert.deepStrictEqual(val.reduce(book), v(3));
+          });
+        });
       });
 
       describe("#getAtIndex", () => {
