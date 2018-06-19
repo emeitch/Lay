@@ -97,6 +97,28 @@ describe("stdlib", () => {
       });
     });
 
+    describe("allOf", () => {
+      it("should return array for specified key", () => {
+        const typeid = new UUID();
+        const id = new UUID();
+        book.put(id, "type", typeid);
+
+        {
+          const p = new Path(id, ["add", "foo", v(1)]);
+          const a = p.reduce(book);
+          book.run(a);
+        }
+
+        {
+          const p = new Path(id, ["add", "foo", v(2)]);
+          const a = p.reduce(book);
+          book.run(a);
+        }
+
+        assert.deepStrictEqual(path(id, ["allOf", "foo"]).reduce(book), v([v(1), v(2)]));
+      });
+    });
+
     describe("new", () => {
       it("should return a instance creation act", () => {
         book.set("Foo", book.new());

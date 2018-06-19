@@ -130,6 +130,15 @@ export const stdlib = new Book();
     }), "self", "key", "index"))
   );
 
+  stdlib.put(
+    obj,
+    "allOf",
+    func("key", exp(new LiftedNative(function(self, key) {
+      const logs = this.activeLogs(self, key.reduce(this));
+      return v(logs.map(l => l.val));
+    }), "self", "key"))
+  );
+
   // todo: allはClassオブジェクト用のメソッドにしたい
   stdlib.put(
     obj,
