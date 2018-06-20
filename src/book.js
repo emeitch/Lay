@@ -10,6 +10,7 @@ import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
   constructor(...imports) {
+    this.id = new UUID();
     this.logs = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();

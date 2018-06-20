@@ -20,6 +20,12 @@ describe("Book", () => {
     book = new Book();
   });
 
+  describe("#id", () => {
+    it("should return the book uuid", () => {
+      assert.deepStrictEqual(book.id.constructor, UUID);
+    });
+  });
+
   describe("#putLog", () => {
     context("standard arguments", () => {
       let log;
