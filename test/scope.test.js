@@ -26,4 +26,19 @@ describe("Scope", () => {
       });
     });
   });
+
+  describe("#get", () => {
+    it("should return indexed id", () => {
+      const id0 = new UUID();
+      const id1 = new UUID();
+      const id2 = new UUID();
+
+      const s = scope(id0, id1, id2);
+      const dummyBook = undefined;
+
+      assert.deepStrictEqual(s.get(0, dummyBook), id0);
+      assert.deepStrictEqual(s.get(1, dummyBook), id1);
+      assert.deepStrictEqual(s.get(2, dummyBook), id2);
+    });
+  });
 });
