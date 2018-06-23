@@ -7,5 +7,9 @@ export default class Scope extends Val {
 }
 
 export function scope(...args) {
+  if (args.length === 1) {
+    return args[0];
+  }
+  
   return new Scope(...args);
 }
