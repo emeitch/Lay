@@ -5,6 +5,7 @@ import Path, { path } from '../src/path';
 import UUID from '../src/uuid';
 import Exp, { exp } from '../src/exp';
 import { func, plus, concat } from '../src/func';
+import { scope } from '../src/scope';
 import Log from '../src/log';
 import Book from '../src/book';
 
@@ -323,6 +324,17 @@ describe("Path", () => {
 
       it("should return the path", () => {
         assert.deepStrictEqual(p.reduce(book), p);
+      });
+    });
+
+    context("with scope", () => {
+      it("should return scoped id props", () => {
+        const id0 = new UUID();
+        const id1 = new UUID();
+        const sid = scope(id0, id1);
+        book.put(sid, "foo", v(3));
+
+        assert.deepStrictEqual(path(sid, "foo").reduce(book), v(3));
       });
     });
   });
