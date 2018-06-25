@@ -17,14 +17,6 @@ describe("Scope", () => {
       assert.deepStrictEqual(s.origin[1], id1);
       assert.deepStrictEqual(s.origin[2], id2);
     });
-
-    context("one id", () => {
-      it("should return the id oneself", () => {
-        const id0 = new UUID();
-        const s = scope(id0);
-        assert.deepStrictEqual(s, id0);
-      });
-    });
   });
 
   describe("#get", () => {
@@ -39,6 +31,19 @@ describe("Scope", () => {
       assert.deepStrictEqual(s.get(0, dummyBook), id0);
       assert.deepStrictEqual(s.get(1, dummyBook), id1);
       assert.deepStrictEqual(s.get(2, dummyBook), id2);
+    });
+
+    context("one id", () => {
+      it("should return id as indexed 0", () => {
+        const id0 = new UUID();
+
+        const s = scope(id0);
+        const dummyBook = undefined;
+
+        assert.deepStrictEqual(s.constructor, Scope);
+        assert.deepStrictEqual(s.origin[0], id0);
+        assert.deepStrictEqual(s.get(0, dummyBook), id0);
+      });
     });
   });
 });
