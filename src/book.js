@@ -18,6 +18,7 @@ export default class Book {
     for (const i of imports) {
       this.import(i);
     }
+    this.put(this.id, "type", path("Book"));
   }
 
   log(logid) {

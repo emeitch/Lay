@@ -24,6 +24,12 @@ describe("Book", () => {
     it("should return the book uuid", () => {
       assert.deepStrictEqual(book.id.constructor, UUID);
     });
+
+    describe("#type", () => {
+      it("should return a path to 'Book'", () => {
+        assert.deepStrictEqual(path(book.id, "type").reduce(book), sym("Book"));
+      });
+    });
   });
 
   describe("#putLog", () => {
