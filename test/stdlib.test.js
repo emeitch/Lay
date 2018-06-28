@@ -454,7 +454,10 @@ describe("stdlib", () => {
   context("accessing Book methods", () => {
     describe("Book", () => {
       it("should return a Book type object", () => {
-        assert.deepStrictEqual(path("Book").reduce(book).constructor, UUID);
+        const bookClass = path("Book").reduce(book);
+
+        assert.deepStrictEqual(bookClass.constructor, UUID);
+        assert.deepStrictEqual(path(book.id, "type").reduce(book), bookClass);
       });
     });
   });
