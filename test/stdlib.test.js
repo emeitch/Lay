@@ -451,6 +451,14 @@ describe("stdlib", () => {
     });
   });
 
+  context("accessing Book methods", () => {
+    describe("Book", () => {
+      it("should return a Book type object", () => {
+        assert.deepStrictEqual(path("Book").reduce(book).constructor, UUID);
+      });
+    });
+  });
+
   describe("n", () => {
     it("should return array or map creation path", () => {
       const arr = n("Arr", [v(10), v(11), v(12)]);

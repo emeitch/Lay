@@ -347,6 +347,11 @@ export const stdlib = new Book();
   );
 }
 
+{
+  const book = new UUID();
+  stdlib.set("Book", book);
+}
+
 export function n(...args) {
   const origin = args.pop();
   const hsrc = args.pop();
