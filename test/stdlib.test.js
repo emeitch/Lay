@@ -460,6 +460,16 @@ describe("stdlib", () => {
         assert.deepStrictEqual(path(book.id, "type").reduce(book), bookClass);
       });
     });
+
+    describe("put", () => {
+      it("should put a log", () => {
+        const id = new UUID();
+        const pact = path(book.id, ["put", id, "foo", v(1)]).reduce(book);
+        book.run(pact);
+
+        assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
+      });
+    });
   });
 
   describe("n", () => {

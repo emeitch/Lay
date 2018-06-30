@@ -350,6 +350,15 @@ export const stdlib = new Book();
 {
   const book = new UUID();
   stdlib.set("Book", book);
+
+  stdlib.put(
+    book,
+    "put",
+    func("id", "key", "val", exp(new LiftedNative(function(self, id, key, val) {
+      // todo: selfから対応するbookオブジェクトを取り出しputActする必要あり
+      return this.putAct(id, key, val);
+    }), "self", "id", "key", "val"))
+  );
 }
 
 export function n(...args) {
