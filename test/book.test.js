@@ -32,6 +32,12 @@ describe("Book", () => {
     });
   });
 
+  describe("currentBookId", () => {
+    it("should return the current book id", () => {
+      assert.deepStrictEqual(path("currentBookId").reduce(book), book.id);
+    });
+  });
+
   describe("#putLog", () => {
     context("standard arguments", () => {
       let log;
