@@ -469,6 +469,20 @@ describe("stdlib", () => {
 
         assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
       });
+
+      context("other book", () => {
+        it("should put a log", () => {
+          const b = new Book(stdlib);
+          book.import(b);
+
+          const id = new UUID();
+          const pact = path(b.id, ["put", id, "foo", v(1)]).reduce(book);
+          book.run(pact);
+
+          assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
+          assert.deepStrictEqual(path(id, "foo").reduce(b), v(1));
+        });
+      });
     });
   });
 

@@ -355,7 +355,12 @@ export const stdlib = new Book();
     book,
     "put",
     func("id", "key", "val", exp(new LiftedNative(function(self, id, key, val) {
-      // todo: selfから対応するbookオブジェクトを取り出しputActする必要あり
+      for (const i of this.imports) {
+        if (i.id.equals(self)) {
+          return i.putAct(id, key, val);
+        }
+      }
+      
       return this.putAct(id, key, val);
     }), "self", "id", "key", "val"))
   );
