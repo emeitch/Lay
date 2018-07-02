@@ -461,6 +461,18 @@ describe("stdlib", () => {
       });
     });
 
+    describe("importedBooks", () => {
+      it("should return a imported books", () => {
+        const b1 = new Book();
+        book.import(b1);
+
+        const b2 = new Book();
+        book.import(b2);
+
+        assert.deepStrictEqual(path("currentBookId", "importedBooks").reduce(book), v([stdlib.id, b1.id, b2.id]));
+      });
+    });
+
     describe("put", () => {
       it("should put a log", () => {
         const id = new UUID();
