@@ -368,15 +368,15 @@ export const stdlib = new Book();
   stdlib.put(
     book,
     "importedBooks",
-    func(exp(new LiftedNative(function(_self) {
-      // for (const i of this.imports) {
-      //   if (i.id.equals(self)) {
-      //     return v(i.imports.map(i => i.id));
-      //   }
-      // }
+    exp(new LiftedNative(function(self) {
+      for (const i of this.imports) {
+        if (i.id.equals(self)) {
+          return v(i.imports.map(i => i.id));
+        }
+      }
 
       return v(this.imports.map(i => i.id));
-    }), "self"))
+    }), "self")
   );
 
 }

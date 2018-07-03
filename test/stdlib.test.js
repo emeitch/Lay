@@ -462,7 +462,7 @@ describe("stdlib", () => {
     });
 
     describe("importedBooks", () => {
-      it("should return a imported books", () => {
+      it("should return imported books", () => {
         const b1 = new Book();
         book.import(b1);
 
@@ -470,6 +470,21 @@ describe("stdlib", () => {
         book.import(b2);
 
         assert.deepStrictEqual(path("currentBookId", "importedBooks").reduce(book), v([stdlib.id, b1.id, b2.id]));
+      });
+
+      context("specified a importedBook", () => {
+        it("should return imported books", () => {
+          const b1 = new Book();
+          book.import(b1);
+
+          const bc1 = new Book();
+          b1.import(bc1);
+
+          const bc2 = new Book();
+          b1.import(bc2);
+
+          assert.deepStrictEqual(path(b1.id, "importedBooks").reduce(book), v([bc1.id, bc2.id]));
+        });
       });
     });
 
