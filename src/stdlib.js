@@ -351,17 +351,21 @@ export const stdlib = new Book();
   const book = new UUID();
   stdlib.set("Book", book);
 
+  const findAndDecorateBook = (baseBook, targetBookId, decorate) => {
+    for (const i of baseBook.imports) {
+      if (i.id.equals(targetBookId)) {
+        return decorate(i);
+      }
+    }
+
+    return decorate(baseBook);
+  };
+
   stdlib.put(
     book,
     "put",
     func("id", "key", "val", exp(new LiftedNative(function(self, id, key, val) {
-      for (const i of this.imports) {
-        if (i.id.equals(self)) {
-          return i.putAct(id, key, val);
-        }
-      }
-
-      return this.putAct(id, key, val);
+      return findAndDecorateBook(this, self, b => b.putAct(id, key, val));
     }), "self", "id", "key", "val"))
   );
 
@@ -369,13 +373,7 @@ export const stdlib = new Book();
     book,
     "importedBooks",
     exp(new LiftedNative(function(self) {
-      for (const i of this.imports) {
-        if (i.id.equals(self)) {
-          return v(i.imports.map(i => i.id));
-        }
-      }
-
-      return v(this.imports.map(i => i.id));
+      return findAndDecorateBook(this, self, b => v(b.imports.map(i => i.id)));
     }), "self")
   );
 
