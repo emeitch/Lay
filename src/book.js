@@ -162,9 +162,13 @@ export default class Book {
     }
   }
 
-  import(other) {
+  import(other, name) {
     this.imports.push(other);
     this.handleOnInport(other);
+
+    if (typeof(name) === "string") {
+      this.set(name, other.id);
+    }
   }
 
   new(props) {

@@ -449,6 +449,15 @@ describe("Book", () => {
       assert(book.logIDs().some(lid => lid.equals(log.logid)));
     });
 
+    context("with name", () => {
+      it("should assign a imported book to name", () => {
+        const lib = new Book();
+        book.import(lib, "foo");
+
+        assert.deepStrictEqual(path("foo").reduce(book), lib.id);
+      });
+    });
+
     context("set up onImport", () => {
       it("should run the returned act", () => {
         let b = 0;
