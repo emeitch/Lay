@@ -377,6 +377,17 @@ export const stdlib = new Book();
     }), "self")
   );
 
+  stdlib.put(
+    book,
+    "generateAs",
+    func("name", exp(new LiftedNative(function(self, name) {
+      const b = new Book();
+      const n = name.reduce(this).origin;
+      return new Act(() => {
+        return this.import(b, n);
+      });
+    }), "self", "name"))
+  );
 }
 
 export function n(...args) {

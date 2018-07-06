@@ -461,6 +461,16 @@ describe("stdlib", () => {
       });
     });
 
+    describe("generateAs", () => {
+      it("should generate new book and give name", () => {
+        const bact = path("Book", ["generateAs", "foo"]).reduce(book);
+        book.run(bact);
+
+        const bookClass = path("Book").reduce(book);
+        assert.deepStrictEqual(path("foo", "type").reduce(book), bookClass);
+      });
+    });
+
     describe("importedBooks", () => {
       it("should return imported books", () => {
         const b1 = new Book();
