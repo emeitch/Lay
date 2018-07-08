@@ -469,6 +469,16 @@ describe("stdlib", () => {
         const bookClass = path("Book").reduce(book);
         assert.deepStrictEqual(path("foo", "type").reduce(book), bookClass);
       });
+
+      context("currentBookId", () => {
+        it("should generate new book and give name", () => {
+          const bact = path("currentBookId", ["generateAs", "foo"]).reduce(book);
+          book.run(bact);
+
+          const bookClass = path("Book").reduce(book);
+          assert.deepStrictEqual(path("foo", "type").reduce(book), bookClass);
+        });
+      });
     });
 
     describe("importedBooks", () => {
