@@ -377,16 +377,25 @@ export const stdlib = new Book();
     }), "self")
   );
 
+  // todo: 本来は片方を参照して共通化したいが、うまく行かないのでJSレベルの値で共通化
+  const generateFunc = func("name", exp(new LiftedNative(function(self, name) {
+    const b = new Book();
+    const n = name.reduce(this).origin;
+    return new Act(() => {
+      return this.import(b, n);
+    });
+  }), "self", "name"));
+
   stdlib.put(
     book,
     "generateAs",
-    func("name", exp(new LiftedNative(function(self, name) {
-      const b = new Book();
-      const n = name.reduce(this).origin;
-      return new Act(() => {
-        return this.import(b, n);
-      });
-    }), "self", "name"))
+    generateFunc
+  );
+
+  stdlib.put(
+    book,
+    "generateBookAs",
+    generateFunc
   );
 }
 
