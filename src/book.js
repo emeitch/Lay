@@ -21,6 +21,8 @@ export default class Book {
 
     this.set("currentBookId", this.id);
     this.put(this.id, "type", path("Book"));
+
+    this.lay_logs = new Map();
   }
 
   log(logid) {
@@ -273,6 +275,21 @@ export default class Book {
       const act = actexp.reduce(this);
       this.run(act, log);
     }
+  }
+
+  lay_put(...args) {
+    const sobj = args.shift();
+    const key = args.shift();
+    const eobj = args.shift();
+
+    const smap = this.lay_logs.get(sobj) || new Map();
+    smap.set(Val.stringify(key), eobj);
+    this.lay_logs.set(sobj, smap);
+  }
+
+  lay_fetch(sobj, key) {
+    const smap = this.lay_logs.get(sobj);
+    return smap.get(Val.stringify(key));
   }
 
   putLog(log) {

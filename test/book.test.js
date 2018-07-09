@@ -80,6 +80,14 @@ describe("Book", () => {
     });
   });
 
+  describe("lay_put and lay_get", () => {
+    it("should append a log", () => {
+      const jsobj = {};
+      book.lay_put(jsobj, v("foo"), 1);
+      assert.deepStrictEqual(book.lay_fetch(jsobj, v("foo")), 1);
+    });
+  });
+
   describe("#put", () => {
     context("standard arguments with time", () => {
       const time = new Date(2017, 0);
