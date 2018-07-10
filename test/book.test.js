@@ -80,17 +80,12 @@ describe("Book", () => {
     });
   });
 
-  describe("lay_put and lay_fetch", () => {
-    it("should append a log", () => {
-      const jsobj = {};
-      book.lay_put(jsobj, v("foo"), 1);
-      assert.deepStrictEqual(book.lay_fetch(jsobj, v("foo")), 1);
-    });
-
+  describe("lay_fetch", () => {
     context("book as sobj", () => {
       it("should append a log", () => {
-        book.lay_put(book, v("foo"), 2);
-        assert.deepStrictEqual(book.lay_fetch(book, v("foo")), 2);
+        const eobj = {};
+        book.lay_put(book, v("foo"), eobj);
+        assert.deepStrictEqual(book.lay_fetch(book, v("foo")), eobj);
       });
     });
 
@@ -98,6 +93,15 @@ describe("Book", () => {
       it("should return the book oneself", () => {
         assert.deepStrictEqual(book.lay_fetch(book, v("self")), book);
       });
+    });
+  });
+
+  describe("lay_put", () => {
+    it("should append a log", () => {
+      const sobj = {};
+      const eobj = {};
+      book.lay_put(sobj, v("foo"), eobj);
+      assert.deepStrictEqual(book.lay_fetch(sobj, v("foo")), eobj);
     });
   });
 
