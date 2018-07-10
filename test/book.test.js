@@ -86,7 +86,20 @@ describe("Book", () => {
       book.lay_put(jsobj, v("foo"), 1);
       assert.deepStrictEqual(book.lay_fetch(jsobj, v("foo")), 1);
     });
+
+    context("book as sobj", () => {
+      it("should append a log", () => {
+        book.lay_put(book, v("foo"), 2);
+        assert.deepStrictEqual(book.lay_fetch(book, v("foo")), 2);
+      });
+    });
   });
+
+  // describe("lay_set", () => {
+  //   it("should append js object data", () => {
+  //     book.lay_set({"foo": {"bar": 1}});
+  //   });
+  // });
 
   describe("#put", () => {
     context("standard arguments with time", () => {
