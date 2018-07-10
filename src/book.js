@@ -23,6 +23,7 @@ export default class Book {
     this.put(this.id, "type", path("Book"));
 
     this.lay_logs = new Map();
+    this.lay_put(this, v("self"), this);
   }
 
   log(logid) {

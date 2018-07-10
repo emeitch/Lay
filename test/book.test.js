@@ -93,6 +93,12 @@ describe("Book", () => {
         assert.deepStrictEqual(book.lay_fetch(book, v("foo")), 2);
       });
     });
+
+    context("fetch book's self", () => {
+      it("should return the book oneself", () => {
+        assert.deepStrictEqual(book.lay_fetch(book, v("self")), book);
+      });
+    });
   });
 
   // describe("lay_set", () => {
