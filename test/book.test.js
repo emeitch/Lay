@@ -80,7 +80,7 @@ describe("Book", () => {
     });
   });
 
-  describe("lay_put and lay_get", () => {
+  describe("lay_put and lay_fetch", () => {
     it("should append a log", () => {
       const jsobj = {};
       book.lay_put(jsobj, v("foo"), 1);
