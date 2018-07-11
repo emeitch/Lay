@@ -84,7 +84,7 @@ describe("Book", () => {
     context("book as sobj", () => {
       it("should append a log", () => {
         const eobj = {};
-        book.lay_put(book, v("foo"), eobj);
+        book.lay_append(book, v("foo"), eobj);
         assert.deepStrictEqual(book.lay_fetch(book, v("foo")), eobj);
       });
     });
@@ -96,18 +96,18 @@ describe("Book", () => {
     });
   });
 
-  describe("lay_put", () => {
+  describe("lay_append", () => {
     it("should append a log", () => {
       const sobj = {};
       const eobj = {};
-      book.lay_put(sobj, v("foo"), eobj);
+      book.lay_append(sobj, v("foo"), eobj);
       assert.deepStrictEqual(book.lay_fetch(sobj, v("foo")), eobj);
     });
   });
 
-  // describe("lay_set", () => {
+  // describe("lay_put", () => {
   //   it("should append js object data", () => {
-  //     book.lay_set({"foo": {"bar": 1}});
+  //     book.lay_put({"foo": {"bar": 1}});
   //   });
   // });
 
