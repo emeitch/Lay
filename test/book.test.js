@@ -105,11 +105,14 @@ describe("Book", () => {
     });
   });
 
-  // describe("lay_put", () => {
-  //   it("should append js object data", () => {
-  //     book.lay_put({"foo": {"bar": 1}});
-  //   });
-  // });
+  describe("lay_put", () => {
+    context("book property", () => {
+      it("should append js object data", () => {
+        book.lay_put({"foo": 1});
+        assert.deepStrictEqual(book.lay_fetch(book, v("foo")), 1);
+      });
+    });
+  });
 
   describe("#put", () => {
     context("standard arguments with time", () => {

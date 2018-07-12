@@ -288,6 +288,13 @@ export default class Book {
     this.lay_logs.set(sobj, smap);
   }
 
+  lay_put(object) {
+    for (const key of Object.keys(object)) {
+      const v = object[key];
+      this.lay_append(this, key, v);
+    }
+  }
+
   lay_fetch(sobj, key) {
     const smap = this.lay_logs.get(sobj);
     return smap.get(Val.stringify(key));
