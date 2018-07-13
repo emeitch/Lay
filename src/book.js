@@ -283,6 +283,12 @@ export default class Book {
     const key = args.shift();
     const eobj = args.shift();
 
+    if (eobj instanceof Object) {
+      for (const key of Object.keys(eobj)) {
+        this.lay_append(eobj, key, eobj[key]);
+      }
+    }
+
     const smap = this.lay_logs.get(sobj) || new Map();
     smap.set(Val.stringify(key), eobj);
     this.lay_logs.set(sobj, smap);

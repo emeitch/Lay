@@ -112,6 +112,13 @@ describe("Book", () => {
         assert.deepStrictEqual(book.lay_fetch(book, v("foo")), 1);
       });
     });
+
+    context("tree object", () => {
+      it("should append js object data", () => {
+        book.lay_put({"foo": {"bar": 1}});
+        assert.deepStrictEqual(book.lay_fetch(book.lay_fetch(book, v("foo")), v("bar")), 1);
+      });
+    });
   });
 
   describe("#put", () => {
