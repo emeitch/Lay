@@ -94,6 +94,12 @@ describe("Book", () => {
         assert.deepStrictEqual(book.lay_fetch(book, v("self")), book);
       });
     });
+
+    context("number string", () => {
+      it("should return number object", () => {
+        assert.deepStrictEqual(book.lay_fetch(book, v("1")), 1);
+      });
+    });
   });
 
   describe("lay_append", () => {
