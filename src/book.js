@@ -310,6 +310,13 @@ export default class Book {
     return smap.get(Val.stringify(key));
   }
 
+  lay_traverse(receiver, ...keys) {
+    for (const key of keys) {
+      receiver = this.lay_fetch(receiver, key);
+    }
+    return receiver;
+  }
+
   putLog(log) {
     const result = this.doPutLog(log);
     this.handleOnPut(log);
