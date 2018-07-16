@@ -310,11 +310,20 @@ export default class Book {
     return smap.get(Val.stringify(key));
   }
 
-  lay_traverse(receiver, ...keys) {
+  lay_doTraverse(receiver, ...keys) {
     for (const key of keys) {
       receiver = this.lay_fetch(receiver, key);
     }
     return receiver;
+  }
+
+  lay_traverse(...args) {
+    if (args[0] instanceof Val) {
+      // complete this book as receiver
+      return this.lay_doTraverse(this, ...args);
+    } else {
+      return this.lay_doTraverse(...args);
+    }
   }
 
   putLog(log) {

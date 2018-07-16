@@ -123,6 +123,20 @@ describe("Book", () => {
       assert.deepStrictEqual(book.lay_traverse(book, v("foo"), v("bar")), eobj);
       assert.deepStrictEqual(book.lay_traverse(book, v("foo"), v("bar"), v("buz")), 1);
     });
+
+    context("without receiver", () => {
+      it("should fetch multiple keys", () => {
+        const sobj = {};
+        const eobj = {};
+        book.lay_append(book, v("foo"), sobj);
+        book.lay_append(sobj, v("bar"), eobj);
+        book.lay_append(eobj, v("buz"), 1);
+
+        assert.deepStrictEqual(book.lay_traverse(v("foo")), sobj);
+        assert.deepStrictEqual(book.lay_traverse(v("foo"), v("bar")), eobj);
+        assert.deepStrictEqual(book.lay_traverse(v("foo"), v("bar"), v("buz")), 1);
+      });
+    });
   });
 
   describe("lay_put", () => {
