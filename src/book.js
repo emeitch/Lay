@@ -23,7 +23,7 @@ export default class Book {
     this.put(this.id, "type", path("Book"));
 
     this.lay_logs = new Map();
-    this.lay_append(this, v("self"), this);
+    this.lay_append(this, "self", this);
   }
 
   log(logid) {
@@ -361,7 +361,7 @@ export default class Book {
     }
 
     const smap = this.lay_logs.get(sobj) || new Map();
-    smap.set(Val.stringify(key), eobj);
+    smap.set(key, eobj);
     this.lay_logs.set(sobj, smap);
   }
 
@@ -373,12 +373,12 @@ export default class Book {
   }
 
   lay_fetch(sobj, key) {
-    if(key.origin.match(/-?\d+/)) {
-      return parseInt(key.origin, 10);
+    if(key.match(/-?\d+/)) {
+      return parseInt(key, 10);
     }
 
     const smap = this.lay_logs.get(sobj);
-    return smap.get(Val.stringify(key));
+    return smap.get(key);
   }
 
   lay_doTraverse(receiver, ...keys) {
@@ -389,7 +389,7 @@ export default class Book {
   }
 
   lay_traverse(...args) {
-    if (args[0] instanceof Val) {
+    if (typeof(args[0]) === "string") {
       // complete this book as receiver
       return this.lay_doTraverse(this, ...args);
     } else {
