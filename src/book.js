@@ -278,54 +278,6 @@ export default class Book {
     }
   }
 
-  lay_append(...args) {
-    const sobj = args.shift();
-    const key = args.shift();
-    const eobj = args.shift();
-
-    if (eobj instanceof Object) {
-      for (const key of Object.keys(eobj)) {
-        this.lay_append(eobj, key, eobj[key]);
-      }
-    }
-
-    const smap = this.lay_logs.get(sobj) || new Map();
-    smap.set(Val.stringify(key), eobj);
-    this.lay_logs.set(sobj, smap);
-  }
-
-  lay_put(object) {
-    for (const key of Object.keys(object)) {
-      const v = object[key];
-      this.lay_append(this, key, v);
-    }
-  }
-
-  lay_fetch(sobj, key) {
-    if(key.origin.match(/-?\d+/)) {
-      return parseInt(key.origin, 10);
-    }
-
-    const smap = this.lay_logs.get(sobj);
-    return smap.get(Val.stringify(key));
-  }
-
-  lay_doTraverse(receiver, ...keys) {
-    for (const key of keys) {
-      receiver = this.lay_fetch(receiver, key);
-    }
-    return receiver;
-  }
-
-  lay_traverse(...args) {
-    if (args[0] instanceof Val) {
-      // complete this book as receiver
-      return this.lay_doTraverse(this, ...args);
-    } else {
-      return this.lay_doTraverse(...args);
-    }
-  }
-
   putLog(log) {
     const result = this.doPutLog(log);
     this.handleOnPut(log);
@@ -395,5 +347,53 @@ export default class Book {
     }
 
     return logids.concat(this.imports.reduce((r, i) => r.concat(i.logIDs()), []));
+  }
+
+  lay_append(...args) {
+    const sobj = args.shift();
+    const key = args.shift();
+    const eobj = args.shift();
+
+    if (eobj instanceof Object) {
+      for (const key of Object.keys(eobj)) {
+        this.lay_append(eobj, key, eobj[key]);
+      }
+    }
+
+    const smap = this.lay_logs.get(sobj) || new Map();
+    smap.set(Val.stringify(key), eobj);
+    this.lay_logs.set(sobj, smap);
+  }
+
+  lay_put(object) {
+    for (const key of Object.keys(object)) {
+      const v = object[key];
+      this.lay_append(this, key, v);
+    }
+  }
+
+  lay_fetch(sobj, key) {
+    if(key.origin.match(/-?\d+/)) {
+      return parseInt(key.origin, 10);
+    }
+
+    const smap = this.lay_logs.get(sobj);
+    return smap.get(Val.stringify(key));
+  }
+
+  lay_doTraverse(receiver, ...keys) {
+    for (const key of keys) {
+      receiver = this.lay_fetch(receiver, key);
+    }
+    return receiver;
+  }
+
+  lay_traverse(...args) {
+    if (args[0] instanceof Val) {
+      // complete this book as receiver
+      return this.lay_doTraverse(this, ...args);
+    } else {
+      return this.lay_doTraverse(...args);
+    }
   }
 }

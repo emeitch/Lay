@@ -80,81 +80,6 @@ describe("Book", () => {
     });
   });
 
-  describe("lay_fetch", () => {
-    context("book as sobj", () => {
-      it("should append a log", () => {
-        const eobj = {};
-        book.lay_append(book, v("foo"), eobj);
-        assert.deepStrictEqual(book.lay_fetch(book, v("foo")), eobj);
-      });
-    });
-
-    context("fetch book's self", () => {
-      it("should return the book oneself", () => {
-        assert.deepStrictEqual(book.lay_fetch(book, v("self")), book);
-      });
-    });
-
-    context("number string", () => {
-      it("should return number object", () => {
-        assert.deepStrictEqual(book.lay_fetch(book, v("1")), 1);
-      });
-    });
-  });
-
-  describe("lay_append", () => {
-    it("should append a log", () => {
-      const sobj = {};
-      const eobj = {};
-      book.lay_append(sobj, v("foo"), eobj);
-      assert.deepStrictEqual(book.lay_fetch(sobj, v("foo")), eobj);
-    });
-  });
-
-  describe("lay_traverse", () => {
-    it("should fetch multiple keys", () => {
-      const sobj = {};
-      const eobj = {};
-      book.lay_append(book, v("foo"), sobj);
-      book.lay_append(sobj, v("bar"), eobj);
-      book.lay_append(eobj, v("buz"), 1);
-
-      assert.deepStrictEqual(book.lay_traverse(book, v("foo")), sobj);
-      assert.deepStrictEqual(book.lay_traverse(book, v("foo"), v("bar")), eobj);
-      assert.deepStrictEqual(book.lay_traverse(book, v("foo"), v("bar"), v("buz")), 1);
-    });
-
-    context("without receiver", () => {
-      it("should fetch multiple keys", () => {
-        const sobj = {};
-        const eobj = {};
-        book.lay_append(book, v("foo"), sobj);
-        book.lay_append(sobj, v("bar"), eobj);
-        book.lay_append(eobj, v("buz"), 1);
-
-        assert.deepStrictEqual(book.lay_traverse(v("foo")), sobj);
-        assert.deepStrictEqual(book.lay_traverse(v("foo"), v("bar")), eobj);
-        assert.deepStrictEqual(book.lay_traverse(v("foo"), v("bar"), v("buz")), 1);
-      });
-    });
-  });
-
-  describe("lay_put", () => {
-    context("book property", () => {
-      it("should append js object data", () => {
-        book.lay_put({"foo": 1});
-        assert.deepStrictEqual(book.lay_fetch(book, v("foo")), 1);
-      });
-    });
-
-    context("tree object", () => {
-      it("should append js object data", () => {
-        book.lay_put({"foo": {"bar": 1}});
-        assert.deepStrictEqual(book.lay_fetch(book.lay_fetch(book, v("foo")), v("bar")), 1);
-      });
-    });
-  });
-
   describe("#put", () => {
     context("standard arguments with time", () => {
       const time = new Date(2017, 0);
@@ -671,6 +596,89 @@ describe("Book", () => {
       importer.put(id, "k2", v("v2"));
       assert(book.findLogs({id: id}).length == 0);
       assert(importer.findLogs({id: id}).length == 2);
+    });
+  });
+});
+
+
+describe("Book", () => {
+  let book;
+  beforeEach(() => {
+    book = new Book();
+  });
+
+  describe("lay_fetch", () => {
+    context("book as sobj", () => {
+      it("should append a log", () => {
+        const eobj = {};
+        book.lay_append(book, v("foo"), eobj);
+        assert.deepStrictEqual(book.lay_fetch(book, v("foo")), eobj);
+      });
+    });
+
+    context("fetch book's self", () => {
+      it("should return the book oneself", () => {
+        assert.deepStrictEqual(book.lay_fetch(book, v("self")), book);
+      });
+    });
+
+    context("number string", () => {
+      it("should return number object", () => {
+        assert.deepStrictEqual(book.lay_fetch(book, v("1")), 1);
+      });
+    });
+  });
+
+  describe("lay_append", () => {
+    it("should append a log", () => {
+      const sobj = {};
+      const eobj = {};
+      book.lay_append(sobj, v("foo"), eobj);
+      assert.deepStrictEqual(book.lay_fetch(sobj, v("foo")), eobj);
+    });
+  });
+
+  describe("lay_traverse", () => {
+    it("should fetch multiple keys", () => {
+      const sobj = {};
+      const eobj = {};
+      book.lay_append(book, v("foo"), sobj);
+      book.lay_append(sobj, v("bar"), eobj);
+      book.lay_append(eobj, v("buz"), 1);
+
+      assert.deepStrictEqual(book.lay_traverse(book, v("foo")), sobj);
+      assert.deepStrictEqual(book.lay_traverse(book, v("foo"), v("bar")), eobj);
+      assert.deepStrictEqual(book.lay_traverse(book, v("foo"), v("bar"), v("buz")), 1);
+    });
+
+    context("without receiver", () => {
+      it("should fetch multiple keys", () => {
+        const sobj = {};
+        const eobj = {};
+        book.lay_append(book, v("foo"), sobj);
+        book.lay_append(sobj, v("bar"), eobj);
+        book.lay_append(eobj, v("buz"), 1);
+
+        assert.deepStrictEqual(book.lay_traverse(v("foo")), sobj);
+        assert.deepStrictEqual(book.lay_traverse(v("foo"), v("bar")), eobj);
+        assert.deepStrictEqual(book.lay_traverse(v("foo"), v("bar"), v("buz")), 1);
+      });
+    });
+  });
+
+  describe("lay_put", () => {
+    context("book property", () => {
+      it("should append js object data", () => {
+        book.lay_put({"foo": 1});
+        assert.deepStrictEqual(book.lay_fetch(book, v("foo")), 1);
+      });
+    });
+
+    context("tree object", () => {
+      it("should append js object data", () => {
+        book.lay_put({"foo": {"bar": 1}});
+        assert.deepStrictEqual(book.lay_fetch(book.lay_fetch(book, v("foo")), v("bar")), 1);
+      });
     });
   });
 });
