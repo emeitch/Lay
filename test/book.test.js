@@ -616,12 +616,6 @@ describe("Book", () => {
       });
     });
 
-    context("fetch book's self", () => {
-      it("should return the book oneself", () => {
-        assert.deepStrictEqual(book.lay_fetch(book, "self"), book);
-      });
-    });
-
     context("number string", () => {
       it("should return number object", () => {
         assert.deepStrictEqual(book.lay_fetch(book, "1"), 1);
