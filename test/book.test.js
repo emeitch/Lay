@@ -615,12 +615,6 @@ describe("Book", () => {
         assert.deepStrictEqual(book.lay_fetch(book, "foo"), eobj);
       });
     });
-
-    context("number string", () => {
-      it("should return number object", () => {
-        assert.deepStrictEqual(book.lay_fetch(book, "1"), 1);
-      });
-    });
   });
 
   describe("lay_append", () => {

@@ -372,10 +372,6 @@ export default class Book {
   }
 
   lay_fetch(sobj, key) {
-    if(key.match(/-?\d+/)) {
-      return parseInt(key, 10);
-    }
-
     const smap = this.lay_logs.get(sobj);
     return smap.get(key);
   }
