@@ -657,6 +657,7 @@ describe("Book", () => {
       it("should append js object data", () => {
         book.lay_put({"foo": 1});
         assert.deepStrictEqual(book.lay_fetch(book, "foo"), 1);
+        assert.deepStrictEqual(book.lay_traverse("foo"), 1);
       });
     });
 
