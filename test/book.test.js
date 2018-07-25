@@ -625,13 +625,16 @@ describe("Book", () => {
   });
 
   describe("lay_traverse", () => {
-    it("should fetch multiple keys", () => {
-      const sobj = {};
-      const eobj = {};
+    const sobj = {};
+    const eobj = {};
+
+    beforeEach(() => {
       book.lay_append(book, "foo", sobj);
       book.lay_append(sobj, "bar", eobj);
       book.lay_append(eobj, "buz", 1);
+    });
 
+    it("should fetch multiple keys", () => {
       assert.deepStrictEqual(book.lay_traverse(book, "foo"), sobj);
       assert.deepStrictEqual(book.lay_traverse(book, "foo", "bar"), eobj);
       assert.deepStrictEqual(book.lay_traverse(book, "foo", "bar", "buz"), 1);
@@ -639,12 +642,6 @@ describe("Book", () => {
 
     context("without receiver", () => {
       it("should fetch multiple keys", () => {
-        const sobj = {};
-        const eobj = {};
-        book.lay_append(book, "foo", sobj);
-        book.lay_append(sobj, "bar", eobj);
-        book.lay_append(eobj, "buz", 1);
-
         assert.deepStrictEqual(book.lay_traverse("foo"), sobj);
         assert.deepStrictEqual(book.lay_traverse("foo", "bar"), eobj);
         assert.deepStrictEqual(book.lay_traverse("foo", "bar", "buz"), 1);
