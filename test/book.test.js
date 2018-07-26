@@ -664,7 +664,6 @@ describe("Book", () => {
     context("book property", () => {
       it("should append js object data", () => {
         book.lay_put({"foo": 1});
-        assert.deepStrictEqual(book.lay_fetch(book, "foo"), 1);
         assert.deepStrictEqual(book.lay_traverse("foo"), 1);
       });
     });
@@ -672,7 +671,6 @@ describe("Book", () => {
     context("tree object", () => {
       it("should append js object data", () => {
         book.lay_put({"foo": {"bar": 1}});
-        assert.deepStrictEqual(book.lay_traverse(book, "foo", "bar"), 1);
         assert.deepStrictEqual(book.lay_traverse("foo", "bar"), 1);
       });
     });
