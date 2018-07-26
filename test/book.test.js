@@ -622,6 +622,17 @@ describe("Book", () => {
         assert.deepStrictEqual(book.lay_fetch(book, "foo"), eobj);
       });
     });
+
+    context("chain", () => {
+      it("should append a log and return chained object", () => {
+        const sobj = {};
+        const eobj = {};
+        book.lay_append(book, "foo", sobj);
+        book.lay_append(sobj, "bar", eobj);
+
+        assert.deepStrictEqual(book.lay_fetch(book.lay_fetch(book, "foo"), "bar"), eobj);
+      });
+    });
   });
 
   describe("lay_traverse", () => {
