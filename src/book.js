@@ -364,6 +364,10 @@ export default class Book {
     this.lay_logs.set(sobj, smap);
   }
 
+  lay_new(key) {
+    this.lay_append(this, key, {});
+  }
+
   lay_put(object) {
     for (const key of Object.keys(object)) {
       const v = object[key];
@@ -373,7 +377,7 @@ export default class Book {
 
   lay_fetch(sobj, key) {
     const smap = this.lay_logs.get(sobj);
-    return smap.get(key);
+    return smap ? smap.get(key) : undefined;
   }
 
   lay_doTraverse(receiver, ...keys) {

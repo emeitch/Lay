@@ -660,6 +660,15 @@ describe("Book", () => {
     });
   });
 
+  describe("lay_new", () => {
+    it("should create new object", () => {
+      assert(book.lay_traverse("foo") === undefined);
+
+      book.lay_new("foo");
+      assert(book.lay_traverse("foo") !== undefined);
+    });
+  });
+
   describe("lay_put", () => {
     context("book property", () => {
       it("should append js object data", () => {
