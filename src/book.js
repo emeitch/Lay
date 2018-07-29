@@ -348,9 +348,13 @@ export default class Book {
     return logids.concat(this.imports.reduce((r, i) => r.concat(i.logIDs()), []));
   }
 
+  lay_keystr(key) {
+    return key instanceof Val ? key.stringify() : key;
+  }
+
   lay_append(...args) {
     const sobj = args.shift();
-    const okey = args.shift();
+    const key = args.shift();
     const eobj = args.shift();
 
 
@@ -360,16 +364,14 @@ export default class Book {
       }
     }
 
-    const key = okey instanceof UUID ? okey.stringify() : okey;
     const smap = this.lay_logs.get(sobj) || new Map();
-    smap.set(key, eobj);
+    smap.set(this.lay_keystr(key), eobj);
     this.lay_logs.set(sobj, smap);
   }
 
-  lay_fetch(sobj, okey) {
-    const key = okey instanceof UUID ? okey.stringify() : okey;
+  lay_fetch(sobj, key) {
     const smap = this.lay_logs.get(sobj);
-    return smap ? smap.get(key) : undefined;
+    return smap ? smap.get(this.lay_keystr(key)) : undefined;
   }
 
   lay_new(key) {
