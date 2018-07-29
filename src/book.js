@@ -350,8 +350,9 @@ export default class Book {
 
   lay_append(...args) {
     const sobj = args.shift();
-    const key = args.shift();
+    const okey = args.shift();
     const eobj = args.shift();
+
 
     if (eobj instanceof Object) {
       for (const key of Object.keys(eobj)) {
@@ -359,9 +360,16 @@ export default class Book {
       }
     }
 
+    const key = okey instanceof UUID ? okey.stringify() : okey;
     const smap = this.lay_logs.get(sobj) || new Map();
     smap.set(key, eobj);
     this.lay_logs.set(sobj, smap);
+  }
+
+  lay_fetch(sobj, okey) {
+    const key = okey instanceof UUID ? okey.stringify() : okey;
+    const smap = this.lay_logs.get(sobj);
+    return smap ? smap.get(key) : undefined;
   }
 
   lay_new(key) {
@@ -375,11 +383,6 @@ export default class Book {
     }
   }
 
-  lay_fetch(sobj, key) {
-    const smap = this.lay_logs.get(sobj);
-    return smap ? smap.get(key) : undefined;
-  }
-
   lay_doTraverse(receiver, ...keys) {
     for (const key of keys) {
       receiver = this.lay_fetch(receiver, key);
@@ -388,7 +391,7 @@ export default class Book {
   }
 
   lay_traverse(...args) {
-    if (typeof(args[0]) === "string") {
+    if (args[0] instanceof UUID || typeof(args[0]) === "string") {
       // complete this book as receiver
       return this.lay_doTraverse(this, ...args);
     } else {

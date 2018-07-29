@@ -658,6 +658,15 @@ describe("Book", () => {
         assert.deepStrictEqual(book.lay_traverse("foo", "bar", "buz"), 1);
       });
     });
+
+    context("id key", () => {
+      it("should fetch object", () => {
+        const id = new UUID();
+        book.lay_append(book, id, sobj);
+
+        assert.deepStrictEqual(book.lay_traverse(id), sobj);
+      });
+    });
   });
 
   describe("lay_new", () => {
