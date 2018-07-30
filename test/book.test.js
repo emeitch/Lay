@@ -669,11 +669,10 @@ describe("Book", () => {
     });
   });
 
-  describe("lay_new", () => {
+  describe("lay_exist", () => {
     it("should create new object", () => {
       assert(book.lay_traverse("foo") === undefined);
-
-      book.lay_new("foo");
+      book.lay_exist("foo");
       assert(book.lay_traverse("foo") !== undefined);
     });
   });

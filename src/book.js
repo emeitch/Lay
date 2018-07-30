@@ -374,7 +374,7 @@ export default class Book {
     return smap ? smap.get(this.lay_keystr(key)) : undefined;
   }
 
-  lay_new(key) {
+  lay_exist(key) {
     this.lay_append(this, key, {});
   }
 
