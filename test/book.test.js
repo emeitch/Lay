@@ -677,6 +677,12 @@ describe("Book", () => {
     });
   });
 
+  describe("lay_path", () => {
+    it("should create path", () => {
+      assert(book.lay_path("foo", "bar").constructor.name, "Path");
+    });
+  });
+
   describe("lay_put", () => {
     context("book property", () => {
       it("should append js object data", () => {
