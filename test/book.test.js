@@ -649,7 +649,9 @@ describe("Book", () => {
         const pe = book.lay_path(id3);
         book.lay_append(ps, "foo", pe);
 
-        assert.deepStrictEqual(book.lay_fetch(ps, "foo"), pe);
+        assert(book.lay_fetch(book, id1));
+        assert(book.lay_fetch(book.lay_fetch(book, id1), id2));
+        assert(book.lay_fetch(book.lay_fetch(book.lay_fetch(book, id1), id2), "foo"), pe);
       });
     });
   });

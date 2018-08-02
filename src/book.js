@@ -353,10 +353,20 @@ export default class Book {
   }
 
   lay_append(...args) {
-    const sobj = args.shift();
+    let sobj = args.shift();
     const key = args.shift();
     const eobj = args.shift();
 
+    // path traverse
+    if (sobj instanceof Val && Array.isArray(sobj.origin)) {
+      let so = this;
+      for (const key of sobj.origin) {
+        const eo = this.lay_fetch(so, key) || {};
+        this.lay_append(so, key, eo);
+        so = eo;
+      }
+      sobj = so;
+    }
 
     if (eobj instanceof Object) {
       for (const key of Object.keys(eobj)) {
