@@ -607,6 +607,12 @@ describe("Book", () => {
     book = new Book();
   });
 
+  describe("lay_path", () => {
+    it("should create path", () => {
+      assert(book.lay_path("foo", "bar").constructor.name, "Path");
+    });
+  });
+
   describe("lay_append and lay_fetch", () => {
     it("should append a log", () => {
       const sobj = {};
@@ -631,6 +637,19 @@ describe("Book", () => {
         book.lay_append(sobj, "bar", eobj);
 
         assert.deepStrictEqual(book.lay_fetch(book.lay_fetch(book, "foo"), "bar"), eobj);
+      });
+    });
+
+    context("path start and end", () => {
+      it("should append a log by path", () => {
+        const id1 = new UUID();
+        const id2 = new UUID();
+        const id3 = new UUID();
+        const ps = book.lay_path(id1, id2);
+        const pe = book.lay_path(id3);
+        book.lay_append(ps, "foo", pe);
+
+        assert.deepStrictEqual(book.lay_fetch(ps, "foo"), pe);
       });
     });
   });
@@ -674,12 +693,6 @@ describe("Book", () => {
       assert(book.lay_traverse("foo") === undefined);
       book.lay_exist("foo");
       assert(book.lay_traverse("foo") !== undefined);
-    });
-  });
-
-  describe("lay_path", () => {
-    it("should create path", () => {
-      assert(book.lay_path("foo", "bar").constructor.name, "Path");
     });
   });
 
