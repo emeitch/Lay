@@ -644,14 +644,11 @@ describe("Book", () => {
       it("should append a log by path", () => {
         const id1 = new UUID();
         const id2 = new UUID();
-        const id3 = new UUID();
-        const ps = book.lay_path(id1, id2);
-        const pe = book.lay_path(id3);
-        book.lay_append(ps, "foo", pe);
+        book.lay_append(id1, id2, "foo", 1);
 
         assert(book.lay_fetch(book, id1));
         assert(book.lay_fetch(book.lay_fetch(book, id1), id2));
-        assert(book.lay_fetch(book.lay_fetch(book.lay_fetch(book, id1), id2), "foo"), pe);
+        assert(book.lay_fetch(book.lay_fetch(book.lay_fetch(book, id1), id2), "foo"), 1);
       });
     });
   });
