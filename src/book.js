@@ -361,9 +361,7 @@ export default class Book {
     if (sobj instanceof Val && Array.isArray(sobj.origin)) {
       let so = this;
       for (const key of sobj.origin) {
-        const eo = this.lay_fetch(so, key) || {};
-        this.lay_append(so, key, eo);
-        so = eo;
+        so = this.lay_fetch(so, key) || this.lay_create(so, key);
       }
       sobj = so;
     }
@@ -388,8 +386,14 @@ export default class Book {
     return path(...keys);
   }
 
+  lay_create(sobj, key) {
+    const created = {};
+    this.lay_append(sobj, key, created);
+    return created;
+  }
+
   lay_exist(key) {
-    this.lay_append(this, key, {});
+    return this.lay_create(this, key);
   }
 
   lay_put(object) {
