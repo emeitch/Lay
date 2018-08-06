@@ -634,7 +634,7 @@ describe("Book", () => {
       });
     });
 
-    context("path start and end", () => {
+    context("path start", () => {
       it("should append a log by path", () => {
         const id1 = new UUID();
         const id2 = new UUID();
@@ -677,6 +677,16 @@ describe("Book", () => {
         book.lay_append(book, id, sobj);
 
         assert.deepStrictEqual(book.lay_traverse(id), sobj);
+      });
+    });
+
+    context("path start", () => {
+      it("should append a log by path", () => {
+        const id1 = new UUID();
+        const id2 = new UUID();
+        book.lay_append(id1, id2, "foo", 1);
+
+        assert.deepStrictEqual(book.lay_traverse(id1, id2, "foo"), 1);
       });
     });
   });
