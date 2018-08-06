@@ -384,10 +384,6 @@ export default class Book {
     return smap ? smap.get(this.lay_keystr(key)) : undefined;
   }
 
-  lay_path(...keys) {
-    return path(...keys);
-  }
-
   lay_create(sobj, key) {
     const created = {};
     this.lay_append(sobj, key, created);
