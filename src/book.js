@@ -401,19 +401,19 @@ export default class Book {
     }
   }
 
-  lay_doTraverse(receiver, ...keys) {
-    for (const key of keys) {
-      receiver = this.lay_fetch(receiver, key);
-    }
-    return receiver;
-  }
-
   lay_traverse(...args) {
+    const traverse = (receiver, ...keys) => {
+      for (const key of keys) {
+        receiver = this.lay_fetch(receiver, key);
+      }
+      return receiver;
+    };
+
     if (args[0] instanceof UUID || typeof(args[0]) === "string") {
       // complete this book as receiver
-      return this.lay_doTraverse(this, ...args);
+      return traverse(this, ...args);
     } else {
-      return this.lay_doTraverse(...args);
+      return traverse(...args);
     }
   }
 }
