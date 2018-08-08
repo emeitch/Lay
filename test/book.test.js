@@ -689,6 +689,18 @@ describe("Book", () => {
         assert.deepStrictEqual(book.lay_traverse(id1, id2, "foo"), 1);
       });
     });
+
+    context("path end", () => {
+      it("should append a log by path", () => {
+        const id1 = new UUID();
+        const id2 = new UUID();
+        const id3 = new UUID();
+        const id4 = new UUID();
+        book.lay_append(id1, id2, "foo", path(id3, id4));
+
+        assert.deepStrictEqual(book.lay_traverse(id1, id2, "foo"), path(id3, id4));
+      });
+    });
   });
 
   describe("lay_exist", () => {
