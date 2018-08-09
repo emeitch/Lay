@@ -59,6 +59,18 @@ describe("Book", () => {
       });
     });
 
+    context("js object log properties", () => {
+      let jid = {};
+      let jkey = {};
+      let jval = {};
+      
+      it("should append a log", () => {
+        const log = new Log(jid, jkey, jval);
+        book.putLog(log);
+        assert(book.log(log.logid) === log);
+      });
+    });
+
     context("with time", () => {
       const time = new Date(2017, 0);
 
