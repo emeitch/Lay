@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import v from '../src/v';
 import UUID from '../src/uuid';
+import LID from '../src/lid';
 import Log from '../src/log';
 import Book from '../src/book';
 import Act from '../src/act';
@@ -59,13 +60,13 @@ describe("Book", () => {
       });
     });
 
-    context("js object log properties", () => {
-      let jid = {};
-      let jkey = {};
-      let jval = {};
-      
+    context("lid as log properties", () => {
+      let lidId = new LID();
+      let lidKey = new UUID();
+      let lidVal = new LID();
+
       it("should append a log", () => {
-        const log = new Log(jid, jkey, jval);
+        const log = new Log(lidId, lidKey, lidVal);
         book.putLog(log);
         assert(book.log(log.logid) === log);
       });
