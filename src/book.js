@@ -2,6 +2,7 @@ import _ from 'lodash';
 import Val from './val';
 import v from './v';
 import UUID from './uuid';
+import LID from './lid';
 import Log from './log';
 import Comp from './comp';
 import Act from './act';
@@ -11,6 +12,7 @@ import { assign, transaction, transactionTime, invalidate } from './ontology';
 export default class Book {
   constructor(...imports) {
     this.id = new UUID();
+    this.lid = new LID();
     this.logs = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();

@@ -129,6 +129,12 @@ describe("Book", () => {
     });
   });
 
+  describe("#lid", () => {
+    it("should return book LID", () => {
+      assert(book.lid instanceof LID);
+    });
+  });
+
   describe("#transactionID", () => {
     let tid;
     beforeEach(() => {
