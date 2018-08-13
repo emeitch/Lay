@@ -135,6 +135,14 @@ describe("Book", () => {
     });
   });
 
+  describe("#exist", () => {
+    it("should create lid reached from book by key", () => {
+      const key = new UUID();
+      book.exist(key);
+      assert(book.activeLog(book.lid, key));
+    });
+  });
+
   describe("#transactionID", () => {
     let tid;
     beforeEach(() => {
