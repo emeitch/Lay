@@ -306,9 +306,13 @@ export default class Book {
     });
   }
 
-  exist(key) {
+  create(receiver, key) {
     const obj = new LID();
-    return this.put(this.lid, key, obj);
+    return this.put(receiver, key, obj);
+  }
+
+  exist(key) {
+    return this.create(this.lid, key);
   }
 
   instanceIDs(id) {
