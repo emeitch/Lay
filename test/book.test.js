@@ -138,7 +138,12 @@ describe("Book", () => {
   describe("#exist", () => {
     it("should create lid reached from book by key", () => {
       const key = new UUID();
-      book.exist(key);
+      const log = book.exist(key);
+
+      assert(log.id === book.lid);
+      assert(log.key === key);
+      assert(log.val);
+
       assert(book.activeLog(book.lid, key));
     });
   });
