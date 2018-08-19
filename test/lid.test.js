@@ -11,8 +11,7 @@ describe("LID", () => {
 
   describe("#reducible", () => {
     it("should return true by default behavior", () => {
-      const lid = new LID();
-      assert.deepStrictEqual(lid.reducible, false);
+      assert.deepStrictEqual(new LID().reducible, false);
     });
   });
 });
