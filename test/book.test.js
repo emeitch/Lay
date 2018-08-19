@@ -142,7 +142,7 @@ describe("Book", () => {
 
       assert(log.id === book.lid);
       assert(log.key === key);
-      assert(log.val);
+      assert(log.val instanceof LID);
 
       assert(book.activeLog(book.lid, key));
     });
