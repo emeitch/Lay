@@ -14,6 +14,7 @@ export default class Book {
     this.id = new UUID();
     this.lid = new LID();
     this.logs = new Map();
+    this.keysCache = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();
     this.imports = [];
@@ -308,11 +309,16 @@ export default class Book {
 
   create(receiver, key) {
     const obj = new LID();
+    this.keysCache.set(obj, key);
     return this.put(receiver, key, obj);
   }
 
   exist(key) {
     return this.create(this.lid, key);
+  }
+
+  objKey(obj) {
+    return this.keysCache.get(obj);
   }
 
   instanceIDs(id) {
