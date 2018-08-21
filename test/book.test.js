@@ -157,6 +157,15 @@ describe("Book", () => {
     });
   });
 
+  describe("#referer", () => {
+    it("should return obj's referer", () => {
+      const key = new UUID();
+      const log = book.exist(key);
+
+      assert.deepStrictEqual(book.referer(log.val), book.lid);
+    });
+  });
+
   describe("#transactionID", () => {
     let tid;
     beforeEach(() => {

@@ -15,6 +15,7 @@ export default class Book {
     this.lid = new LID();
     this.logs = new Map();
     this.keysCache = new Map();
+    this.referersCache = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();
     this.imports = [];
@@ -310,6 +311,7 @@ export default class Book {
   create(receiver, key) {
     const obj = new LID();
     this.keysCache.set(obj, key);
+    this.referersCache.set(obj, receiver);
     return this.put(receiver, key, obj);
   }
 
@@ -319,6 +321,10 @@ export default class Book {
 
   objKey(obj) {
     return this.keysCache.get(obj);
+  }
+
+  referer(obj) {
+    return this.referersCache.get(obj);
   }
 
   instanceIDs(id) {
