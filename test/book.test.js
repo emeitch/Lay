@@ -148,12 +148,12 @@ describe("Book", () => {
     });
   });
 
-  describe("#objKey", () => {
+  describe("#key", () => {
     it("should return obj's key", () => {
       const key = new UUID();
       const log = book.exist(key);
 
-      assert.deepStrictEqual(book.objKey(log.val), key);
+      assert.deepStrictEqual(book.key(log.val), key);
     });
   });
 

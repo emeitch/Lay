@@ -319,7 +319,7 @@ export default class Book {
     return this.create(this.lid, key);
   }
 
-  objKey(obj) {
+  key(obj) {
     return this.keysCache.get(obj);
   }
 
