@@ -315,8 +315,14 @@ export default class Book {
     return this.put(receiver, key, obj);
   }
 
-  exist(key) {
-    return this.create(this.lid, key);
+  exist(...keys) {
+    let referer = this.lid;
+    let log;
+    for (const key of keys) {
+      log = this.create(referer, key);
+      referer = log.val;
+    }
+    return log;
   }
 
   key(obj) {

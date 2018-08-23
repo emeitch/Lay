@@ -146,6 +146,22 @@ describe("Book", () => {
 
       assert(book.activeLog(book.lid, key));
     });
+
+    context("multiple key", () => {
+      it("should create lid reached from book by key path", () => {
+        const key1 = new UUID();
+        const key2 = new UUID();
+        const log = book.exist(key1, key2);
+
+        assert(log.key === key2);
+        assert(log.val instanceof LID);
+
+        const l1 = book.activeLog(book.lid, key1);
+        const l2 = book.activeLog(l1.val, key2);
+
+        assert.deepStrictEqual(l2.val, log.val);
+      });
+    });
   });
 
   describe("#key", () => {
