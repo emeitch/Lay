@@ -182,6 +182,16 @@ describe("Book", () => {
     });
   });
 
+  describe("#path", () => {
+    it("should return obj's path", () => {
+      const key1 = new UUID();
+      const key2 = new UUID();
+      const log = book.exist(key1, key2);
+      const obj = log.val;
+      assert.deepStrictEqual(book.path(obj), path(key1, key2));
+    });
+  });
+
   describe("#transactionID", () => {
     let tid;
     beforeEach(() => {

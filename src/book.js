@@ -333,6 +333,15 @@ export default class Book {
     return this.referersCache.get(obj);
   }
 
+  path(obj) {
+    const keys = [];
+    while (!obj.equals(this.lid)) {
+      keys.unshift(this.key(obj));
+      obj = this.referer(obj);
+    }
+    return path(...keys);
+  }
+
   instanceIDs(id) {
     const name = this.name(id);
     if (name.origin === null) {
