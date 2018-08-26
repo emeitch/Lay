@@ -12,7 +12,7 @@ import { assign, transaction, transactionTime, invalidate } from './ontology';
 export default class Book {
   constructor(...imports) {
     this.id = new UUID();
-    this.lid = new LID();
+    this.root = new LID();
     this.logs = new Map();
     this.keysCache = new Map();
     this.referersCache = new Map();
@@ -316,7 +316,7 @@ export default class Book {
   }
 
   exist(...keys) {
-    let referer = this.lid;
+    let referer = this.root;
     let log;
     for (const key of keys) {
       log = this.create(referer, key);
@@ -335,7 +335,7 @@ export default class Book {
 
   path(obj) {
     const keys = [];
-    while (!obj.equals(this.lid)) {
+    while (!obj.equals(this.root)) {
       keys.unshift(this.key(obj));
       obj = this.referer(obj);
     }

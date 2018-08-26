@@ -131,7 +131,7 @@ describe("Book", () => {
 
   describe("#lid", () => {
     it("should return book LID", () => {
-      assert(book.lid instanceof LID);
+      assert(book.root instanceof LID);
     });
   });
 
@@ -140,11 +140,11 @@ describe("Book", () => {
       const key = new UUID();
       const log = book.exist(key);
 
-      assert(log.id === book.lid);
+      assert(log.id === book.root);
       assert(log.key === key);
       assert(log.val instanceof LID);
 
-      assert(book.activeLog(book.lid, key));
+      assert(book.activeLog(book.root, key));
     });
 
     context("multiple key", () => {
@@ -156,7 +156,7 @@ describe("Book", () => {
         assert(log.key === key2);
         assert(log.val instanceof LID);
 
-        const l1 = book.activeLog(book.lid, key1);
+        const l1 = book.activeLog(book.root, key1);
         const l2 = book.activeLog(l1.val, key2);
 
         assert.deepStrictEqual(l2.val, log.val);
@@ -178,7 +178,7 @@ describe("Book", () => {
       const key = new UUID();
       const log = book.exist(key);
 
-      assert.deepStrictEqual(book.referer(log.val), book.lid);
+      assert.deepStrictEqual(book.referer(log.val), book.root);
     });
   });
 
