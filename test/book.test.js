@@ -200,6 +200,15 @@ describe("Book", () => {
       const obj = log.val;
       assert.deepStrictEqual(book.fetch(key1, key2), obj);
     });
+
+    context("not exist key2", () => {
+      it("should return undefined", () => {
+        const key1 = new UUID();
+        const key2 = new UUID();
+        book.exist(key1);
+        assert.throws(() => book.fetch(key1, key2), /not found key: /);
+      });
+    });
   });
 
   describe("#transactionID", () => {

@@ -345,7 +345,11 @@ export default class Book {
   fetch(...keys) {
     let obj = this.root;
     for (const key of keys) {
-      obj = this.activeLog(obj, key).val;
+      const log = this.activeLog(obj, key);
+      if (!log) {
+        throw `not found key: ${key.stringify()}`;
+      }
+      obj = log.val;
     }
     return obj;
   }
