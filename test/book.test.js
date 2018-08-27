@@ -192,6 +192,16 @@ describe("Book", () => {
     });
   });
 
+  describe("#fetch", () => {
+    it("should fetch path's obj", () => {
+      const key1 = new UUID();
+      const key2 = new UUID();
+      const log = book.exist(key1, key2);
+      const obj = log.val;
+      assert.deepStrictEqual(book.fetch(key1, key2), obj);
+    });
+  });
+
   describe("#transactionID", () => {
     let tid;
     beforeEach(() => {

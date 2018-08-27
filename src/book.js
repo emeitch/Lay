@@ -342,6 +342,14 @@ export default class Book {
     return path(...keys);
   }
 
+  fetch(...keys) {
+    let obj = this.root;
+    for (const key of keys) {
+      obj = this.activeLog(obj, key).val;
+    }
+    return obj;
+  }
+
   instanceIDs(id) {
     const name = this.name(id);
     if (name.origin === null) {
