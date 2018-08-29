@@ -144,7 +144,9 @@ describe("Book", () => {
       assert(log.key === key);
       assert(log.val instanceof LID);
 
-      assert(book.activeLog(book.root, key));
+      const alog = book.activeLog(book.root, key);
+
+      assert.deepStrictEqual(alog.val, log.val);
     });
 
     context("multiple key", () => {
