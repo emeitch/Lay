@@ -15,7 +15,7 @@ export default class Book {
     this.root = new LID();
     this.logs = new Map();
     this.keysCache = new Map();
-    this.referersCache = new Map();
+    this.parentsCache = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();
     this.imports = [];
@@ -311,16 +311,16 @@ export default class Book {
   create(receiver, key) {
     const obj = new LID();
     this.keysCache.set(obj, key);
-    this.referersCache.set(obj, receiver);
+    this.parentsCache.set(obj, receiver);
     return this.put(receiver, key, obj);
   }
 
   exist(...keys) {
-    let referer = this.root;
+    let parent = this.root;
     let log;
     for (const key of keys) {
-      log = this.create(referer, key);
-      referer = log.val;
+      log = this.create(parent, key);
+      parent = log.val;
     }
     return log;
   }
@@ -329,15 +329,15 @@ export default class Book {
     return this.keysCache.get(obj);
   }
 
-  referer(obj) {
-    return this.referersCache.get(obj);
+  parent(obj) {
+    return this.parentsCache.get(obj);
   }
 
   path(obj) {
     const keys = [];
     while (!obj.equals(this.root)) {
       keys.unshift(this.key(obj));
-      obj = this.referer(obj);
+      obj = this.parent(obj);
     }
     return path(...keys);
   }

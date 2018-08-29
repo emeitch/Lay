@@ -175,12 +175,12 @@ describe("Book", () => {
     });
   });
 
-  describe("#referer", () => {
-    it("should return obj's referer", () => {
+  describe("#parent", () => {
+    it("should return parent obj", () => {
       const key = new UUID();
       const log = book.exist(key);
 
-      assert.deepStrictEqual(book.referer(log.val), book.root);
+      assert.deepStrictEqual(book.parent(log.val), book.root);
     });
   });
 
