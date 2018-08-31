@@ -213,6 +213,21 @@ describe("Book", () => {
     });
   });
 
+  describe("#derefer", () => {
+    it("should return objs that dereferd by path and key", () => {
+      const key1 = new UUID();
+      book.exist(key1);
+
+      book.put(book.root, v("foo"), path(key1));
+
+      const key2 = new UUID();
+      const log = book.exist(key2);
+      book.put(log.val, v("foo"), path(key1));
+
+      assert.deepStrictEqual(book.derefer(path(key1), v("foo")), v([book.root, log.val]));
+    });
+  });
+
   describe("#transactionID", () => {
     let tid;
     beforeEach(() => {

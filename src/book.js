@@ -16,6 +16,7 @@ export default class Book {
     this.logs = new Map();
     this.keysCache = new Map();
     this.parentsCache = new Map();
+    this.dereferenceCache = new Map();
     this.activeLogsCache = new Map();
     this.invalidationLogsCache = new Map();
     this.imports = [];
@@ -244,6 +245,12 @@ export default class Book {
       il.set(log.logid, log);
       this.invalidationLogsCache.set(i, il);
     }
+
+    {
+      const i = this.cacheIndex(log.val, log.key);
+      const ids = [...this.dereferenceCache.get(i) || [], log.id];
+      this.dereferenceCache.set(i, ids);
+    }
   }
 
   doTransaction(block) {
@@ -352,6 +359,12 @@ export default class Book {
       obj = log.val;
     }
     return obj;
+  }
+
+  derefer(pth, key) {
+    const i = this.cacheIndex(pth, key);
+    const logs = this.dereferenceCache.get(i);
+    return v(logs);
   }
 
   instanceIDs(id) {
