@@ -195,7 +195,7 @@ describe("Book", () => {
   });
 
   describe("#fetch", () => {
-    it("should fetch path's obj", () => {
+    it("should return path's obj", () => {
       const key1 = new UUID();
       const key2 = new UUID();
       const log = book.exist(key1, key2);
