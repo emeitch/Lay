@@ -350,14 +350,18 @@ export default class Book {
   }
 
   fetch(keys, obj=this.root) {
-    for (const key of keys) {
-      const log = this.activeLog(obj, key);
-      if (!log) {
-        return undefined;
-      }
-      obj = log.val;
+    if (keys.length === 0) {
+      return obj;
     }
-    return obj;
+
+    const ks = keys.concat();
+    const key = ks.shift();
+    const log = this.activeLog(obj, key);
+    if (!log) {
+      return undefined;
+    }
+
+    return this.fetch(ks, log.val);
   }
 
   derefer(pth, key) {
