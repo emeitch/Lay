@@ -260,6 +260,26 @@ describe("Book", () => {
         assert.deepStrictEqual(book.query([key2, v("fiz")]), v(4)); // override
       });
     });
+
+    context("specifying absolute path", () => {
+      it("should retrieve absolute keys", () => {
+        const key1 = new UUID();
+        const log1 = book.exist(key1);
+        book.put(log1.val, v("foo"), v(2));
+        book.put(log1.val, v("bar"), v(3));
+
+        const key2 = new UUID();
+        const log2 = book.exist(key2);
+        book.put(log2.val, v("baz"), path(v("/"), key1, v("foo")));
+        book.put(log2.val, v("fiz"), path(v("/"), key1, v("bar")));
+
+        const log3 = book.exist(key2, key1);
+        book.put(log3.val, v("bar"), v(4));
+
+        assert.deepStrictEqual(book.query([key2, v("baz")]), v(2));
+        assert.deepStrictEqual(book.query([key2, v("fiz")]), v(3));
+      });
+    });
   });
 
   describe("#transactionID", () => {

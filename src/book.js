@@ -371,12 +371,19 @@ export default class Book {
     if (o !== undefined && o.reducible) {
       // todo: この部分がpath前提の書き方になってるのでいつか直す
       const selfKeys = keys.concat();
+      const ks = o.origin;
       let self;
       let ret;
       do {
         selfKeys.pop();
-        self = this.fetch(selfKeys, obj);
-        ret = this.query(o.origin, self);
+        if (ks[0].equals(v("/"))) {
+          self = this.root;
+          ks.shift();
+          ret = this.query(ks, self);
+        } else {
+          self = this.fetch(selfKeys, obj);
+        }
+        ret = this.query(ks, self);
       } while(self != this.root && ret === undefined);
       return ret;
     } else {
