@@ -228,6 +228,20 @@ describe("Book", () => {
     });
   });
 
+  describe("#query", () => {
+    it("should retrieve keys and reduce value", () => {
+      const key1 = new UUID();
+      const log1 = book.exist(key1);
+      book.put(log1.val, v("foo"), v(2));
+
+      const key2 = new UUID();
+      const log2 = book.exist(key2);
+      book.put(log2.val, v("bar"), path(key1, v("foo")));
+
+      assert.deepStrictEqual(book.query(key2, v("bar")), v(2));
+    });
+  });
+
   describe("#transactionID", () => {
     let tid;
     beforeEach(() => {

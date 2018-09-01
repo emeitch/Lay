@@ -367,6 +367,16 @@ export default class Book {
     return v(logs);
   }
 
+  query(...keys) {
+    const obj = this.fetch(...keys);
+    if (obj.reducible) {
+      // path前提の書き方になってる
+      return this.query(...obj.origin);
+    } else {
+      return obj;
+    }
+  }
+
   instanceIDs(id) {
     const name = this.name(id);
     if (name.origin === null) {
