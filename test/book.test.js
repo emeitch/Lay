@@ -229,7 +229,7 @@ describe("Book", () => {
   });
 
   describe("#query", () => {
-    it("should retrieve keys and reduce value", () => {
+    it("should retrieve absolute keys and reduce path", () => {
       const key1 = new UUID();
       const log1 = book.exist(key1);
       book.put(log1.val, v("foo"), v(2));
