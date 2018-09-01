@@ -326,7 +326,7 @@ export default class Book {
     let parent = this.root;
     let log;
     for (const key of keys) {
-      log = this.create(parent, key);
+      log = this.activeLog(parent, key) || this.create(parent, key);
       parent = log.val;
     }
     return log;
@@ -349,12 +349,11 @@ export default class Book {
     return path(...keys);
   }
 
-  fetch(...keys) {
-    let obj = this.root;
+  fetch(keys, obj=this.root) {
     for (const key of keys) {
       const log = this.activeLog(obj, key);
       if (!log) {
-        throw `not found key: ${key.stringify()}`;
+        return undefined;
       }
       obj = log.val;
     }
@@ -367,13 +366,21 @@ export default class Book {
     return v(logs);
   }
 
-  query(...keys) {
-    const obj = this.fetch(...keys);
-    if (obj.reducible) {
-      // path前提の書き方になってる
-      return this.query(...obj.origin);
+  query(keys, obj=this.root) {
+    const o = this.fetch(keys, obj);
+    if (o !== undefined && o.reducible) {
+      // todo: この部分がpath前提の書き方になってるのでいつか直す
+      const selfKeys = keys.concat();
+      let self;
+      let ret;
+      do {
+        selfKeys.pop();
+        self = this.fetch(selfKeys, obj);
+        ret = this.query(o.origin, self);
+      } while(self != this.root && ret === undefined);
+      return ret;
     } else {
-      return obj;
+      return o;
     }
   }
 

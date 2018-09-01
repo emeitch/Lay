@@ -200,7 +200,7 @@ describe("Book", () => {
       const key2 = new UUID();
       const log = book.exist(key1, key2);
       const obj = log.val;
-      assert.deepStrictEqual(book.fetch(key1, key2), obj);
+      assert.deepStrictEqual(book.fetch([key1, key2]), obj);
     });
 
     context("not exist key2", () => {
@@ -208,7 +208,7 @@ describe("Book", () => {
         const key1 = new UUID();
         const key2 = new UUID();
         book.exist(key1);
-        assert.throws(() => book.fetch(key1, key2), /not found key: /);
+        assert.deepStrictEqual(book.fetch([key1, key2]), undefined);
       });
     });
   });
@@ -238,7 +238,24 @@ describe("Book", () => {
       const log2 = book.exist(key2);
       book.put(log2.val, v("bar"), path(key1, v("foo")));
 
-      assert.deepStrictEqual(book.query(key2, v("bar")), v(2));
+      assert.deepStrictEqual(book.query([key2, v("bar")]), v(2));
+    });
+
+    context("relative path", () => {
+      it("should retrieve relative keys", () => {
+        const key1 = new UUID();
+        const log1 = book.exist(key1);
+        book.put(log1.val, v("foo"), v(2));
+
+        const key2 = new UUID();
+        const log2 = book.exist(key2);
+        book.put(log2.val, v("bar"), path(key1, v("foo")));
+
+        const log3 = book.exist(key2, key1);
+        book.put(log3.val, v("foo"), v(3));
+
+        assert.deepStrictEqual(book.query([key2, v("bar")]), v(3));
+      });
     });
   });
 
