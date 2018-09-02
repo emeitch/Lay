@@ -377,10 +377,25 @@ export default class Book {
     return v(logs);
   }
 
+  traverseAndRollbackKeys(obj, keys, block) {
+    if (keys.length === 0) {
+      return obj;
+    }
+
+    const kys = keys.concat();
+    const key = kys.shift();
+    const o = block(obj, key);
+    if (!o) {
+      return undefined;
+    }
+
+    return this.traverseAndRollbackKeys(o, kys, block);
+  }
+
   query(keys, obj=this.root) {
-    return this.traverseKeys(obj, keys, (ob, ky) => {
+    return this.traverseAndRollbackKeys(obj, keys, (ob, ky) => {
       const log = this.activeLog(ob, ky);
-      const o = log ? log.val : undefined;
+      let o = log ? log.val : undefined;
       if (o !== undefined && o.reducible) {
         // todo: この部分がpath前提の書き方になってるのでいつか直す
         const ks = o.origin.concat();
