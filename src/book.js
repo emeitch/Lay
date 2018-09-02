@@ -377,46 +377,27 @@ export default class Book {
     return v(logs);
   }
 
-  traverseAndRollbackKeys(obj, keys, block) {
-    if (keys.length === 0) {
-      return obj;
-    }
-
+  query(keys, obj=this.root) {
     const kys = keys.concat();
     const key = kys.shift();
-    const o = block(obj, key);
-    if (!o) {
-      return undefined;
+    const log = this.activeLog(obj, key);
+    let o = log ? log.val : undefined;
+    if (o instanceof LID) {
+      o = this.query(kys, o);
     }
 
-    return this.traverseAndRollbackKeys(o, kys, block);
-  }
-
-  query(keys, obj=this.root) {
-    return this.traverseAndRollbackKeys(obj, keys, (ob, ky) => {
-      const log = this.activeLog(ob, ky);
-      let o = log ? log.val : undefined;
-      if (o !== undefined && o.reducible) {
-        // todo: この部分がpath前提の書き方になってるのでいつか直す
-        const ks = o.origin.concat();
-        if (ks[0].equals(v("/"))) {
-          ks.shift();
-          return this.query(ks, this.root);
-        }
-
-        const selfKeys = keys.concat();
-        let self;
-        let ret;
-        do {
-          selfKeys.pop();
-          self = this.fetch(selfKeys, obj);
-          ret = this.query(ks, self);
-        } while(self != this.root && ret === undefined);
-        return ret;
+    if (o && o.reducible) {
+      // todo: この部分がpath前提の書き方になってるのでいつか直す
+      const ks = o.origin.concat();
+      if (ks[0].equals(v("/"))) {
+        ks.shift();
+        return this.query(ks, this.root);
       } else {
-        return o;
+        return this.query(ks, obj) || o;
       }
-    });
+    }
+
+    return o;
   }
 
   instanceIDs(id) {
