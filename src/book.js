@@ -378,16 +378,18 @@ export default class Book {
   }
 
   query(keys, obj=this.root) {
-    const kys = keys.concat();
-    const key = kys.shift();
-    const log = this.activeLog(obj, key);
-    let o = log ? log.val : undefined;
-    if (o instanceof LID) {
-      o = this.query(kys, o);
+    if (!(obj instanceof LID)) {
+      return obj;
     }
 
+    const rest = keys.concat();
+    const key = rest.shift();
+    const log = this.activeLog(obj, key);
+    const val = log ? log.val : undefined;
+    const o = val ? this.query(rest, val) : undefined;
+
+    // todo: この部分がpath前提の書き方になってるのでいつか直す
     if (o && o.reducible) {
-      // todo: この部分がpath前提の書き方になってるのでいつか直す
       const ks = o.origin.concat();
       if (ks[0].equals(v("/"))) {
         ks.shift();
