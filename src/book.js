@@ -378,28 +378,30 @@ export default class Book {
   }
 
   query(keys, obj=this.root) {
-    const o = this.fetch(keys, obj);
-    if (o !== undefined && o.reducible) {
-      // todo: この部分がpath前提の書き方になってるのでいつか直す
-      const selfKeys = keys.concat();
-      const ks = o.origin;
-      let self;
-      let ret;
-      do {
-        selfKeys.pop();
+    return this.traverseKeys(obj, keys, (ob, ky) => {
+      const log = this.activeLog(ob, ky);
+      const o = log ? log.val : undefined;
+      if (o !== undefined && o.reducible) {
+        // todo: この部分がpath前提の書き方になってるのでいつか直す
+        const ks = o.origin.concat();
         if (ks[0].equals(v("/"))) {
-          self = this.root;
           ks.shift();
-          ret = this.query(ks, self);
-        } else {
-          self = this.fetch(selfKeys, obj);
+          return this.query(ks, this.root);
         }
-        ret = this.query(ks, self);
-      } while(self != this.root && ret === undefined);
-      return ret;
-    } else {
-      return o;
-    }
+
+        const selfKeys = keys.concat();
+        let self;
+        let ret;
+        do {
+          selfKeys.pop();
+          self = this.fetch(selfKeys, obj);
+          ret = this.query(ks, self);
+        } while(self != this.root && ret === undefined);
+        return ret;
+      } else {
+        return o;
+      }
+    });
   }
 
   instanceIDs(id) {
