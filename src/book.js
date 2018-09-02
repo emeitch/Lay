@@ -346,6 +346,7 @@ export default class Book {
       keys.unshift(this.key(obj));
       obj = this.parent(obj);
     }
+    keys.unshift(v("/"));
     return path(...keys);
   }
 

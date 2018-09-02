@@ -190,7 +190,7 @@ describe("Book", () => {
       const key2 = new UUID();
       const log = book.exist(key1, key2);
       const obj = log.val;
-      assert.deepStrictEqual(book.path(obj), path(key1, key2));
+      assert.deepStrictEqual(book.path(obj), path(v("/"), key1, key2));
     });
   });
 
