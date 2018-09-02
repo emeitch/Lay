@@ -349,26 +349,22 @@ export default class Book {
     return path(...keys);
   }
 
-  traverseKeys(obj, keys, block) {
+  fetch(keys, obj=this.root) {
     if (keys.length === 0) {
+      return obj;
+    }
+
+    if (!(obj instanceof LID)) {
       return obj;
     }
 
     const ks = keys.concat();
     const key = ks.shift();
-    const o = block(obj, key);
-    if (!o) {
-      return undefined;
-    }
+    const log = this.activeLog(obj, key);
+    const val = log ? log.val : undefined;
+    const o = val ? this.fetch(ks, val) : undefined;
 
-    return this.traverseKeys(o, ks, block);
-  }
-
-  fetch(keys, obj=this.root) {
-    return this.traverseKeys(obj, keys, (o, k) => {
-      const log = this.activeLog(o, k);
-      return log ? log.val : undefined;
-    });
+    return o;
   }
 
   derefer(pth, key) {
