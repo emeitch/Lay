@@ -349,12 +349,8 @@ export default class Book {
     return path(...keys);
   }
 
-  fetch(keys, obj=this.root) {
+  fetch(keys, obj=this.root, filter=(o, _parent) => o) {
     if (keys.length === 0) {
-      return obj;
-    }
-
-    if (!(obj instanceof LID)) {
       return obj;
     }
 
@@ -362,40 +358,31 @@ export default class Book {
     const key = ks.shift();
     const log = this.activeLog(obj, key);
     const val = log ? log.val : undefined;
-    const o = val ? this.fetch(ks, val) : undefined;
+    const o = val ? this.fetch(ks, val, filter) : undefined;
+    return filter(o, obj);
+  }
 
-    return o;
+  query(keys, obj=this.root) {
+    return this.fetch(keys, obj, (o, parent) => {
+      // todo: この部分がpath前提の書き方になってるのでいつか直す
+      if (o && o.reducible) {
+        const ks = o.origin.concat();
+        if (ks[0].equals(v("/"))) {
+          ks.shift();
+          return this.query(ks, this.root);
+        } else {
+          return this.query(ks, parent) || o;
+        }
+      }
+
+      return o;
+    });
   }
 
   derefer(pth, key) {
     const i = this.cacheIndex(pth, key);
     const logs = this.dereferenceCache.get(i);
     return v(logs);
-  }
-
-  query(keys, obj=this.root) {
-    if (!(obj instanceof LID)) {
-      return obj;
-    }
-
-    const rest = keys.concat();
-    const key = rest.shift();
-    const log = this.activeLog(obj, key);
-    const val = log ? log.val : undefined;
-    const o = val ? this.query(rest, val) : undefined;
-
-    // todo: この部分がpath前提の書き方になってるのでいつか直す
-    if (o && o.reducible) {
-      const ks = o.origin.concat();
-      if (ks[0].equals(v("/"))) {
-        ks.shift();
-        return this.query(ks, this.root);
-      } else {
-        return this.query(ks, obj) || o;
-      }
-    }
-
-    return o;
   }
 
   instanceIDs(id) {
