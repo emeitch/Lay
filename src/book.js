@@ -5,8 +5,10 @@ import UUID from './uuid';
 import LID from './lid';
 import Log from './log';
 import Comp from './comp';
+import Case from './case';
 import Act from './act';
 import { path } from './path';
+import { exp } from './exp';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
@@ -350,29 +352,41 @@ export default class Book {
     return path(...keys);
   }
 
-  fetch(keys, obj=this.root, filter=(o, _parent) => o) {
+  fetch(keys, obj=this.root, filter=(o, _self) => o) {
     if (keys.length === 0) {
       return obj;
     }
 
     const ks = keys.concat();
-    const key = ks.shift();
+    let key = ks.shift();
+    let args = [];
+    if (Array.isArray(key)) {
+      args = key.concat();
+      key = args.shift();
+    }
     const log = this.activeLog(obj, key);
     const val = log ? log.val : undefined;
     const o = val ? this.fetch(ks, val, filter) : undefined;
-    return filter(o, obj);
+    return filter(o, obj, args);
   }
 
   query(keys, obj=this.root) {
-    return this.fetch(keys, obj, (o, parent) => {
+    return this.fetch(keys, obj, (o, self, args) => {
       // todo: この部分がpath前提の書き方になってるのでいつか直す
       if (o && o.reducible) {
+        if (o instanceof Case) {
+          const c = o.replaceSelfBy(self);
+          const as = args.map(a => a.replaceSelfBy(self));
+          const e = exp(c, ...as);
+          return e.reduce(this).replaceSelfBy(self);
+        }
+
         const ks = o.origin.concat();
         if (ks[0].equals(v("/"))) {
           ks.shift();
           return this.query(ks, this.root);
         } else {
-          return this.query(ks, parent) || o;
+          return this.query(ks, self) || o;
         }
       }
 

@@ -10,6 +10,8 @@ import { path } from '../src/path';
 import { sym } from '../src/sym';
 import { pack } from '../src/pack';
 import { transaction, invalidate } from '../src/ontology';
+import { func, plus } from '../src/func';
+import { exp } from '../src/exp';
 
 describe("Book", () => {
   const id = new UUID();
@@ -278,6 +280,16 @@ describe("Book", () => {
 
         assert.deepStrictEqual(book.query([key2, v("baz")]), v(2));
         assert.deepStrictEqual(book.query([key2, v("fiz")]), v(3));
+      });
+    });
+
+    context("func val", () => {
+      it("should apply by args", () => {
+        const key1 = new UUID();
+        const log1 = book.exist(key1);
+        book.put(log1.val, v("foo"), func("x", exp(plus, "x", v(1))));
+
+        assert.deepStrictEqual(book.query([key1, [v("foo"), v(2)]]), v(3));
       });
     });
   });
