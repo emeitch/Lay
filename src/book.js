@@ -7,7 +7,7 @@ import Log from './log';
 import Comp from './comp';
 import Case from './case';
 import Act from './act';
-import { path } from './path';
+import Path, { path } from './path';
 import { exp } from './exp';
 import { assign, transaction, transactionTime, invalidate } from './ontology';
 
@@ -297,6 +297,18 @@ export default class Book {
   }
 
   put(...args) {
+    const id = args[0];
+    if (id instanceof Path) {
+      const keys = id.origin;
+      let pth = [];
+      let log;
+      for(const key of keys) {
+        pth.push(key);
+        log = this.exist(...pth);
+      }
+      args[0] = log.val;
+    }
+
     const log = new Log(...args);
     return this.putLog(log);
   }

@@ -118,10 +118,12 @@ describe("Book", () => {
         const pth = path(id, "foo");
         const log = book.put(pth, key, val);
 
-        assert(log.id === pth);
+        assert(log.id instanceof LID);
         assert(log.key === key);
         assert(log.val === val);
         assert(book.log(log.logid) === log);
+
+        assert(book.activeLog(log.id, key));
       });
     });
   });
