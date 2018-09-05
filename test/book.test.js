@@ -112,6 +112,18 @@ describe("Book", () => {
         assert(book.log(log.logid) === log);
       });
     });
+
+    context("path as id", () => {
+      it("should append a log", () => {
+        const pth = path(id, "foo");
+        const log = book.put(pth, key, val);
+
+        assert(log.id === pth);
+        assert(log.key === key);
+        assert(log.val === val);
+        assert(book.log(log.logid) === log);
+      });
+    });
   });
 
   describe("putAct", () => {
