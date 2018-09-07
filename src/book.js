@@ -307,6 +307,10 @@ export default class Book {
         log = this.exist(...pth);
       }
       args[0] = log.val;
+
+      if (!(args[0] instanceof LID)) {
+        throw `can't put val for not ID object: ${args[0]}`;
+      }
     }
 
     const log = new Log(...args);
