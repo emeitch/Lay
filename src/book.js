@@ -305,12 +305,12 @@ export default class Book {
       for(const key of keys) {
         pth.push(key);
         log = this.exist(...pth);
+
+        if (!(log.val instanceof LID)) {
+          throw `can't put val for not ID object: ${log.val}`;
+        }
       }
       args[0] = log.val;
-
-      if (!(args[0] instanceof LID)) {
-        throw `can't put val for not ID object: ${args[0]}`;
-      }
     }
 
     const log = new Log(...args);
