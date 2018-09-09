@@ -131,6 +131,8 @@ describe("Book", () => {
           book.put(path(id), "foo", v(1));
 
           assert.throws(() => book.put(path(id, "foo"), "bar", v(2)), /can't put val for not ID object: /);
+
+          assert.throws(() => book.put(path(id, "foo", "bar"), "buz", v(3)), /can't put val for not ID object: /);
         });
       });
     });
