@@ -296,21 +296,26 @@ export default class Book {
     return result;
   }
 
-  put(...args) {
-    const id = args[0];
-    if (id instanceof Path) {
-      const keys = id.origin;
-      let pth = [];
-      let log;
-      for(const key of keys) {
-        pth.push(key);
-        log = this.exist(...pth);
+  putPath(pth) {
+    const keys = [];
+    const logs = [];
+    for(const key of pth.origin) {
+      keys.push(key);
+      const log = this.exist(...keys);
+      logs.push(log);
 
-        if (!(log.val instanceof LID)) {
-          throw `can't put val for not ID object: ${log.val}`;
-        }
+      if (!(log.val instanceof LID)) {
+        throw `can't put val for not ID object: ${log.val}`;
       }
-      args[0] = log.val;
+    }
+    return logs;
+  }
+
+  put(...args) {
+    if (args[0] instanceof Path) {
+      const pth = args[0];
+      const logs = this.putPath(pth);
+      args[0] = logs[logs.length-1].val;
     }
 
     const log = new Log(...args);
