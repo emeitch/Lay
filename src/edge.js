@@ -1,4 +1,4 @@
-export default class Log {
+export default class Edge {
   constructor(tail, label, head) {
     this.tail = tail;
     this.label = label;
