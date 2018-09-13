@@ -1,4 +1,5 @@
 import UUID from './uuid';
+import Edge from './edge';
 import v from './v';
 
 export default class Log {
@@ -20,6 +21,14 @@ export default class Log {
 
   get in() {
     return this.id;
+  }
+
+  get edges() {
+    return [
+      new Edge(this.logid, "type", this.key),
+      new Edge(this.logid, "subject", this.id),
+      new Edge(this.logid, "object", this.val),
+    ];
   }
 
   object(book) {
