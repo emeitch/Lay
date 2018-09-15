@@ -19,7 +19,10 @@ describe("v function", () => {
     it("should return a Comp", () => {
       assert(v({a: 1, b: 2}) instanceof Comp);
       assert(v([1, 2, 3]) instanceof Comp);
-      assert(v(new Date()) instanceof Comp);
+
+      const date = v(new Date());
+      assert(date instanceof Comp);
+      assert(date.head, v("Date"));
     });
   });
 

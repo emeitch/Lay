@@ -36,6 +36,8 @@ function parseVal(raw) {
         org[key] = parseVal(raw.origin[key]);
       }
       return v(head, org);
+    } else if (klass.origin === "Date") {
+      return v(head, new Date(raw.origin));
     } else if (klass.origin === "UUID") {
       return new UUID(raw.origin);
     } else if (klass.origin === "Path") {
@@ -43,7 +45,7 @@ function parseVal(raw) {
     }
   }
 
-  throw `can not identify a val: ${raw}`;
+  throw `can not identify a val: ${JSON.stringify(raw)}`;
 }
 
 export function parse(raws) {
@@ -52,7 +54,7 @@ export function parse(raws) {
     const id = parseVal(raw.id);
     const key = parseVal(raw.key);
     const val = parseVal(raw.val);
-    const at = new Date(raw.at);
+    const at = parseVal(raw.at);
     const logid = parseVal(raw.logid);
     const log = new Log(id, key, val, at, raw.in, logid);
     logs.push(log);

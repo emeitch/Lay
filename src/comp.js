@@ -37,6 +37,8 @@ export default class Comp extends Val {
           orgn[key] = val instanceof Prim ? val.origin : val;
         }
         return new CompMap(orgn, head);
+      } else if (type === "object" && origin && origin.constructor === Date) {
+        return new CompDate(origin, head);
       }
       return new Comp(origin, head);
     }
@@ -202,5 +204,18 @@ export class CompMap extends Comp {
     }
 
     return new this.constructor(org, this.head);
+  }
+}
+
+export class CompDate extends Comp {
+  get type() {
+     return sym("Date");
+  }
+
+  object(book) {
+    const o = super.object(book);
+    return Object.assign(o, {
+      origin: this.origin.toISOString()
+    });
   }
 }

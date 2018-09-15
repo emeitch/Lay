@@ -87,7 +87,7 @@ describe("Book", () => {
         assert(log.id === id);
         assert(log.key === key);
         assert(log.val === val);
-        assert(log.at === time);
+        assert.deepStrictEqual(log.at, v(time));
         assert(book.log(log.logid) === log);
 
         assert(log.logid.get("id", book) === id);
@@ -108,7 +108,7 @@ describe("Book", () => {
         assert(log.id === id);
         assert(log.key === key);
         assert(log.val === val);
-        assert(log.at === time);
+        assert.deepStrictEqual(log.at, v(time));
         assert(book.log(log.logid) === log);
       });
     });

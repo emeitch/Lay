@@ -98,21 +98,21 @@ export default class Book {
     const ilogs = new Map(this.invalidationLogsCache.get(i));
 
     for (let [, log] of alogs) {
-      if (log.at && log.at > at) {
+      if (log.at.origin && log.at.origin > at) {
         alogs.delete(log.logid);
       }
     }
 
     for (let [, ilog] of ilogs) {
       const log = alogs.get(ilog.id);
-      if (log && (!ilog.at || ilog.at <= at)) {
+      if (log && (!ilog.at.origin || ilog.at.origin <= at)) {
         alogs.delete(log.logid);
       }
     }
 
     const actives = Array.from(alogs.values()).sort((a, b) => {
       // todo: atが重複した場合に順序が制御されないのをどうにかする
-      return a.at.getTime() - b.at.getTime();
+      return a.at.origin.getTime() - b.at.origin.getTime();
     });
 
     if (actives.length > 0) {

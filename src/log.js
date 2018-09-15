@@ -16,7 +16,7 @@ export default class Log {
     this.id = v(id);
     this.key = v(key).unpack();
     this.val = v(val).unpack();
-    this.at = at;
+    this.at = v(at);
   }
 
   get in() {
@@ -37,7 +37,7 @@ export default class Log {
       id: this.id.object(book),
       key: this.key.object(book),
       val: this.val.object(book),
-      at: this.at.toJSON()
+      at: this.at.object(book),
     };
   }
 }

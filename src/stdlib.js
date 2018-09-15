@@ -300,6 +300,11 @@ export const stdlib = new Book();
 }
 
 {
+  const date = new UUID();
+  stdlib.set("Date", date);
+}
+
+{
   const act = new UUID();
   stdlib.set("Act", act);
 
