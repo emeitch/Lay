@@ -3,7 +3,7 @@ import Edge from './edge';
 import v from './v';
 
 export default class Log {
-  constructor(id, key, val=null, at_=new Date(), logid=new UUID()) {
+  constructor(id, key, val=null, at=new Date(), logid=new UUID()) {
     if (!id) {
       throw "id is required";
     }
@@ -16,7 +16,7 @@ export default class Log {
     this.id = v(id);
     this.key = v(key).unpack();
     this.val = v(val).unpack();
-    this.at = at_;
+    this.at = at;
   }
 
   get in() {
