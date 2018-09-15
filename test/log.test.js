@@ -55,6 +55,7 @@ describe("Log", () => {
           new Edge(log.logid, "type", key),
           new Edge(log.logid, "subject", id),
           new Edge(log.logid, "object", val),
+          new Edge(log.logid, "at", log.at),
         ]
       );
     });

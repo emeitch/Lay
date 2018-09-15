@@ -28,6 +28,7 @@ export default class Log {
       new Edge(this.logid, "type", this.key),
       new Edge(this.logid, "subject", this.id),
       new Edge(this.logid, "object", this.val),
+      new Edge(this.logid, "at", this.at),
     ];
   }
 
