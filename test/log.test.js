@@ -1,4 +1,5 @@
 import assert from 'assert';
+import _ from 'lodash';
 
 import UUID from '../src/uuid';
 import Edge from '../src/edge';
@@ -49,15 +50,10 @@ describe("Log", () => {
 
   describe("edges", () => {
     it("should return edges", () => {
-      assert.deepStrictEqual(
-        log.edges,
-        [
-          new Edge(log.logid, "type", key),
-          new Edge(log.logid, "subject", id),
-          new Edge(log.logid, "object", val),
-          new Edge(log.logid, "at", log.at),
-        ]
-      );
+      assert(log.edges.some(e => _.isEqual(e, new Edge(log.logid, "type", key))));
+      assert(log.edges.some(e => _.isEqual(e, new Edge(log.logid, "subject", id))));
+      assert(log.edges.some(e => _.isEqual(e, new Edge(log.logid, "object", val))));
+      assert(log.edges.some(e => _.isEqual(e, new Edge(log.logid, "at", log.at))));
     });
   });
 
