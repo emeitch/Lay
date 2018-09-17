@@ -13,6 +13,22 @@ describe("Edge", () => {
       assert(e.tail === tail);
       assert(e.label === label);
       assert(e.head === head);
+      assert(e.prev === undefined);
+    });
+
+    context("with before", () => {
+      it("should return a Edge object with before", () => {
+        const tail = {};
+        const label = "label1";
+        const head = {};
+        const prev = {};
+        const e = new Edge(tail, label, head, prev);
+
+        assert(e.tail === tail);
+        assert(e.label === label);
+        assert(e.head === head);
+        assert(e.prev === prev);
+      });
     });
   });
 });
