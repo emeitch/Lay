@@ -13,21 +13,21 @@ describe("Edge", () => {
       assert(e.tail === tail);
       assert(e.label === label);
       assert(e.head === head);
-      assert(e.prev === undefined);
+      assert(e.rev === null);
     });
 
-    context("with before", () => {
-      it("should return a Edge object with before", () => {
+    context("with revision", () => {
+      it("should return a Edge object with rev", () => {
         const tail = {};
         const label = "label1";
         const head = {};
-        const prev = {};
-        const e = new Edge(tail, label, head, prev);
+        const rev = {};
+        const e = new Edge(tail, label, head, rev);
 
         assert(e.tail === tail);
         assert(e.label === label);
         assert(e.head === head);
-        assert(e.prev === prev);
+        assert(e.rev === rev);
       });
     });
   });
