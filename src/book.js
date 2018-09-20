@@ -3,6 +3,7 @@ import Val from './val';
 import v from './v';
 import UUID from './uuid';
 import LID from './lid';
+import Edge from './edge';
 import Log from './log';
 import Comp from './comp';
 import Case from './case';
@@ -13,6 +14,8 @@ import { assign, transaction, transactionTime, invalidate } from './ontology';
 
 export default class Book {
   constructor(...imports) {
+    this.edges = [];
+
     this.id = new UUID();
     this.root = new LID();
     this.logs = new Map();
@@ -256,13 +259,17 @@ export default class Book {
   }
 
   doTransaction(block) {
+    const tid = new UUID();
+    const ttlog = new Log(tid, transactionTime, v(new Date()));
+
     // todo: アトミックな操作に修正する
     const appendLog = (log) => {
+      this.edges.push(new Edge(log.logid, "type", log.key));
+      this.edges.push(new Edge(log.logid, "subject", log.id));
+      this.edges.push(new Edge(log.logid, "object", log.val));
       this.logs.set(log.logid, log);
       this.syncCache(log);
     };
-    const tid = new UUID();
-    const ttlog = new Log(tid, transactionTime, v(new Date()));
 
     appendLog(ttlog);
 

@@ -111,6 +111,26 @@ describe("Book", () => {
         assert.deepStrictEqual(log.at, v(time));
         assert(book.log(log.logid) === log);
       });
+
+      it("should append edges", () => {
+        assert(book.edges.some(e =>
+          e.tail === log.logid &&
+          e.label === "type" &&
+          e.head === key
+        ));
+
+        assert(book.edges.some(e =>
+          e.tail === log.logid &&
+          e.label === "subject" &&
+          e.head === id
+        ));
+
+        assert(book.edges.some(e =>
+          e.tail === log.logid &&
+          e.label === "object" &&
+          e.head === val
+        ));
+      });
     });
 
     context("path as id", () => {
