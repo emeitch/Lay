@@ -237,6 +237,10 @@ export default class Book {
     return logs.length > 0 ? logs[0].id : v(null);
   }
 
+  // syncCacheEdge(edge) {
+  //
+  // }
+
   syncCache(log) {
     const i = this.cacheIndex(log.id, log.key);
     const al = this.activeLogsCache.get(i) || new Map();
@@ -262,13 +266,20 @@ export default class Book {
     const tid = new UUID();
     const ttlog = new Log(tid, transactionTime, v(new Date()));
 
+    const appendEdge = (tail, label, head) => {
+      const edge = new Edge(tail, label, head);
+      this.edges.push(edge);
+      // this.syncCacheEdge(edge);
+    };
+
     // todo: アトミックな操作に修正する
     const appendLog = (log) => {
-      this.edges.push(new Edge(log.logid, "type", log.key));
-      this.edges.push(new Edge(log.logid, "subject", log.id));
-      this.edges.push(new Edge(log.logid, "object", log.val));
       this.logs.set(log.logid, log);
       this.syncCache(log);
+
+      appendEdge(log.logid, "type", log.key);
+      appendEdge(log.logid, "subject", log.id);
+      appendEdge(log.logid, "object", log.val);
     };
 
     appendLog(ttlog);
