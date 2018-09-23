@@ -41,60 +41,6 @@ describe("Book", () => {
     });
   });
 
-  describe("#putLog", () => {
-    context("standard arguments", () => {
-      let log;
-      beforeEach(() => {
-        log = new Log(id, key, val);
-        book.putLog(log);
-      });
-
-      it("should append a log", () => {
-        assert(log.id === id);
-        assert(log.key === key);
-        assert(log.val === val);
-        assert(book.log(log.logid) === log);
-      });
-
-      it("should append a transaction log", () => {
-        const tlogs = book.findLogs({id: log.logid, key: transaction});
-        assert(tlogs.length === 1);
-      });
-    });
-
-    context("lid as log properties", () => {
-      let lidId = new LID();
-      let lidKey = new UUID();
-      let lidVal = new LID();
-
-      it("should append a log", () => {
-        const log = new Log(lidId, lidKey, lidVal);
-        book.putLog(log);
-        assert(book.log(log.logid) === log);
-      });
-    });
-
-    context("with time", () => {
-      const time = new Date(2017, 0);
-
-      let log;
-      beforeEach(() => {
-        log = new Log(id, key, val, time);
-        book.putLog(log);
-      });
-
-      it("should append a log with time", () => {
-        assert(log.id === id);
-        assert(log.key === key);
-        assert(log.val === val);
-        assert.deepStrictEqual(log.at, v(time));
-        assert(book.log(log.logid) === log);
-
-        assert(log.logid.get("id", book) === id);
-      });
-    });
-  });
-
   describe("#put", () => {
     context("standard arguments with time", () => {
       const time = new Date(2017, 0);
