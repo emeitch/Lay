@@ -157,12 +157,6 @@ export default class Book {
       return olog;
     }
 
-    const rawlog = this.log(id);
-    if (rawlog && rawlog[key]) {
-      // todo: アドホックなログとしてlogidが存在しないなど特殊な扱いにしたい
-      return new Log(id, key, rawlog[key]);
-    }
-
     return undefined;
   }
 

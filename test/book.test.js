@@ -9,7 +9,7 @@ import Act from '../src/act';
 import { path } from '../src/path';
 import { sym } from '../src/sym';
 import { pack } from '../src/pack';
-import { transaction, invalidate } from '../src/ontology';
+import { invalidate } from '../src/ontology';
 import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
 
