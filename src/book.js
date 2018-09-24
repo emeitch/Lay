@@ -15,6 +15,7 @@ import { assign, transaction, transactionTime, invalidate } from './ontology';
 export default class Book {
   constructor(...imports) {
     this.edges = [];
+    this.tailLabelCache = new Map();
 
     this.id = new UUID();
     this.root = new LID();
@@ -231,9 +232,15 @@ export default class Book {
     return logs.length > 0 ? logs[0].id : v(null);
   }
 
-  // syncCacheEdge(edge) {
-  //
-  // }
+  getEdgeHead(tail, label) {
+    const i = this.cacheIndex(tail, label);
+    return this.tailLabelCache.get(i);
+  }
+
+  syncEdgeCache(edge) {
+    const i = this.cacheIndex(edge.tail, edge.label);
+    this.tailLabelCache.set(i, edge.head);
+  }
 
   syncCache(log) {
     const i = this.cacheIndex(log.id, log.key);
@@ -263,7 +270,7 @@ export default class Book {
     const appendEdge = (tail, label, head) => {
       const edge = new Edge(tail, label, head);
       this.edges.push(edge);
-      // this.syncCacheEdge(edge);
+      this.syncEdgeCache(edge);
     };
 
     // todo: アトミックな操作に修正する

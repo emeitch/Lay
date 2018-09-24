@@ -104,6 +104,17 @@ describe("Book", () => {
     });
   });
 
+  describe("getEdgeHead", () => {
+    let log;
+    beforeEach(() => {
+      log = book.put(id, key, val);
+    });
+
+    it("should return a edge head value matched the tail and the label", () => {
+      assert.deepStrictEqual(book.getEdgeHead(log.logid, "type"), key);
+    });
+  });
+
   describe("putAct", () => {
     it("should return a calling put act", () => {
       const id = new UUID();
