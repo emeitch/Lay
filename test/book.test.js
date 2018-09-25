@@ -1,4 +1,5 @@
 import assert from 'assert';
+import _ from 'underscore';
 
 import v from '../src/v';
 import UUID from '../src/uuid';
@@ -112,6 +113,25 @@ describe("Book", () => {
 
     it("should return a edge head value matched the tail and the label", () => {
       assert.deepStrictEqual(book.getEdgeHead(log.logid, "type"), key);
+    });
+  });
+
+  describe("getEdgesBySubject", () => {
+    beforeEach(() => {
+      book.put(id, key, val);
+      book.put(id, key, v(2));
+    });
+
+    it("should return a edges which has subject head", () => {
+      const edges = book.getEdgesBySubject(id);
+      assert(edges.some(e => _.isEqual(book.getEdgeHead(e.tail, "object"), val)));
+      assert(edges.some(e => _.isEqual(book.getEdgeHead(e.tail, "object"), v(2))));
+    });
+
+    context("no put id", () => {
+      it("should return empty", () => {
+        assert.deepStrictEqual(book.getEdgesBySubject(new UUID()), []);
+      });
     });
   });
 

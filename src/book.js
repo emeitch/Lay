@@ -16,6 +16,7 @@ export default class Book {
   constructor(...imports) {
     this.edges = [];
     this.tailLabelCache = new Map();
+    this.edgesBySubjectCache = new Map();
 
     this.id = new UUID();
     this.root = new LID();
@@ -237,9 +238,23 @@ export default class Book {
     return this.tailLabelCache.get(i);
   }
 
+  getEdgesBySubject(subject) {
+    const i = Val.stringify(subject);
+    return this.edgesBySubjectCache.get(i) || [];
+  }
+
   syncEdgeCache(edge) {
-    const i = this.cacheIndex(edge.tail, edge.label);
-    this.tailLabelCache.set(i, edge.head);
+    {
+      const i = this.cacheIndex(edge.tail, edge.label);
+      this.tailLabelCache.set(i, edge.head);
+    }
+
+    if (edge.label === "subject") {
+      const i = Val.stringify(edge.head);
+      const edges = this.edgesBySubjectCache.get(i) || [];
+      edges.push(edge);
+      this.edgesBySubjectCache.set(i, edges);
+    }
   }
 
   syncCache(log) {
