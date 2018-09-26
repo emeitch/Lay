@@ -135,6 +135,27 @@ describe("Book", () => {
     });
   });
 
+  describe("getEdgesByObject", () => {
+    const id2 = new UUID();
+    beforeEach(() => {
+      book.put(id, key, val);
+      book.put(id2, key, val);
+    });
+
+    it("should return a edges which has object head", () => {
+      const edges = book.getEdgesByObject(val);
+      assert(edges.some(e => _.isEqual(book.getEdgeHead(e.tail, "subject"), id)));
+      assert(edges.some(e => _.isEqual(book.getEdgeHead(e.tail, "subject"), id2)));
+    });
+
+    context("no put val", () => {
+      it("should return empty", () => {
+        assert.deepStrictEqual(book.getEdgesByObject(new UUID()), []);
+      });
+    });
+  });
+
+
   describe("putAct", () => {
     it("should return a calling put act", () => {
       const id = new UUID();
