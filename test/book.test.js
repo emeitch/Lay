@@ -4,6 +4,7 @@ import _ from 'underscore';
 import v from '../src/v';
 import UUID from '../src/uuid';
 import LID from '../src/lid';
+import Edge from '../src/edge';
 import Log from '../src/log';
 import Book from '../src/book';
 import Act from '../src/act';
@@ -105,6 +106,26 @@ describe("Book", () => {
     });
   });
 
+  describe("getEdgeByTailAndLabel", () => {
+    let log;
+    beforeEach(() => {
+      log = book.put(id, key, val);
+    });
+
+    it("should return a edge which has argument tail and label", () => {
+      assert.deepStrictEqual(
+        book.getEdgeByTailAndLabel(log.logid, "object"),
+        new Edge(log.logid, "object", val)
+      );
+    });
+
+    context("no put tail and label", () => {
+      it("should return undefined", () => {
+        assert.deepStrictEqual(book.getEdgeByTailAndLabel(new UUID(), new UUID()), undefined);
+      });
+    });
+  });
+
   describe("getEdgeHead", () => {
     let log;
     beforeEach(() => {
@@ -113,6 +134,12 @@ describe("Book", () => {
 
     it("should return a edge head value matched the tail and the label", () => {
       assert.deepStrictEqual(book.getEdgeHead(log.logid, "type"), key);
+    });
+
+    context("no put tail and label", () => {
+      it("should return undefined", () => {
+        assert.deepStrictEqual(book.getEdgeHead(new UUID(), new UUID()), undefined);
+      });
     });
   });
 

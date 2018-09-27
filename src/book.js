@@ -15,7 +15,7 @@ import { assign, transaction, transactionTime, invalidate } from './ontology';
 export default class Book {
   constructor(...imports) {
     this.edges = [];
-    this.tailLabelCache = new Map();
+    this.edgeByTailAndLabelCache = new Map();
     this.edgesBySubjectCache = new Map();
     this.edgesByObjectCache = new Map();
 
@@ -234,9 +234,14 @@ export default class Book {
     return logs.length > 0 ? logs[0].id : v(null);
   }
 
-  getEdgeHead(tail, label) {
+  getEdgeByTailAndLabel(tail, label) {
     const i = this.cacheIndex(tail, label);
-    return this.tailLabelCache.get(i);
+    return this.edgeByTailAndLabelCache.get(i);
+  }
+
+  getEdgeHead(tail, label) {
+    const edge = this.getEdgeByTailAndLabel(tail, label);
+    return edge && edge.head;
   }
 
   getEdgesBySubject(subject) {
@@ -252,7 +257,7 @@ export default class Book {
   syncEdgeCache(edge) {
     {
       const i = this.cacheIndex(edge.tail, edge.label);
-      this.tailLabelCache.set(i, edge.head);
+      this.edgeByTailAndLabelCache.set(i, edge);
     }
 
     if (edge.label === "subject") {
