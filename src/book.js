@@ -250,6 +250,10 @@ export default class Book {
     return this.edgesByLabelAndHeadCache.get(i) || [];
   }
 
+  getEdgeTails(label, head) {
+    return this.getEdgesByLabelAndHead(label, head).map(e => e.tail);
+  }
+
   getEdgesBySubject(subject) {
     const i = Val.stringify(subject);
     return this.edgesBySubjectCache.get(i) || [];

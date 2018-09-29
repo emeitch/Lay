@@ -172,6 +172,23 @@ describe("Book", () => {
     });
   });
 
+  describe("getEdgeHead", () => {
+    let log;
+    beforeEach(() => {
+      log = book.put(id, key, val);
+    });
+
+    it("should return a edge head value matched the tail and the label", () => {
+      assert.deepStrictEqual(book.getEdgeTails("type", key), [log.logid]);
+    });
+
+    context("no put tail and label", () => {
+      it("should return undefined", () => {
+        assert.deepStrictEqual(book.getEdgeTails(new UUID(), new UUID()), []);
+      });
+    });
+  });
+
   describe("getEdgesBySubject", () => {
     beforeEach(() => {
       book.put(id, key, val);
