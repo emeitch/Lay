@@ -16,6 +16,7 @@ export default class Book {
   constructor(...imports) {
     this.edges = [];
     this.edgeByTailAndLabelCache = new Map();
+    this.edgesByLabelAndHeadCache = new Map();
     this.edgesBySubjectCache = new Map();
     this.edgesByObjectCache = new Map();
 
@@ -244,6 +245,11 @@ export default class Book {
     return edge && edge.head;
   }
 
+  getEdgesByLabelAndHead(label, head) {
+    const i = this.cacheIndex(label, head);
+    return this.edgesByLabelAndHeadCache.get(i) || [];
+  }
+
   getEdgesBySubject(subject) {
     const i = Val.stringify(subject);
     return this.edgesBySubjectCache.get(i) || [];
@@ -258,6 +264,13 @@ export default class Book {
     {
       const i = this.cacheIndex(edge.tail, edge.label);
       this.edgeByTailAndLabelCache.set(i, edge);
+    }
+
+    {
+      const i = this.cacheIndex(edge.label, edge.head);
+      const edges = this.edgesByLabelAndHeadCache.get(i) || [];
+      edges.push(edge);
+      this.edgesByLabelAndHeadCache.set(i, edges);
     }
 
     if (edge.label === "subject") {

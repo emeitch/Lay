@@ -143,6 +143,35 @@ describe("Book", () => {
     });
   });
 
+  describe("getEdgeByLabelAndHead", () => {
+    beforeEach(() => {
+      book.put(id, key, val);
+    });
+
+    it("should return edges which has argument label and head", () => {
+      {
+        const edges = book.getEdgesByLabelAndHead("subject", id);
+        assert(edges.some(e => _.isEqual(book.getEdgeHead(e.tail, "subject"), id)));
+      }
+
+      {
+        const edges = book.getEdgesByLabelAndHead("type", key);
+        assert(edges.some(e => _.isEqual(book.getEdgeHead(e.tail, "type"), key)));
+      }
+
+      {
+        const edges = book.getEdgesByLabelAndHead("object", val);
+        assert(edges.some(e => _.isEqual(book.getEdgeHead(e.tail, "object"), val)));
+      }
+    });
+
+    context("no put label and head", () => {
+      it("should return empty", () => {
+        assert.deepStrictEqual(book.getEdgesByLabelAndHead(new UUID(), new UUID()), []);
+      });
+    });
+  });
+
   describe("getEdgesBySubject", () => {
     beforeEach(() => {
       book.put(id, key, val);
