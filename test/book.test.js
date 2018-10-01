@@ -494,7 +494,23 @@ describe("Book", () => {
     context("no edges", () => {
       it("should return empty", () => {
         const rels = book.activeRels(id, key);
-        assert(rels.length === 0);
+        assert(rels.size === 0);
+      });
+    });
+
+    context("put with same ids & keys but different vals", () => {
+      let log0;
+      let log1;
+      beforeEach(() => {
+        log0 = book.put(id, key, v("val0"));
+        log1 = book.put(id, key, v("val1"));
+      });
+
+      it("should return all rel", () => {
+        const rels = book.activeRels(id, key);
+        // todo: もう少しシンプルな記述にしたい
+        assert([...rels].some(r => r.equals(log0.logid)));
+        assert([...rels].some(r => r.equals(log1.logid)));
       });
     });
   });

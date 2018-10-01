@@ -19,6 +19,7 @@ export default class Book {
     this.edgesByLabelAndHeadCache = new Map();
     this.edgesBySubjectCache = new Map();
     this.edgesByObjectCache = new Map();
+    this.activeRelsCache = new Map();
 
     this.id = new UUID();
     this.root = new LID();
@@ -99,8 +100,9 @@ export default class Book {
     return logs;
   }
 
-  activeRels(_id, _key) {
-    return [];
+  activeRels(id, key) {
+    const i = this.cacheIndex(id, key);
+    return this.activeRelsCache.get(i) || new Set();
   }
 
   activeLogs(id, key, at=new Date()) {
@@ -297,10 +299,17 @@ export default class Book {
   }
 
   syncCache(log) {
-    const i = this.cacheIndex(log.id, log.key);
-    const al = this.activeLogsCache.get(i) || new Map();
-    al.set(log.logid, log);
-    this.activeLogsCache.set(i, al);
+    {
+      const i = this.cacheIndex(log.id, log.key);
+      const al = this.activeLogsCache.get(i) || new Map();
+      al.set(log.logid, log);
+      this.activeLogsCache.set(i, al);
+
+      // todo: 本当はsyncEdgeCacheの方に入れたい
+      const ar = this.activeRelsCache.get(i) || new Set();
+      ar.add(log.logid);
+      this.activeRelsCache.set(i, ar);
+    }
 
     if (log.key === invalidate) {
       const positive = this.log(log.id);
