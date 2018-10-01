@@ -490,6 +490,15 @@ describe("Book", () => {
     });
   });
 
+  describe("#activeRels", () => {
+    context("no edges", () => {
+      it("should return empty", () => {
+        const rels = book.activeRels(id, key);
+        assert(rels.length === 0);
+      });
+    });
+  });
+
   describe("#activeLogs", () => {
     context("no logs", () => {
       it("should return empty", () => {

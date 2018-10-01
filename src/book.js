@@ -99,6 +99,10 @@ export default class Book {
     return logs;
   }
 
+  activeRels(_id, _key) {
+    return [];
+  }
+
   activeLogs(id, key, at=new Date()) {
     const i = this.cacheIndex(id, key);
     const alogs = new Map(this.activeLogsCache.get(i));
