@@ -100,10 +100,15 @@ export default class Book {
     return logs;
   }
 
-  activeRels(id, key) {
+  activeRelsSet(id, key) {
     const i = this.cacheIndex(id, key);
     return this.activeRelsCache.get(i) || new Set();
   }
+
+  activeRels(id, key) {
+    return [...this.activeRelsSet(id, key)];
+  }
+
 
   activeLogs(id, key, at=new Date()) {
     const i = this.cacheIndex(id, key);

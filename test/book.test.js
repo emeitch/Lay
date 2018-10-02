@@ -494,7 +494,7 @@ describe("Book", () => {
     context("no edges", () => {
       it("should return empty", () => {
         const rels = book.activeRels(id, key);
-        assert(rels.size === 0);
+        assert(rels.length === 0);
       });
     });
 
@@ -506,11 +506,10 @@ describe("Book", () => {
         log1 = book.put(id, key, v("val1"));
       });
 
-      it("should return all rel", () => {
+      it("should return all rel id", () => {
         const rels = book.activeRels(id, key);
-        // todo: もう少しシンプルな記述にしたい
-        assert([...rels].some(r => r.equals(log0.logid)));
-        assert([...rels].some(r => r.equals(log1.logid)));
+        assert(rels.some(r => r.equals(log0.logid)));
+        assert(rels.some(r => r.equals(log1.logid)));
       });
     });
   });
