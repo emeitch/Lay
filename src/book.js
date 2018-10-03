@@ -100,13 +100,13 @@ export default class Book {
     return logs;
   }
 
-  activeRelsSet(id, key) {
+  activeRelsMap(id, key) {
     const i = this.cacheIndex(id, key);
-    return this.activeRelsCache.get(i) || new Set();
+    return this.activeRelsCache.get(i) || new Map();
   }
 
   activeRels(id, key) {
-    return [...this.activeRelsSet(id, key)];
+    return [...this.activeRelsMap(id, key).values()];
   }
 
 
@@ -301,6 +301,18 @@ export default class Book {
       edges.push(edge);
       this.edgesByObjectCache.set(i, edges);
     }
+
+    {
+      const se = this.getEdgeByTailAndLabel(edge.tail, "subject");
+      const te = this.getEdgeByTailAndLabel(edge.tail, "type");
+      if (se && te) {
+        const i = this.cacheIndex(se.head, te.head);
+        const ar = this.activeRelsCache.get(i) || new Map();
+        const s = Val.stringify(edge.tail);
+        ar.set(s, edge.tail);
+        this.activeRelsCache.set(i, ar);
+      }
+    }
   }
 
   syncCache(log) {
@@ -309,11 +321,6 @@ export default class Book {
       const al = this.activeLogsCache.get(i) || new Map();
       al.set(log.logid, log);
       this.activeLogsCache.set(i, al);
-
-      // todo: 本当はsyncEdgeCacheの方に入れたい
-      const ar = this.activeRelsCache.get(i) || new Set();
-      ar.add(log.logid);
-      this.activeRelsCache.set(i, ar);
     }
 
     if (log.key === invalidate) {
