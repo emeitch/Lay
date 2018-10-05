@@ -172,18 +172,18 @@ describe("Book", () => {
     });
   });
 
-  describe("getEdgeHead", () => {
+  describe("getEdgeTails", () => {
     let log;
     beforeEach(() => {
       log = book.put(id, key, val);
     });
 
-    it("should return a edge head value matched the tail and the label", () => {
+    it("should return tail values matched the label and the head", () => {
       assert.deepStrictEqual(book.getEdgeTails("type", key), [log.logid]);
     });
 
-    context("no put tail and label", () => {
-      it("should return undefined", () => {
+    context("no put label and head", () => {
+      it("should return empty", () => {
         assert.deepStrictEqual(book.getEdgeTails(new UUID(), new UUID()), []);
       });
     });
