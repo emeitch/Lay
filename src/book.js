@@ -338,14 +338,18 @@ export default class Book {
     }
   }
 
+  putEdge(edge) {
+    this.edges.push(edge);
+    this.syncEdgeCache(edge);
+  }
+
   doTransaction(block) {
     const tid = new UUID();
     const ttlog = new Log(tid, transactionTime, v(new Date()));
 
     const appendEdge = (tail, label, head) => {
       const edge = new Edge(tail, label, head);
-      this.edges.push(edge);
-      this.syncEdgeCache(edge);
+      this.putEdge(edge);
     };
 
     // todo: アトミックな操作に修正する

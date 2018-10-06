@@ -490,6 +490,15 @@ describe("Book", () => {
     });
   });
 
+  describe("#putEdge", () => {
+    it("should append edge", () => {
+      const edge = new Edge(new UUID(), "subject", new UUID());
+      book.putEdge(edge);
+
+      assert(book.edges.some(e => e === edge));
+    });
+  });
+
   describe("#activeRels", () => {
     context("no edges", () => {
       it("should return empty", () => {
