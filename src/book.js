@@ -338,9 +338,15 @@ export default class Book {
     }
   }
 
-  putEdge(edge) {
-    this.edges.push(edge);
-    this.syncEdgeCache(edge);
+  transactionIdFromEdge(edge) {
+    const e = this.getEdgeByTailAndLabel(edge.tail, edge.label);
+    return e.rev;
+  }
+
+  putEdge(tail, label, head) {
+    return this.doTransaction((_, putEdgeWithTranaction) => {
+      return putEdgeWithTranaction(tail, label, head);
+    });
   }
 
   doTransaction(block) {
@@ -348,8 +354,10 @@ export default class Book {
     const ttlog = new Log(tid, transactionTime, v(new Date()));
 
     const appendEdge = (tail, label, head) => {
-      const edge = new Edge(tail, label, head);
-      this.putEdge(edge);
+      const edge = new Edge(tail, label, head, tid);
+      this.edges.push(edge);
+      this.syncEdgeCache(edge);
+      return edge;
     };
 
     // todo: アトミックな操作に修正する
@@ -364,13 +372,18 @@ export default class Book {
 
     appendLog(ttlog);
 
-    const putWithTransaction = (log) => {
+    const putWithTransaction = log => {
       appendLog(log);
       const tlog = new Log(log.logid, transaction, tid);
       appendLog(tlog);
       return log;
     };
-    return block(putWithTransaction);
+
+    const putEdgeWithTransaction = (tail, label, head) => {
+      return appendEdge(tail, label, head);
+    };
+
+    return block(putWithTransaction, putEdgeWithTransaction);
   }
 
   doPutLog(log) {

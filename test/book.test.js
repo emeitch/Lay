@@ -113,10 +113,10 @@ describe("Book", () => {
     });
 
     it("should return a edge which has argument tail and label", () => {
-      assert.deepStrictEqual(
-        book.getEdgeByTailAndLabel(log.logid, "object"),
-        new Edge(log.logid, "object", val)
-      );
+      const e = book.getEdgeByTailAndLabel(log.logid, "object");
+      assert.deepStrictEqual(e.tail, log.logid);
+      assert.deepStrictEqual(e.label, "object");
+      assert.deepStrictEqual(e.head, val);
     });
 
     context("no put tail and label", () => {
@@ -492,10 +492,20 @@ describe("Book", () => {
 
   describe("#putEdge", () => {
     it("should append edge", () => {
-      const edge = new Edge(new UUID(), "subject", new UUID());
-      book.putEdge(edge);
+      const edge = book.putEdge(new UUID(), "subject", new UUID());
 
       assert(book.edges.some(e => e === edge));
+    });
+  });
+
+  describe("#transactionIdFromEdge", () => {
+    it("should return transaction id by edge argument", () => {
+      const tail = new UUID();
+      const label = "subject";
+      const head = new UUID();
+      const edge = book.putEdge(tail, label, head);
+
+      assert.deepStrictEqual(book.transactionIdFromEdge(new Edge(tail, label, head)), edge.rev);
     });
   });
 
