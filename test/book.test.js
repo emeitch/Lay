@@ -509,7 +509,7 @@ describe("Book", () => {
     });
   });
 
-  describe("#activeRels", () => {
+  describe("#activeRels and #rels", () => {
     context("no edges", () => {
       it("should return empty", () => {
         const rels = book.activeRels(id, key);
@@ -535,6 +535,14 @@ describe("Book", () => {
         beforeEach(() => {
           const rels = book.activeRels(id, key);
           book.putEdge(rels[1], "to", v(new Date()));
+        });
+
+        describe("#rels", () => {
+          it("should return all edges", () => {
+            const rels = book.rels(id, key);
+            assert(rels[0].equals(log0.logid));
+            assert(rels[1].equals(log1.logid));
+          });
         });
 
         it("should return only the first edge", () => {
