@@ -106,7 +106,11 @@ export default class Book {
   }
 
   activeRels(id, key) {
-    return [...this.activeRelsMap(id, key).values()];
+    const now = new Date();
+    return [...this.activeRelsMap(id, key).values()].filter(r => {
+      const to = this.getEdgeHead(r, "to");
+      return !to || to.origin > now;
+    });
   }
 
 
@@ -309,8 +313,10 @@ export default class Book {
         const i = this.cacheIndex(se.head, te.head);
         const ar = this.activeRelsCache.get(i) || new Map();
         const s = Val.stringify(edge.tail);
-        ar.set(s, edge.tail);
-        this.activeRelsCache.set(i, ar);
+        if (!ar.has(s)) {
+          ar.set(s, edge.tail);
+          this.activeRelsCache.set(i, ar);
+        }
       }
     }
   }

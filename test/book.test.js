@@ -527,8 +527,21 @@ describe("Book", () => {
 
       it("should return all rel id", () => {
         const rels = book.activeRels(id, key);
-        assert(rels.some(r => r.equals(log0.logid)));
-        assert(rels.some(r => r.equals(log1.logid)));
+        assert(rels[0].equals(log0.logid));
+        assert(rels[1].equals(log1.logid));
+      });
+
+      context("set valid time to the last edge", () => {
+        beforeEach(() => {
+          const rels = book.activeRels(id, key);
+          book.putEdge(rels[1], "to", v(new Date()));
+        });
+
+        it("should return only the first edge", () => {
+          const rels = book.activeRels(id, key);
+          assert(rels[0].equals(log0.logid));
+          assert(!rels[1]);
+        });
       });
     });
   });
