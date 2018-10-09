@@ -531,7 +531,7 @@ describe("Book", () => {
         assert(rels[1].equals(log1.logid));
       });
 
-      context("set valid time to the last edge", () => {
+      context("set valid end time to the last edge", () => {
         beforeEach(() => {
           const rels = book.activeRels(id, key);
           book.putEdge(rels[1], "to", v(new Date()));
@@ -549,6 +549,30 @@ describe("Book", () => {
           const rels = book.activeRels(id, key);
           assert(rels[0].equals(log0.logid));
           assert(!rels[1]);
+        });
+      });
+
+      context("set valid start time to the last edge", () => {
+        beforeEach(() => {
+          const rels = book.activeRels(id, key);
+          book.putEdge(rels[1], "from", v(new Date("2018-08-01T00:00:00")));
+        });
+
+        context("after from", () => {
+          it("should return all edges", () => {
+            const rels = book.activeRels(id, key);
+            assert(rels[0].equals(log0.logid));
+            assert(rels[1].equals(log1.logid));
+          });
+        });
+
+        context("specify before from", () => {
+          it("should return only the first edge", () => {
+            const at = new Date("2018-01-01T00:00:00");
+            const rels = book.activeRels(id, key, at);
+            assert(rels[0].equals(log0.logid));
+            assert(!rels[1]);
+          });
         });
       });
     });

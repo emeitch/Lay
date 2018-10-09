@@ -109,11 +109,11 @@ export default class Book {
     return [...this.relsMap(id, key).values()];
   }
 
-  activeRels(id, key) {
-    const now = new Date();
+  activeRels(id, key, at=new Date()) {
     return this.rels(id, key).filter(r => {
+      const from = this.getEdgeHead(r, "from");
       const to = this.getEdgeHead(r, "to");
-      return !to || to.origin > now;
+      return (!to || to.origin > at) && (!from || from.origin < at);
     });
   }
 
