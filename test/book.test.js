@@ -826,8 +826,11 @@ describe("Book", () => {
 
       assert(book.findLogs({key: v("foo")}).length === 1);
       assert(book.activeLogs(id2, v("foo")).length === 1);
+      assert(book.activeRels(id2, v("foo")).length === 1);
       assert.deepStrictEqual(book.get("bar"), v(4));
       assert(book.logIDs().some(lid => lid.equals(log.logid)));
+
+      assert(book.activeRels(id2, v("nothing")).length === 0);
     });
 
     context("with name", () => {

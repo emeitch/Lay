@@ -118,7 +118,19 @@ export default class Book {
   }
 
   activeRels(id, key, at) {
-    return this.active(this.rels(id, key), at);
+    const actives = this.active(this.rels(id, key), at);
+    if (actives.length > 0) {
+      return actives;
+    }
+
+    for (const imported of this.imports) {
+      const rels = imported.activeRels(id, key, at);
+      if (rels.length > 0) {
+        return rels;
+      }
+    }
+
+    return [];
   }
 
   activeLogs(id, key, at=new Date()) {
