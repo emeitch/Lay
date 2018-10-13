@@ -237,7 +237,7 @@ export default class Book {
   }
 
   transactionID(log) {
-    const tlogs = this.findActiveLogs({id: log.logid, key: transaction});
+    const tlogs = this.activeLogs(log.logid, transaction);
 
     if (tlogs.length === 0) {
       return null;
@@ -249,7 +249,7 @@ export default class Book {
   }
 
   get(name) {
-    const logs = this.findActiveLogs({id: v(name), key: assign});
+    const logs = this.activeLogs(v(name), assign);
     const log = logs[logs.length-1];
     if (log) {
       return log.val;
@@ -564,7 +564,7 @@ export default class Book {
     const sname = path(name.origin);
     const logs = this.findActiveLogs({key: "type", val: sname});
     return logs.filter(log => {
-      const es = this.findActiveLogs({id: log.id, key: "exists"});
+      const es = this.activeLogs(log.id, v("exists"));
       return es.length > 0 && es[es.length-1].val.origin;
     }).map(log => log.id);
   }
