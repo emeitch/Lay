@@ -237,15 +237,13 @@ export default class Book {
   }
 
   transactionID(log) {
-    const tlogs = this.activeLogs(log.logid, transaction);
+    const trels = this.activeRels(log.logid, transaction);
 
-    if (tlogs.length === 0) {
+    if (trels.length === 0) {
       return null;
     }
 
-    const tlog = tlogs[0];
-    const tid = tlog.val;
-    return tid;
+    return this.getEdgeHead(trels[0], "subject");
   }
 
   get(name) {

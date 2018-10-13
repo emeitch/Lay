@@ -417,6 +417,10 @@ describe("Book", () => {
       tid = book.transactionID(log);
     });
 
+    it("should return trasncation id", () => {
+      assert(tid instanceof UUID);
+    });
+
     it("should has no more transaction", () => {
       assert.deepStrictEqual(book.transactionID(tid), null);
     });
