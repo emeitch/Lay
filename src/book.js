@@ -20,6 +20,7 @@ export default class Book {
     this.edgesBySubjectCache = new Map();
     this.edgesByObjectCache = new Map();
     this.relsCache = new Map();
+    this.relsByTypeAndObjectCache = new Map();
 
     this.id = new UUID();
     this.root = new LID();
@@ -109,8 +110,13 @@ export default class Book {
     return [...this.relsMap(id, key).values()];
   }
 
-  relsByTypeAndObject(_key, _val) {
-    return [];
+  relsByTypeAndObjectMap(key, val) {
+    const i = this.cacheIndex(key, val);
+    return this.relsByTypeAndObjectCache.get(i) || new Map();
+  }
+
+  relsByTypeAndObject(key, val) {
+    return [...this.relsByTypeAndObjectMap(key, val).values()];
   }
 
   active(rels, at=new Date()) {
@@ -330,6 +336,8 @@ export default class Book {
     {
       const se = this.getEdgeByTailAndLabel(edge.tail, "subject");
       const te = this.getEdgeByTailAndLabel(edge.tail, "type");
+      const oe = this.getEdgeByTailAndLabel(edge.tail, "object");
+
       if (se && te) {
         const i = this.cacheIndex(se.head, te.head);
         const ar = this.relsCache.get(i) || new Map();
@@ -337,6 +345,16 @@ export default class Book {
         if (!ar.has(s)) {
           ar.set(s, edge.tail);
           this.relsCache.set(i, ar);
+        }
+      }
+
+      if (te && oe) {
+        const i = this.cacheIndex(te.head, oe.head);
+        const ar = this.relsByTypeAndObjectCache.get(i) || new Map();
+        const s = Val.stringify(edge.tail);
+        if (!ar.has(s)) {
+          ar.set(s, edge.tail);
+          this.relsByTypeAndObjectCache.set(i, ar);
         }
       }
     }

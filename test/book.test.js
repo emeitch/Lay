@@ -589,6 +589,22 @@ describe("Book", () => {
         assert(rels.length === 0);
       });
     });
+
+    context("put with same ids & keys but different vals", () => {
+      const id1 = new UUID();
+      let log0;
+      let log1;
+      beforeEach(() => {
+        log0 = book.put(id, key, val);
+        log1 = book.put(id1, key, val);
+      });
+
+      it("should return all rel id", () => {
+        const rels = book.relsByTypeAndObject(key, val);
+        assert(rels[0].equals(log0.logid));
+        assert(rels[1].equals(log1.logid));
+      });
+    });
   });
 
   describe("#activeLogs", () => {
