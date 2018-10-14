@@ -127,14 +127,14 @@ export default class Book {
     });
   }
 
-  activeRels(id, key, at) {
-    const actives = this.active(this.rels(id, key), at);
+  activeWithRelsFunction(relsFunction, at, ...args) {
+    const actives = this.active(relsFunction.bind(this)(...args), at);
     if (actives.length > 0) {
       return actives;
     }
 
     for (const imported of this.imports) {
-      const rels = imported.activeRels(id, key, at);
+      const rels = imported.active(relsFunction.bind(imported)(...args), at);
       if (rels.length > 0) {
         return rels;
       }
@@ -143,20 +143,12 @@ export default class Book {
     return [];
   }
 
+  activeRels(id, key, at) {
+    return this.activeWithRelsFunction(this.rels, at, id, key);
+  }
+
   activeRelsByTypeAndObject(key, val, at) {
-    const actives = this.active(this.relsByTypeAndObject(key, val), at);
-    if (actives.length > 0) {
-      return actives;
-    }
-
-    for (const imported of this.imports) {
-      const rels = imported.relsByTypeAndObject(key, val, at);
-      if (rels.length > 0) {
-        return rels;
-      }
-    }
-
-    return [];
+    return this.activeWithRelsFunction(this.relsByTypeAndObject, at, key, val);
   }
 
   activeLogs(id, key, at=new Date()) {
