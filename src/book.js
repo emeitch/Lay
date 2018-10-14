@@ -143,6 +143,11 @@ export default class Book {
     return [];
   }
 
+  activeRelsByTypeAndObject(key, val, at) {
+    const actives = this.active(this.relsByTypeAndObject(key, val), at);
+    return actives;
+  }
+
   activeLogs(id, key, at=new Date()) {
     const i = this.cacheIndex(id, key);
     const alogs = new Map(this.activeLogsCache.get(i));

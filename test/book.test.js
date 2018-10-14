@@ -582,7 +582,7 @@ describe("Book", () => {
     });
   });
 
-  describe("relsByTypeAndObject", () => {
+  describe("#activeRelsByTypeAndObject and #relsByTypeAndObject", () => {
     context("no rels", () => {
       it("should return empty", () => {
         const rels = book.relsByTypeAndObject(key, val);
@@ -600,9 +600,29 @@ describe("Book", () => {
       });
 
       it("should return all rel id", () => {
-        const rels = book.relsByTypeAndObject(key, val);
+        const rels = book.activeRelsByTypeAndObject(key, val);
         assert(rels[0].equals(log0.logid));
         assert(rels[1].equals(log1.logid));
+      });
+
+      context("set valid end time to the last edge", () => {
+        beforeEach(() => {
+          book.putEdge(log1.logid, "to", v(new Date()));
+        });
+
+        describe("#relsByTypeAndObject", () => {
+          it("should return all edges", () => {
+            const rels = book.relsByTypeAndObject(key, val);
+            assert(rels[0].equals(log0.logid));
+            assert(rels[1].equals(log1.logid));
+          });
+        });
+
+        it("should return only the first edge", () => {
+          const rels = book.activeRelsByTypeAndObject(key, val);
+          assert(rels[0].equals(log0.logid));
+          assert(!rels[1]);
+        });
       });
     });
   });
