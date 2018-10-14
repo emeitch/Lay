@@ -590,12 +590,14 @@ export default class Book {
       return [];
     }
     const sname = path(name.origin);
-    const logs = this.findActiveLogs({key: "type", val: sname});
-    return logs.filter(log => {
-      const rs = this.activeRels(log.id, v("exists"));
+    const rels = this.activeRelsByTypeAndObject(v("type"), sname);
+    return rels.map(
+      rel => this.getEdgeHead(rel, "subject")
+    ).filter(id => {
+      const rs = this.activeRels(id, v("exists"));
       const r = rs[rs.length-1];
       return r && this.getEdgeHead(r, "object").origin;
-    }).map(log => log.id);
+    });
   }
 
   run(e, arg) {
