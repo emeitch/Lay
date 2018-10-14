@@ -562,8 +562,9 @@ export default class Book {
     const sname = path(name.origin);
     const logs = this.findActiveLogs({key: "type", val: sname});
     return logs.filter(log => {
-      const es = this.activeLogs(log.id, v("exists"));
-      return es.length > 0 && es[es.length-1].val.origin;
+      const rs = this.activeRels(log.id, v("exists"));
+      const r = rs[rs.length-1];
+      return r && this.getEdgeHead(r, "object").origin;
     }).map(log => log.id);
   }
 
