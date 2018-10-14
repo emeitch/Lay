@@ -582,6 +582,15 @@ describe("Book", () => {
     });
   });
 
+  describe("relsByTypeAndObject", () => {
+    context("no rels", () => {
+      it("should return empty", () => {
+        const rels = book.relsByTypeAndObject(key, val);
+        assert(rels.length === 0);
+      });
+    });
+  });
+
   describe("#activeLogs", () => {
     context("no logs", () => {
       it("should return empty", () => {

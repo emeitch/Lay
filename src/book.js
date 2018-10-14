@@ -109,6 +109,10 @@ export default class Book {
     return [...this.relsMap(id, key).values()];
   }
 
+  relsByTypeAndObject(_key, _val) {
+    return [];
+  }
+
   active(rels, at=new Date()) {
     return rels.filter(r => {
       const from = this.getEdgeHead(r, "from");
