@@ -145,7 +145,18 @@ export default class Book {
 
   activeRelsByTypeAndObject(key, val, at) {
     const actives = this.active(this.relsByTypeAndObject(key, val), at);
-    return actives;
+    if (actives.length > 0) {
+      return actives;
+    }
+
+    for (const imported of this.imports) {
+      const rels = imported.relsByTypeAndObject(key, val, at);
+      if (rels.length > 0) {
+        return rels;
+      }
+    }
+
+    return [];
   }
 
   activeLogs(id, key, at=new Date()) {
