@@ -516,7 +516,7 @@ describe("Book", () => {
   describe("#activeRels and #rels", () => {
     context("no edges", () => {
       it("should return empty", () => {
-        const rels = book.activeRels(id, key);
+        const rels = book.rels(id, key);
         assert(rels.length === 0);
       });
     });
