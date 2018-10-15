@@ -265,10 +265,10 @@ export default class Book {
   }
 
   get(name) {
-    const logs = this.activeLogs(v(name), assign);
-    const log = logs[logs.length-1];
-    if (log) {
-      return log.val;
+    const rels = this.activeRels(v(name), assign);
+    const rel = rels[rels.length-1];
+    if (rel) {
+      return this.getEdgeHead(rel, "object");
     }
 
     return undefined;
@@ -287,7 +287,19 @@ export default class Book {
 
   getEdgeByTailAndLabel(tail, label) {
     const i = this.cacheIndex(tail, label);
-    return this.edgeByTailAndLabelCache.get(i);
+    const edge = this.edgeByTailAndLabelCache.get(i);
+    if (edge) {
+      return edge;
+    }
+
+    for (const imported of this.imports) {
+      const e = imported.getEdgeByTailAndLabel(tail, label);
+      if (e) {
+        return e;
+      }
+    }
+
+    return undefined;
   }
 
   getEdgeHead(tail, label) {
