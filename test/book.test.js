@@ -495,7 +495,7 @@ describe("Book", () => {
   });
 
   describe("#putEdge", () => {
-    it("should append edge", () => {
+    it("should append a edge", () => {
       const edge = book.putEdge(new UUID(), "subject", new UUID());
 
       assert(book.edges.some(e => e === edge));
