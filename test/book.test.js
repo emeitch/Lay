@@ -878,6 +878,8 @@ describe("Book", () => {
       assert(book.activeRels(id2, v("foo")).length === 1);
       assert(book.activeRelsByTypeAndObject(v("foo"), v(3)).length === 1);
 
+      assert.deepStrictEqual(book.getEdgeByTailAndLabel(log.logid, "object").head, v(3));
+
       assert.deepStrictEqual(book.get("bar"), v(4));
       assert(book.logIDs().some(lid => lid.equals(log.logid)));
 
