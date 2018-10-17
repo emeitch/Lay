@@ -309,7 +309,15 @@ export default class Book {
 
   getEdgesByLabelAndHead(label, head) {
     const i = this.cacheIndex(label, head);
-    return this.edgesByLabelAndHeadCache.get(i) || [];
+    const results = [];
+    const edges = this.edgesByLabelAndHeadCache.get(i) || [];
+    results.push(...edges);
+
+    for (const imported of this.imports) {
+      results.push(...imported.getEdgesByLabelAndHead(label, head));
+    }
+
+    return results;
   }
 
   getEdgeTails(label, head) {
