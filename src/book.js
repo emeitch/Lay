@@ -514,8 +514,8 @@ export default class Book {
   setAct(...args) {
     return new Act(() => {
       const log = new Log(...args);
-      for (const l of this.activeLogs(log.id, log.key)) {
-         this.put(l.logid, invalidate);
+      for (const rel of this.activeRels(log.id, log.key)) {
+         this.put(rel, invalidate);
       }
       return this.putLog(log);
     });
