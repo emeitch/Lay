@@ -11,9 +11,9 @@ export default class ID extends Ref {
 
   get(key, book) {
     if (book) {
-      const log = book.findLogWithType(this, key);
-      if (log) {
-        return log.val;
+      const rel = book.findRelWithType(this, key);
+      if (rel) {
+        return book.getEdgeHead(rel, "object");
       }
     }
 

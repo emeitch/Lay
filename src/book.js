@@ -147,6 +147,11 @@ export default class Book {
     return this.activeWithRelsFunction(this.rels, at, id, key);
   }
 
+  activeRel(id, key, at) {
+    const actives = this.activeRels(id, key, at);
+    return actives[actives.length-1];
+  }
+
   activeRelsByTypeAndObject(key, val, at) {
     return this.activeWithRelsFunction(this.relsByTypeAndObject, at, key, val);
   }
@@ -193,24 +198,25 @@ export default class Book {
     return actives[actives.length-1];
   }
 
-  findLogWithType(id, key) {
-    const log = this.activeLog(id, key);
-    if (log) {
-      return log;
+  findRelWithType(id, key) {
+    const rel = this.activeRel(id, key);
+    if (rel) {
+      return rel;
     }
 
-    const tlogs = this.activeLogs(id, "type");
-    for (const tlog of tlogs) {
-      const p = tlog.val.replaceSelfBy(id).reduce(this);
-      const l = this.findLogWithType(p, key);
-      if (l) {
-        return l;
+    const trels = this.activeRels(id, "type");
+    for (const trel of trels) {
+      const v = this.getEdgeHead(trel, "object");
+      const p = v.replaceSelfBy(id).reduce(this);
+      const r = this.findRelWithType(p, key);
+      if (r) {
+        return r;
       }
     }
 
-    const olog = this.activeLog(this.get("Object"), key);
-    if (olog) {
-      return olog;
+    const orel = this.activeRel(this.get("Object"), key);
+    if (orel) {
+      return orel;
     }
 
     return undefined;
