@@ -574,8 +574,8 @@ export default class Book {
       args = key.concat();
       key = args.shift();
     }
-    const log = this.activeLog(obj, key);
-    const val = log ? log.val : undefined;
+    const rel = this.activeRel(obj, key);
+    const val = rel ? this.getEdgeHead(rel, "object") : undefined;
     const o = val ? this.fetch(ks, val, filter) : undefined;
     return filter(o, obj, args);
   }
