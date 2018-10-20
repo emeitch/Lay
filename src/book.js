@@ -488,23 +488,25 @@ export default class Book {
 
   putPath(pth) {
     const keys = [];
-    const logs = [];
+    const rels = [];
     for(const key of pth.origin) {
       keys.push(key);
-      const log = this.exist(...keys);
-      if (!(log.val instanceof LID)) {
-        throw `can't put val for not ID object: ${log.val}(${keys})`;
+      const rel = this.exist(...keys);
+      const val = this.getEdgeHead(rel, "object");
+      if (!(val instanceof LID)) {
+        throw `can't put val for not ID object: ${val}(${keys})`;
       }
-      logs.push(log);
+      rels.push(rel);
     }
-    return logs;
+    return rels;
   }
 
   put(...args) {
     if (args[0] instanceof Path) {
       const pth = args[0];
-      const logs = this.putPath(pth);
-      args[0] = logs[logs.length-1].val;
+      const rels = this.putPath(pth);
+      const rel = rels[rels.length-1];
+      args[0] = this.getEdgeHead(rel, "object");
     }
 
     const log = new Log(...args);
@@ -536,12 +538,12 @@ export default class Book {
 
   exist(...keys) {
     let parent = this.root;
-    let log;
+    let rel;
     for (const key of keys) {
-      log = this.activeLog(parent, key) || this.create(parent, key);
-      parent = log.val;
+      rel = this.activeRel(parent, key) || this.create(parent, key).logid;
+      parent = this.getEdgeHead(rel, "object");
     }
-    return log;
+    return rel;
   }
 
   key(obj) {

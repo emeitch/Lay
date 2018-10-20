@@ -255,30 +255,30 @@ describe("Book", () => {
   describe("#exist", () => {
     it("should create lid reached from book by key", () => {
       const key = new UUID();
-      const log = book.exist(key);
+      const rel = book.exist(key);
 
-      assert(log.id === book.root);
-      assert(log.key === key);
-      assert(log.val instanceof LID);
+      assert(book.getEdgeHead(rel, "subject") === book.root);
+      assert(book.getEdgeHead(rel, "type") === key);
+      assert(book.getEdgeHead(rel, "object") instanceof LID);
 
       const alog = book.activeLog(book.root, key);
 
-      assert.deepStrictEqual(alog.val, log.val);
+      assert.deepStrictEqual(alog.val, book.getEdgeHead(rel, "object"));
     });
 
     context("multiple key", () => {
       it("should create lid reached from book by key path", () => {
         const key1 = new UUID();
         const key2 = new UUID();
-        const log = book.exist(key1, key2);
+        const rel = book.exist(key1, key2);
 
-        assert(log.key === key2);
-        assert(log.val instanceof LID);
+        assert(book.getEdgeHead(rel, "type") === key2);
+        assert(book.getEdgeHead(rel, "object") instanceof LID);
 
         const l1 = book.activeLog(book.root, key1);
         const l2 = book.activeLog(l1.val, key2);
 
-        assert.deepStrictEqual(l2.val, log.val);
+        assert.deepStrictEqual(l2.val, book.getEdgeHead(rel, "object"));
       });
     });
   });
@@ -286,18 +286,18 @@ describe("Book", () => {
   describe("#key", () => {
     it("should return obj's key", () => {
       const key = new UUID();
-      const log = book.exist(key);
+      const rel = book.exist(key);
 
-      assert.deepStrictEqual(book.key(log.val), key);
+      assert.deepStrictEqual(book.key(book.getEdgeHead(rel, "object")), key);
     });
   });
 
   describe("#parent", () => {
     it("should return parent obj", () => {
       const key = new UUID();
-      const log = book.exist(key);
+      const rel = book.exist(key);
 
-      assert.deepStrictEqual(book.parent(log.val), book.root);
+      assert.deepStrictEqual(book.parent(book.getEdgeHead(rel, "object")), book.root);
     });
   });
 
@@ -305,8 +305,8 @@ describe("Book", () => {
     it("should return obj's path", () => {
       const key1 = new UUID();
       const key2 = new UUID();
-      const log = book.exist(key1, key2);
-      const obj = log.val;
+      const rel = book.exist(key1, key2);
+      const obj = book.getEdgeHead(rel, "object");
       assert.deepStrictEqual(book.path(obj), path(v("/"), key1, key2));
     });
   });
@@ -315,8 +315,8 @@ describe("Book", () => {
     it("should return path's obj", () => {
       const key1 = new UUID();
       const key2 = new UUID();
-      const log = book.exist(key1, key2);
-      const obj = log.val;
+      const rel = book.exist(key1, key2);
+      const obj = book.getEdgeHead(rel, "object");
       assert.deepStrictEqual(book.fetch([key1, key2]), obj);
     });
 
@@ -338,22 +338,22 @@ describe("Book", () => {
       book.put(book.root, v("foo"), path(key1));
 
       const key2 = new UUID();
-      const log = book.exist(key2);
-      book.put(log.val, v("foo"), path(key1));
+      const rel = book.exist(key2);
+      book.put(book.getEdgeHead(rel, "object"), v("foo"), path(key1));
 
-      assert.deepStrictEqual(book.derefer(path(key1), v("foo")), v([book.root, log.val]));
+      assert.deepStrictEqual(book.derefer(path(key1), v("foo")), v([book.root, book.getEdgeHead(rel, "object")]));
     });
   });
 
   describe("#query", () => {
     it("should retrieve absolute keys and reduce path", () => {
       const key1 = new UUID();
-      const log1 = book.exist(key1);
-      book.put(log1.val, v("foo"), v(2));
+      const rel1 = book.exist(key1);
+      book.put(book.getEdgeHead(rel1, "object"), v("foo"), v(2));
 
       const key2 = new UUID();
-      const log2 = book.exist(key2);
-      book.put(log2.val, v("bar"), path(key1, v("foo")));
+      const rel2 = book.exist(key2);
+      book.put(book.getEdgeHead(rel2, "object"), v("bar"), path(key1, v("foo")));
 
       assert.deepStrictEqual(book.query([key2, v("bar")]), v(2));
     });
@@ -361,17 +361,20 @@ describe("Book", () => {
     context("relative path", () => {
       it("should retrieve relative keys", () => {
         const key1 = new UUID();
-        const log1 = book.exist(key1);
-        book.put(log1.val, v("foo"), v(2));
-        book.put(log1.val, v("bar"), v(3));
+        const rel1 = book.exist(key1);
+        const obj1 = book.getEdgeHead(rel1, "object");
+        book.put(obj1, v("foo"), v(2));
+        book.put(obj1, v("bar"), v(3));
 
         const key2 = new UUID();
-        const log2 = book.exist(key2);
-        book.put(log2.val, v("baz"), path(key1, v("foo")));
-        book.put(log2.val, v("fiz"), path(key1, v("bar")));
+        const rel2 = book.exist(key2);
+        const obj2 = book.getEdgeHead(rel2, "object");
+        book.put(obj2, v("baz"), path(key1, v("foo")));
+        book.put(obj2, v("fiz"), path(key1, v("bar")));
 
-        const log3 = book.exist(key2, key1);
-        book.put(log3.val, v("bar"), v(4));
+        const rel3 = book.exist(key2, key1);
+        const obj3 = book.getEdgeHead(rel3, "object");
+        book.put(obj3, v("bar"), v(4));
 
         assert.deepStrictEqual(book.query([key2, v("baz")]), v(2));
         assert.deepStrictEqual(book.query([key2, v("fiz")]), v(4)); // override
@@ -381,17 +384,20 @@ describe("Book", () => {
     context("specifying absolute path", () => {
       it("should retrieve absolute keys", () => {
         const key1 = new UUID();
-        const log1 = book.exist(key1);
-        book.put(log1.val, v("foo"), v(2));
-        book.put(log1.val, v("bar"), v(3));
+        const rel1 = book.exist(key1);
+        const obj1 = book.getEdgeHead(rel1, "object");
+        book.put(obj1, v("foo"), v(2));
+        book.put(obj1, v("bar"), v(3));
 
         const key2 = new UUID();
-        const log2 = book.exist(key2);
-        book.put(log2.val, v("baz"), path(v("/"), key1, v("foo")));
-        book.put(log2.val, v("fiz"), path(v("/"), key1, v("bar")));
+        const rel2 = book.exist(key2);
+        const obj2 = book.getEdgeHead(rel2, "object");
+        book.put(obj2, v("baz"), path(v("/"), key1, v("foo")));
+        book.put(obj2, v("fiz"), path(v("/"), key1, v("bar")));
 
-        const log3 = book.exist(key2, key1);
-        book.put(log3.val, v("bar"), v(4));
+        const rel3 = book.exist(key2, key1);
+        const obj3 = book.getEdgeHead(rel3, "object");
+        book.put(obj3, v("bar"), v(4));
 
         assert.deepStrictEqual(book.query([key2, v("baz")]), v(2));
         assert.deepStrictEqual(book.query([key2, v("fiz")]), v(3));
@@ -401,8 +407,9 @@ describe("Book", () => {
     context("func val", () => {
       it("should apply by args", () => {
         const key1 = new UUID();
-        const log1 = book.exist(key1);
-        book.put(log1.val, v("foo"), func("x", exp(plus, "x", v(1))));
+        const rel1 = book.exist(key1);
+        const obj1 = book.getEdgeHead(rel1, "object");
+        book.put(obj1, v("foo"), func("x", exp(plus, "x", v(1))));
 
         assert.deepStrictEqual(book.query([key1, [v("foo"), v(2)]]), v(3));
       });
