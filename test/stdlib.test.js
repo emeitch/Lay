@@ -164,8 +164,8 @@ describe("stdlib", () => {
           assert.deepStrictEqual(a.constructor, Act);
           book.run(a);
 
-          const l = book.activeLog(id, "foo");
-          assert.deepStrictEqual(l.val, v(1));
+          const r = book.activeRel(id, "foo");
+          assert.deepStrictEqual(book.getEdgeHead(r, "object"), v(1));
 
           const p2 = new Path(id, ["add", "foo", v(2)]);
           const a2 = p2.reduce(book);
@@ -189,8 +189,8 @@ describe("stdlib", () => {
           assert.deepStrictEqual(a.constructor, Act);
           book.run(a);
 
-          const l = book.activeLog(id, "foo");
-          assert.deepStrictEqual(l.val, exp(plus, v(1), v(2)));
+          const r = book.activeRel(id, "foo");
+          assert.deepStrictEqual(book.getEdgeHead(r, "object"), exp(plus, v(1), v(2)));
 
           const p2 = new Path(id, ["def", "foo", exp(plus, v(2), v(3))]);
           const a2 = p2.reduce(book);
@@ -213,16 +213,16 @@ describe("stdlib", () => {
           assert.deepStrictEqual(a.constructor, Act);
           book.run(a);
 
-          const l = book.activeLog(id, "foo");
-          assert.deepStrictEqual(l.val, v(3));
+          const r = book.activeRel(id, "foo");
+          assert.deepStrictEqual(book.getEdgeHead(r, "object"), v(3));
 
           const p2 = new Path(id, ["set", "bar", pack(exp(plus, v(1), v(2)))]);
           const a2 = p2.reduce(book);
           assert.deepStrictEqual(a2.constructor, Act);
           book.run(a2);
 
-          const l2 = book.activeLog(id, "bar");
-          assert.deepStrictEqual(l2.val, exp(plus, v(1), v(2)));
+          const r2 = book.activeRel(id, "bar");
+          assert.deepStrictEqual(book.getEdgeHead(r2, "object"), exp(plus, v(1), v(2)));
 
           const p3 = new Path(id, ["set", "bar", pack(exp(plus, v(2), v(1)))]);
           const a3 = p3.reduce(book);
