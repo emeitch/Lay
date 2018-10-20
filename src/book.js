@@ -408,6 +408,8 @@ export default class Book {
       const il = this.invalidationLogsCache.get(i) || new Map();
       il.set(log.logid, log);
       this.invalidationLogsCache.set(i, il);
+
+      this.putEdge(log.id, "to", v(new Date()));
     }
 
     {

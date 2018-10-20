@@ -171,10 +171,10 @@ describe("stdlib", () => {
           const a2 = p2.reduce(book);
           book.run(a2);
 
-          const logs = book.activeLogs(id, "foo");
-          assert.deepStrictEqual(logs.length, 2);
-          assert.deepStrictEqual(logs[0].val, v(1));
-          assert.deepStrictEqual(logs[1].val, v(2));
+          const rels = book.activeRels(id, "foo");
+          assert.deepStrictEqual(rels.length, 2);
+          assert.deepStrictEqual(book.getEdgeHead(rels[0], "object"), v(1));
+          assert.deepStrictEqual(book.getEdgeHead(rels[1], "object"), v(2));
         });
       });
 
@@ -196,9 +196,9 @@ describe("stdlib", () => {
           const a2 = p2.reduce(book);
           book.run(a2);
 
-          const logs = book.activeLogs(id, "foo");
-          assert.deepStrictEqual(logs[0].val, exp(plus, v(2), v(3)));
-          assert.deepStrictEqual(logs.length, 1); // invalidated old logs
+          const rels = book.activeRels(id, "foo");
+          assert.deepStrictEqual(rels.length, 1); // invalidated old rels
+          assert.deepStrictEqual(book.getEdgeHead(rels[0], "object"), exp(plus, v(2), v(3)));
         });
       });
 
@@ -232,9 +232,9 @@ describe("stdlib", () => {
           const a4 = p4.reduce(book);
           book.run(a4);
 
-          const logs = book.activeLogs(id, "bar");
-          assert.deepStrictEqual(logs[0].val, exp(plus, v(3), v(2)));
-          assert.deepStrictEqual(logs.length, 1); // invalidated old logs
+          const rels = book.activeRels(id, "bar");
+          assert.deepStrictEqual(rels.length, 1); // invalidated old rels
+          assert.deepStrictEqual(book.getEdgeHead(rels[0], "object"), exp(plus, v(3), v(2)));
         });
       });
 

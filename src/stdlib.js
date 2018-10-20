@@ -115,8 +115,8 @@ export const stdlib = new Book();
     obj,
     "get",
     func("key", exp(new LiftedNative(function(self, key) {
-      const logs = this.activeLogs(self, key.reduce(this));
-      return logs[0].val;
+      const rels = this.activeRels(self, key.reduce(this));
+      return this.getEdgeHead(rels[0], "object");
     }), "self", "key"))
   );
 
@@ -124,9 +124,9 @@ export const stdlib = new Book();
     obj,
     "getAtIndex",
     func("key", "index", exp(new LiftedNative(function(self, key, index) {
-      const logs = this.activeLogs(self, key.reduce(this));
+      const rels = this.activeRels(self, key.reduce(this));
       const i = index.reduce(this).origin;
-      return logs[i].val;
+      return this.getEdgeHead(rels[i], "object");
     }), "self", "key", "index"))
   );
 
@@ -134,8 +134,8 @@ export const stdlib = new Book();
     obj,
     "allOf",
     func("key", exp(new LiftedNative(function(self, key) {
-      const logs = this.activeLogs(self, key.reduce(this));
-      return v(logs.map(l => l.val));
+      const rels = this.activeRels(self, key.reduce(this));
+      return v(rels.map(r => this.getEdgeHead(r, "object")));
     }), "self", "key"))
   );
 
