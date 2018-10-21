@@ -91,7 +91,7 @@ describe("Book", () => {
         assert(log.val === val);
         assert(book.log(log.logid) === log);
 
-        assert(book.activeLog(log.id, key));
+        assert(book.activeRel(log.id, key));
       });
 
       context("intermediate object isn't lid", () => {
@@ -238,11 +238,11 @@ describe("Book", () => {
       const pae = book.putAct(id, key, val);
       let pa = pae.reduce(book);
 
-      assert(!book.activeLog(id, key));
+      assert(!book.activeRel(id, key));
       while(!pa.settled) {
         pa = pa.proceed();
       }
-      assert(book.activeLog(id, key));
+      assert(book.activeRel(id, key));
     });
   });
 
@@ -261,9 +261,9 @@ describe("Book", () => {
       assert(book.getEdgeHead(rel, "type") === key);
       assert(book.getEdgeHead(rel, "object") instanceof LID);
 
-      const alog = book.activeLog(book.root, key);
+      const arel = book.activeRel(book.root, key);
 
-      assert.deepStrictEqual(alog.val, book.getEdgeHead(rel, "object"));
+      assert.deepStrictEqual(arel, rel);
     });
 
     context("multiple key", () => {
@@ -275,10 +275,10 @@ describe("Book", () => {
         assert(book.getEdgeHead(rel, "type") === key2);
         assert(book.getEdgeHead(rel, "object") instanceof LID);
 
-        const l1 = book.activeLog(book.root, key1);
-        const l2 = book.activeLog(l1.val, key2);
+        const r1 = book.activeRel(book.root, key1);
+        const r2 = book.activeRel(book.getEdgeHead(r1, "object"), key2);
 
-        assert.deepStrictEqual(l2.val, book.getEdgeHead(rel, "object"));
+        assert.deepStrictEqual(r2, rel);
       });
     });
   });
@@ -634,163 +634,6 @@ describe("Book", () => {
     });
   });
 
-  describe("#activeLogs", () => {
-    context("no logs", () => {
-      it("should return empty", () => {
-        const logs = book.activeLogs(id, key);
-        assert(logs.length === 0);
-      });
-    });
-
-    context("logs with same ids & keys but different vals", () => {
-      beforeEach(() => {
-        book.putLog(new Log(id, key, v("val0")));
-        book.putLog(new Log(id, key, v("val1")));
-      });
-
-      it("should return all logs", () => {
-        const logs = book.activeLogs(id, key);
-        assert.deepStrictEqual(logs[0].val, v("val0"));
-        assert.deepStrictEqual(logs[1].val, v("val1"));
-      });
-
-      context("invalidate the last log", () => {
-        beforeEach(() => {
-          const log = book.activeLog(id, key);
-          book.putLog(new Log(log.logid, invalidate));
-        });
-
-        it("should return only the first log", () => {
-          const logs = book.activeLogs(id, key);
-          assert.deepStrictEqual(logs[0].val, v("val0"));
-          assert(!logs[1]);
-        });
-      });
-    });
-
-    context("logs with applying time", () => {
-      beforeEach(() => {
-        book.putLog(new Log(id, key, v("val0"), new Date(2017, 0)));
-        book.putLog(new Log(id, key, v("val1"), new Date(2017, 2)));
-      });
-
-      it("should return all logs", () => {
-        const logs = book.activeLogs(id, key);
-        assert.deepStrictEqual(logs[0].val, v("val0"));
-        assert.deepStrictEqual(logs[1].val, v("val1"));
-      });
-
-      it("should return only the first log by specifying time before applied", () => {
-        const logs = book.activeLogs(id, key, new Date(2017, 1));
-        assert.deepStrictEqual(logs[0].val, v("val0"));
-        assert(!logs[1]);
-      });
-
-      context("invalidate the last log", () => {
-        beforeEach(() => {
-          const log = book.activeLog(id, key);
-          book.putLog(new Log(log.logid, invalidate));
-        });
-
-        it("should return only the first log", () => {
-          const logs = book.activeLogs(id, key);
-          assert.deepStrictEqual(logs[0].val, v("val0"));
-          assert(!logs[1]);
-        });
-      });
-
-      context("invalidate the last log with applying time", () => {
-        beforeEach(() => {
-          const log = book.activeLog(id, key);
-          book.putLog(new Log(log.logid, invalidate, null, new Date(2017, 4)));
-        });
-
-        it("should return only the first log", () => {
-          const logs = book.activeLogs(id, key, new Date(2017, 6));
-          assert.deepStrictEqual(logs[0].val, v("val0"));
-          assert(!logs[1]);
-        });
-
-        it("should return only the first log by time specified just invalidation time", () => {
-          const logs = book.activeLogs(id, key, new Date(2017, 4));
-          assert.deepStrictEqual(logs[0].val, v("val0"));
-          assert(!logs[1]);
-        });
-
-        it("should return all logs by time specified before invalidation", () => {
-          const logs = book.activeLogs(id, key, new Date(2017, 3));
-          assert.deepStrictEqual(logs[0].val, v("val0"));
-          assert.deepStrictEqual(logs[1].val, v("val1"));
-        });
-      });
-    });
-
-    context("contain logs with old applying time", () => {
-      beforeEach(() => {
-        book.putLog(new Log(id, key, v("val0"), new Date(2017, 1)));
-        book.putLog(new Log(id, key, v("val1"), new Date(2017, 0)));
-      });
-
-      it("should return all logs order by applying time", () => {
-        const logs = book.activeLogs(id, key);
-        assert.deepStrictEqual(logs[0].val, v("val1"));
-        assert.deepStrictEqual(logs[1].val, v("val0"));
-      });
-
-      context("invalidate the last log", () => {
-        beforeEach(() => {
-          const log = book.activeLog(id, key);
-          book.putLog(new Log(log.logid, invalidate));
-        });
-
-        it("should return only the first log", () => {
-          const logs = book.activeLogs(id, key);
-          assert.deepStrictEqual(logs[0].val, v("val1"));
-          assert(!logs[1]);
-        });
-      });
-    });
-
-    context("contain a log with time and a log without time", () => {
-      beforeEach(() => {
-        book.putLog(new Log(id, key, v("val0")));
-        book.putLog(new Log(id, key, v("val1"), new Date(2017, 2)));
-      });
-
-      it("should return all logs order by applying time", () => {
-        const logs = book.activeLogs(id, key);
-        assert.deepStrictEqual(logs[0].val, v("val1"));
-        assert.deepStrictEqual(logs[1].val, v("val0"));
-      });
-    });
-  });
-
-  describe("#activeLog", () => {
-    context("no logs", () => {
-      it("should return empty", () => {
-        const log = book.activeLog(id, key);
-        assert(!log);
-      });
-    });
-
-    context("logs with applying time", () => {
-      beforeEach(() => {
-        book.putLog(new Log(id, key, v("val0"), new Date(2017, 0)));
-        book.putLog(new Log(id, key, v("val1"), new Date(2017, 2)));
-      });
-
-      it("should return the last log", () => {
-        const log = book.activeLog(id, key);
-        assert.deepStrictEqual(log.val, v("val1"));
-      });
-
-      it("should return the first log by specifying time", () => {
-        const log = book.activeLog(id, key, new Date(2017, 1));
-        assert.deepStrictEqual(log.val, v("val0"));
-      });
-    });
-  });
-
   describe("#instanceIDs", () => {
     let t1;
 
@@ -832,8 +675,8 @@ describe("Book", () => {
       const id = book.new();
       assert(id.constructor === UUID);
 
-      const logs = book.activeLogs(id, v("exists"));
-      assert(logs.length > 0);
+      const rels = book.activeRels(id, v("exists"));
+      assert(rels.length > 0);
     });
 
     context("with properties", () => {
@@ -881,7 +724,6 @@ describe("Book", () => {
       assert(book.findLogs({key: v("baz")}).length === 1);
 
       assert(book.findLogs({key: v("foo")}).length === 1);
-      assert(book.activeLogs(id2, v("foo")).length === 1);
       assert(book.activeRels(id2, v("foo")).length === 1);
       assert(book.activeRelsByTypeAndObject(v("foo"), v(3)).length === 1);
 
@@ -970,8 +812,8 @@ describe("Book", () => {
         book.put(id, key, v("val0"));
         book.put(id, key, v("val1"));
 
-        const log = book.activeLog(id, key);
-        book.put(log.logid, invalidate);
+        const rel = book.activeRel(id, key);
+        book.put(rel, invalidate);
       });
 
       it("should return only the first log", () => {

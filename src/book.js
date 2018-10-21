@@ -156,48 +156,6 @@ export default class Book {
     return this.activeWithRelsFunction(this.relsByTypeAndObject, at, key, val);
   }
 
-  activeLogs(id, key, at=new Date()) {
-    const i = this.cacheIndex(id, key);
-    const alogs = new Map(this.activeLogsCache.get(i));
-    const ilogs = new Map(this.invalidationLogsCache.get(i));
-
-    for (let [, log] of alogs) {
-      if (log.at.origin && log.at.origin > at) {
-        alogs.delete(log.logid);
-      }
-    }
-
-    for (let [, ilog] of ilogs) {
-      const log = alogs.get(ilog.id);
-      if (log && (!ilog.at.origin || ilog.at.origin <= at)) {
-        alogs.delete(log.logid);
-      }
-    }
-
-    const actives = Array.from(alogs.values()).sort((a, b) => {
-      // todo: atが重複した場合に順序が制御されないのをどうにかする
-      return a.at.origin.getTime() - b.at.origin.getTime();
-    });
-
-    if (actives.length > 0) {
-      return actives;
-    }
-
-    for (const imported of this.imports) {
-      const logs = imported.activeLogs(id, key, at);
-      if (logs.length > 0) {
-        return logs;
-      }
-    }
-
-    return [];
-  }
-
-  activeLog(id, key, at=new Date()) {
-    const actives = this.activeLogs(id, key, at);
-    return actives[actives.length-1];
-  }
-
   findRelWithType(id, key) {
     const rel = this.activeRel(id, key);
     if (rel) {
