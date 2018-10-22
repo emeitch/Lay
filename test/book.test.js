@@ -691,7 +691,7 @@ describe("Book", () => {
         assert.deepStrictEqual(id.get(v("bar"), book), v("bar"));
         assert.deepStrictEqual(id.get(v("baz"), book), v("baz"));
 
-        assert(book.findLogs({key: v("foo")}).length === 1);
+        assert(book.activeRels(id, v("foo")).length === 1);
       });
     });
   });
@@ -709,10 +709,12 @@ describe("Book", () => {
   describe("#import", () => {
     it("should add search target books", () => {
       const alib1 = new Book();
-      alib1.put(new UUID(), "bar", v(1));
+      const id0 = new UUID();
+      alib1.put(id0, "bar", v(1));
 
       const alib2 = new Book();
-      alib2.put(new UUID(), "baz", v(2));
+      const id1 = new UUID();
+      alib2.put(id1, "baz", v(2));
 
       const lib = new Book(alib1, alib2);
       const id2 = new UUID();
@@ -720,10 +722,9 @@ describe("Book", () => {
       lib.set("bar", v(4));
       book.import(lib);
 
-      assert(book.findLogs({key: v("bar")}).length === 1);
-      assert(book.findLogs({key: v("baz")}).length === 1);
+      assert(book.activeRels(id0, v("bar")).length === 1);
+      assert(book.activeRels(id1, v("baz")).length === 1);
 
-      assert(book.findLogs({key: v("foo")}).length === 1);
       assert(book.activeRels(id2, v("foo")).length === 1);
       assert(book.activeRelsByTypeAndObject(v("foo"), v(3)).length === 1);
 
@@ -876,14 +877,14 @@ describe("Book", () => {
 
       const importer = new Book();
       importer.put(id, "k1", v("v1"));
-      assert(book.findLogs({id: id}).length == 0);
-      assert(importer.findLogs({id: id}).length == 1);
+      assert(book.activeRels(id, v("k1")).length == 0);
+      assert(importer.activeRels(id, v("k1")).length == 1);
 
       importer.import(book);
 
       importer.put(id, "k2", v("v2"));
-      assert(book.findLogs({id: id}).length == 0);
-      assert(importer.findLogs({id: id}).length == 2);
+      assert(book.activeRels(id, v("k2")).length == 0);
+      assert(importer.activeRels(id, v("k2")).length == 1);
     });
   });
 });
