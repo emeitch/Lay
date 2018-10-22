@@ -54,8 +54,16 @@ export default class Book {
     return this.relsCache.get(i) || new Map();
   }
 
-  rels(id, key) {
+  relsOnlySelf(id, key) {
     return [...this.relsMap(id, key).values()];
+  }
+
+  rels(id, key) {
+    const results = this.relsOnlySelf(id, key);
+    for (const i of this.imports) {
+      results.push(...i.rels(id, key));
+    }
+    return results;
   }
 
   relsByTypeAndObjectMap(key, val) {
@@ -63,8 +71,16 @@ export default class Book {
     return this.relsByTypeAndObjectCache.get(i) || new Map();
   }
 
-  relsByTypeAndObject(key, val) {
+  relsByTypeAndObjectOnlySelf(key, val) {
     return [...this.relsByTypeAndObjectMap(key, val).values()];
+  }
+
+  relsByTypeAndObject(key, val) {
+    const results = this.relsByTypeAndObjectOnlySelf(key, val);
+    for (const i of this.imports) {
+      results.push(...i.relsByTypeAndObject(key, val));
+    }
+    return results;
   }
 
   active(rels, at=new Date()) {
@@ -75,25 +91,8 @@ export default class Book {
     });
   }
 
-  activeWithRelsFunction(relsFunction, at, ...args) {
-    const results = [];
-    const actives = this.active(relsFunction.bind(this)(...args), at);
-    if (actives.length > 0) {
-      results.push(...actives);
-    }
-
-    for (const imported of this.imports) {
-      const rels = imported.activeWithRelsFunction(relsFunction, at, ...args);
-      if (rels.length > 0) {
-        results.push(...rels);
-      }
-    }
-
-    return results;
-  }
-
   activeRels(id, key, at) {
-    return this.activeWithRelsFunction(this.rels, at, id, key);
+    return this.active(this.rels(id, key), at);
   }
 
   activeRel(id, key, at) {
@@ -102,7 +101,7 @@ export default class Book {
   }
 
   activeRelsByTypeAndObject(key, val, at) {
-    return this.activeWithRelsFunction(this.relsByTypeAndObject, at, key, val);
+    return this.active(this.relsByTypeAndObject(key, val), at);
   }
 
   findRelWithType(id, key) {
