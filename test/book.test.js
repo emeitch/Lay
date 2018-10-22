@@ -793,20 +793,6 @@ describe("Book", () => {
     });
   });
 
-  describe("#existsIDs", () => {
-    it("should return new generated ids", () => {
-      const o0 = book.new();
-      const o1 = book.new();
-      const o2 = book.new();
-
-      const ids = book.existsIDs();
-      assert(ids.length === 3);
-      assert(ids[0] === o0);
-      assert(ids[1] === o1);
-      assert(ids[2] === o2);
-    });
-  });
-
   describe("findActiveLogs", () => {
     context("invalidate the last log", () => {
       beforeEach(() => {

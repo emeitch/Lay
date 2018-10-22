@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import Val from './val';
 import v from './v';
 import UUID from './uuid';
@@ -210,12 +209,6 @@ export default class Book {
     this.put(id, "exists", v(true));
 
     return id;
-  }
-
-  existsIDs() {
-    const logs = this.findActiveLogs({key: v("exists")});
-    const ids = _.uniq(logs.map(l => l.id));
-    return ids;
   }
 
   transactionID(log) {
