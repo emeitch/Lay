@@ -92,10 +92,6 @@ export default class Book {
     return results;
   }
 
-  activeRelsOnlySelf(id, key, at) {
-    return this.active(this.rels(id, key), at);
-  }
-
   activeRels(id, key, at) {
     return this.activeWithRelsFunction(this.rels, at, id, key);
   }
