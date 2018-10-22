@@ -11,7 +11,6 @@ import Act from '../src/act';
 import { path } from '../src/path';
 import { sym } from '../src/sym';
 import { pack } from '../src/pack';
-import { invalidate } from '../src/ontology';
 import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
 
@@ -696,16 +695,6 @@ describe("Book", () => {
     });
   });
 
-  describe("#findLogs", () => {
-    it("should return the logs with sym completion", () => {
-      book.put(id, "foo", v(1));
-
-      assert(book.findLogs({key: v("foo")}).length === 1);
-      assert(book.findLogs({key: "foo"}).length === 1);
-      assert(book.findLogs({key: sym("foo")}).length === 0);
-    });
-  });
-
   describe("#import", () => {
     it("should add search target books", () => {
       const alib1 = new Book();
@@ -789,24 +778,6 @@ describe("Book", () => {
         book.put(new UUID(), "foo", v(1));
         assert.deepStrictEqual(a, 2);
         assert.deepStrictEqual(b, 2);
-      });
-    });
-  });
-
-  describe("findActiveLogs", () => {
-    context("invalidate the last log", () => {
-      beforeEach(() => {
-        book.put(id, key, v("val0"));
-        book.put(id, key, v("val1"));
-
-        const rel = book.activeRel(id, key);
-        book.put(rel, invalidate);
-      });
-
-      it("should return only the first log", () => {
-        const logs = book.findActiveLogs({id});
-        assert.deepStrictEqual(logs[0].val, v("val0"));
-        assert(!logs[1]);
       });
     });
   });

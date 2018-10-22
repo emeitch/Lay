@@ -44,60 +44,9 @@ export default class Book {
     return this.logs.get(logid);
   }
 
-  findLogs(condition) {
-    const cond = {};
-    Object.keys(condition).forEach(k => {
-      if (typeof(condition[k]) === "string") {
-        cond[k] = v(condition[k]);
-      } else {
-        cond[k] = condition[k];
-      }
-    });
-
-    let logs = [];
-    for (const imported of this.imports) {
-      const ls = imported.findLogs(cond);
-      if (ls.length > 0) {
-        logs = logs.concat(ls);
-      }
-    }
-
-    // todo: 線形探索になっているので高速化する
-    for (const [, log] of this.logs) {
-      const keys = Object.keys(cond);
-      if (keys.every((k) => Val.stringify(log[k]) === Val.stringify(cond[k]))) {
-        logs.push(log);
-      }
-    }
-
-    return logs;
-  }
-
   cacheIndex(id, key) {
     key = v(key);
     return Val.stringify(id) + "__" + Val.stringify(key);
-  }
-
-  findActiveLogs(cond) {
-    const logs = [];
-    for (const log of this.findLogs(cond)) {
-      const i = this.cacheIndex(log.id, log.key);
-      const ilogs = new Map(this.invalidationLogsCache.get(i));
-
-      let invalidated = false;
-      for (let [, ilog] of ilogs) {
-        if (ilog.id.equals(log.logid)) {
-          invalidated = true;
-          break;
-        }
-      }
-
-      if (!invalidated) {
-        logs.push(log);
-      }
-    }
-
-    return logs;
   }
 
   relsMap(id, key) {
