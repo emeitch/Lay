@@ -238,8 +238,8 @@ export default class Book {
   }
 
   name(id) {
-    const logs = this.findActiveLogs({key: assign, val: id});
-    return logs.length > 0 ? logs[0].id : v(null);
+    const rels = this.relsByTypeAndObject(assign, id);
+    return rels.length > 0 ? this.getEdgeHead(rels[0], "subject") : v(null);
   }
 
   getEdgeByTailAndLabel(tail, label) {
