@@ -39,9 +39,8 @@ describe("stdlib", () => {
         ]);
       });
       book.run(path(act, ["then", exp("load")]).deepReduce(book));
-      const log = book.findLogs({id})[0];
-      assert.deepStrictEqual(log.key, key);
-      assert.deepStrictEqual(log.val, val);
+      const rel = book.activeRel(id, key);
+      assert.deepStrictEqual(book.getEdgeHead(rel, "object"), val);
     });
 
     it("should nothing to do without prev act json string", () => {
