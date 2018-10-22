@@ -134,7 +134,7 @@ export default class Book {
     }
 
     for (const imported of this.imports) {
-      const rels = imported.active(relsFunction.bind(imported)(...args), at);
+      const rels = imported.activeWithRelsFunction(relsFunction, at, ...args);
       if (rels.length > 0) {
         return rels;
       }
