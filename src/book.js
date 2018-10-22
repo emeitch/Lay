@@ -127,19 +127,24 @@ export default class Book {
   }
 
   activeWithRelsFunction(relsFunction, at, ...args) {
+    const results = [];
     const actives = this.active(relsFunction.bind(this)(...args), at);
     if (actives.length > 0) {
-      return actives;
+      results.push(...actives);
     }
 
     for (const imported of this.imports) {
       const rels = imported.activeWithRelsFunction(relsFunction, at, ...args);
       if (rels.length > 0) {
-        return rels;
+        results.push(...rels);
       }
     }
 
-    return [];
+    return results;
+  }
+
+  activeRelsOnlySelf(id, key, at) {
+    return this.active(this.rels(id, key), at);
   }
 
   activeRels(id, key, at) {
@@ -223,7 +228,7 @@ export default class Book {
 
   get(name) {
     const rels = this.activeRels(v(name), assign);
-    const rel = rels[rels.length-1];
+    const rel = rels[0];
     if (rel) {
       return this.getEdgeHead(rel, "object");
     }
@@ -425,9 +430,9 @@ export default class Book {
   }
 
   handleOnPut(log) {
-    const alogs = this.findActiveLogs({id: "onPut"});
-    for (const alog of alogs) {
-      const actexp = alog.val;
+    const rels = this.activeRels(v("onPut"), assign);
+    for (const rel of rels) {
+      const actexp = this.getEdgeHead(rel, "object");
       const act = actexp.reduce(this);
       this.run(act, log);
     }
