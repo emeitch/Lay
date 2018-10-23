@@ -412,7 +412,8 @@ export default class Book {
     }
 
     const log = new Log(...args);
-    return this.putLog(log);
+    this.putLog(log);
+    return log.logid;
   }
 
   putAct(...args) {
@@ -442,7 +443,7 @@ export default class Book {
     let parent = this.root;
     let rel;
     for (const key of keys) {
-      rel = this.activeRel(parent, key) || this.create(parent, key).logid;
+      rel = this.activeRel(parent, key) || this.create(parent, key);
       parent = this.getEdgeHead(rel, "object");
     }
     return rel;

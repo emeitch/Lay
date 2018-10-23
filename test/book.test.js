@@ -46,34 +46,26 @@ describe("Book", () => {
     context("standard arguments with time", () => {
       const time = new Date(2017, 0);
 
-      let log;
+      let rel;
       beforeEach(() => {
-        log = book.put(id, key, val, time);
-      });
-
-      it("should append a log", () => {
-        assert(log.id === id);
-        assert(log.key === key);
-        assert(log.val === val);
-        assert.deepStrictEqual(log.at, v(time));
-        assert(book.log(log.logid) === log);
+        rel = book.put(id, key, val, time);
       });
 
       it("should append edges", () => {
         assert(book.edges.some(e =>
-          e.tail === log.logid &&
+          e.tail === rel &&
           e.label === "type" &&
           e.head === key
         ));
 
         assert(book.edges.some(e =>
-          e.tail === log.logid &&
+          e.tail === rel &&
           e.label === "subject" &&
           e.head === id
         ));
 
         assert(book.edges.some(e =>
-          e.tail === log.logid &&
+          e.tail === rel &&
           e.label === "object" &&
           e.head === val
         ));
@@ -83,14 +75,13 @@ describe("Book", () => {
     context("path as id", () => {
       it("should append a log", () => {
         const pth = path(id, "foo");
-        const log = book.put(pth, key, val);
+        const rel = book.put(pth, key, val);
 
-        assert(log.id instanceof LID);
-        assert(log.key === key);
-        assert(log.val === val);
-        assert(book.log(log.logid) === log);
+        assert(book.getEdgeHead(rel, "subject") instanceof LID);
+        assert(book.getEdgeHead(rel, "type") === key);
+        assert(book.getEdgeHead(rel, "object") === val);
 
-        assert(book.activeRel(log.id, key));
+        assert(book.activeRel(book.getEdgeHead(rel, "subject"), key));
       });
 
       context("intermediate object isn't lid", () => {
@@ -106,14 +97,14 @@ describe("Book", () => {
   });
 
   describe("getEdgeByTailAndLabel", () => {
-    let log;
+    let rel;
     beforeEach(() => {
-      log = book.put(id, key, val);
+      rel = book.put(id, key, val);
     });
 
     it("should return a edge which has argument tail and label", () => {
-      const e = book.getEdgeByTailAndLabel(log.logid, "object");
-      assert.deepStrictEqual(e.tail, log.logid);
+      const e = book.getEdgeByTailAndLabel(rel, "object");
+      assert.deepStrictEqual(e.tail, rel);
       assert.deepStrictEqual(e.label, "object");
       assert.deepStrictEqual(e.head, val);
     });
@@ -126,13 +117,13 @@ describe("Book", () => {
   });
 
   describe("getEdgeHead", () => {
-    let log;
+    let rel;
     beforeEach(() => {
-      log = book.put(id, key, val);
+      rel = book.put(id, key, val);
     });
 
     it("should return a edge head value matched the tail and the label", () => {
-      assert.deepStrictEqual(book.getEdgeHead(log.logid, "type"), key);
+      assert.deepStrictEqual(book.getEdgeHead(rel, "type"), key);
     });
 
     context("no put tail and label", () => {
@@ -172,13 +163,13 @@ describe("Book", () => {
   });
 
   describe("getEdgeTails", () => {
-    let log;
+    let rel;
     beforeEach(() => {
-      log = book.put(id, key, val);
+      rel = book.put(id, key, val);
     });
 
     it("should return tail values matched the label and the head", () => {
-      assert.deepStrictEqual(book.getEdgeTails("type", key), [log.logid]);
+      assert.deepStrictEqual(book.getEdgeTails("type", key), [rel]);
     });
 
     context("no put label and head", () => {
@@ -528,17 +519,17 @@ describe("Book", () => {
     });
 
     context("put with same ids & keys but different vals", () => {
-      let log0;
-      let log1;
+      let rel0;
+      let rel1;
       beforeEach(() => {
-        log0 = book.put(id, key, v("val0"));
-        log1 = book.put(id, key, v("val1"));
+        rel0 = book.put(id, key, v("val0"));
+        rel1 = book.put(id, key, v("val1"));
       });
 
       it("should return all rel id", () => {
         const rels = book.activeRels(id, key);
-        assert(rels[0].equals(log0.logid));
-        assert(rels[1].equals(log1.logid));
+        assert(rels[0].equals(rel0));
+        assert(rels[1].equals(rel1));
       });
 
       context("set valid end time to the last edge", () => {
@@ -550,14 +541,14 @@ describe("Book", () => {
         describe("#rels", () => {
           it("should return all edges", () => {
             const rels = book.rels(id, key);
-            assert(rels[0].equals(log0.logid));
-            assert(rels[1].equals(log1.logid));
+            assert(rels[0].equals(rel0));
+            assert(rels[1].equals(rel1));
           });
         });
 
         it("should return only the first edge", () => {
           const rels = book.activeRels(id, key);
-          assert(rels[0].equals(log0.logid));
+          assert(rels[0].equals(rel0));
           assert(!rels[1]);
         });
       });
@@ -571,8 +562,8 @@ describe("Book", () => {
         context("after from", () => {
           it("should return all edges", () => {
             const rels = book.activeRels(id, key);
-            assert(rels[0].equals(log0.logid));
-            assert(rels[1].equals(log1.logid));
+            assert(rels[0].equals(rel0));
+            assert(rels[1].equals(rel1));
           });
         });
 
@@ -580,7 +571,7 @@ describe("Book", () => {
           it("should return only the first edge", () => {
             const at = new Date("2018-01-01T00:00:00");
             const rels = book.activeRels(id, key, at);
-            assert(rels[0].equals(log0.logid));
+            assert(rels[0].equals(rel0));
             assert(!rels[1]);
           });
         });
@@ -598,35 +589,35 @@ describe("Book", () => {
 
     context("put with same ids & keys but different vals", () => {
       const id1 = new UUID();
-      let log0;
-      let log1;
+      let rel0;
+      let rel1;
       beforeEach(() => {
-        log0 = book.put(id, key, val);
-        log1 = book.put(id1, key, val);
+        rel0 = book.put(id, key, val);
+        rel1 = book.put(id1, key, val);
       });
 
       it("should return all rel id", () => {
         const rels = book.activeRelsByTypeAndObject(key, val);
-        assert(rels[0].equals(log0.logid));
-        assert(rels[1].equals(log1.logid));
+        assert(rels[0].equals(rel0));
+        assert(rels[1].equals(rel1));
       });
 
       context("set valid end time to the last edge", () => {
         beforeEach(() => {
-          book.putEdge(log1.logid, "to", v(new Date()));
+          book.putEdge(rel1, "to", v(new Date()));
         });
 
         describe("#relsByTypeAndObject", () => {
           it("should return all edges", () => {
             const rels = book.relsByTypeAndObject(key, val);
-            assert(rels[0].equals(log0.logid));
-            assert(rels[1].equals(log1.logid));
+            assert(rels[0].equals(rel0));
+            assert(rels[1].equals(rel1));
           });
         });
 
         it("should return only the first edge", () => {
           const rels = book.activeRelsByTypeAndObject(key, val);
-          assert(rels[0].equals(log0.logid));
+          assert(rels[0].equals(rel0));
           assert(!rels[1]);
         });
       });
@@ -707,7 +698,7 @@ describe("Book", () => {
 
       const lib = new Book(alib1, alib2);
       const id2 = new UUID();
-      const log = lib.put(id2, "foo", v(3));
+      const rel = lib.put(id2, "foo", v(3));
       lib.set("bar", v(4));
       book.import(lib);
 
@@ -717,11 +708,11 @@ describe("Book", () => {
       assert(book.activeRels(id2, v("foo")).length === 1);
       assert(book.activeRelsByTypeAndObject(v("foo"), v(3)).length === 1);
 
-      assert.deepStrictEqual(book.getEdgeByTailAndLabel(log.logid, "object").head, v(3));
-      assert(book.getEdgesByLabelAndHead("object", v(3)).some(e => e.tail.equals(log.logid)));
+      assert.deepStrictEqual(book.getEdgeByTailAndLabel(rel, "object").head, v(3));
+      assert(book.getEdgesByLabelAndHead("object", v(3)).some(e => e.tail.equals(rel)));
 
       assert.deepStrictEqual(book.get("bar"), v(4));
-      assert(book.logIDs().some(lid => lid.equals(log.logid)));
+      assert(book.logIDs().some(lid => lid.equals(rel)));
 
       assert(book.activeRels(id2, v("nothing")).length === 0);
       assert(book.activeRelsByTypeAndObject(v("nothing"), v(3)).length === 0);
