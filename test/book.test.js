@@ -73,7 +73,7 @@ describe("Book", () => {
     });
 
     context("path as id", () => {
-      it("should append a log", () => {
+      it("should append a rel", () => {
         const pth = path(id, "foo");
         const rel = book.put(pth, key, val);
 
