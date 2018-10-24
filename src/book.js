@@ -160,14 +160,9 @@ export default class Book {
     return id;
   }
 
-  transactionID(log) {
-    const trels = this.activeRels(log.logid, transaction);
-
-    if (trels.length === 0) {
-      return null;
-    }
-
-    return this.getEdgeHead(trels[0], "subject");
+  transactionID(rel) {
+    const trel = this.activeRel(rel, transaction);
+    return this.getEdgeHead(trel, "subject");
   }
 
   get(name) {

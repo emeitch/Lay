@@ -5,7 +5,6 @@ import v from '../src/v';
 import UUID from '../src/uuid';
 import LID from '../src/lid';
 import Edge from '../src/edge';
-import Log from '../src/log';
 import Book from '../src/book';
 import Act from '../src/act';
 import { path } from '../src/path';
@@ -409,17 +408,18 @@ describe("Book", () => {
   describe("#transactionID", () => {
     let tid;
     beforeEach(() => {
-      const log = new Log(id, key, val);
-      book.putLog(log);
-      tid = book.transactionID(log);
+      const rel = book.put(id, key, val);
+      tid = book.transactionID(rel);
     });
 
     it("should return trasncation id", () => {
       assert(tid instanceof UUID);
     });
 
-    it("should has no more transaction", () => {
-      assert.deepStrictEqual(book.transactionID(tid), null);
+    context("tid as arg", () => {
+      it("should return tid", () => {
+        assert.deepStrictEqual(book.transactionID(tid), tid);
+      });
     });
   });
 
