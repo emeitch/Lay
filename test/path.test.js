@@ -6,7 +6,6 @@ import UUID from '../src/uuid';
 import Exp, { exp } from '../src/exp';
 import { func, plus, concat } from '../src/func';
 import { scope } from '../src/scope';
-import Log from '../src/log';
 import Book from '../src/book';
 
 describe("Path", () => {
@@ -51,8 +50,8 @@ describe("Path", () => {
       const id3 = new UUID();
 
       beforeEach(() => {
-        book.putLog(new Log(id, key, id2));
-        book.putLog(new Log(id2, key2, id3));
+        book.put(id, key, id2);
+        book.put(id2, key2, id3);
         p = new Path(id, key, key2);
       });
 
@@ -67,7 +66,7 @@ describe("Path", () => {
       const val = v("val0");
 
       beforeEach(() => {
-        book.putLog(new Log(id, key, val));
+        book.put(id, key, val);
         book.set("a", id);
         p = new Path("a", key);
       });
@@ -91,10 +90,10 @@ describe("Path", () => {
       let p3;
       let p4;
       beforeEach(() => {
-        book.putLog(new Log(id, key, id2));
-        book.putLog(new Log(id2, key2, new Path("self", refkey)));
-        book.putLog(new Log(id2, key3, new Path("self", [key4, new Path("self", refkey)])));
-        book.putLog(new Log(id2, key4, func("x", exp(plus, "x", new Path("self", refkey)))));
+        book.put(id, key, id2);
+        book.put(id2, key2, new Path("self", refkey));
+        book.put(id2, key3, new Path("self", [key4, new Path("self", refkey)]));
+        book.put(id2, key4, func("x", exp(plus, "x", new Path("self", refkey))));
 
         book.set("a", id);
         p2 = new Path("a", key, key2);
@@ -106,7 +105,7 @@ describe("Path", () => {
 
       context("referencing key exists", () => {
         beforeEach(() => {
-          book.putLog(new Log(id2, refkey, refval));
+          book.put(id2, refkey, refval);
         });
 
         it("should return the val", () => {
@@ -150,8 +149,8 @@ describe("Path", () => {
       const val2 = v(2);
 
       beforeEach(() => {
-        book.putLog(new Log(id, key, func("x", exp(plus, new Path("self", key2), "x"))));
-        book.putLog(new Log(id, key2, val2));
+        book.put(id, key, func("x", exp(plus, new Path("self", key2), "x")));
+        book.put(id, key2, val2);
         p = new Path(id, [key, v(3)]);
       });
 

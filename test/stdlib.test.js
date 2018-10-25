@@ -437,15 +437,12 @@ describe("stdlib", () => {
   context("accessing Log methods", () => {
     describe("all", () => {
       it("should return all logs", () => {
-        const log1 = new Log(new UUID(), "foo", v("hoge"));
-        book.putLog(log1);
-
-        const log2 = new Log(new UUID(), "bar", v("fuga"));
-        book.putLog(log2);
+        const rel1 = book.put(new UUID(), "foo", v("hoge"));
+        const rel2 = book.put(new UUID(), "bar", v("fuga"));
 
         const logs = path("Log", "all").reduce(book);
-        assert(logs.origin.some(l => l.equals(log1.logid)));
-        assert(logs.origin.some(l => l.equals(log2.logid)));
+        assert(logs.origin.some(l => l.equals(rel1)));
+        assert(logs.origin.some(l => l.equals(rel2)));
       });
     });
   });
