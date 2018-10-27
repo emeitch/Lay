@@ -747,16 +747,16 @@ describe("Book", () => {
       it("should run the returned act", () => {
         let b = 0;
         const alib = new Book();
-        alib.set("onPut", new Act(log => {
-          if (log.key.equals(v("foo"))) {
+        alib.set("onPut", new Act(edge => {
+          if (edge.label === "type" && edge.head.equals(v("foo"))) {
             b += 1;
           }
         }));
 
         let a = 0;
         const lib = new Book(alib);
-        lib.set("onPut", new Act(log => {
-          if (log.key.equals(v("foo"))) {
+        lib.set("onPut", new Act(edge => {
+          if (edge.label === "type" && edge.head.equals(v("foo"))) {
             a += 1;
           }
         }));

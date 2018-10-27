@@ -5,4 +5,13 @@ export default class Edge {
     this.head = head;
     this.rev = rev;
   }
+
+  object(book) {
+    return {
+      tail: this.tail.object(book),
+      label: this.label,
+      head: this.head.object(book),
+      rev: this.rev.object(book),
+    };
+  }
 }

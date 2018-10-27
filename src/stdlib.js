@@ -40,25 +40,27 @@ export const stdlib = new Book();
 
   stdlib.set("load", func(new LiftedNative(function() {
     const book = this;
-    return new Act(logsStr => {
-      const jsobj = logsStr ? JSON.parse(logsStr) : [];
-      const logs = parse(jsobj);
-      for (const log of logs) {
-        book.doPutLog(log);
+    return new Act(edgesStr => {
+      const jsobj = edgesStr ? JSON.parse(edgesStr) : [];
+      const edges = parse(jsobj);
+      for (const edge of edges) {
+        book.putEdge(edge.tail, edge.label, edge.head, edge.rev);
       }
     });
   })));
 
-  stdlib.set("filterLog", func("pattern", new LiftedNative(function(pattern) {
+  stdlib.set("filterEdge", func("pattern", new LiftedNative(function(pattern) {
     const book = this;
     const p = pattern.deepReduce(book).origin;
-    return new Act(log => {
+    return new Act(edge => {
       for (const type of Object.keys(p)) {
         const keys = p[type];
-        const logtype = path(log.id, "type").deepReduce(book);
-        const typename = book.name(logtype);
-        if ((logtype.origin === type || typename.origin === type) && keys.includes(log.key.origin)) {
-          return log;
+        const id = book.getEdgeHead(edge.tail, "subject");
+        const key = book.getEdgeHead(edge.tail, "type");
+        const idtype = path(id, "type").deepReduce(book);
+        const typename = book.name(idtype);
+        if ((idtype.origin === type || typename.origin === type) && keys.includes(key.origin)) {
+          return edge;
         } else {
           return null;
         }

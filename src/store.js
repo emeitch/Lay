@@ -1,5 +1,5 @@
 import UUID from './uuid';
-import Log from './log';
+import Edge from './edge';
 import { sym } from './sym';
 import { path } from './path';
 import v from './v';
@@ -49,15 +49,14 @@ function parseVal(raw) {
 }
 
 export function parse(raws) {
-  const logs = [];
+  const edges = [];
   for (const raw of raws) {
-    const id = parseVal(raw.id);
-    const key = parseVal(raw.key);
-    const val = parseVal(raw.val);
-    const at = parseVal(raw.at);
-    const logid = parseVal(raw.logid);
-    const log = new Log(id, key, val, at, raw.in, logid);
-    logs.push(log);
+    const tail = parseVal(raw.tail);
+    const label = raw.label;
+    const head = parseVal(raw.head);
+    const rev = parseVal(raw.rev);
+    const edge = new Edge(v(tail), label, v(head), rev);
+    edges.push(edge);
   }
-  return logs;
+  return edges;
 }

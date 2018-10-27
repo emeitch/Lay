@@ -3,7 +3,7 @@ import assert from 'assert';
 import { stdlib, n } from '../src/stdlib';
 import v from '../src/v';
 import UUID from '../src/uuid';
-import Log from '../src/log';
+import Edge from '../src/edge';
 import Book from '../src/book';
 import Act from '../src/act';
 import Path, { path } from '../src/path';
@@ -30,17 +30,20 @@ describe("stdlib", () => {
 
   describe("load", () => {
     it("should load prev act json string val to book", () => {
-      const id = new UUID();
-      const key = v("key");
-      const val = v(0);
+      const tail = new UUID();
+      const label = "foo";
+      const head = v(0);
+      const rev = new UUID();
       const act = new Act(() => {
         return JSON.stringify([
-          new Log(id, key, val).object(book),
+          new Edge(tail, label, head, rev).object(book),
         ]);
       });
       book.run(path(act, ["then", exp("load")]).deepReduce(book));
-      const rel = book.activeRel(id, key);
-      assert.deepStrictEqual(book.getEdgeHead(rel, "object"), val);
+
+      const edge = book.edges.find(e => e.tail.equals(tail));
+      assert.deepStrictEqual(edge.label, label);
+      assert.deepStrictEqual(edge.head, head);
     });
 
     it("should nothing to do without prev act json string", () => {
@@ -51,32 +54,33 @@ describe("stdlib", () => {
   });
 
 
-  describe("filterLog", () => {
+  describe("filterEdge", () => {
     it("should filter act arg log by pattern", () => {
       const id = new UUID();
-      const key = "key";
-      const val = v(0);
       book.put(id, "type", "Obj");
+      book.put(id, "key", v(1));
+      const edges = book.getEdgesBySubject(id);
+      const edgeForKey = edges[edges.length-1];
       const act = new Act(() => {
-        return new Log(id, key, val);
+        return edgeForKey;
       });
-      let passedLog;
-      const act2 = new Act(log => {
-        passedLog = log;
+      let passedEdge;
+      const act2 = new Act(edge => {
+        passedEdge = edge;
       });
-      book.run(path(act, ["then", exp("filterLog", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
-      assert(passedLog !== null);
+      book.run(path(act, ["then", exp("filterEdge", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
+      assert(passedEdge !== null);
 
 
       book.set("Obj", new UUID()); // type assigned
-      book.run(path(act, ["then", exp("filterLog", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
-      assert(passedLog !== null);
+      book.run(path(act, ["then", exp("filterEdge", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
+      assert(passedEdge !== null);
 
-      book.run(path(act, ["then", exp("filterLog", v({"Other": ["key"]}))], ["then", act2]).deepReduce(book));
-      assert(passedLog === null);
+      book.run(path(act, ["then", exp("filterEdge", v({"Other": ["key"]}))], ["then", act2]).deepReduce(book));
+      assert(passedEdge === null);
 
-      book.run(path(act, ["then", exp("filterLog", v({"Obj": ["other"]}))], ["then", act2]).deepReduce(book));
-      assert(passedLog === null);
+      book.run(path(act, ["then", exp("filterEdge", v({"Obj": ["other"]}))], ["then", act2]).deepReduce(book));
+      assert(passedEdge === null);
     });
   });
 

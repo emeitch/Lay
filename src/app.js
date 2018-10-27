@@ -560,13 +560,13 @@ const d = new Book(stdlib);
   d.put(eventListeners, "DOMContentLoaded", func("win",
     path(
       "todos", ["changeStateByHash", path("win", "location", "hash")],
-      ["then", path("localStorage", ["read", v("todos-lay")])],
+      ["then", path("localStorage", ["read", v("todos-lay-edges")])],
       ["then", exp("load")]
     )
   ));
   d.set("onPut", path(
-    exp("filterLog", v({"Task": ["type", "exists", "title", "state"]})),
-    ["then", path("localStorage", "appendLog")],
-    ["then", path("localStorage", ["write", v("todos-lay")])]
+    exp("filterEdge", v({"Task": ["type", "exists", "title", "state"]})),
+    ["then", path("localStorage", "appendEdge")],
+    ["then", path("localStorage", ["write", v("todos-lay-edges")])]
   ));
 }

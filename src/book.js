@@ -298,10 +298,12 @@ export default class Book {
 
     if (log.key === invalidate) {
       const positive = this.log(log.id);
-      const i = this.cacheIndex(positive.id, positive.key);
-      const il = this.invalidationLogsCache.get(i) || new Map();
-      il.set(log.logid, log);
-      this.invalidationLogsCache.set(i, il);
+      if (positive) {
+        const i = this.cacheIndex(positive.id, positive.key);
+        const il = this.invalidationLogsCache.get(i) || new Map();
+        il.set(log.logid, log);
+        this.invalidationLogsCache.set(i, il);
+      }
 
       this.putEdge(log.id, "to", v(new Date()));
     }
@@ -318,9 +320,9 @@ export default class Book {
     return e.rev;
   }
 
-  putEdge(tail, label, head) {
-    return this.doTransaction((_, putEdgeWithTranaction) => {
-      return putEdgeWithTranaction(tail, label, head);
+  putEdge(tail, label, head, rev) {
+    return this.doTransaction((_, putEdgeWithTransaction) => {
+      return putEdgeWithTransaction(tail, label, head, rev);
     });
   }
 
@@ -328,8 +330,8 @@ export default class Book {
     const tid = new UUID();
     const ttlog = new Log(tid, transactionTime, v(new Date()));
 
-    const appendEdge = (tail, label, head) => {
-      const edge = new Edge(tail, label, head, tid);
+    const appendEdge = (tail, label, head, rev) => {
+      const edge = new Edge(tail, label, head, rev || tid);
       this.edges.push(edge);
       this.syncEdgeCache(edge);
       return edge;
@@ -340,39 +342,44 @@ export default class Book {
       this.logs.set(log.logid, log);
       this.syncCache(log);
 
-      appendEdge(log.logid, "type", log.key);
-      appendEdge(log.logid, "subject", log.id);
-      appendEdge(log.logid, "object", log.val);
+      const edges = [];
+      edges.push(appendEdge(log.logid, "type", log.key));
+      edges.push(appendEdge(log.logid, "subject", log.id));
+      edges.push(appendEdge(log.logid, "object", log.val));
+      return edges;
     };
 
     appendLog(ttlog);
 
-    const putWithTransaction = log => {
-      appendLog(log);
+    const putWithTransaction = (...args) => {
+      const log = new Log(...args);
+      const edges = appendLog(log);
       const tlog = new Log(log.logid, transaction, tid);
-      appendLog(tlog);
-      return log;
+      edges.concat(appendLog(tlog));
+      return edges;
     };
 
-    const putEdgeWithTransaction = (tail, label, head) => {
-      return appendEdge(tail, label, head);
+    const putEdgeWithTransaction = (tail, label, head, rev) => {
+      return appendEdge(tail, label, head, rev);
     };
 
     return block(putWithTransaction, putEdgeWithTransaction);
   }
 
-  doPutLog(log) {
+  doPut(...args) {
     return this.doTransaction(putWithTransaction => {
-      return putWithTransaction(log);
+      return putWithTransaction(...args);
     });
   }
 
-  handleOnPut(log) {
+  handleOnPut(edges) {
     const rels = this.activeRels(v("onPut"), assign);
     for (const rel of rels) {
       const actexp = this.getEdgeHead(rel, "object");
       const act = actexp.reduce(this);
-      this.run(act, log);
+      for (const edge of edges) {
+        this.run(act, edge);
+      }
     }
   }
 
@@ -399,10 +406,9 @@ export default class Book {
       args[0] = this.getEdgeHead(rel, "object");
     }
 
-    const log = new Log(...args);
-    this.doPutLog(log);
-    this.handleOnPut(log);
-    return log.logid;
+    const edges = this.doPut(...args);
+    this.handleOnPut(edges);
+    return edges[0].tail; // todo: 返し方が微妙なので修正したい
   }
 
   putAct(...args) {
