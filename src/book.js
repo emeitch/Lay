@@ -177,8 +177,7 @@ export default class Book {
 
   set(name, id) {
     // todo: ユニーク制約をかけたい
-    const log = new Log(v(name), assign, id);
-    this.putLog(log);
+    this.put(v(name), assign, id);
   }
 
   name(id) {
@@ -377,12 +376,6 @@ export default class Book {
     }
   }
 
-  putLog(log) {
-    const result = this.doPutLog(log);
-    this.handleOnPut(log);
-    return result;
-  }
-
   putPath(pth) {
     const keys = [];
     const rels = [];
@@ -407,7 +400,8 @@ export default class Book {
     }
 
     const log = new Log(...args);
-    this.putLog(log);
+    this.doPutLog(log);
+    this.handleOnPut(log);
     return log.logid;
   }
 
@@ -417,13 +411,12 @@ export default class Book {
     });
   }
 
-  setAct(...args) {
+  setAct(id, key, val) {
     return new Act(() => {
-      const log = new Log(...args);
-      for (const rel of this.activeRels(log.id, log.key)) {
+      for (const rel of this.activeRels(id, key)) {
          this.put(rel, invalidate);
       }
-      return this.putLog(log);
+      return this.put(id, key, val);
     });
   }
 
