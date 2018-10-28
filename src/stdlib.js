@@ -44,7 +44,7 @@ export const stdlib = new Book();
       const jsobj = edgesStr ? JSON.parse(edgesStr) : [];
       const edges = parse(jsobj);
       for (const edge of edges) {
-        book.putEdge(edge.tail, edge.label, edge.head, edge.rev);
+        book.appendEdge(edge.tail, edge.label, edge.head, edge.rev);
       }
     });
   })));
