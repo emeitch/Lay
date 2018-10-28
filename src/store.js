@@ -42,6 +42,8 @@ function parseVal(raw) {
       return new UUID(raw.origin);
     } else if (klass.origin === "Path") {
       return path(...parseVal(raw.origin));
+    } else {
+      throw `unsupported type: ${JSON.stringify(raw)}`;
     }
   }
 
