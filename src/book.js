@@ -40,9 +40,10 @@ export default class Book {
     this.lay_logs = new Map();
   }
 
-  log(logid) {
-    return this.logs.get(logid);
-  }
+  // todo: invalidation対応で後日取り除く
+  // log(logid) {
+  //   return this.logs.get(logid);
+  // }
 
   cacheIndex(id, key) {
     key = v(key);
@@ -297,13 +298,14 @@ export default class Book {
     }
 
     if (log.key === invalidate) {
-      const positive = this.log(log.id);
-      if (positive) {
-        const i = this.cacheIndex(positive.id, positive.key);
-        const il = this.invalidationLogsCache.get(i) || new Map();
-        il.set(log.logid, log);
-        this.invalidationLogsCache.set(i, il);
-      }
+      // todo: invalidation対応で後日取り除く
+      // const positive = this.log(log.id);
+      // if (positive) {
+      //   const i = this.cacheIndex(positive.id, positive.key);
+      //   const il = this.invalidationLogsCache.get(i) || new Map();
+      //   il.set(log.logid, log);
+      //   this.invalidationLogsCache.set(i, il);
+      // }
 
       this.putEdge(log.id, "to", v(new Date()));
     }
