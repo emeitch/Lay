@@ -9,7 +9,7 @@ import Case from './case';
 import Act from './act';
 import Path, { path } from './path';
 import { exp } from './exp';
-import { assign, transaction, invalidate } from './ontology';
+import { assign, invalidate } from './ontology';
 
 export default class Book {
   constructor(...imports) {
@@ -159,11 +159,6 @@ export default class Book {
     this.put(id, "exists", v(true));
 
     return id;
-  }
-
-  transactionID(rel) {
-    const trel = this.activeRel(rel, transaction);
-    return this.getEdgeHead(trel, "subject");
   }
 
   get(name) {
@@ -354,8 +349,6 @@ export default class Book {
       const log = new Log(...args);
       const edges = appendLog(log);
 
-      const tlog = new Log(log.logid, transaction, tid);
-      edges.push(...appendLog(tlog));
       const talog = new Log(tid, "at", v(new Date()));
       edges.push(...appendLog(talog));
       const ttlog = new Log(tid, "type", path("Transaction"));

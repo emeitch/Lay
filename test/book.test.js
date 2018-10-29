@@ -405,24 +405,6 @@ describe("Book", () => {
     });
   });
 
-  describe("#transactionID", () => {
-    let tid;
-    beforeEach(() => {
-      const rel = book.put(id, key, val);
-      tid = book.transactionID(rel);
-    });
-
-    it("should return trasncation id", () => {
-      assert(tid instanceof UUID);
-    });
-
-    context("tid as arg", () => {
-      it("should return tid", () => {
-        assert.deepStrictEqual(book.transactionID(tid), tid);
-      });
-    });
-  });
-
   describe("#get", () => {
     context("name un assigned", () => {
       it("should return null", () => {
