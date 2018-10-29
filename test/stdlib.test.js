@@ -54,33 +54,36 @@ describe("stdlib", () => {
   });
 
 
-  describe("filterEdge", () => {
+  describe("filterEdges", () => {
     it("should filter act arg log by pattern", () => {
       const id = new UUID();
       book.put(id, "type", "Obj");
       book.put(id, "key", v(1));
       const edges = book.getEdgesBySubject(id);
-      const edgeForKey = edges[edges.length-1];
+      const revs = new Set(edges.map(e => e.rev));
+      for (const rev of revs) {
+        // transactions
+        edges.push(...book.getEdgesBySubject(rev));
+      }
       const act = new Act(() => {
-        return edgeForKey;
+        return edges;
       });
-      let passedEdge;
-      const act2 = new Act(edge => {
-        passedEdge = edge;
+      let passedEdges;
+      const act2 = new Act(edges => {
+        passedEdges = edges;
       });
-      book.run(path(act, ["then", exp("filterEdge", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
-      assert(passedEdge !== null);
-
+      book.run(path(act, ["then", exp("filterEdges", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
+      assert(passedEdges.length > 0);
 
       book.set("Obj", new UUID()); // type assigned
-      book.run(path(act, ["then", exp("filterEdge", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
-      assert(passedEdge !== null);
+      book.run(path(act, ["then", exp("filterEdges", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
+      assert(passedEdges.length > 0);
 
-      book.run(path(act, ["then", exp("filterEdge", v({"Other": ["key"]}))], ["then", act2]).deepReduce(book));
-      assert(passedEdge === null);
+      book.run(path(act, ["then", exp("filterEdges", v({"Other": ["key"]}))], ["then", act2]).deepReduce(book));
+      assert.deepStrictEqual(passedEdges, []);
 
-      book.run(path(act, ["then", exp("filterEdge", v({"Obj": ["other"]}))], ["then", act2]).deepReduce(book));
-      assert(passedEdge === null);
+      book.run(path(act, ["then", exp("filterEdges", v({"Obj": ["other"]}))], ["then", act2]).deepReduce(book));
+      assert.deepStrictEqual(passedEdges, []);
     });
   });
 
