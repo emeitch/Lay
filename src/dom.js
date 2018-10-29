@@ -148,18 +148,14 @@ dom.put(
 );
 dom.put(
   localStorage,
-  "appendEdge",
+  "appendEdges",
   func(
-    new LiftedNative(function() {
-      return new Act(edge => {
-        if (edge) {
-          const storageKey = "todos-lay-edges";
-          const storage = JSON.parse(window.localStorage.getItem(storageKey)) || [];
-          storage.push(edge.object(this));
-          return JSON.stringify(storage);
-        } else {
-          return null;
-        }
+    new LiftedNative(function(key) {
+      const k = key.deepReduce(this);
+      return new Act(edges => {
+        const storage = JSON.parse(window.localStorage.getItem(k.origin)) || [];
+        storage.push(...edges.map(e => e.object(this)));
+        return JSON.stringify(storage);
       });
     })
   )

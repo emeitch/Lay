@@ -337,7 +337,6 @@ export default class Book {
 
   doTransaction(block) {
     const tid = new UUID();
-    const ttlog = new Log(tid, "at", v(new Date()));
 
     // todo: アトミックな操作に修正する
     const appendLog = (log) => {
@@ -351,13 +350,17 @@ export default class Book {
       return edges;
     };
 
-    appendLog(ttlog);
-
     const putWithTransaction = (...args) => {
       const log = new Log(...args);
       const edges = appendLog(log);
+
       const tlog = new Log(log.logid, transaction, tid);
-      edges.concat(appendLog(tlog));
+      edges.push(...appendLog(tlog));
+      const talog = new Log(tid, "at", v(new Date()));
+      edges.push(...appendLog(talog));
+      const ttlog = new Log(tid, "type", path("Transaction"));
+      edges.push(...appendLog(ttlog));
+
       return edges;
     };
 
@@ -379,9 +382,7 @@ export default class Book {
     for (const rel of rels) {
       const actexp = this.getEdgeHead(rel, "object");
       const act = actexp.reduce(this);
-      for (const edge of edges) {
-        this.run(act, edge);
-      }
+      this.run(act, edges);
     }
   }
 

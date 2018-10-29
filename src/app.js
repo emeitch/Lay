@@ -565,8 +565,8 @@ const d = new Book(stdlib);
     )
   ));
   d.set("onPut", path(
-    exp("filterEdge", v({"Task": ["type", "exists", "title", "state"]})),
-    ["then", path("localStorage", "appendEdge")],
+    exp("filterEdges", v({"Task": ["type", "exists", "title", "state"]})),
+    ["then", path("localStorage", ["appendEdges", v("todos-lay-edges")])],
     ["then", path("localStorage", ["write", v("todos-lay-edges")])]
   ));
 }

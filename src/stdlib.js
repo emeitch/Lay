@@ -49,22 +49,31 @@ export const stdlib = new Book();
     });
   })));
 
-  stdlib.set("filterEdge", func("pattern", new LiftedNative(function(pattern) {
+  stdlib.set("filterEdges", func("pattern", new LiftedNative(function(pattern) {
     const book = this;
     const p = pattern.deepReduce(book).origin;
-    return new Act(edge => {
-      for (const type of Object.keys(p)) {
-        const keys = p[type];
+    return new Act(edges => {
+      const filtered = [];
+      for (const edge of edges) {
         const id = book.getEdgeHead(edge.tail, "subject");
         const key = book.getEdgeHead(edge.tail, "type");
         const idtype = path(id, "type").deepReduce(book);
         const typename = book.name(idtype);
-        if ((idtype.origin === type || typename.origin === type) && keys.includes(key.origin)) {
-          return edge;
-        } else {
-          return null;
+
+        if (filtered.find(e => e.rev.equals(id))) {
+          filtered.push(edge);
+          continue;
+        }
+
+        for (const type of Object.keys(p)) {
+          const keys = p[type];
+          if ((idtype.origin === type || typename.origin === type) && keys.includes(key.origin)) {
+            filtered.push(edge);
+            break;
+          }
         }
       }
+      return filtered;
     });
   })));
 }
