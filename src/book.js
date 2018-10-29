@@ -9,7 +9,7 @@ import Case from './case';
 import Act from './act';
 import Path, { path } from './path';
 import { exp } from './exp';
-import { assign, transaction, transactionTime, invalidate } from './ontology';
+import { assign, transaction, invalidate } from './ontology';
 
 export default class Book {
   constructor(...imports) {
@@ -337,7 +337,7 @@ export default class Book {
 
   doTransaction(block) {
     const tid = new UUID();
-    const ttlog = new Log(tid, transactionTime, v(new Date()));
+    const ttlog = new Log(tid, "at", v(new Date()));
 
     // todo: アトミックな操作に修正する
     const appendLog = (log) => {

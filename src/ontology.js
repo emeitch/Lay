@@ -5,5 +5,3 @@ export const invalidate = new UUID();
 export const assign = new UUID();
 
 export const transaction = new UUID();
-
-export const transactionTime = new UUID();
