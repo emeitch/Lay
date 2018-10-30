@@ -42,7 +42,7 @@ describe("stdlib", () => {
       book.run(path(act, ["then", exp("load")]).deepReduce(book));
 
       const edge = book.edges.find(e => e.tail.equals(tail));
-      assert.deepStrictEqual(edge.label, label);
+      assert.deepStrictEqual(edge.label, v(label));
       assert.deepStrictEqual(edge.head, head);
     });
 

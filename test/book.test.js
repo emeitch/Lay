@@ -53,19 +53,19 @@ describe("Book", () => {
       it("should append edges", () => {
         assert(book.edges.some(e =>
           e.tail === rel &&
-          e.label === "type" &&
+          e.label.equals(v("type")) &&
           e.head === key
         ));
 
         assert(book.edges.some(e =>
           e.tail === rel &&
-          e.label === "subject" &&
+          e.label.equals(v("subject")) &&
           e.head === id
         ));
 
         assert(book.edges.some(e =>
           e.tail === rel &&
-          e.label === "object" &&
+          e.label.equals(v("object")) &&
           e.head === val
         ));
       });
@@ -104,7 +104,7 @@ describe("Book", () => {
     it("should return a edge which has argument tail and label", () => {
       const e = book.getEdgeByTailAndLabel(rel, "object");
       assert.deepStrictEqual(e.tail, rel);
-      assert.deepStrictEqual(e.label, "object");
+      assert.deepStrictEqual(e.label, v("object"));
       assert.deepStrictEqual(e.head, val);
     });
 
@@ -730,7 +730,7 @@ describe("Book", () => {
         let b = 0;
         const alib = new Book();
         alib.set("onPut", new Act(edges => {
-          if (edges.find(e => e.label === "type" && e.head.equals(v("foo")))) {
+          if (edges.find(e => e.label.equals(v("type")) && e.head.equals(v("foo")))) {
             b += 1;
           }
         }));
@@ -738,7 +738,7 @@ describe("Book", () => {
         let a = 0;
         const lib = new Book(alib);
         lib.set("onPut", new Act(edges => {
-          if (edges.find(e => e.label === "type" && e.head.equals(v("foo")))) {
+          if (edges.find(e => e.label.equals(v("type")) && e.head.equals(v("foo")))) {
             a += 1;
           }
         }));

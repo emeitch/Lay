@@ -16,7 +16,7 @@ describe("parse", () => {
     }]);
 
     assert.deepStrictEqual(edges[0].tail, new UUID("uuidexample"));
-    assert.deepStrictEqual(edges[0].label, "foo");
+    assert.deepStrictEqual(edges[0].label, v("foo"));
     assert.deepStrictEqual(edges[0].head, v(1));
     assert.deepStrictEqual(edges[0].rev, new UUID("rev1"));
   });

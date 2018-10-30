@@ -1,6 +1,7 @@
 import assert from 'assert';
 
 import Edge from '../src/edge';
+import v from '../src/v';
 
 describe("Edge", () => {
   describe("#constructor", () => {
@@ -8,12 +9,13 @@ describe("Edge", () => {
       const tail = {};
       const label = "label1";
       const head = {};
-      const e = new Edge(tail, label, head);
+      const rev = {};
+      const e = new Edge(tail, label, head, rev);
 
       assert(e.tail === tail);
-      assert(e.label === label);
+      assert.deepStrictEqual(e.label, v(label));
       assert(e.head === head);
-      assert(e.rev === null);
+      assert(e.rev === rev);
     });
 
     context("with revision", () => {
@@ -25,7 +27,7 @@ describe("Edge", () => {
         const e = new Edge(tail, label, head, rev);
 
         assert(e.tail === tail);
-        assert(e.label === label);
+        assert.deepStrictEqual(e.label, v(label));
         assert(e.head === head);
         assert(e.rev === rev);
       });

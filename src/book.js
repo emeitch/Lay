@@ -181,7 +181,8 @@ export default class Book {
     return rels.length > 0 ? this.getEdgeHead(rels[0], "subject") : v(null);
   }
 
-  getEdgeByTailAndLabel(tail, label) {
+  getEdgeByTailAndLabel(tail, labelSrc) {
+    const label = v(labelSrc);
     const i = this.cacheIndex(tail, label);
     const edge = this.edgeByTailAndLabelCache.get(i);
     if (edge) {
@@ -203,7 +204,8 @@ export default class Book {
     return edge && edge.head;
   }
 
-  getEdgesByLabelAndHead(label, head) {
+  getEdgesByLabelAndHead(labelSrc, head) {
+    const label = v(labelSrc);
     const i = this.cacheIndex(label, head);
     const results = [];
     const edges = this.edgesByLabelAndHeadCache.get(i) || [];
@@ -243,14 +245,14 @@ export default class Book {
       this.edgesByLabelAndHeadCache.set(i, edges);
     }
 
-    if (edge.label === "subject") {
+    if (edge.label.equals(v("subject"))) {
       const i = Val.stringify(edge.head);
       const edges = this.edgesBySubjectCache.get(i) || [];
       edges.push(edge);
       this.edgesBySubjectCache.set(i, edges);
     }
 
-    if (edge.label === "object") {
+    if (edge.label.equals(v("object"))) {
       const i = Val.stringify(edge.head);
       const edges = this.edgesByObjectCache.get(i) || [];
       edges.push(edge);
