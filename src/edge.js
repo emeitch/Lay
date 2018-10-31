@@ -2,7 +2,7 @@ import v from './v';
 
 export default class Edge {
   constructor(tail, label, head, rev) {
-    this.tail = tail;
+    this.tail = v(tail);
     this.label = v(label);
     this.head = head;
     this.rev = rev;
