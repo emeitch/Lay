@@ -4,7 +4,7 @@ export default class Edge {
   constructor(tail, label, head, rev) {
     this.tail = v(tail);
     this.label = v(label);
-    this.head = head;
+    this.head = v(head);
     this.rev = rev;
   }
 

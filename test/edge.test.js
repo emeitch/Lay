@@ -9,13 +9,13 @@ describe("Edge", () => {
     it("should return a Edge object", () => {
       const tail = new UUID();
       const label = "label1";
-      const head = {};
+      const head = new UUID();
       const rev = {};
       const e = new Edge(tail, label, head, rev);
 
       assert.deepStrictEqual(e.tail, tail);
       assert.deepStrictEqual(e.label, v(label));
-      assert(e.head === head);
+      assert.deepStrictEqual(e.head, head);
       assert(e.rev === rev);
     });
 
@@ -23,13 +23,13 @@ describe("Edge", () => {
       it("should return a Edge object with rev", () => {
         const tail = new UUID();
         const label = "label1";
-        const head = {};
+        const head = new UUID();
         const rev = {};
         const e = new Edge(tail, label, head, rev);
 
         assert.deepStrictEqual(e.tail, tail);
         assert.deepStrictEqual(e.label, v(label));
-        assert(e.head === head);
+        assert.deepStrictEqual(e.head, head);
         assert(e.rev === rev);
       });
     });
