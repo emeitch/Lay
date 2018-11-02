@@ -10,13 +10,13 @@ describe("Edge", () => {
       const tail = new UUID();
       const label = "label1";
       const head = new UUID();
-      const rev = {};
+      const rev = new UUID();
       const e = new Edge(tail, label, head, rev);
 
       assert.deepStrictEqual(e.tail, tail);
       assert.deepStrictEqual(e.label, v(label));
       assert.deepStrictEqual(e.head, head);
-      assert(e.rev === rev);
+      assert.deepStrictEqual(e.rev, rev);
     });
 
     context("with revision", () => {
@@ -24,13 +24,13 @@ describe("Edge", () => {
         const tail = new UUID();
         const label = "label1";
         const head = new UUID();
-        const rev = {};
+        const rev = new UUID();
         const e = new Edge(tail, label, head, rev);
 
         assert.deepStrictEqual(e.tail, tail);
         assert.deepStrictEqual(e.label, v(label));
         assert.deepStrictEqual(e.head, head);
-        assert(e.rev === rev);
+        assert.deepStrictEqual(e.rev, rev);
       });
     });
   });

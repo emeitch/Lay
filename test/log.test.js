@@ -1,8 +1,6 @@
 import assert from 'assert';
-import _ from 'lodash';
 
 import UUID from '../src/uuid';
-import Edge from '../src/edge';
 import Log, { n } from '../src/log';
 import { path } from '../src/path';
 import { pack } from '../src/pack';
@@ -45,15 +43,6 @@ describe("Log", () => {
       assert.deepStrictEqual(l.id, v("foo"));
       assert.deepStrictEqual(l.key, v("bar"));
       assert.deepStrictEqual(l.val, v("baz"));
-    });
-  });
-
-  describe("edges", () => {
-    it("should return edges", () => {
-      assert(log.edges.some(e => _.isEqual(e, new Edge(log.logid, "type", key))));
-      assert(log.edges.some(e => _.isEqual(e, new Edge(log.logid, "subject", id))));
-      assert(log.edges.some(e => _.isEqual(e, new Edge(log.logid, "object", val))));
-      assert(log.edges.some(e => _.isEqual(e, new Edge(log.logid, "at", log.at))));
     });
   });
 

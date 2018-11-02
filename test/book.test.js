@@ -4,7 +4,6 @@ import _ from 'underscore';
 import v from '../src/v';
 import UUID from '../src/uuid';
 import LID from '../src/lid';
-import Edge from '../src/edge';
 import Book from '../src/book';
 import Act from '../src/act';
 import { path } from '../src/path';
@@ -475,20 +474,9 @@ describe("Book", () => {
 
   describe("#putEdge", () => {
     it("should append a edge", () => {
-      const edge = book.putEdge(new UUID(), "subject", new UUID());
+      const edge = book.putEdge(new UUID(), "subject", new UUID(), new UUID());
 
       assert(book.edges.some(e => e === edge));
-    });
-  });
-
-  describe("#transactionIdFromEdge", () => {
-    it("should return transaction id by edge argument", () => {
-      const tail = new UUID();
-      const label = "subject";
-      const head = new UUID();
-      const edge = book.putEdge(tail, label, head);
-
-      assert.deepStrictEqual(book.transactionIdFromEdge(new Edge(tail, label, head)), edge.rev);
     });
   });
 
@@ -538,7 +526,7 @@ describe("Book", () => {
       context("set valid start time to the last edge", () => {
         beforeEach(() => {
           const rels = book.activeRels(id, key);
-          book.putEdge(rels[1], "from", v(new Date("2018-08-01T00:00:00")));
+          book.putEdge(rels[1], "from", v(new Date("2018-08-01T00:00:00")), new UUID());
         });
 
         context("after from", () => {
@@ -586,7 +574,7 @@ describe("Book", () => {
 
       context("set valid end time to the last edge", () => {
         beforeEach(() => {
-          book.putEdge(rel1, "to", v(new Date()));
+          book.putEdge(rel1, "to", v(new Date()), new UUID());
         });
 
         describe("#relsByTypeAndObject", () => {

@@ -294,29 +294,11 @@ export default class Book {
       this.activeLogsCache.set(i, al);
     }
 
-    if (log.key === invalidate) {
-      // todo: invalidation対応で後日取り除く
-      // const positive = this.log(log.id);
-      // if (positive) {
-      //   const i = this.cacheIndex(positive.id, positive.key);
-      //   const il = this.invalidationLogsCache.get(i) || new Map();
-      //   il.set(log.logid, log);
-      //   this.invalidationLogsCache.set(i, il);
-      // }
-
-      this.putEdge(log.id, "to", v(new Date()));
-    }
-
     {
       const i = this.cacheIndex(log.val, log.key);
       const ids = [...this.dereferenceCache.get(i) || [], log.id];
       this.dereferenceCache.set(i, ids);
     }
-  }
-
-  transactionIdFromEdge(edge) {
-    const e = this.getEdgeByTailAndLabel(edge.tail, edge.label);
-    return e.rev;
   }
 
   putEdge(tail, label, head, rev) {
@@ -340,6 +322,19 @@ export default class Book {
       this.logs.set(log.logid, log);
       this.syncCache(log);
 
+      if (log.key === invalidate) {
+        // todo: invalidation対応で後日取り除く
+        // const positive = this.log(log.id);
+        // if (positive) {
+        //   const i = this.cacheIndex(positive.id, positive.key);
+        //   const il = this.invalidationLogsCache.get(i) || new Map();
+        //   il.set(log.logid, log);
+        //   this.invalidationLogsCache.set(i, il);
+        // }
+
+        this.putEdge(log.id, "to", v(new Date()), tid);
+      }
+
       const edges = [];
       edges.push(this.appendEdge(log.logid, "type", log.key, tid));
       edges.push(this.appendEdge(log.logid, "subject", log.id, tid));
@@ -360,7 +355,7 @@ export default class Book {
     };
 
     const putEdgeWithTransaction = (tail, label, head, rev) => {
-      return this.appendEdge(tail, label, head, rev);
+      return this.appendEdge(tail, label, head, rev || tid);
     };
 
     return block(putWithTransaction, putEdgeWithTransaction);

@@ -5,7 +5,7 @@ export default class Edge {
     this.tail = v(tail);
     this.label = v(label);
     this.head = v(head);
-    this.rev = rev;
+    this.rev = v(rev);
   }
 
   object(book) {
