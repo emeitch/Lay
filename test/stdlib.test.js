@@ -441,19 +441,6 @@ describe("stdlib", () => {
     });
   });
 
-  context("accessing Log methods", () => {
-    describe("all", () => {
-      it("should return all logs", () => {
-        const rel1 = book.put(new UUID(), "foo", v("hoge"));
-        const rel2 = book.put(new UUID(), "bar", v("fuga"));
-
-        const logs = path("Log", "all").reduce(book);
-        assert(logs.origin.some(l => l.equals(rel1)));
-        assert(logs.origin.some(l => l.equals(rel2)));
-      });
-    });
-  });
-
   context("accessing Book methods", () => {
     describe("Book", () => {
       it("should return a Book type object", () => {

@@ -3,7 +3,6 @@ import v from './v';
 import UUID from './uuid';
 import LID from './lid';
 import Edge from './edge';
-import Log from './log';
 import Comp from './comp';
 import Case from './case';
 import Act from './act';
@@ -286,21 +285,6 @@ export default class Book {
     }
   }
 
-  syncCache(log) {
-    {
-      const i = this.cacheIndex(log.id, log.key);
-      const al = this.activeLogsCache.get(i) || new Map();
-      al.set(log.logid, log);
-      this.activeLogsCache.set(i, al);
-    }
-
-    {
-      const i = this.cacheIndex(log.val, log.key);
-      const ids = [...this.dereferenceCache.get(i) || [], log.id];
-      this.dereferenceCache.set(i, ids);
-    }
-  }
-
   putEdge(tail, label, head, rev) {
     return this.doTransaction((_, putEdgeWithTransaction) => {
       return putEdgeWithTransaction(tail, label, head, rev);
@@ -318,39 +302,27 @@ export default class Book {
     const tid = new UUID();
 
     // todo: アトミックな操作に修正する
-    const appendLog = (log) => {
-      this.logs.set(log.logid, log);
-      this.syncCache(log);
+    const append = (id, key, val) => {
+      const tail = new UUID();
 
-      if (log.key === invalidate) {
-        // todo: invalidation対応で後日取り除く
-        // const positive = this.log(log.id);
-        // if (positive) {
-        //   const i = this.cacheIndex(positive.id, positive.key);
-        //   const il = this.invalidationLogsCache.get(i) || new Map();
-        //   il.set(log.logid, log);
-        //   this.invalidationLogsCache.set(i, il);
-        // }
-
-        this.putEdge(log.id, "to", v(new Date()), tid);
+      if (key === invalidate) {
+        this.putEdge(id, "to", v(new Date()), tid);
       }
 
       const edges = [];
-      edges.push(this.appendEdge(log.logid, "type", log.key, tid));
-      edges.push(this.appendEdge(log.logid, "subject", log.id, tid));
-      edges.push(this.appendEdge(log.logid, "object", log.val, tid));
+      edges.push(this.appendEdge(tail, "type", key, tid));
+      edges.push(this.appendEdge(tail, "subject", id, tid));
+      if (val !== undefined) {
+        edges.push(this.appendEdge(tail, "object", val, tid));
+      }
       return edges;
     };
 
     const putWithTransaction = (...args) => {
-      const log = new Log(...args);
-      const edges = appendLog(log);
-
-      const talog = new Log(tid, "at", v(new Date()));
-      edges.push(...appendLog(talog));
-      const ttlog = new Log(tid, "type", path("Transaction"));
-      edges.push(...appendLog(ttlog));
-
+      const edges = [];
+      edges.push(...append(...args));
+      edges.push(...append(tid, "at", v(new Date())));
+      edges.push(...append(tid, "type", path("Transaction")));
       return edges;
     };
 
@@ -496,12 +468,6 @@ export default class Book {
     });
   }
 
-  derefer(pth, key) {
-    const i = this.cacheIndex(pth, key);
-    const logs = this.dereferenceCache.get(i);
-    return v(logs);
-  }
-
   instanceIDs(id) {
     const name = this.name(id);
     if (name.origin === null) {
@@ -538,14 +504,5 @@ export default class Book {
     }
 
     return act ? act.val : null;
-  }
-
-  logIDs() {
-    const logids = [];
-    for (const [, log] of this.logs) {
-      logids.push(log.logid);
-    }
-
-    return logids.concat(this.imports.reduce((r, i) => r.concat(i.logIDs()), []));
   }
 }

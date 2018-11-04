@@ -331,19 +331,6 @@ export const stdlib = new Book();
 }
 
 {
-  const log = new UUID();
-  stdlib.set("Log", log);
-
-  stdlib.put(
-    log,
-    "all",
-    func(new LiftedNative(function() {
-      return v(this.logIDs());
-    }))
-  );
-}
-
-{
   const app = new UUID();
   stdlib.set("App", app);
 }

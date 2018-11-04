@@ -318,21 +318,6 @@ describe("Book", () => {
     });
   });
 
-  describe("#derefer", () => {
-    it("should return objs that dereferd by path and key", () => {
-      const key1 = new UUID();
-      book.exist(key1);
-
-      book.put(book.root, v("foo"), path(key1));
-
-      const key2 = new UUID();
-      const rel = book.exist(key2);
-      book.put(book.getEdgeHead(rel, "object"), v("foo"), path(key1));
-
-      assert.deepStrictEqual(book.derefer(path(key1), v("foo")), v([book.root, book.getEdgeHead(rel, "object")]));
-    });
-  });
-
   describe("#query", () => {
     it("should retrieve absolute keys and reduce path", () => {
       const key1 = new UUID();
@@ -682,7 +667,6 @@ describe("Book", () => {
       assert(book.getEdgesByLabelAndHead("object", v(3)).some(e => e.tail.equals(rel)));
 
       assert.deepStrictEqual(book.get("bar"), v(4));
-      assert(book.logIDs().some(lid => lid.equals(rel)));
 
       assert(book.activeRels(id2, v("nothing")).length === 0);
       assert(book.activeRelsByTypeAndObject(v("nothing"), v(3)).length === 0);
