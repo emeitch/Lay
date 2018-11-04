@@ -22,12 +22,9 @@ export default class Book {
 
     this.id = new UUID();
     this.root = new LID();
-    this.logs = new Map();
     this.keysCache = new Map();
     this.parentsCache = new Map();
-    this.dereferenceCache = new Map();
-    this.activeLogsCache = new Map();
-    this.invalidationLogsCache = new Map();
+
     this.imports = [];
     for (const i of imports) {
       this.import(i);
@@ -35,8 +32,6 @@ export default class Book {
 
     this.set("currentBookId", this.id);
     this.put(this.id, "type", path("Book"));
-
-    this.lay_logs = new Map();
   }
 
   // todo: invalidation対応で後日取り除く

@@ -47,9 +47,9 @@ describe("stdlib", () => {
     });
 
     it("should nothing to do without prev act json string", () => {
-      const length = book.logs.length;
+      const length = book.edges.length;
       book.run(exp("load").deepReduce(book));
-      assert(length === book.logs.length);
+      assert(length === book.edges.length);
     });
   });
 
