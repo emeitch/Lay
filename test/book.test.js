@@ -534,6 +534,25 @@ describe("Book", () => {
     });
   });
 
+  describe("#invalidate", () => {
+    context("put with same ids & keys but different vals", () => {
+      let rel0;
+      let rel1;
+      beforeEach(() => {
+        rel0 = book.put(id, key, v("val0"));
+        rel1 = book.put(id, key, v("val1"));
+      });
+
+      it("should invalidate a rel", () => {
+        book.invalidate(rel1);
+
+        const rels = book.activeRels(id, key);
+        assert(rels[0].equals(rel0));
+        assert(!rels[1]);
+      });
+    });
+  });
+
   describe("#activeRelsByTypeAndObject and #relsByTypeAndObject", () => {
     context("no rels", () => {
       it("should return empty", () => {

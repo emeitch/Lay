@@ -293,6 +293,12 @@ export default class Book {
     return edge;
   }
 
+  invalidate(rel) {
+    return this.doTransaction((_, __, invalidateWithTransaction) => {
+      return invalidateWithTransaction(rel);
+    });
+  }
+
   doTransaction(block) {
     const tid = new UUID();
 
@@ -313,6 +319,10 @@ export default class Book {
       return edges;
     };
 
+    const invalidateWithTransaction = rel => {
+      return this.putEdge(rel, "to", v(new Date()), tid);
+    };
+
     const putWithTransaction = (...args) => {
       const edges = [];
       edges.push(...append(...args));
@@ -325,7 +335,7 @@ export default class Book {
       return this.appendEdge(tail, label, head, rev || tid);
     };
 
-    return block(putWithTransaction, putEdgeWithTransaction);
+    return block(putWithTransaction, putEdgeWithTransaction, invalidateWithTransaction);
   }
 
   doPut(...args) {
