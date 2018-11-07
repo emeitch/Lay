@@ -8,7 +8,7 @@ import Case from './case';
 import Act from './act';
 import Path, { path } from './path';
 import { exp } from './exp';
-import { assign, invalidate } from './ontology';
+import { assign } from './ontology';
 
 export default class Book {
   constructor(...imports) {
@@ -305,11 +305,6 @@ export default class Book {
     // todo: アトミックな操作に修正する
     const append = (id, key, val) => {
       const tail = new UUID();
-
-      if (key === invalidate) {
-        this.appendEdge(id, "to", v(new Date()), tid);
-      }
-
       const edges = [];
       edges.push(this.appendEdge(tail, "type", key, tid));
       edges.push(this.appendEdge(tail, "subject", id, tid));
@@ -390,7 +385,7 @@ export default class Book {
   setAct(id, key, val) {
     return new Act(() => {
       for (const rel of this.activeRels(id, key)) {
-         this.put(rel, invalidate);
+        this.invalidate(rel);
       }
       return this.put(id, key, val);
     });

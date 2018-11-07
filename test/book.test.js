@@ -70,6 +70,16 @@ describe("Book", () => {
       });
     });
 
+    context("without object", () => {
+      it("should append a rel", () => {
+        const rel = book.put(id, "foo");
+
+        assert.deepStrictEqual(book.getEdgeHead(rel, "subject"), id);
+        assert.deepStrictEqual(book.getEdgeHead(rel, "type"), v("foo"));
+        assert.deepStrictEqual(book.getEdgeHead(rel, "object"), undefined);
+      });
+    });
+
     context("path as id", () => {
       it("should append a rel", () => {
         const pth = path(id, "foo");
