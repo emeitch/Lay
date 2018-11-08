@@ -15,8 +15,6 @@ export default class Book {
     this.edges = [];
     this.edgeByTailAndLabelCache = new Map();
     this.edgesByLabelAndHeadCache = new Map();
-    this.edgesBySubjectCache = new Map();
-    this.edgesByObjectCache = new Map();
     this.relsCache = new Map();
     this.relsByTypeAndObjectCache = new Map();
 
@@ -212,13 +210,11 @@ export default class Book {
   }
 
   getEdgesBySubject(subject) {
-    const i = Val.stringify(subject);
-    return this.edgesBySubjectCache.get(i) || [];
+    return this.getEdgesByLabelAndHead("subject", subject);
   }
 
   getEdgesByObject(object) {
-    const i = Val.stringify(object);
-    return this.edgesByObjectCache.get(i) || [];
+    return this.getEdgesByLabelAndHead("object", object);
   }
 
   syncEdgeCache(edge) {
@@ -232,20 +228,6 @@ export default class Book {
       const edges = this.edgesByLabelAndHeadCache.get(i) || [];
       edges.push(edge);
       this.edgesByLabelAndHeadCache.set(i, edges);
-    }
-
-    if (edge.label.equals(v("subject"))) {
-      const i = Val.stringify(edge.head);
-      const edges = this.edgesBySubjectCache.get(i) || [];
-      edges.push(edge);
-      this.edgesBySubjectCache.set(i, edges);
-    }
-
-    if (edge.label.equals(v("object"))) {
-      const i = Val.stringify(edge.head);
-      const edges = this.edgesByObjectCache.get(i) || [];
-      edges.push(edge);
-      this.edgesByObjectCache.set(i, edges);
     }
 
     {
