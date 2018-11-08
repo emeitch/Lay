@@ -34,11 +34,6 @@ export default class Book {
     this.put(this.id, "type", path("Book"));
   }
 
-  // todo: invalidation対応で後日取り除く
-  // log(logid) {
-  //   return this.logs.get(logid);
-  // }
-
   cacheIndex(id, key) {
     key = v(key);
     return Val.stringify(id) + "__" + Val.stringify(key);
