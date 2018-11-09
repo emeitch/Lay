@@ -122,6 +122,23 @@ describe("Book", () => {
         assert.deepStrictEqual(book.getEdgeByTailAndLabel(new UUID(), new UUID()), undefined);
       });
     });
+
+    context("duplicate labels", () => {
+      it("should return a latest edge", () => {
+        const tail = new UUID();
+        const head0 = new UUID();
+        const edge0 = book.putEdge(tail, "subject", head0, new UUID());
+
+        const head1 = new UUID();
+        const edge1 = book.putEdge(tail, "subject", head1, new UUID());
+
+        assert(book.edges.some(e => e === edge0));
+        assert(book.edges.some(e => e === edge1));
+
+        // latest edge
+        assert(book.getEdgeByTailAndLabel(tail, "subject"), edge1);
+      });
+    });
   });
 
   describe("getEdgeHead", () => {
