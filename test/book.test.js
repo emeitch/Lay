@@ -102,6 +102,21 @@ describe("Book", () => {
         });
       });
     });
+
+    it("should put for first imported book", () => {
+      const id = new UUID();
+
+      const importer = new Book();
+      importer.put(id, "k1", v("v1"));
+      assert(book.activeRels(id, v("k1")).length == 0);
+      assert(importer.activeRels(id, v("k1")).length == 1);
+
+      importer.import(book);
+
+      importer.put(id, "k2", v("v2"));
+      assert(book.activeRels(id, v("k2")).length == 0);
+      assert(importer.activeRels(id, v("k2")).length == 1);
+    });
   });
 
   describe("getEdgeByTailAndLabel", () => {
@@ -809,30 +824,6 @@ describe("Book", () => {
         const book = new Book();
         assert.throws(() => book.run(v([1])), /not Act instance:/);
       });
-    });
-  });
-});
-
-describe("Book", () => {
-  let book;
-  beforeEach(() => {
-    book = new Book();
-  });
-
-  describe("putLog", () => {
-    it("should put for first imported book", () => {
-      const id = new UUID();
-
-      const importer = new Book();
-      importer.put(id, "k1", v("v1"));
-      assert(book.activeRels(id, v("k1")).length == 0);
-      assert(importer.activeRels(id, v("k1")).length == 1);
-
-      importer.import(book);
-
-      importer.put(id, "k2", v("v2"));
-      assert(book.activeRels(id, v("k2")).length == 0);
-      assert(importer.activeRels(id, v("k2")).length == 1);
     });
   });
 });
