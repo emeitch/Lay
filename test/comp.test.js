@@ -207,3 +207,27 @@ describe("Comp", () => {
     });
   });
 });
+
+describe("CompDate", () => {
+  describe("#type", () => {
+    it("should return a sym to Date", () => {
+      const cd = v(new Date());
+      assert.deepStrictEqual(cd.type, sym("Date"));
+    });
+  });
+
+  describe("#object", () => {
+    it("should return a sym to Date", () => {
+      const date = new Date("2018-01-01T00:00:00z");
+      const cd = v(date);
+
+      const book = new Book();
+      assert.deepStrictEqual(cd.object(book), {
+        origin: "2018-01-01T00:00:00.000Z",
+        type: {
+          origin: "Date",
+        },
+      });
+    });
+  });
+});
