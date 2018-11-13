@@ -14,6 +14,9 @@ const subjectLabel = "subject";
 const typeLabel = "type";
 const objectLabel = "object";
 
+const fromLabel = "from";
+const toLabel = "to";
+
 export default class Book {
   constructor(...imports) {
     this.edges = [];
@@ -77,8 +80,8 @@ export default class Book {
 
   active(rels, at=new Date()) {
     return rels.filter(r => {
-      const from = this.getEdgeHead(r, "from");
-      const to = this.getEdgeHead(r, "to");
+      const from = this.getEdgeHead(r, fromLabel);
+      const to = this.getEdgeHead(r, toLabel);
       return (!to || to.origin > at) && (!from || from.origin < at);
     });
   }
@@ -308,7 +311,7 @@ export default class Book {
     };
 
     const invalidateWithTransaction = rel => {
-      return this.appendEdge(rel, "to", v(new Date()), tid);
+      return this.appendEdge(rel, toLabel, v(new Date()), tid);
     };
 
     return block(putWithTransaction, putEdgeWithTransaction, invalidateWithTransaction);
