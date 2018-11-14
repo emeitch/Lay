@@ -241,6 +241,13 @@ describe("stdlib", () => {
           const rels = book.activeRels(id, "bar");
           assert.deepStrictEqual(rels.length, 1); // invalidated old rels
           assert.deepStrictEqual(book.getEdgeHead(rels[0], "object"), exp(plus, v(3), v(2)));
+
+          const p5 = new Path(id, ["set", "bar", v(null)]);
+          const a5 = p5.reduce(book);
+          book.run(a5);
+
+          const rels5 = book.activeRels(id, "bar");
+          assert.deepStrictEqual(rels5.length, 0); // invalidated rels
         });
       });
 

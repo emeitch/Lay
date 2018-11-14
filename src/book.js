@@ -371,6 +371,11 @@ export default class Book {
       for (const rel of this.activeRels(id, key)) {
         this.invalidate(rel);
       }
+
+      if (val.equals(v(null))) {
+        return v(null);
+      }
+
       return this.put(id, key, val);
     });
   }
