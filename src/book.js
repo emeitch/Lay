@@ -8,7 +8,6 @@ import Case from './case';
 import Act from './act';
 import Path, { path } from './path';
 import { exp } from './exp';
-import { assign } from './ontology';
 
 const subjectLabel = "subject";
 const typeLabel = "type";
@@ -24,6 +23,7 @@ export default class Book {
     this.edgesByLabelAndHeadCache = new Map();
     this.relsCache = new Map();
     this.relsByTypeAndObjectCache = new Map();
+    this.relsBySubjectAndObjectCache = new Map();
 
     this.id = new UUID();
     this.root = new LID();
@@ -74,6 +74,23 @@ export default class Book {
     const results = this.relsByTypeAndObjectOnlySelf(key, val);
     for (const i of this.imports) {
       results.push(...i.relsByTypeAndObject(key, val));
+    }
+    return results;
+  }
+
+  relsBySubjectAndObjectMap(id, val) {
+    const i = this.cacheIndex(id, val);
+    return this.relsBySubjectAndObjectCache.get(i) || new Map();
+  }
+
+  relsBySubjectAndObjectOnlySelf(id, val) {
+    return [...this.relsBySubjectAndObjectMap(id, val).values()];
+  }
+
+  relsBySubjectAndObject(id, val) {
+    const results = this.relsBySubjectAndObjectOnlySelf(id, val);
+    for (const i of this.imports) {
+      results.push(...i.relsBySubjectAndObject(id, val));
     }
     return results;
   }
@@ -156,10 +173,17 @@ export default class Book {
   }
 
   get(name) {
-    const rels = this.activeRels(v(name), assign);
+    const rels = this.activeRels(this.id, name);
     const rel = rels[0];
     if (rel) {
       return this.getEdgeHead(rel, objectLabel);
+    }
+
+    for (const imported of this.imports) {
+      const val = imported.get(name);
+      if (val) {
+        return val;
+      }
     }
 
     return undefined;
@@ -167,12 +191,12 @@ export default class Book {
 
   set(name, id) {
     // todo: ユニーク制約をかけたい
-    this.put(v(name), assign, id);
+    this.put(this.id, name, id);
   }
 
   name(id) {
-    const rels = this.relsByTypeAndObject(assign, id);
-    return rels.length > 0 ? this.getEdgeHead(rels[0], subjectLabel) : v(null);
+    const rels = this.relsBySubjectAndObject(this.id, id);
+    return rels.length > 0 ? this.getEdgeHead(rels[0], typeLabel) : v(null);
   }
 
   getEdgeByTailAndLabel(tail, labelSrc) {
@@ -261,6 +285,16 @@ export default class Book {
           this.relsByTypeAndObjectCache.set(i, ar);
         }
       }
+
+      if (se && oe) {
+        const i = this.cacheIndex(se.head, oe.head);
+        const ar = this.relsBySubjectAndObjectCache.get(i) || new Map();
+        const s = Val.stringify(edge.tail);
+        if (!ar.has(s)) {
+          ar.set(s, edge.tail);
+          this.relsBySubjectAndObjectCache.set(i, ar);
+        }
+      }
     }
   }
 
@@ -324,7 +358,14 @@ export default class Book {
   }
 
   handleOnPut(edges) {
-    const rels = this.activeRels(v("onPut"), assign);
+    const getOnPutsRels = book => {
+      // todo: book.idを渡すのではなくselfなどの概念を用いて
+      // 効率的にhandleOnPutさせたい
+      const brels = book.activeRels(book.id, "onPut");
+      const irels = book.imports.map(i => getOnPutsRels(i));
+      return brels.concat(...irels);
+    };
+    const rels = getOnPutsRels(this);
     for (const rel of rels) {
       const actexp = this.getEdgeHead(rel, objectLabel);
       const act = actexp.reduce(this);
