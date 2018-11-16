@@ -173,8 +173,7 @@ export default class Book {
   }
 
   get(name) {
-    const rels = this.activeRels(this.id, name);
-    const rel = rels[0];
+    const rel = this.activeRel(this.id, name);
     if (rel) {
       return this.getEdgeHead(rel, objectLabel);
     }

@@ -469,6 +469,17 @@ describe("Book", () => {
           assert(cbook.get("i") === id);
         });
       });
+
+      context("duplicate assign", () => {
+        beforeEach(() => {
+          book.set("foo", v(1));
+          book.set("foo", v(2));
+        });
+
+        it("should return latest val", () => {
+          assert.deepStrictEqual(book.get("foo"), v(2));
+        });
+      });
     });
   });
 
