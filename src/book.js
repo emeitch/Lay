@@ -189,8 +189,7 @@ export default class Book {
   }
 
   set(name, id) {
-    // todo: ユニーク制約をかけたい
-    this.put(this.id, name, id);
+    this.setProperty(this.id, name, id);
   }
 
   name(id) {
@@ -406,17 +405,21 @@ export default class Book {
     });
   }
 
+  setProperty(id, key, val) {
+    for (const rel of this.activeRels(id, key)) {
+      this.invalidate(rel);
+    }
+
+    if (val.equals(v(null))) {
+      return v(null);
+    }
+
+    return this.put(id, key, val);
+  }
+
   setAct(id, key, val) {
     return new Act(() => {
-      for (const rel of this.activeRels(id, key)) {
-        this.invalidate(rel);
-      }
-
-      if (val.equals(v(null))) {
-        return v(null);
-      }
-
-      return this.put(id, key, val);
+      return this.setProperty(id, key, val);
     });
   }
 

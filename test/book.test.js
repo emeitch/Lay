@@ -478,6 +478,9 @@ describe("Book", () => {
 
         it("should return latest val", () => {
           assert.deepStrictEqual(book.get("foo"), v(2));
+
+          const rels = book.activeRels(book.id, "foo");
+          assert.deepStrictEqual(rels.length, 1);
         });
       });
     });
