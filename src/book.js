@@ -54,11 +54,12 @@ export default class Book {
   }
 
   rels(id, key) {
-    const results = this.relsOnlySelf(id, key);
-    for (const i of this.imports) {
-      results.push(...i.rels(id, key));
-    }
-    return results;
+    return this.traverseImports(
+      (book, current) => {
+        const result = book.relsOnlySelf(id, key);
+        return current.concat(result);
+      },
+      []);
   }
 
   relsByTypeAndObjectMap(key, val) {
@@ -71,11 +72,12 @@ export default class Book {
   }
 
   relsByTypeAndObject(key, val) {
-    const results = this.relsByTypeAndObjectOnlySelf(key, val);
-    for (const i of this.imports) {
-      results.push(...i.relsByTypeAndObject(key, val));
-    }
-    return results;
+    return this.traverseImports(
+      (book, current) => {
+        const result = book.relsByTypeAndObjectOnlySelf(key, val);
+        return current.concat(result);
+      },
+      []);
   }
 
   relsBySubjectAndObjectMap(id, val) {
@@ -88,11 +90,12 @@ export default class Book {
   }
 
   relsBySubjectAndObject(id, val) {
-    const results = this.relsBySubjectAndObjectOnlySelf(id, val);
-    for (const i of this.imports) {
-      results.push(...i.relsBySubjectAndObject(id, val));
-    }
-    return results;
+    return this.traverseImports(
+      (book, current) => {
+        const result = book.relsBySubjectAndObjectOnlySelf(id, val);
+        return current.concat(result);
+      },
+      []);
   }
 
   active(rels, at=new Date()) {
@@ -220,18 +223,23 @@ export default class Book {
     return edge && edge.head;
   }
 
+  traverseImports(reducer, current) {
+    let reduced = reducer(this, current);
+    for (const imported of this.imports) {
+      reduced = imported.traverseImports(reducer, reduced);
+    }
+    return reduced;
+  }
+
   getEdgesByLabelAndHead(labelSrc, head) {
     const label = v(labelSrc);
-    const i = this.cacheIndex(label, head);
-    const results = [];
-    const edges = this.edgesByLabelAndHeadCache.get(i) || [];
-    results.push(...edges);
-
-    for (const imported of this.imports) {
-      results.push(...imported.getEdgesByLabelAndHead(label, head));
-    }
-
-    return results;
+    return this.traverseImports(
+      (book, current) => {
+        const i = book.cacheIndex(label, head);
+        const res = book.edgesByLabelAndHeadCache.get(i) || [];
+        return current.concat(res);
+      },
+      []);
   }
 
   getEdgeTails(label, head) {
