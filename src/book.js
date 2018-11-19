@@ -355,15 +355,14 @@ export default class Book {
     });
   }
 
+  getOnPutsRels() {
+    const rels = this.activeRels(this.id, "onPut");
+    const importedRels = this.imports.map(i => i.getOnPutsRels());
+    return rels.concat(...importedRels);
+  }
+
   handleOnPut(edges) {
-    const getOnPutsRels = book => {
-      // todo: book.idを渡すのではなくselfなどの概念を用いて
-      // 効率的にhandleOnPutさせたい
-      const brels = book.activeRels(book.id, "onPut");
-      const irels = book.imports.map(i => getOnPutsRels(i));
-      return brels.concat(...irels);
-    };
-    const rels = getOnPutsRels(this);
+    const rels = this.getOnPutsRels();
     for (const rel of rels) {
       const actexp = this.getEdgeHead(rel, objectLabel);
       const act = actexp.reduce(this);
