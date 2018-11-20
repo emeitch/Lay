@@ -176,19 +176,8 @@ export default class Book {
   }
 
   get(name) {
-    const rel = this.activeRel(this.id, name);
-    if (rel) {
-      return this.getEdgeHead(rel, objectLabel);
-    }
-
-    for (const imported of this.imports) {
-      const val = imported.get(name);
-      if (val) {
-        return val;
-      }
-    }
-
-    return undefined;
+    const rel = this.fetchWithImports(book => book.activeRel(book.id, name));
+    return rel ? this.getEdgeHead(rel, objectLabel) : undefined;
   }
 
   set(name, id) {
@@ -203,19 +192,7 @@ export default class Book {
   getEdgeByTailAndLabel(tail, labelSrc) {
     const label = v(labelSrc);
     const i = this.cacheIndex(tail, label);
-    const edge = this.edgeByTailAndLabelCache.get(i);
-    if (edge) {
-      return edge;
-    }
-
-    for (const imported of this.imports) {
-      const e = imported.getEdgeByTailAndLabel(tail, label);
-      if (e) {
-        return e;
-      }
-    }
-
-    return undefined;
+    return this.fetchWithImports(book => book.edgeByTailAndLabelCache.get(i));
   }
 
   getEdgeHead(tail, label) {
@@ -223,12 +200,23 @@ export default class Book {
     return edge && edge.head;
   }
 
-  traverseImports(reducer, current) {
-    let reduced = reducer(this, current);
+  traverseImports(traverser, current) {
+    let results = traverser(this, current);
     for (const imported of this.imports) {
-      reduced = imported.traverseImports(reducer, reduced);
+      results = imported.traverseImports(traverser, results);
     }
-    return reduced;
+    return results;
+  }
+
+  fetchWithImports(fetcher) {
+    let result = fetcher(this);
+    for (const imported of this.imports) {
+      if (result) {
+        break;
+      }
+      result = imported.fetchWithImports(fetcher);
+    }
+    return result;
   }
 
   getEdgesByLabelAndHead(labelSrc, head) {
@@ -364,9 +352,10 @@ export default class Book {
   }
 
   getOnPutsRels() {
-    const rels = this.activeRels(this.id, "onPut");
-    const importedRels = this.imports.map(i => i.getOnPutsRels());
-    return rels.concat(...importedRels);
+    return this.traverseImports(
+      (book, current) =>
+        current.concat(book.activeRels(book.id, "onPut")),
+        []);
   }
 
   handleOnPut(edges) {
