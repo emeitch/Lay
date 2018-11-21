@@ -200,22 +200,31 @@ export default class Book {
     return edge && edge.head;
   }
 
-  traverseImports(traverser, current) {
-    let results = traverser(this, current);
+  iterateImports(block) {
+    let stop = block(this);
     for (const imported of this.imports) {
-      results = imported.traverseImports(traverser, results);
+      if (stop) {
+        break;
+      }
+      stop = imported.iterateImports(block);
     }
-    return results;
+    return stop;
+  }
+
+  traverseImports(traverser, current) {
+    this.iterateImports(book => {
+      current = traverser(book, current);
+      return false;
+    });
+    return current;
   }
 
   fetchWithImports(fetcher) {
-    let result = fetcher(this);
-    for (const imported of this.imports) {
-      if (result) {
-        break;
-      }
-      result = imported.fetchWithImports(fetcher);
-    }
+    let result = undefined;
+    this.iterateImports(book => {
+      result = fetcher(book);
+      return result;
+    });
     return result;
   }
 
