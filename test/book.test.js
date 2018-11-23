@@ -526,6 +526,12 @@ describe("Book", () => {
       it("should return empty", () => {
         const rels = book.rels(id, key);
         assert(rels.length === 0);
+
+        const arels = book.activeRels(id, key);
+        assert(arels.length === 0);
+
+        const arel = book.activeRel(id, key);
+        assert(arel === undefined);
       });
     });
 
