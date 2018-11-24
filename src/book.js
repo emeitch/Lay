@@ -9,12 +9,20 @@ import Act from './act';
 import Path, { path } from './path';
 import { exp } from './exp';
 
-const subjectLabel = "subject";
-const typeLabel = "type";
-const objectLabel = "object";
+const SUBJECT_LABEL = "subject";
+const TYPE_LABEL = "type";
+const OBJECT_LABEL = "object";
 
-const fromLabel = "from";
-const toLabel = "to";
+const FROM_LABEL = "from";
+const TO_LABEL = "to";
+
+const AT_KEY = "at";
+const EXISTS_KEY = "exists";
+const ON_IMPORT_KEY = "onImport";
+const ON_PUT_KEY = "onPut";
+const CURRENT_BOOK_ID_KEY = "currentBookId";
+
+const ROOT_STR_VAL = v("/");
 
 export default class Book {
   constructor(...imports) {
@@ -35,13 +43,14 @@ export default class Book {
       this.import(i);
     }
 
-    this.set("currentBookId", this.id);
-    this.put(this.id, typeLabel, path("Book"));
+    this.set(CURRENT_BOOK_ID_KEY, this.id);
+    this.put(this.id, TYPE_LABEL, path("Book"));
   }
 
   cacheIndex(id, key) {
+    const separator = "__";
     key = v(key);
-    return Val.stringify(id) + "__" + Val.stringify(key);
+    return Val.stringify(id) + separator + Val.stringify(key);
   }
 
   relsMap(id, key) {
@@ -100,8 +109,8 @@ export default class Book {
 
   active(rels, at=new Date()) {
     return rels.filter(r => {
-      const from = this.getEdgeHead(r, fromLabel);
-      const to = this.getEdgeHead(r, toLabel);
+      const from = this.getEdgeHead(r, FROM_LABEL);
+      const to = this.getEdgeHead(r, TO_LABEL);
       return (!to || to.origin > at) && (!from || from.origin < at);
     });
   }
@@ -125,9 +134,9 @@ export default class Book {
       return rel;
     }
 
-    const trels = this.activeRels(id, typeLabel);
+    const trels = this.activeRels(id, TYPE_LABEL);
     for (const trel of trels) {
-      const v = this.getEdgeHead(trel, objectLabel);
+      const v = this.getEdgeHead(trel, OBJECT_LABEL);
       const p = v.replaceSelfBy(id).reduce(this);
       const r = this.findRelWithType(p, key);
       if (r) {
@@ -144,7 +153,7 @@ export default class Book {
   }
 
   handleOnInport(other) {
-    const actexp = other.get("onImport");
+    const actexp = other.get(ON_IMPORT_KEY);
     if (actexp) {
       const act = actexp.reduce(this);
       this.run(act);
@@ -170,14 +179,14 @@ export default class Book {
       }
     }
 
-    this.put(id, "exists", v(true));
+    this.put(id, EXISTS_KEY, v(true));
 
     return id;
   }
 
   get(name) {
     const rel = this.fetchWithImports(book => book.activeRel(book.id, name));
-    return rel ? this.getEdgeHead(rel, objectLabel) : undefined;
+    return rel ? this.getEdgeHead(rel, OBJECT_LABEL) : undefined;
   }
 
   set(name, id) {
@@ -186,7 +195,7 @@ export default class Book {
 
   name(id) {
     const rels = this.relsBySubjectAndObject(this.id, id);
-    return rels.length > 0 ? this.getEdgeHead(rels[0], typeLabel) : v(null);
+    return rels.length > 0 ? this.getEdgeHead(rels[0], TYPE_LABEL) : v(null);
   }
 
   getEdgeByTailAndLabel(tail, labelSrc) {
@@ -244,11 +253,11 @@ export default class Book {
   }
 
   getEdgesBySubject(subject) {
-    return this.getEdgesByLabelAndHead(subjectLabel, subject);
+    return this.getEdgesByLabelAndHead(SUBJECT_LABEL, subject);
   }
 
   getEdgesByObject(object) {
-    return this.getEdgesByLabelAndHead(objectLabel, object);
+    return this.getEdgesByLabelAndHead(OBJECT_LABEL, object);
   }
 
   syncEdgeCache(edge) {
@@ -265,9 +274,9 @@ export default class Book {
     }
 
     {
-      const se = this.getEdgeByTailAndLabel(edge.tail, subjectLabel);
-      const te = this.getEdgeByTailAndLabel(edge.tail, typeLabel);
-      const oe = this.getEdgeByTailAndLabel(edge.tail, objectLabel);
+      const se = this.getEdgeByTailAndLabel(edge.tail, SUBJECT_LABEL);
+      const te = this.getEdgeByTailAndLabel(edge.tail, TYPE_LABEL);
+      const oe = this.getEdgeByTailAndLabel(edge.tail, OBJECT_LABEL);
 
       if (se && te) {
         const i = this.cacheIndex(se.head, te.head);
@@ -327,10 +336,10 @@ export default class Book {
     const append = (id, key, val) => {
       const tail = new UUID();
       const edges = [];
-      edges.push(this.appendEdge(tail, typeLabel, key, tid));
-      edges.push(this.appendEdge(tail, subjectLabel, id, tid));
+      edges.push(this.appendEdge(tail, TYPE_LABEL, key, tid));
+      edges.push(this.appendEdge(tail, SUBJECT_LABEL, id, tid));
       if (val !== undefined) {
-        edges.push(this.appendEdge(tail, objectLabel, val, tid));
+        edges.push(this.appendEdge(tail, OBJECT_LABEL, val, tid));
       }
       return edges;
     };
@@ -338,8 +347,8 @@ export default class Book {
     const putWithTransaction = (...args) => {
       const edges = [];
       edges.push(...append(...args));
-      edges.push(...append(tid, "at", v(new Date())));
-      edges.push(...append(tid, typeLabel, path("Transaction")));
+      edges.push(...append(tid, AT_KEY, v(new Date())));
+      edges.push(...append(tid, TYPE_LABEL, path("Transaction")));
       return edges;
     };
 
@@ -348,7 +357,7 @@ export default class Book {
     };
 
     const invalidateWithTransaction = rel => {
-      return this.appendEdge(rel, toLabel, v(new Date()), tid);
+      return this.appendEdge(rel, TO_LABEL, v(new Date()), tid);
     };
 
     return block(putWithTransaction, putEdgeWithTransaction, invalidateWithTransaction);
@@ -363,14 +372,14 @@ export default class Book {
   getOnPutsRels() {
     return this.traverseImports(
       (book, current) =>
-        current.concat(book.activeRels(book.id, "onPut")),
+        current.concat(book.activeRels(book.id, ON_PUT_KEY)),
         []);
   }
 
   handleOnPut(edges) {
     const rels = this.getOnPutsRels();
     for (const rel of rels) {
-      const actexp = this.getEdgeHead(rel, objectLabel);
+      const actexp = this.getEdgeHead(rel, OBJECT_LABEL);
       const act = actexp.reduce(this);
       this.run(act, edges);
     }
@@ -382,7 +391,7 @@ export default class Book {
     for(const key of pth.origin) {
       keys.push(key);
       const rel = this.exist(...keys);
-      const val = this.getEdgeHead(rel, objectLabel);
+      const val = this.getEdgeHead(rel, OBJECT_LABEL);
       if (!(val instanceof LID)) {
         throw `can't put val for not ID object: ${val}(${keys})`;
       }
@@ -396,7 +405,7 @@ export default class Book {
       const pth = args[0];
       const rels = this.putPath(pth);
       const rel = rels[rels.length-1];
-      args[0] = this.getEdgeHead(rel, objectLabel);
+      args[0] = this.getEdgeHead(rel, OBJECT_LABEL);
     }
 
     const edges = this.doPut(...args);
@@ -440,7 +449,7 @@ export default class Book {
     let rel;
     for (const key of keys) {
       rel = this.activeRel(parent, key) || this.create(parent, key);
-      parent = this.getEdgeHead(rel, objectLabel);
+      parent = this.getEdgeHead(rel, OBJECT_LABEL);
     }
     return rel;
   }
@@ -459,7 +468,7 @@ export default class Book {
       keys.unshift(this.key(obj));
       obj = this.parent(obj);
     }
-    keys.unshift(v("/"));
+    keys.unshift(ROOT_STR_VAL);
     return path(...keys);
   }
 
@@ -476,7 +485,7 @@ export default class Book {
       key = args.shift();
     }
     const rel = this.activeRel(obj, key);
-    const val = rel ? this.getEdgeHead(rel, objectLabel) : undefined;
+    const val = rel ? this.getEdgeHead(rel, OBJECT_LABEL) : undefined;
     const o = val ? this.fetch(ks, val, filter) : undefined;
     return filter(o, obj, args);
   }
@@ -493,7 +502,7 @@ export default class Book {
         }
 
         const ks = o.origin.concat();
-        if (ks[0].equals(v("/"))) {
+        if (ks[0].equals(ROOT_STR_VAL)) {
           ks.shift();
           return this.query(ks, this.root);
         } else {
@@ -511,13 +520,13 @@ export default class Book {
       return [];
     }
     const sname = path(name.origin);
-    const rels = this.activeRelsByTypeAndObject(v(typeLabel), sname);
+    const rels = this.activeRelsByTypeAndObject(v(TYPE_LABEL), sname);
     return rels.map(
-      rel => this.getEdgeHead(rel, subjectLabel)
+      rel => this.getEdgeHead(rel, SUBJECT_LABEL)
     ).filter(id => {
-      const rs = this.activeRels(id, v("exists"));
+      const rs = this.activeRels(id, EXISTS_KEY);
       const r = rs[rs.length-1];
-      return r && this.getEdgeHead(r, objectLabel).origin;
+      return r && this.getEdgeHead(r, OBJECT_LABEL).origin;
     });
   }
 
