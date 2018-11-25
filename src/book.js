@@ -22,7 +22,7 @@ const ON_IMPORT_KEY = "onImport";
 const ON_PUT_KEY = "onPut";
 const CURRENT_BOOK_ID_KEY = "currentBookId";
 
-const ROOT_STR_VAL = v("/");
+const ROOT_STR_VAL = v("$");
 
 export default class Book {
   constructor(...imports) {

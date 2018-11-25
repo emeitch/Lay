@@ -337,7 +337,7 @@ describe("Book", () => {
       const key2 = new UUID();
       const rel = book.exist(key1, key2);
       const obj = book.getEdgeHead(rel, "object");
-      assert.deepStrictEqual(book.path(obj), path(v("/"), key1, key2));
+      assert.deepStrictEqual(book.path(obj), path(v("$"), key1, key2));
     });
   });
 
@@ -407,8 +407,8 @@ describe("Book", () => {
         const key2 = new UUID();
         const rel2 = book.exist(key2);
         const obj2 = book.getEdgeHead(rel2, "object");
-        book.put(obj2, v("baz"), path(v("/"), key1, v("foo")));
-        book.put(obj2, v("fiz"), path(v("/"), key1, v("bar")));
+        book.put(obj2, v("baz"), path(v("$"), key1, v("foo")));
+        book.put(obj2, v("fiz"), path(v("$"), key1, v("bar")));
 
         const rel3 = book.exist(key2, key1);
         const obj3 = book.getEdgeHead(rel3, "object");
