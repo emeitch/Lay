@@ -411,7 +411,9 @@ export default class Book {
 
     const edges = this.doPut(...args);
     this.handleOnPut(edges);
-    return edges[0].tail; // todo: 返し方が微妙なので修正したい
+
+    const rel = edges[0].tail;
+    return rel;
   }
 
   putAct(...args) {
