@@ -331,6 +331,7 @@ export default class Book {
 
   doTransaction(block) {
     const tid = new UUID();
+    const ttime = new Date();
 
     // todo: アトミックな操作に修正する
     const append = (id, key, val) => {
@@ -347,7 +348,7 @@ export default class Book {
     const putWithTransaction = (...args) => {
       const edges = [];
       edges.push(...append(...args));
-      edges.push(...append(tid, AT_KEY, v(new Date())));
+      edges.push(...append(tid, AT_KEY, v(ttime)));
       edges.push(...append(tid, TYPE_LABEL, path("Transaction")));
       return edges;
     };
