@@ -4,7 +4,16 @@ import UUID from '../src/uuid';
 import { sym } from '../src/sym';
 import { path } from '../src/path';
 import v from '../src/v';
-import { parse } from '../src/store';
+import Store, { parse } from '../src/store';
+
+describe("Store", () => {
+  describe("constructor", () => {
+    it("should create new store object", () => {
+      const store = new Store();
+      assert(store);
+    });
+  });
+});
 
 describe("parse", () => {
   it("should parse raw edges", () => {

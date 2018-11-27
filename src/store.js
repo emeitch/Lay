@@ -4,6 +4,9 @@ import { sym } from './sym';
 import { path } from './path';
 import v from './v';
 
+export default class Store {
+}
+
 function parseVal(raw) {
   const head = !raw || raw.head === undefined ? null : parseVal(raw.head);
   const type = typeof(raw);
