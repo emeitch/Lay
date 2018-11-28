@@ -7,10 +7,24 @@ import v from '../src/v';
 import Store, { parse } from '../src/store';
 
 describe("Store", () => {
+  let store;
+  beforeEach(() => {
+    store = new Store();
+  });
+
   describe("constructor", () => {
     it("should create new store object", () => {
-      const store = new Store();
       assert(store);
+    });
+  });
+
+  describe("#set (#get)", () => {
+    it("should store the object", () => {
+      const id = new UUID();
+      const obj = v({foo: 1, bar: "abc"});
+      store.set(id, obj);
+
+      assert.deepStrictEqual(store.get(id), obj);
     });
   });
 });

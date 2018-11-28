@@ -5,6 +5,17 @@ import { path } from './path';
 import v from './v';
 
 export default class Store {
+  constructor() {
+    this.objs = new Map();
+  }
+
+  set(key, obj) {
+    this.objs.set(key, obj);
+  }
+
+  get(key) {
+    return this.objs.get(key);
+  }
 }
 
 function parseVal(raw) {
