@@ -7,6 +7,7 @@ import Exp, { exp } from '../src/exp';
 import { func, plus, concat } from '../src/func';
 import { scope } from '../src/scope';
 import Book from '../src/book';
+import Store from '../src/store';
 
 describe("Path", () => {
   const id1 = new UUID();
@@ -38,8 +39,10 @@ describe("Path", () => {
 
   describe("#reduce", () => {
     let book;
+    let store;
     beforeEach(() => {
       book = new Book();
+      store = new Store();
     });
 
     context("absolute path with end of uuid", () => {
@@ -49,14 +52,20 @@ describe("Path", () => {
       const key2 = new UUID();
       const id3 = new UUID();
 
+      let p2;
       beforeEach(() => {
         book.put(id, key, id2);
         book.put(id2, key2, id3);
         p = new Path(id, key, key2);
+
+        store.set(id, v({foo: id2}));
+        store.set(id2, v({bar: id3}));
+        p2 = new Path(id, "foo", "bar");
       });
 
       it("should return the val", () => {
         assert.deepStrictEqual(p.reduce(book), id3);
+        assert.deepStrictEqual(p2.reduce(store), id3);
       });
     });
 

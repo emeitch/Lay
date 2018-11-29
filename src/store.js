@@ -16,6 +16,11 @@ export default class Store {
   get(key) {
     return this.objs.get(key);
   }
+
+  getProp(id, key) {
+    const obj = this.get(id);
+    return obj && obj.get(key, this);
+  }
 }
 
 function parseVal(raw) {

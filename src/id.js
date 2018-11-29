@@ -10,13 +10,6 @@ export default class ID extends Ref {
   }
 
   get(key, book) {
-    if (book) {
-      const rel = book.findRelWithType(this, key);
-      if (rel) {
-        return book.getEdgeHead(rel, "object");
-      }
-    }
-
-    return super.get(key, book);
+    return book && book.getProp(this, key) || super.get(key, book);
   }
 }
