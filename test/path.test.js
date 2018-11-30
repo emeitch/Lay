@@ -152,18 +152,17 @@ describe("Path", () => {
 
     context("assigned sym path chain with self exp", () => {
       const id = new UUID();
-      const key = new UUID();
-      const key2 = new UUID();
-      const val2 = v(2);
 
       beforeEach(() => {
-        book.put(id, key, func("x", exp(plus, new Path("self", key2), "x")));
-        book.put(id, key2, val2);
-        p = new Path(id, [key, v(3)]);
+        store.set(id, v({
+          "foo": func("x", exp(plus, new Path("self", "bar"), "x")),
+          "bar": v(2)
+        }));
+        p = new Path(id, ["foo", v(3)]);
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(book), v(5));
+        assert.deepStrictEqual(p.reduce(store), v(5));
       });
     });
 
