@@ -122,7 +122,7 @@ describe("Path", () => {
 
         it("should return path with reduced self", () => {
           assert.deepStrictEqual(p2.reduce(store), new Path(id2, "refkey"));
-          assert.deepStrictEqual(p3.reduce(store), exp(plus, new Path(id2, "refkey"), new Path(id2, "refkey")).reduce(book));
+          assert.deepStrictEqual(p3.reduce(store), exp(plus, new Path(id2, "refkey"), new Path(id2, "refkey")).reduce(store));
         });
       });
     });
@@ -132,17 +132,21 @@ describe("Path", () => {
       const id2 = new UUID();
 
       beforeEach(() => {
-        book.put(id1, "foo", v(1));
-        book.put(id1, "bar", path("self", "foo"));
+        store.set(id1, v({
+          foo: v(1),
+          bar: path("self", "foo"),
+        }));
 
-        book.put(id2, "foo", v(2));
-        book.put(id2, "bar", path("self", "foo"));
-        book.put(id2, "buz", func("x", exp(plus, path(id1, "bar"), "x")));
-        book.put(id2, "biz", path("self", ["buz", v(3)]));
+        store.set(id2, v({
+          foo: v(2),
+          bar: path("self", "foo"),
+          buz: func("x", exp(plus, path(id1, "bar"), "x")),
+          biz: path("self", ["buz", v(3)])
+        }));
       });
 
       it("should refer correct self", () => {
-        assert.deepStrictEqual(path(id2, "biz").reduce(book), v(4));
+        assert.deepStrictEqual(path(id2, "biz").reduce(store), v(4));
       });
     });
 
