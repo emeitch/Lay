@@ -78,49 +78,51 @@ describe("Path", () => {
 
     context("assigned sym path chain with self", () => {
       const id = new UUID();
-      const key = new UUID();
       const id2 = new UUID();
-      const key2 = new UUID();
-      const key3 = new UUID();
-      const key4 = new UUID();
-      const refkey = new UUID();
-      const refval = v(2);
 
       let p2;
       let p3;
       let p4;
       beforeEach(() => {
-        book.put(id, key, id2);
-        book.put(id2, key2, new Path("self", refkey));
-        book.put(id2, key3, new Path("self", [key4, new Path("self", refkey)]));
-        book.put(id2, key4, func("x", exp(plus, "x", new Path("self", refkey))));
+        store.set(id, v({foo: id2}));
+        store.set("a", id);
 
-        book.set("a", id);
-        p2 = new Path("a", key, key2);
-        p3 = new Path(id2, key3);
+        p2 = new Path("a", "foo", "bar");
+        p3 = new Path(id2, "buz");
 
-        book.set("foo", func("x", exp(plus, "x", v(1))));
+        store.set("foo", func("x", exp(plus, "x", v(1))));
         p4 = new Path(["foo", v(2)]);
-
-
       });
 
       context("referencing key exists", () => {
         beforeEach(() => {
-          book.put(id2, refkey, refval);
+          store.set(id2, v({
+            bar: new Path("self", "refkey"),
+            buz: new Path("self", ["fiz", new Path("self", "refkey")]),
+            fiz: func("x", exp(plus, "x", new Path("self", "refkey"))),
+            refkey: v(2)
+          }));
         });
 
         it("should return the val", () => {
-          assert.deepStrictEqual(p2.reduce(book), refval);
-          assert.deepStrictEqual(p3.reduce(book), v(4));
-          assert.deepStrictEqual(p4.reduce(book), v(3));
+          assert.deepStrictEqual(p2.reduce(store), v(2));
+          assert.deepStrictEqual(p3.reduce(store), v(4));
+          assert.deepStrictEqual(p4.reduce(store), v(3));
         });
       });
 
       context("referencing key don't exists", () => {
+        beforeEach(() => {
+          store.set(id2, v({
+            bar: new Path("self", "refkey"),
+            buz: new Path("self", ["fiz", new Path("self", "refkey")]),
+            fiz: func("x", exp(plus, "x", new Path("self", "refkey"))),
+          }));
+        });
+
         it("should return path with reduced self", () => {
-          assert.deepStrictEqual(p2.reduce(book), new Path(id2, refkey));
-          assert.deepStrictEqual(p3.reduce(book), exp(plus, new Path(id2, refkey), new Path(id2, refkey)).reduce(book));
+          assert.deepStrictEqual(p2.reduce(store), new Path(id2, "refkey"));
+          assert.deepStrictEqual(p3.reduce(store), exp(plus, new Path(id2, "refkey"), new Path(id2, "refkey")).reduce(book));
         });
       });
     });
