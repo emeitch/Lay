@@ -179,7 +179,7 @@ describe("Path", () => {
             const p = path(v(3), ["equals", path(id, "bar")]);
             assert.deepStrictEqual(p.reduce(store).constructor, Exp);
 
-            store.set(id, v({bar: v(3)}));
+            store.set(id, {bar: v(3)});
             assert.deepStrictEqual(p.reduce(store), v(true));
           });
         });

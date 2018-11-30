@@ -9,8 +9,8 @@ export default class Store {
     this.objs = new Map();
   }
 
-  set(key, obj) {
-    this.objs.set(key, obj);
+  set(key, val) {
+    this.objs.set(key, v(val));
   }
 
   get(key) {
