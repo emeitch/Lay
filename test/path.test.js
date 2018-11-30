@@ -169,19 +169,18 @@ describe("Path", () => {
     context("access js object property", () => {
       describe("equals", () => {
         it("should return equality", () => {
-          const book = new Book();
           const p = path(v(3), ["equals", exp(plus, v(1), v(2))]);
-          assert.deepStrictEqual(p.reduce(book), v(true));
+          assert.deepStrictEqual(p.reduce(store), v(true));
         });
 
         context("partial reduce", () => {
           it("should return a exp", () => {
             const id = new UUID();
             const p = path(v(3), ["equals", path(id, "bar")]);
-            assert.deepStrictEqual(p.reduce(book).constructor, Exp);
+            assert.deepStrictEqual(p.reduce(store).constructor, Exp);
 
-            book.put(id, "bar", v(3));
-            assert.deepStrictEqual(p.reduce(book), v(true));
+            store.set(id, v({bar: v(3)}));
+            assert.deepStrictEqual(p.reduce(store), v(true));
           });
         });
       });
