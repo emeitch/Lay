@@ -47,41 +47,32 @@ describe("Path", () => {
 
     context("absolute path with end of uuid", () => {
       const id = new UUID();
-      const key = new UUID();
       const id2 = new UUID();
-      const key2 = new UUID();
       const id3 = new UUID();
 
-      let p2;
       beforeEach(() => {
-        book.put(id, key, id2);
-        book.put(id2, key2, id3);
-        p = new Path(id, key, key2);
-
         store.set(id, v({foo: id2}));
         store.set(id2, v({bar: id3}));
-        p2 = new Path(id, "foo", "bar");
+        p = new Path(id, "foo", "bar");
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(book), id3);
-        assert.deepStrictEqual(p2.reduce(store), id3);
+        assert.deepStrictEqual(p.reduce(store), id3);
       });
     });
 
     context("assigned sym path with val end", () => {
       const id = new UUID();
-      const key = new UUID();
       const val = v("val0");
 
       beforeEach(() => {
-        book.put(id, key, val);
-        book.set("a", id);
-        p = new Path("a", key);
+        store.set(id, v({foo: val}));
+        store.set("a", id);
+        p = new Path("a", "foo");
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(book), val);
+        assert.deepStrictEqual(p.reduce(store), val);
       });
     });
 
@@ -110,6 +101,8 @@ describe("Path", () => {
 
         book.set("foo", func("x", exp(plus, "x", v(1))));
         p4 = new Path(["foo", v(2)]);
+
+
       });
 
       context("referencing key exists", () => {
