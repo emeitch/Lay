@@ -91,7 +91,7 @@ export default class Comp extends Val {
       return this.head;
     }
 
-    if (this.origin.type) {
+    if (this.origin && this.origin.type) {
       const tref = this.constructor.valFrom(this.origin.type);
       const type = tref.replaceSelfBy(this).reduce(book);
       return type.get(key, book);
