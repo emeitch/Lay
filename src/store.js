@@ -32,9 +32,9 @@ export default class Store {
       return prop;
     }
 
-    const type = val.get("type", this);
-    const types = type.type.equals(sym("Array")) ? type : v([type]);
-    for (const tref of types.origin) {
+    const tprop = val.get("type", this);
+    const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
+    for (const tref of tprops.origin) {
       const t = tref.replaceSelfBy(id).reduce(this);
       const p = t.get(key, this);
       if (p) {
