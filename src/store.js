@@ -36,7 +36,7 @@ export default class Store {
     const types = type.type.equals(sym("Array")) ? type : v([type]);
     for (const tref of types.origin) {
       const t = tref.replaceSelfBy(id).reduce(this);
-      const p = this.findPropWithType(t, key);
+      const p = t.get(key, this);
       if (p) {
         return p;
       }

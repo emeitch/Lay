@@ -35,32 +35,16 @@ describe("Store", () => {
         foo: 1
       });
 
-      // todo: 間接IDがなくても動くようにしたい
-      const barid = new UUID();
-      store.set("Bar", barid);
-      store.set(barid, {
+      store.set("Bar", {
         foo: 2
       });
 
       const buzid = new UUID();
-      store.set("Buz", buzid);
+      store.set("Buz", buzid); // indirect referencing
       store.set(buzid, {
         foo: 4,
         foz: 4
       });
-
-      const grandtype = new UUID();
-      store.set("Grandtype", grandtype);
-      store.set(grandtype, {
-        foo: 5
-      });
-
-      const parenttype = new UUID();
-      store.set("Parenttype", parenttype);
-      store.set(parenttype, {
-        type: path("Grandtype")
-      });
-
 
       id = new UUID();
     });
@@ -102,12 +86,18 @@ describe("Store", () => {
 
     context("grandparent type", () => {
       it("should return grandparent type prop", () => {
-        const id2 = new UUID();
-        store.set(id2, {
+        store.set("Grandtype", {
+          foo: 5
+        });
+        store.set("Parenttype", {
+          type: path("Grandtype")
+        });
+        const child = new UUID();
+        store.set(child, {
           type: path("Parenttype"),
         });
 
-        assert.deepStrictEqual(store.findPropWithType(id2, "foo"), v(5));
+        assert.deepStrictEqual(store.findPropWithType(child, "foo"), v(5));
       });
     });
 
