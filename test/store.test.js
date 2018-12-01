@@ -49,6 +49,18 @@ describe("Store", () => {
         foz: 4
       });
 
+      const grandtype = new UUID();
+      store.set("Grandtype", grandtype);
+      store.set(grandtype, {
+        foo: 5
+      });
+
+      const parenttype = new UUID();
+      store.set("Parenttype", parenttype);
+      store.set(parenttype, {
+        type: path("Grandtype")
+      });
+
 
       id = new UUID();
     });
@@ -85,6 +97,17 @@ describe("Store", () => {
 
         assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(2));
         assert.deepStrictEqual(store.findPropWithType(id, "foz"), v(4));
+      });
+    });
+
+    context("grandparent type", () => {
+      it("should return grandparent type prop", () => {
+        const id2 = new UUID();
+        store.set(id2, {
+          type: path("Parenttype"),
+        });
+
+        assert.deepStrictEqual(store.findPropWithType(id2, "foo"), v(5));
       });
     });
 
