@@ -42,10 +42,11 @@ describe("Store", () => {
         foo: 2
       });
 
-      const bazid = new UUID();
-      store.set("Baz", bazid);
-      store.set(bazid, {
-        foo: 4
+      const buzid = new UUID();
+      store.set("Buz", buzid);
+      store.set(buzid, {
+        foo: 4,
+        foz: 4
       });
 
 
@@ -70,6 +71,20 @@ describe("Store", () => {
         });
 
         assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(2));
+      });
+    });
+
+    context("multiple type", () => {
+      it("should return first type prop", () => {
+        store.set(id, {
+          type: [
+            path("Bar"),
+            path("Buz")
+          ]
+        });
+
+        assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(2));
+        assert.deepStrictEqual(store.findPropWithType(id, "foz"), v(4));
       });
     });
 
