@@ -29,6 +29,24 @@ describe("Store", () => {
   });
 
   describe("#findPropWithType", () => {
+    context("self prop", () => {
+      it("should return self prop", () => {
+        store.set("Object", {
+          foo: 1
+        });
+        store.set("Bar", {
+          foo: 2
+        });
+        const id = new UUID();
+        store.set(id, {
+          type: path("Bar"),
+          foo: 3
+        });
+
+        assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(3));
+      });
+    });
+
     context("access Object prop", () => {
       it("should return Object prop", () => {
         store.set("Object", {
