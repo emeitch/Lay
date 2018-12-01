@@ -194,29 +194,39 @@ describe("Path", () => {
         const typeid2 = new UUID();
         const typeid3 = new UUID();
 
-        book.set("parent1", typeid1);
-        book.set("parent2", typeid2);
-        book.set("grandparent", typeid3);
+        store.set("parent1", typeid1);
+        store.set("parent2", typeid2);
+        store.set("grandparent", typeid3);
 
-        book.put(id, "type", path("parent1"));
-        book.put(id, "type", path("parent2"));
-        book.put(typeid2, "type", path("grandparent"));
+        store.set(id, {
+          type: [
+            path("parent1"),
+            path("parent2")
+          ]
+        });
 
-        book.put(typeid1, "foo", v(1));
-        book.put(typeid2, "foo", v(2));
-        book.put(typeid2, "bar", v(3));
-        book.put(typeid3, "baz", v(4));
+        store.set(typeid1, {
+          foo: v(1)
+        });
+        store.set(typeid2, {
+          type: path("grandparent"),
+          foo: v(2),
+          bar: v(3)
+        });
+        store.set(typeid3, {
+          baz: v(4)
+        });
       });
 
       it("should return the type's val", () => {
         const p1 = new Path(id, "foo");
-        assert.deepStrictEqual(p1.reduce(book), v(1));
+        assert.deepStrictEqual(p1.reduce(store), v(1));
 
         const p2 = new Path(id, "bar");
-        assert.deepStrictEqual(p2.reduce(book), v(3));
+        assert.deepStrictEqual(p2.reduce(store), v(3));
 
         const p3 = new Path(id, "baz");
-        assert.deepStrictEqual(p3.reduce(book), v(4));
+        assert.deepStrictEqual(p3.reduce(store), v(4));
       });
     });
 

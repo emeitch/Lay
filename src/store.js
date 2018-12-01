@@ -18,8 +18,36 @@ export default class Store {
   }
 
   getProp(id, key) {
-    const obj = this.get(id);
-    return obj && obj.get(key, this);
+    return this.findPropWithType(id, key);
+  }
+
+  findPropWithType(id, key) {
+    const val = this.get(id);
+    if (!val) {
+      return undefined;
+    }
+
+    const prop = val.get(key, this);
+    if (prop) {
+      return prop;
+    }
+
+    const type = val.get("type", this);
+    const types = type.type.equals(sym("Array")) ? type : v([type]);
+    for (const tref of types.origin) {
+      const t = tref.replaceSelfBy(id).reduce(this);
+      const p = this.findPropWithType(t, key);
+      if (p) {
+        return p;
+      }
+    }
+
+    // const op = this.get("Object", key);
+    // if (op) {
+    //   return op;
+    // }
+
+    return undefined;
   }
 }
 
