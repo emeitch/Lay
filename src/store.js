@@ -42,10 +42,11 @@ export default class Store {
       }
     }
 
-    // const op = this.get("Object", key);
-    // if (op) {
-    //   return op;
-    // }
+    const ot = this.get("Object");
+    const op = ot && ot.get(key, this);
+    if (op) {
+      return op;
+    }
 
     return undefined;
   }

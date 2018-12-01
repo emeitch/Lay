@@ -27,6 +27,20 @@ describe("Store", () => {
       assert.deepStrictEqual(store.get(id), obj);
     });
   });
+
+  describe("#findPropWithType", () => {
+    context("access Object prop", () => {
+      it("should return Object prop", () => {
+        store.set("Object", {
+          foo: v(1)
+        });
+        const id = new UUID();
+        store.set(id, {});
+
+        assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(1));
+      });
+    });
+  });
 });
 
 describe("parse", () => {
