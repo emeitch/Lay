@@ -35,9 +35,19 @@ describe("Store", () => {
         foo: 1
       });
 
-      store.set("Bar", {
+      // todo: 間接IDがなくても動くようにしたい
+      const barid = new UUID();
+      store.set("Bar", barid);
+      store.set(barid, {
         foo: 2
       });
+
+      const bazid = new UUID();
+      store.set("Baz", bazid);
+      store.set(bazid, {
+        foo: 4
+      });
+
 
       id = new UUID();
     });
@@ -50,6 +60,16 @@ describe("Store", () => {
         });
 
         assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(3));
+      });
+    });
+
+    context("type prop", () => {
+      it("should return type prop", () => {
+        store.set(id, {
+          type: path("Bar"),
+        });
+
+        assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(2));
       });
     });
 
