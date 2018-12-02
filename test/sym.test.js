@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import v from '../src/v';
 import Book from '../src/book';
+import Store from '../src/store';
 import Sym, { sym } from '../src/sym';
 
 describe("Sym", () => {
@@ -36,9 +37,9 @@ describe("Sym", () => {
   describe("#reduce", () => {
     it("should return val of book", () => {
       const val = v("sym val");
-      const book = new Book();
-      book.set("sym", val);
-      assert(sym("sym").reduce(book) === val);
+      const store = new Store();
+      store.set("sym", val);
+      assert(sym("sym").reduce(store) === val);
     });
 
     context("multi-step refering", () => {
