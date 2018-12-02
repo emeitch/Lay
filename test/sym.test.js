@@ -38,7 +38,7 @@ describe("Sym", () => {
       const val = v("sym val");
       const store = new Store();
       store.set("sym", val);
-      assert(sym("sym").reduce(store) === val);
+      assert.deepStrictEqual(sym("sym").reduce(store), val);
     });
 
     context("multi-step refering", () => {
@@ -47,7 +47,7 @@ describe("Sym", () => {
         const store = new Store();
         store.set("sym", sym("sym2"));
         store.set("sym2", val);
-        assert(sym("sym").reduce(store) === val);
+        assert.deepStrictEqual(sym("sym").reduce(store), val);
       });
     });
 
@@ -55,7 +55,7 @@ describe("Sym", () => {
       it("should return the sym", () => {
         const s = sym("sym");
         const store = new Store();
-        assert(s.reduce(store) === s);
+        assert.deepStrictEqual(s.reduce(store), s);
       });
     });
 
@@ -66,7 +66,7 @@ describe("Sym", () => {
         pstore.set("sym", val);
         const store = new Store(pstore);
 
-        assert(sym("sym").reduce(store) === val);
+        assert.deepStrictEqual(sym("sym").reduce(store), val);
       });
     });
   });
