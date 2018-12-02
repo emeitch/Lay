@@ -34,19 +34,19 @@ describe("stdlib", () => {
     it("should load prev act json string val to store", () => {
       const store = new Store(std);
 
-      const id = new UUID();
+      const key = new UUID();
       const val = v({
         foo: 1
       });
       const act = new Act(() => {
         return JSON.stringify([
-          [id.object(store), val.object(store)]
+          {key: key.object(store), val: val.object(store)}
         ]);
       });
       store.run(path(act, ["then", exp("load")]).deepReduce(store));
       store.run(path(new Act(() => undefined), ["then", exp("load")]).deepReduce(store)); // invalid act
 
-      assert.deepStrictEqual(store.get(id), val);
+      assert.deepStrictEqual(store.get(key), val);
     });
 
     it("should nothing to do without prev act json string", () => {

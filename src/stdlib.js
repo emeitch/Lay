@@ -10,7 +10,7 @@ import { exp } from './exp';
 import { kase, alt, grd, otherwise } from './case';
 import { func, LiftedNative } from './func';
 import { path } from './path';
-import { parseObjs, parseEdges } from './store';
+import { parseKeyValues, parseEdges } from './store';
 
 export const stdlib = new Book();
 export const std = new Store();
@@ -57,11 +57,11 @@ function set(...args) {
   })));
   std.set("load", func(new LiftedNative(function() {
     const store = this;
-    return new Act(objsStr => {
-      const jsobj = objsStr ? JSON.parse(objsStr) : [];
-      const objs = parseObjs(jsobj);
-      for (const obj of objs) {
-        store.set(obj[0], obj[1]);
+    return new Act(kvsStr => {
+      const jsobj = kvsStr ? JSON.parse(kvsStr) : [];
+      const kvs = parseKeyValues(jsobj);
+      for (const kv of kvs) {
+        store.set(kv.key, kv.val);
       }
     });
   })));
