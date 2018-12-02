@@ -283,12 +283,14 @@ describe("Path", () => {
 
       beforeEach(() => {
         const typeid = new UUID();
-        book.put(id, "type", typeid);
+        store.set(id, {
+          type: typeid
+        });
       });
 
       it("should return the path", () => {
         const p = new Path(id, "foo");
-        assert.deepStrictEqual(p.reduce(book), p);
+        assert.deepStrictEqual(p.reduce(store), p);
       });
     });
 
