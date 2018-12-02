@@ -1,10 +1,11 @@
 import assert from 'assert';
 
-import { stdlib, n } from '../src/stdlib';
+import { std, stdlib, n } from '../src/stdlib';
 import v from '../src/v';
 import UUID from '../src/uuid';
 import Edge from '../src/edge';
 import Book from '../src/book';
+import Store from '../src/store';
 import Act from '../src/act';
 import Path, { path } from '../src/path';
 import { func, plus } from '../src/func';
@@ -20,6 +21,8 @@ describe("stdlib", () => {
 
   describe("if", () => {
     it("should test cond and reduce then exp or else exp", () => {
+      const store = new Store(std);
+
       const t = exp("if", v(true), v(1), v(2)).reduce(store);
       assert.deepStrictEqual(t, v(1));
 

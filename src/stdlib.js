@@ -3,6 +3,7 @@ import v from './v';
 import UUID from './uuid';
 import Act from './act';
 import Book from './book';
+import Store from './store';
 import Prim from './prim';
 import Comp, { CompArray, CompMap } from  './comp';
 import { exp } from './exp';
@@ -12,9 +13,15 @@ import { path } from './path';
 import { parse } from './store';
 
 export const stdlib = new Book();
+export const std = new Store();
+
+function set(...args) {
+  stdlib.set(...args);
+  std.set(...args);
+}
 
 {
-  stdlib.set("if", func(
+  set("if", func(
     "cond",
     "then",
     "else",
