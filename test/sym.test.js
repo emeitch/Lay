@@ -55,8 +55,8 @@ describe("Sym", () => {
     context("unassigned", () => {
       it("should return the sym", () => {
         const s = sym("sym");
-        const book = new Book();
-        assert(s.reduce(book) === s);
+        const store = new Store();
+        assert(s.reduce(store) === s);
       });
     });
 
