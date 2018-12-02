@@ -260,17 +260,21 @@ describe("Path", () => {
       beforeEach(() => {
         const typeid1 = new UUID();
 
-        book.set("parent1", typeid1);
+        store.set("parent1", typeid1);
 
-        book.put(id, "type", path("self", ["baz", path("parent1")]));
-        book.put(id, "baz", func("arg", path("arg")));
+        store.set(id, {
+          type: path("self", ["baz", path("parent1")]),
+          baz: func("arg", path("arg"))
+        });
 
-        book.put(typeid1, "foo", v("bar"));
+        store.set(typeid1, {
+          foo: v("bar")
+        });
       });
 
       it("should return the type's val", () => {
         const p1 = new Path(id, "foo");
-        assert.deepStrictEqual(p1.reduce(book), v("bar"));
+        assert.deepStrictEqual(p1.reduce(store), v("bar"));
       });
     });
 
