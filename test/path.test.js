@@ -328,16 +328,24 @@ describe("Path", () => {
 
         const holder1 = new UUID();
         const context1 = new UUID();
-        book.put(holder1, id, context1);
-        book.put(context1, "x", v(1));
+        store.set(holder1, {
+          [id]: context1
+        });
+        store.set(context1, {
+          x: 1
+        });
 
         const holder2 = new UUID();
         const context2 = new UUID();
-        book.put(holder2, id, context2);
-        book.put(context2, "x", v(2));
+        store.set(holder2, {
+          [id]: context2
+        });
+        store.set(context2, {
+          x: 2
+        });
 
-        assert.deepStrictEqual(path(holder1, id, "x").reduce(book), v(1));
-        assert.deepStrictEqual(path(holder2, id, "x").reduce(book), v(2));
+        assert.deepStrictEqual(path(holder1, id, "x").reduce(store), v(1));
+        assert.deepStrictEqual(path(holder2, id, "x").reduce(store), v(2));
       });
     });
 
