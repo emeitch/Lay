@@ -300,12 +300,12 @@ describe("Path", () => {
 
         {
           const p = new Path(c, "a", "b");
-          assert.deepStrictEqual(p.reduce(book), v({c: "d"}));
+          assert.deepStrictEqual(p.reduce(store), v({c: "d"}));
         }
 
         {
           const p = new Path(c, "a", "b", "c");
-          assert.deepStrictEqual(p.reduce(book), v("d"));
+          assert.deepStrictEqual(p.reduce(store), v("d"));
         }
       });
     });
