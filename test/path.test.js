@@ -313,9 +313,12 @@ describe("Path", () => {
     context("path in func", () => {
       it("should replace path args", () => {
         const id = new UUID();
-        book.put(id, v("foo"), func("a", exp(concat, v("f"), "a")));
-        const e = exp(func("x", new Path(id, [v("foo"), path("x")])), v("bar"));
-        assert.deepStrictEqual(e.reduce(book), v("fbar"));
+        store.set(id, {
+          foo: func("a", exp(concat, v("f"), "a"))
+        });
+
+        const e = exp(func("x", new Path(id, ["foo", path("x")])), v("bar"));
+        assert.deepStrictEqual(e.reduce(store), v("fbar"));
       });
     });
 
