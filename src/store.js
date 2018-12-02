@@ -9,12 +9,18 @@ export default class Store {
     this.objs = new Map();
   }
 
+  convertStringKey(key) {
+    return v(key).stringify();
+  }
+
   set(key, val) {
-    this.objs.set(key, v(val));
+    const k = this.convertStringKey(key);
+    this.objs.set(k, v(val));
   }
 
   get(key) {
-    return this.objs.get(key);
+    const k = this.convertStringKey(key);
+    return this.objs.get(k);
   }
 
   getProp(id, key) {

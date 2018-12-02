@@ -6,7 +6,6 @@ import UUID from '../src/uuid';
 import Exp, { exp } from '../src/exp';
 import { func, plus, concat } from '../src/func';
 import { scope } from '../src/scope';
-import Book from '../src/book';
 import Store from '../src/store';
 
 describe("Path", () => {
@@ -38,10 +37,8 @@ describe("Path", () => {
   });
 
   describe("#reduce", () => {
-    let book;
     let store;
     beforeEach(() => {
-      book = new Book();
       store = new Store();
     });
 
@@ -368,9 +365,11 @@ describe("Path", () => {
         const id0 = new UUID();
         const id1 = new UUID();
         const sid = scope(id0, id1);
-        book.put(sid, "foo", v(3));
+        store.set(sid, {
+          foo: 3
+        });
 
-        assert.deepStrictEqual(path(sid, "foo").reduce(book), v(3));
+        assert.deepStrictEqual(path(scope(id0, id1), "foo").reduce(store), v(3));
       });
     });
   });
