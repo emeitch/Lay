@@ -43,11 +43,13 @@ describe("Sym", () => {
     });
 
     context("multi-step refering", () => {
-      const val = v("sym val");
-      const book = new Book();
-      book.set("sym", sym("sym2"));
-      book.set("sym2", val);
-      assert(sym("sym").reduce(book) === val);
+      it("should return val of store", () => {
+        const val = v("sym val");
+        const store = new Store();
+        store.set("sym", sym("sym2"));
+        store.set("sym2", val);
+        assert(sym("sym").reduce(store) === val);
+      });
     });
 
     context("unassigned", () => {
