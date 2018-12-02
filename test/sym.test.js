@@ -35,7 +35,7 @@ describe("Sym", () => {
   });
 
   describe("#reduce", () => {
-    it("should return val of book", () => {
+    it("should return val of store", () => {
       const val = v("sym val");
       const store = new Store();
       store.set("sym", val);
