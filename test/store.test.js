@@ -4,7 +4,9 @@ import UUID from '../src/uuid';
 import { sym } from '../src/sym';
 import { path } from '../src/path';
 import v from '../src/v';
-import Store, { parse } from '../src/store';
+import Store, { parseEdges } from '../src/store';
+
+const parse = parseEdges;
 
 describe("Store", () => {
   let store;
@@ -156,7 +158,7 @@ describe("parse", () => {
       const edges = parse([{
         tail: {type: {origin: "UUID"}, origin: "uuidexample"},
         label: "foo",
-        head: {type: {origin: "CompArray"}, origin: [1, 2, 3]},
+        head: {type: {origin: "Array"}, origin: [1, 2, 3]},
         rev: {type: {origin: "UUID"}, origin: "rev1"},
       }]);
 
@@ -169,7 +171,7 @@ describe("parse", () => {
       const edges = parse([{
         tail: {type: {origin: "UUID"}, origin: "uuidexample"},
         label: "foo",
-        head: {type: {origin: "CompArray"}, head: "foo", origin: [{type: {origin: "CompMap"}, head: "bar", origin: {a: 1, b: 2}}]},
+        head: {type: {origin: "Array"}, head: "foo", origin: [{type: {origin: "Map"}, head: "bar", origin: {a: 1, b: 2}}]},
         rev: {type: {origin: "UUID"}, origin: "rev1"},
       }]);
 
@@ -182,7 +184,7 @@ describe("parse", () => {
       const edges = parse([{
         tail: {type: {origin: "UUID"}, origin: "uuidexample"},
         label: "foo",
-        head: {type: {origin: "CompMap"}, head: "foo", origin: {a: {type: {origin: "CompArray"}, head: "bar", origin: [1, 2, 3]}}},
+        head: {type: {origin: "Map"}, head: "foo", origin: {a: {type: {origin: "Array"}, head: "bar", origin: [1, 2, 3]}}},
         rev: {type: {origin: "UUID"}, origin: "rev1"},
       }]);
 

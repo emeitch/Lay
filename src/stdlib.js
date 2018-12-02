@@ -10,7 +10,7 @@ import { exp } from './exp';
 import { kase, alt, grd, otherwise } from './case';
 import { func, LiftedNative } from './func';
 import { path } from './path';
-import { parse } from './store';
+import { parseObjs, parseEdges } from './store';
 
 export const stdlib = new Book();
 export const std = new Store();
@@ -49,12 +49,23 @@ function set(...args) {
     const book = this;
     return new Act(edgesStr => {
       const jsobj = edgesStr ? JSON.parse(edgesStr) : [];
-      const edges = parse(jsobj);
+      const edges = parseEdges(jsobj);
       for (const edge of edges) {
         book.appendEdge(edge.tail, edge.label, edge.head, edge.rev);
       }
     });
   })));
+  std.set("load", func(new LiftedNative(function() {
+    const store = this;
+    return new Act(objsStr => {
+      const jsobj = objsStr ? JSON.parse(objsStr) : [];
+      const objs = parseObjs(jsobj);
+      for (const obj of objs) {
+        store.set(obj[0], obj[1]);
+      }
+    });
+  })));
+
 
   stdlib.set("filterEdges", func("pattern", new LiftedNative(function(pattern) {
     const book = this;
@@ -324,7 +335,15 @@ function set(...args) {
 
 {
   const act = new UUID();
-  stdlib.set("Act", act);
+  set("Act", act);
+
+  std.set(act, {
+    then: func("next", exp(new LiftedNative(function(self, next) {
+      const act = self.deepReduce(this);
+      const nact = next.deepReduce(this);
+      return act.then(nact);
+    }), "self", "next"))
+  });
 
   stdlib.put(
     act,

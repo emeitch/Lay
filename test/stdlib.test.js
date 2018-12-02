@@ -3,7 +3,6 @@ import assert from 'assert';
 import { std, stdlib, n } from '../src/stdlib';
 import v from '../src/v';
 import UUID from '../src/uuid';
-import Edge from '../src/edge';
 import Book from '../src/book';
 import Store from '../src/store';
 import Act from '../src/act';
@@ -33,20 +32,21 @@ describe("stdlib", () => {
 
   describe("load", () => {
     it("should load prev act json string val to store", () => {
-      const tail = new UUID();
-      const label = "foo";
-      const head = v(0);
-      const rev = new UUID();
+      const store = new Store(std);
+
+      const id = new UUID();
+      const val = v({
+        foo: 1
+      });
       const act = new Act(() => {
         return JSON.stringify([
-          new Edge(tail, label, head, rev).object(store),
+          [id.object(store), val.object(store)]
         ]);
       });
       store.run(path(act, ["then", exp("load")]).deepReduce(store));
+      store.run(path(new Act(() => undefined), ["then", exp("load")]).deepReduce(store)); // invalid act
 
-      const edge = store.edges.find(e => e.tail.equals(tail));
-      assert.deepStrictEqual(edge.label, v(label));
-      assert.deepStrictEqual(edge.head, head);
+      assert.deepStrictEqual(store.get(id), val);
     });
 
     it("should nothing to do without prev act json string", () => {

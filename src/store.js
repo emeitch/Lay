@@ -3,6 +3,8 @@ import Edge from './edge';
 import { sym } from './sym';
 import { path } from './path';
 import v from './v';
+import Act from '../src/act';
+import Comp from './comp';
 
 export default class Store {
   constructor(...imports) {
@@ -94,6 +96,26 @@ export default class Store {
 
     return undefined;
   }
+
+  run(e, arg) {
+    let acts = e.deepReduce(this);
+    if (acts instanceof Act) {
+      acts = v([acts]);
+    }
+
+    let act = null;
+    if (acts instanceof Comp && Array.isArray(acts.origin)) {
+      for (act of acts.origin) {
+        if (!(act instanceof Act)) {
+          throw `not Act instance: ${act}`;
+        }
+
+        do {
+          act = act.proceed(arg);
+        } while(act.canProceed());
+      }
+    }
+  }
 }
 
 function parseVal(raw) {
@@ -120,9 +142,9 @@ function parseVal(raw) {
     const klass = parseVal(raw.type);
     if (klass.origin === "Comp") {
       return v(head, parseVal(raw.origin));
-    } else if (klass.origin === "CompArray") {
+    } else if (klass.origin === "Array") {
       return v(head, raw.origin.map(i => parseVal(i)));
-    } else if (klass.origin === "CompMap") {
+    } else if (klass.origin === "Map") {
       const org = {};
       for (const key of Object.keys(raw.origin)) {
         org[key] = parseVal(raw.origin[key]);
@@ -142,7 +164,15 @@ function parseVal(raw) {
   throw `can not identify a val: ${JSON.stringify(raw)}`;
 }
 
-export function parse(raws) {
+export function parseObjs(raws) {
+  const objs = [];
+  for (const raw of raws) {
+    objs.push([parseVal(raw[0]), parseVal(raw[1])]);
+  }
+  return objs;
+}
+
+export function parseEdges(raws) {
   const edges = [];
   for (const raw of raws) {
     const tail = parseVal(raw.tail);
