@@ -13,43 +13,43 @@ import { pack } from '../src/pack';
 import { sym } from '../src/sym';
 
 describe("stdlib", () => {
-  let book;
+  let store;
   beforeEach(() => {
-    book = new Book(stdlib);
+    store = new Book(stdlib);
   });
 
   describe("if", () => {
     it("should test cond and reduce then exp or else exp", () => {
-      const t = exp("if", v(true), v(1), v(2)).reduce(book);
+      const t = exp("if", v(true), v(1), v(2)).reduce(store);
       assert.deepStrictEqual(t, v(1));
 
-      const f = exp("if", v(false), v(1), v(2)).reduce(book);
+      const f = exp("if", v(false), v(1), v(2)).reduce(store);
       assert.deepStrictEqual(f, v(2));
     });
   });
 
   describe("load", () => {
-    it("should load prev act json string val to book", () => {
+    it("should load prev act json string val to store", () => {
       const tail = new UUID();
       const label = "foo";
       const head = v(0);
       const rev = new UUID();
       const act = new Act(() => {
         return JSON.stringify([
-          new Edge(tail, label, head, rev).object(book),
+          new Edge(tail, label, head, rev).object(store),
         ]);
       });
-      book.run(path(act, ["then", exp("load")]).deepReduce(book));
+      store.run(path(act, ["then", exp("load")]).deepReduce(store));
 
-      const edge = book.edges.find(e => e.tail.equals(tail));
+      const edge = store.edges.find(e => e.tail.equals(tail));
       assert.deepStrictEqual(edge.label, v(label));
       assert.deepStrictEqual(edge.head, head);
     });
 
     it("should nothing to do without prev act json string", () => {
-      const length = book.edges.length;
-      book.run(exp("load").deepReduce(book));
-      assert(length === book.edges.length);
+      const length = store.edges.length;
+      store.run(exp("load").deepReduce(store));
+      assert(length === store.edges.length);
     });
   });
 
@@ -57,13 +57,13 @@ describe("stdlib", () => {
   describe("filterEdges", () => {
     it("should filter act arg log by pattern", () => {
       const id = new UUID();
-      book.put(id, "type", "Obj");
-      book.put(id, "key", v(1));
-      const edges = book.getEdgesBySubject(id);
+      store.put(id, "type", "Obj");
+      store.put(id, "key", v(1));
+      const edges = store.getEdgesBySubject(id);
       const revs = new Set(edges.map(e => e.rev));
       for (const rev of revs) {
         // transactions
-        edges.push(...book.getEdgesBySubject(rev));
+        edges.push(...store.getEdgesBySubject(rev));
       }
       const act = new Act(() => {
         return edges;
@@ -72,17 +72,17 @@ describe("stdlib", () => {
       const act2 = new Act(edges => {
         passedEdges = edges;
       });
-      book.run(path(act, ["then", exp("filterEdges", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
+      store.run(path(act, ["then", exp("filterEdges", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(store));
       assert(passedEdges.length > 0);
 
-      book.set("Obj", new UUID()); // type assigned
-      book.run(path(act, ["then", exp("filterEdges", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(book));
+      store.set("Obj", new UUID()); // type assigned
+      store.run(path(act, ["then", exp("filterEdges", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(store));
       assert(passedEdges.length > 0);
 
-      book.run(path(act, ["then", exp("filterEdges", v({"Other": ["key"]}))], ["then", act2]).deepReduce(book));
+      store.run(path(act, ["then", exp("filterEdges", v({"Other": ["key"]}))], ["then", act2]).deepReduce(store));
       assert.deepStrictEqual(passedEdges, []);
 
-      book.run(path(act, ["then", exp("filterEdges", v({"Obj": ["other"]}))], ["then", act2]).deepReduce(book));
+      store.run(path(act, ["then", exp("filterEdges", v({"Obj": ["other"]}))], ["then", act2]).deepReduce(store));
       assert.deepStrictEqual(passedEdges, []);
     });
   });
@@ -90,16 +90,16 @@ describe("stdlib", () => {
   context("accessing Object methods", () => {
     describe("all", () => {
       it("should return self instances", () => {
-        book.set("Foo", book.new());
-        const id1 = book.new({"type": pack(path("Foo"))});
-        const id2 = book.new({"type": pack(path("Foo"))});
+        store.set("Foo", store.new());
+        const id1 = store.new({"type": pack(path("Foo"))});
+        const id2 = store.new({"type": pack(path("Foo"))});
 
-        const ids = path("Foo", "all").reduce(book);
+        const ids = path("Foo", "all").reduce(store);
         assert.deepStrictEqual(ids.get(0), id1);
         assert.deepStrictEqual(ids.get(1), id2);
 
-        const emp = book.new();
-        assert.deepStrictEqual(path(emp, "all").reduce(book), v([]));
+        const emp = store.new();
+        assert.deepStrictEqual(path(emp, "all").reduce(store), v([]));
       });
     });
 
@@ -107,33 +107,33 @@ describe("stdlib", () => {
       it("should return array for specified key", () => {
         const typeid = new UUID();
         const id = new UUID();
-        book.put(id, "type", typeid);
+        store.put(id, "type", typeid);
 
         {
           const p = new Path(id, ["add", "foo", v(1)]);
-          const a = p.reduce(book);
-          book.run(a);
+          const a = p.reduce(store);
+          store.run(a);
         }
 
         {
           const p = new Path(id, ["add", "foo", v(2)]);
-          const a = p.reduce(book);
-          book.run(a);
+          const a = p.reduce(store);
+          store.run(a);
         }
 
-        assert.deepStrictEqual(path(id, ["allOf", "foo"]).reduce(book), v([v(1), v(2)]));
+        assert.deepStrictEqual(path(id, ["allOf", "foo"]).reduce(store), v([v(1), v(2)]));
       });
     });
 
     describe("new", () => {
       it("should return a instance creation act", () => {
-        book.set("Foo", book.new());
+        store.set("Foo", store.new());
         const act = path("Object", ["new", v({
           type: pack(path("Foo")),
           foo: v("foo"),
           bar: path([plus, v(1), v(2)]),
           buz: pack(path([plus, v(1), v(2)]))
-        })]).reduce(book);
+        })]).reduce(store);
 
         assert.deepStrictEqual(act.constructor, Act);
 
@@ -142,18 +142,18 @@ describe("stdlib", () => {
           ov = id;
         }));
 
-        book.run(act2);
+        store.run(act2);
 
-        const obj = path("Foo", "all", v(0)).reduce(book);
+        const obj = path("Foo", "all", v(0)).reduce(store);
         assert.deepStrictEqual(ov, obj);
-        assert.deepStrictEqual(obj.get("foo", book), v("foo"));
-        assert.deepStrictEqual(path(obj, "foo").reduce(book), v("foo"));
+        assert.deepStrictEqual(obj.get("foo", store), v("foo"));
+        assert.deepStrictEqual(path(obj, "foo").reduce(store), v("foo"));
 
-        assert.deepStrictEqual(obj.get("bar", book), v(3));
-        assert.deepStrictEqual(path(obj, "bar").reduce(book), v(3));
+        assert.deepStrictEqual(obj.get("bar", store), v(3));
+        assert.deepStrictEqual(path(obj, "bar").reduce(store), v(3));
 
-        assert.deepStrictEqual(obj.get("buz", book), path([plus, v(1), v(2)]));
-        assert.deepStrictEqual(path(obj, "buz").reduce(book), v(3));
+        assert.deepStrictEqual(obj.get("buz", store), path([plus, v(1), v(2)]));
+        assert.deepStrictEqual(path(obj, "buz").reduce(store), v(3));
       });
     });
 
@@ -163,24 +163,24 @@ describe("stdlib", () => {
         it("should return the Act which run add action", () => {
           const typeid = new UUID();
           const id = new UUID();
-          book.put(id, "type", typeid);
+          store.put(id, "type", typeid);
 
           const p = new Path(id, ["add", "foo", v(1)]);
-          const a = p.reduce(book);
+          const a = p.reduce(store);
           assert.deepStrictEqual(a.constructor, Act);
-          book.run(a);
+          store.run(a);
 
-          const r = book.activeRel(id, "foo");
-          assert.deepStrictEqual(book.getEdgeHead(r, "object"), v(1));
+          const r = store.activeRel(id, "foo");
+          assert.deepStrictEqual(store.getEdgeHead(r, "object"), v(1));
 
           const p2 = new Path(id, ["add", "foo", v(2)]);
-          const a2 = p2.reduce(book);
-          book.run(a2);
+          const a2 = p2.reduce(store);
+          store.run(a2);
 
-          const rels = book.activeRels(id, "foo");
+          const rels = store.activeRels(id, "foo");
           assert.deepStrictEqual(rels.length, 2);
-          assert.deepStrictEqual(book.getEdgeHead(rels[0], "object"), v(1));
-          assert.deepStrictEqual(book.getEdgeHead(rels[1], "object"), v(2));
+          assert.deepStrictEqual(store.getEdgeHead(rels[0], "object"), v(1));
+          assert.deepStrictEqual(store.getEdgeHead(rels[1], "object"), v(2));
         });
       });
 
@@ -188,23 +188,23 @@ describe("stdlib", () => {
         it("should return the Act which run set action", () => {
           const typeid = new UUID();
           const id = new UUID();
-          book.put(id, "type", typeid);
+          store.put(id, "type", typeid);
 
           const p = new Path(id, ["def", "foo", exp(plus, v(1), v(2))]);
-          const a = p.reduce(book);
+          const a = p.reduce(store);
           assert.deepStrictEqual(a.constructor, Act);
-          book.run(a);
+          store.run(a);
 
-          const r = book.activeRel(id, "foo");
-          assert.deepStrictEqual(book.getEdgeHead(r, "object"), exp(plus, v(1), v(2)));
+          const r = store.activeRel(id, "foo");
+          assert.deepStrictEqual(store.getEdgeHead(r, "object"), exp(plus, v(1), v(2)));
 
           const p2 = new Path(id, ["def", "foo", exp(plus, v(2), v(3))]);
-          const a2 = p2.reduce(book);
-          book.run(a2);
+          const a2 = p2.reduce(store);
+          store.run(a2);
 
-          const rels = book.activeRels(id, "foo");
+          const rels = store.activeRels(id, "foo");
           assert.deepStrictEqual(rels.length, 1); // invalidated old rels
-          assert.deepStrictEqual(book.getEdgeHead(rels[0], "object"), exp(plus, v(2), v(3)));
+          assert.deepStrictEqual(store.getEdgeHead(rels[0], "object"), exp(plus, v(2), v(3)));
         });
       });
 
@@ -212,41 +212,41 @@ describe("stdlib", () => {
         it("should return the Act which run set action", () => {
           const typeid = new UUID();
           const id = new UUID();
-          book.put(id, "type", typeid);
+          store.put(id, "type", typeid);
 
           const p = new Path(id, ["set", "foo", exp(plus, v(1), v(2))]);
-          const a = p.reduce(book);
+          const a = p.reduce(store);
           assert.deepStrictEqual(a.constructor, Act);
-          book.run(a);
+          store.run(a);
 
-          const r = book.activeRel(id, "foo");
-          assert.deepStrictEqual(book.getEdgeHead(r, "object"), v(3));
+          const r = store.activeRel(id, "foo");
+          assert.deepStrictEqual(store.getEdgeHead(r, "object"), v(3));
 
           const p2 = new Path(id, ["set", "bar", pack(exp(plus, v(1), v(2)))]);
-          const a2 = p2.reduce(book);
+          const a2 = p2.reduce(store);
           assert.deepStrictEqual(a2.constructor, Act);
-          book.run(a2);
+          store.run(a2);
 
-          const r2 = book.activeRel(id, "bar");
-          assert.deepStrictEqual(book.getEdgeHead(r2, "object"), exp(plus, v(1), v(2)));
+          const r2 = store.activeRel(id, "bar");
+          assert.deepStrictEqual(store.getEdgeHead(r2, "object"), exp(plus, v(1), v(2)));
 
           const p3 = new Path(id, ["set", "bar", pack(exp(plus, v(2), v(1)))]);
-          const a3 = p3.reduce(book);
-          book.run(a3);
+          const a3 = p3.reduce(store);
+          store.run(a3);
 
           const p4 = new Path(id, ["set", "bar", pack(exp(plus, v(3), v(2)))]);
-          const a4 = p4.reduce(book);
-          book.run(a4);
+          const a4 = p4.reduce(store);
+          store.run(a4);
 
-          const rels = book.activeRels(id, "bar");
+          const rels = store.activeRels(id, "bar");
           assert.deepStrictEqual(rels.length, 1); // invalidated old rels
-          assert.deepStrictEqual(book.getEdgeHead(rels[0], "object"), exp(plus, v(3), v(2)));
+          assert.deepStrictEqual(store.getEdgeHead(rels[0], "object"), exp(plus, v(3), v(2)));
 
           const p5 = new Path(id, ["set", "bar", v(null)]);
-          const a5 = p5.reduce(book);
-          book.run(a5);
+          const a5 = p5.reduce(store);
+          store.run(a5);
 
-          const rels5 = book.activeRels(id, "bar");
+          const rels5 = store.activeRels(id, "bar");
           assert.deepStrictEqual(rels5.length, 0); // invalidated rels
         });
       });
@@ -256,15 +256,15 @@ describe("stdlib", () => {
           const id = new UUID();
 
           const p = new Path(id, ["add", "foo", v(4)]);
-          const a = p.reduce(book);
-          book.run(a);
+          const a = p.reduce(store);
+          store.run(a);
 
           const p2 = new Path(id, ["add", "foo", v(5)]);
-          const a2 = p2.reduce(book);
-          book.run(a2);
+          const a2 = p2.reduce(store);
+          store.run(a2);
 
           const val = new Path(id, ["get", "foo"]);
-          assert.deepStrictEqual(val.reduce(book), v(4));
+          assert.deepStrictEqual(val.reduce(store), v(4));
         });
 
         context("exp val", () => {
@@ -272,11 +272,11 @@ describe("stdlib", () => {
             const id = new UUID();
 
             const p = new Path(id, ["add", "foo", exp(plus, v(1), v(2))]);
-            const a = p.reduce(book);
-            book.run(a);
+            const a = p.reduce(store);
+            store.run(a);
 
             const val = new Path(id, ["get", "foo"]);
-            assert.deepStrictEqual(val.reduce(book), v(3));
+            assert.deepStrictEqual(val.reduce(store), v(3));
           });
         });
       });
@@ -286,18 +286,18 @@ describe("stdlib", () => {
           const id = new UUID();
 
           const p = new Path(id, ["add", "foo", v(4)]);
-          const a = p.reduce(book);
-          book.run(a);
+          const a = p.reduce(store);
+          store.run(a);
 
           const p2 = new Path(id, ["add", "foo", v(5)]);
-          const a2 = p2.reduce(book);
-          book.run(a2);
+          const a2 = p2.reduce(store);
+          store.run(a2);
 
           const val = new Path(id, ["getAtIndex", "foo", v(0)]);
-          assert.deepStrictEqual(val.reduce(book), v(4));
+          assert.deepStrictEqual(val.reduce(store), v(4));
 
           const val2 = new Path(id, ["getAtIndex", "foo", v(1)]);
-          assert.deepStrictEqual(val2.reduce(book), v(5));
+          assert.deepStrictEqual(val2.reduce(store), v(5));
         });
 
         context("exp val", () => {
@@ -305,11 +305,11 @@ describe("stdlib", () => {
             const id = new UUID();
 
             const p = new Path(id, ["add", "foo", exp(plus, v(1), v(2))]);
-            const a = p.reduce(book);
-            book.run(a);
+            const a = p.reduce(store);
+            store.run(a);
 
             const val = new Path(id, ["getAtIndex", "foo", v(0)]);
-            assert.deepStrictEqual(val.reduce(book), v(3));
+            assert.deepStrictEqual(val.reduce(store), v(3));
           });
         });
       });
@@ -319,7 +319,7 @@ describe("stdlib", () => {
   context("accessing String methods", () => {
     describe("trim", () => {
       it("should trim the string", () => {
-        assert.deepStrictEqual(path(v("hoge   "), "trim").reduce(book), v("hoge"));
+        assert.deepStrictEqual(path(v("hoge   "), "trim").reduce(store), v("hoge"));
       });
     });
   });
@@ -327,8 +327,8 @@ describe("stdlib", () => {
   context("accessing Boolean methods", () => {
     describe("not", () => {
       it("should reverse logic", () => {
-        assert.deepStrictEqual(path(v(true), "not").reduce(book), v(false));
-        assert.deepStrictEqual(path(v(false), "not").reduce(book), v(true));
+        assert.deepStrictEqual(path(v(true), "not").reduce(store), v(false));
+        assert.deepStrictEqual(path(v(false), "not").reduce(store), v(true));
       });
     });
   });
@@ -336,19 +336,19 @@ describe("stdlib", () => {
   context("accessing default Array methods", () => {
     describe("new", () => {
       it("should create a array", () => {
-        const m = path("Array", ["new", "Foo", v(1), v(2), v(3)]).reduce(book);
+        const m = path("Array", ["new", "Foo", v(1), v(2), v(3)]).reduce(store);
         assert.deepStrictEqual(m, v("Foo", [1, 2, 3]));
       });
 
       it("should create a nested array", () => {
-        const m = path("Array", ["new", "Foo", v(1), v(2), path("Array", ["new", "Fiz", v(3), v(4)])]).deepReduce(book);
+        const m = path("Array", ["new", "Foo", v(1), v(2), path("Array", ["new", "Fiz", v(3), v(4)])]).deepReduce(store);
         assert.deepStrictEqual(m, v("Foo", [v(1), v(2), v("Fiz", [v(3), v(4)])]));
       });
     });
 
     describe("map", () => {
       it("should map arg func for items", () => {
-        const mapped = path(v([1, 2, 3]), ["map", func("x", exp(plus, "x", v(1)))]).reduce(book);
+        const mapped = path(v([1, 2, 3]), ["map", func("x", exp(plus, "x", v(1)))]).reduce(store);
         assert.deepStrictEqual(mapped, v([2, 3, 4]));
       });
     });
@@ -357,30 +357,30 @@ describe("stdlib", () => {
       it("should all arg func returns true", () => {
         const f = func("x", path("x", ["equals", v(2)]));
         const e1 = path(v([2, 2, 2]), ["every", f]);
-        assert.deepStrictEqual(e1.reduce(book), v(true));
+        assert.deepStrictEqual(e1.reduce(store), v(true));
 
         const e2 = path(v([2, 3, 2]), ["every", f]);
-        assert.deepStrictEqual(e2.reduce(book), v(false));
+        assert.deepStrictEqual(e2.reduce(store), v(false));
       });
     });
 
     describe("filter", () => {
       it("should filter arg func for items", () => {
-        const filtered = path(v([1, 2, 3]), ["filter", func("x", path("x", ["equals", v(2)]))]).reduce(book);
+        const filtered = path(v([1, 2, 3]), ["filter", func("x", path("x", ["equals", v(2)]))]).reduce(store);
         assert.deepStrictEqual(filtered, v([2]));
       });
     });
 
     describe("count", () => {
       it("should return size of array", () => {
-        const count = path(v([1, 2, 3]), "count").reduce(book);
+        const count = path(v([1, 2, 3]), "count").reduce(store);
         assert.deepStrictEqual(count, v(3));
       });
     });
 
     describe("join", () => {
       it("should return joined string", () => {
-        const joined = path(v(["1", "2", "3"]), ["join", ","]).reduce(book);
+        const joined = path(v(["1", "2", "3"]), ["join", ","]).reduce(store);
         assert.deepStrictEqual(joined, v("1,2,3"));
       });
     });
@@ -389,29 +389,29 @@ describe("stdlib", () => {
   context("accessing default Map methods", () => {
     describe("new", () => {
       it("should create a map", () => {
-        const m = path("Map", ["new", "Foo", "bar", v(1), "buz", v(2)]).reduce(book);
+        const m = path("Map", ["new", "Foo", "bar", v(1), "buz", v(2)]).reduce(store);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v(2)}));
       });
 
       it("should create a nested map", () => {
         const exp = path("Map", ["new", "Foo", "bar", v(1), "buz", path("Map", ["new", "Fiz", "faz", v(3)])]);
-        const m = exp.deepReduce(book);
+        const m = exp.deepReduce(store);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
 
-        book.set("a", exp);
-        assert.deepStrictEqual(path("a").deepReduce(book), v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
+        store.set("a", exp);
+        assert.deepStrictEqual(path("a").deepReduce(store), v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
       });
 
       context("illegal arguments", () => {
         it("should throw error", () => {
-          assert.throws(() => path("Map", ["new", "Foo", "bar", v(1), "buz"]).reduce(book), /short arguments error/);
+          assert.throws(() => path("Map", ["new", "Foo", "bar", v(1), "buz"]).reduce(store), /short arguments error/);
         });
       });
     });
 
     describe("get", () => {
       it("should return the property", () => {
-        const val = path(v({a: 1, b: 2}), ["get", "b"]).reduce(book);
+        const val = path(v({a: 1, b: 2}), ["get", "b"]).reduce(store);
         assert.deepStrictEqual(val, v(2));
       });
     });
@@ -420,7 +420,7 @@ describe("stdlib", () => {
   context("accessing Console methods", () => {
     describe("puts", () => {
       it("should return a Act", () => {
-        const o = path("Console", ["puts", v("foo")]).reduce(book);
+        const o = path("Console", ["puts", v("foo")]).reduce(store);
 
         // stub
         const orig = console.log;
@@ -441,7 +441,7 @@ describe("stdlib", () => {
         const a1 = new Act(f1);
         const a2 = new Act(f2);
 
-        const act = path(a1, ["then", a2]).reduce(book);
+        const act = path(a1, ["then", a2]).reduce(store);
         assert(act.executor === f1);
         assert(act.next.executor === f2);
       });
@@ -451,58 +451,58 @@ describe("stdlib", () => {
   context("accessing Book methods", () => {
     describe("Book", () => {
       it("should return a Book type object", () => {
-        const bookClass = path("Book").reduce(book);
+        const storeClass = path("Book").reduce(store);
 
-        assert.deepStrictEqual(bookClass.constructor, UUID);
-        assert.deepStrictEqual(path(book.id, "type").reduce(book), bookClass);
+        assert.deepStrictEqual(storeClass.constructor, UUID);
+        assert.deepStrictEqual(path(store.id, "type").reduce(store), storeClass);
       });
     });
 
     describe("generateAs", () => {
-      it("should generate new book and give name", () => {
-        const bact = path("Book", ["generateAs", "foo"]).reduce(book);
-        book.run(bact);
+      it("should generate new store and give name", () => {
+        const bact = path("Book", ["generateAs", "foo"]).reduce(store);
+        store.run(bact);
 
-        const bookClass = path("Book").reduce(book);
-        assert.deepStrictEqual(path("foo", "type").reduce(book), bookClass);
+        const storeClass = path("Book").reduce(store);
+        assert.deepStrictEqual(path("foo", "type").reduce(store), storeClass);
       });
 
       context("currentBookId", () => {
-        it("should generate new book and give name", () => {
-          const bact = path("currentBookId", ["generateAs", "foo"]).reduce(book);
-          book.run(bact);
+        it("should generate new store and give name", () => {
+          const bact = path("currentBookId", ["generateAs", "foo"]).reduce(store);
+          store.run(bact);
 
-          const bookClass = path("Book").reduce(book);
-          assert.deepStrictEqual(path("foo", "type").reduce(book), bookClass);
+          const storeClass = path("Book").reduce(store);
+          assert.deepStrictEqual(path("foo", "type").reduce(store), storeClass);
         });
       });
 
       context("rename generateBookAs", () => {
-        it("should generate new book and give name", () => {
-          const bact = path("currentBookId", ["generateBookAs", "foo"]).reduce(book);
-          book.run(bact);
+        it("should generate new store and give name", () => {
+          const bact = path("currentBookId", ["generateBookAs", "foo"]).reduce(store);
+          store.run(bact);
 
-          const bookClass = path("Book").reduce(book);
-          assert.deepStrictEqual(path("foo", "type").reduce(book), bookClass);
+          const storeClass = path("Book").reduce(store);
+          assert.deepStrictEqual(path("foo", "type").reduce(store), storeClass);
         });
       });
     });
 
     describe("importedBooks", () => {
-      it("should return imported books", () => {
+      it("should return imported stores", () => {
         const b1 = new Book();
-        book.import(b1);
+        store.import(b1);
 
         const b2 = new Book();
-        book.import(b2);
+        store.import(b2);
 
-        assert.deepStrictEqual(path("currentBookId", "importedBooks").reduce(book), v([stdlib.id, b1.id, b2.id]));
+        assert.deepStrictEqual(path("currentBookId", "importedBooks").reduce(store), v([stdlib.id, b1.id, b2.id]));
       });
 
       context("specified a importedBook", () => {
-        it("should return imported books", () => {
+        it("should return imported stores", () => {
           const b1 = new Book();
-          book.import(b1);
+          store.import(b1);
 
           const bc1 = new Book();
           b1.import(bc1);
@@ -510,7 +510,7 @@ describe("stdlib", () => {
           const bc2 = new Book();
           b1.import(bc2);
 
-          assert.deepStrictEqual(path(b1.id, "importedBooks").reduce(book), v([bc1.id, bc2.id]));
+          assert.deepStrictEqual(path(b1.id, "importedBooks").reduce(store), v([bc1.id, bc2.id]));
         });
       });
     });
@@ -518,22 +518,22 @@ describe("stdlib", () => {
     describe("put", () => {
       it("should put a log", () => {
         const id = new UUID();
-        const pact = path(book.id, ["put", id, "foo", v(1)]).reduce(book);
-        book.run(pact);
+        const pact = path(store.id, ["put", id, "foo", v(1)]).reduce(store);
+        store.run(pact);
 
-        assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
+        assert.deepStrictEqual(path(id, "foo").reduce(store), v(1));
       });
 
-      context("other book", () => {
+      context("other store", () => {
         it("should put a log", () => {
           const b = new Book(stdlib);
-          book.import(b);
+          store.import(b);
 
           const id = new UUID();
-          const pact = path(b.id, ["put", id, "foo", v(1)]).reduce(book);
-          book.run(pact);
+          const pact = path(b.id, ["put", id, "foo", v(1)]).reduce(store);
+          store.run(pact);
 
-          assert.deepStrictEqual(path(id, "foo").reduce(book), v(1));
+          assert.deepStrictEqual(path(id, "foo").reduce(store), v(1));
           assert.deepStrictEqual(path(id, "foo").reduce(b), v(1));
         });
       });
@@ -544,52 +544,52 @@ describe("stdlib", () => {
     it("should return array or map creation path", () => {
       const arr = n("Arr", [v(10), v(11), v(12)]);
       assert.deepStrictEqual(arr.constructor, Path);
-      assert.deepStrictEqual(arr.reduce(book).get(v(0)), v(10));
-      assert.deepStrictEqual(arr.reduce(book).get("head"), v("Arr"));
-      assert.deepStrictEqual(arr.reduce(book).get("type"), sym("Array"));
+      assert.deepStrictEqual(arr.reduce(store).get(v(0)), v(10));
+      assert.deepStrictEqual(arr.reduce(store).get("head"), v("Arr"));
+      assert.deepStrictEqual(arr.reduce(store).get("type"), sym("Array"));
 
       const narr = n([v(10), v(11), v(12)]);
       assert.deepStrictEqual(narr.constructor, Path);
-      assert.deepStrictEqual(narr.reduce(book).get(v(0)), v(10));
-      assert.deepStrictEqual(narr.reduce(book).get("head"), v(null));
-      assert.deepStrictEqual(narr.reduce(book).get("type"), sym("Array"));
+      assert.deepStrictEqual(narr.reduce(store).get(v(0)), v(10));
+      assert.deepStrictEqual(narr.reduce(store).get("head"), v(null));
+      assert.deepStrictEqual(narr.reduce(store).get("type"), sym("Array"));
 
       const map = n("Mp", {foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(map.constructor, Path);
-      assert.deepStrictEqual(map.reduce(book).get("foo"), v("bar"));
-      assert.deepStrictEqual(map.reduce(book).get("head"), v("Mp"));
-      assert.deepStrictEqual(map.reduce(book).get("type"), sym("Map"));
+      assert.deepStrictEqual(map.reduce(store).get("foo"), v("bar"));
+      assert.deepStrictEqual(map.reduce(store).get("head"), v("Mp"));
+      assert.deepStrictEqual(map.reduce(store).get("type"), sym("Map"));
 
       const nmap = n({foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(nmap.constructor, Path);
-      assert.deepStrictEqual(nmap.reduce(book).get("foo"), v("bar"));
-      assert.deepStrictEqual(nmap.reduce(book).get("type"), sym("Map"));
+      assert.deepStrictEqual(nmap.reduce(store).get("foo"), v("bar"));
+      assert.deepStrictEqual(nmap.reduce(store).get("type"), sym("Map"));
 
       const nested = n({foo: {bar: v("baz")}, fiz: v("buz")});
       assert.deepStrictEqual(nested.constructor, Path);
-      assert.deepStrictEqual(nested.reduce(book).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested.reduce(book).get("type"), sym("Map"));
+      assert.deepStrictEqual(nested.reduce(store).get("foo"), v({bar: v("baz")}));
+      assert.deepStrictEqual(nested.reduce(store).get("type"), sym("Map"));
 
       const nested2 = n({foo: n({bar: v("baz")}), fiz: v("buz")});
       assert.deepStrictEqual(nested2.constructor, Path);
-      assert.deepStrictEqual(nested2.deepReduce(book).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested2.deepReduce(book).get("type"), sym("Map"));
+      assert.deepStrictEqual(nested2.deepReduce(store).get("foo"), v({bar: v("baz")}));
+      assert.deepStrictEqual(nested2.deepReduce(store).get("type"), sym("Map"));
 
       const headonly = n("foo");
       assert.deepStrictEqual(headonly.constructor, Path);
-      assert.deepStrictEqual(headonly.deepReduce(book).get("head"), v("foo"));
+      assert.deepStrictEqual(headonly.deepReduce(store).get("head"), v("foo"));
 
       const withhead = n("bar", v(1));
       assert.deepStrictEqual(withhead.constructor, Path);
-      assert.deepStrictEqual(withhead.deepReduce(book).get("head"), v("bar"));
-      assert.deepStrictEqual(path(withhead.deepReduce(book), "head").deepReduce(book), v("bar"));
+      assert.deepStrictEqual(withhead.deepReduce(store).get("head"), v("bar"));
+      assert.deepStrictEqual(path(withhead.deepReduce(store), "head").deepReduce(store), v("bar"));
     });
 
     describe("reduce", () => {
       it("should return a exp", () => {
         const e = exp(plus, v(1), v(2));
         const map = n({foo: e});
-        assert.deepStrictEqual(map.reduce(book).get("foo"), e);
+        assert.deepStrictEqual(map.reduce(store).get("foo"), e);
       });
     });
 
@@ -597,7 +597,7 @@ describe("stdlib", () => {
       it("should return a exp", () => {
         const e = exp(plus, v(1), v(2));
         const map = n({foo: e});
-        assert.deepStrictEqual(map.deepReduce(book).get("foo"), v(3));
+        assert.deepStrictEqual(map.deepReduce(store).get("foo"), v(3));
       });
     });
   });
