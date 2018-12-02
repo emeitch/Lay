@@ -5,8 +5,13 @@ import { path } from './path';
 import v from './v';
 
 export default class Store {
-  constructor() {
+  constructor(...imports) {
     this.objs = new Map();
+
+    this.imports = [];
+    for (const i of imports) {
+      this.import(i);
+    }
   }
 
   convertStringKey(key) {
@@ -18,9 +23,42 @@ export default class Store {
     this.objs.set(k, v(val));
   }
 
-  get(key) {
+  getWithoutImports(key) {
     const k = this.convertStringKey(key);
     return this.objs.get(k);
+  }
+
+  import(other, _name) {
+    this.imports.push(other);
+    // this.handleOnInport(other);
+
+    // if (typeof(name) === "string") {
+    //   this.set(name, other.id);
+    // }
+  }
+
+  iterateImports(block) {
+    let stop = block(this);
+    for (const imported of this.imports) {
+      // if (stop) {
+      //   break;
+      // }
+      stop = imported.iterateImports(block);
+    }
+    return stop;
+  }
+
+  fetchWithImports(fetcher) {
+    let result = undefined;
+    this.iterateImports(store => {
+      result = fetcher(store);
+      return result;
+    });
+    return result;
+  }
+
+  get(key) {
+    return this.getWithoutImports(key) || this.fetchWithImports(store => store.getWithoutImports(key));
   }
 
   getProp(id, key) {

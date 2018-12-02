@@ -1,7 +1,6 @@
 import assert from 'assert';
 
 import v from '../src/v';
-import Book from '../src/book';
 import Store from '../src/store';
 import Sym, { sym } from '../src/sym';
 
@@ -60,14 +59,14 @@ describe("Sym", () => {
       });
     });
 
-    context("nested book", () => {
-      it("should return val of nested book", () => {
+    context("nested store", () => {
+      it("should return val of nested store", () => {
         const val = v("sym val");
-        const pbook = new Book();
-        pbook.set("sym", val);
-        const book = new Book(pbook);
+        const pstore = new Store();
+        pstore.set("sym", val);
+        const store = new Store(pstore);
 
-        assert(sym("sym").reduce(book) === val);
+        assert(sym("sym").reduce(store) === val);
       });
     });
   });
@@ -79,7 +78,7 @@ describe("Sym", () => {
   });
 
   describe("#collate", () => {
-    it("should return a matching book", () => {
+    it("should return a matched", () => {
       const match = sym("sym1").collate(v("any"));
       assert.deepStrictEqual(match.result.sym1, v("any"));
     });
