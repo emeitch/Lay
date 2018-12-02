@@ -359,7 +359,7 @@ describe("Path", () => {
       });
 
       it("should return the path", () => {
-        assert.deepStrictEqual(p.reduce(book), p);
+        assert.deepStrictEqual(p.reduce(store), p);
       });
     });
 
