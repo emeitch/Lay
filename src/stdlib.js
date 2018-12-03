@@ -94,6 +94,20 @@ function set(...args) {
       return filtered;
     });
   })));
+  std.set("filterPiars", func("pattern", new LiftedNative(function(pattern) {
+    const store = this;
+    const types = pattern.deepReduce(store).origin;
+    return new Act(pairs => {
+      const filtered = [];
+      for (const pair of pairs) {
+        const typename = pair.val.get("type").origin[0].origin;
+        if (types.includes(typename)) {
+          filtered.push(pair);
+        }
+      }
+      return filtered;
+    });
+  })));
 }
 
 {

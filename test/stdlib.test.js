@@ -58,36 +58,54 @@ describe("stdlib", () => {
   });
 
 
-  describe("filterEdges", () => {
+  describe("filterPiars", () => {
     it("should filter act arg log by pattern", () => {
-      const id = new UUID();
-      store.put(id, "type", "Obj");
-      store.put(id, "key", v(1));
-      const edges = store.getEdgesBySubject(id);
-      const revs = new Set(edges.map(e => e.rev));
-      for (const rev of revs) {
-        // transactions
-        edges.push(...store.getEdgesBySubject(rev));
-      }
+      const store = new Store(std);
+      const pair1 = {
+        key: new UUID(),
+        val: v({
+          type: path("Foo"),
+          foo: 1
+        })
+      };
+      const pair2 = {
+        key: new UUID(),
+        val: v({
+          type: path("Bar"),
+          foo: 1
+        })
+      };
+
       const act = new Act(() => {
-        return edges;
+        return [
+          pair1,
+          pair2,
+        ];
       });
-      let passedEdges;
-      const act2 = new Act(edges => {
-        passedEdges = edges;
+      let passedObjs;
+      const act2 = new Act(objs => {
+        passedObjs = objs;
       });
-      store.run(path(act, ["then", exp("filterEdges", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(store));
-      assert(passedEdges.length > 0);
 
-      store.set("Obj", new UUID()); // type assigned
-      store.run(path(act, ["then", exp("filterEdges", v({"Obj": ["key"]}))], ["then", act2]).deepReduce(store));
-      assert(passedEdges.length > 0);
+      store.run(path(act, ["then", exp("filterPiars", v(["Foo"]))], ["then", act2]).deepReduce(store));
+      assert.deepStrictEqual(passedObjs, [
+        pair1,
+      ]);
 
-      store.run(path(act, ["then", exp("filterEdges", v({"Other": ["key"]}))], ["then", act2]).deepReduce(store));
-      assert.deepStrictEqual(passedEdges, []);
+      store.run(path(act, ["then", exp("filterPiars", v(["Bar"]))], ["then", act2]).deepReduce(store));
+      assert.deepStrictEqual(passedObjs, [
+        pair2
+      ]);
 
-      store.run(path(act, ["then", exp("filterEdges", v({"Obj": ["other"]}))], ["then", act2]).deepReduce(store));
-      assert.deepStrictEqual(passedEdges, []);
+      store.run(path(act, ["then", exp("filterPiars", v(["Foo", "Bar"]))], ["then", act2]).deepReduce(store));
+      assert.deepStrictEqual(passedObjs, [
+        pair1,
+        pair2
+      ]);
+
+      store.run(path(act, ["then", exp("filterPiars", v(["Other"]))], ["then", act2]).deepReduce(store));
+      assert.deepStrictEqual(passedObjs, [
+      ]);
     });
   });
 
