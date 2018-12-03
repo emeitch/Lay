@@ -50,9 +50,10 @@ describe("stdlib", () => {
     });
 
     it("should nothing to do without prev act json string", () => {
-      const length = store.edges.length;
+      const store = new Store(std);
+      const size = store.objs.size;
       store.run(exp("load").deepReduce(store));
-      assert(length === store.edges.length);
+      assert(size === store.objs.size);
     });
   });
 
