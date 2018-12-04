@@ -20,6 +20,11 @@ function set(...args) {
   std.set(...args);
 }
 
+function put(id, key, val) {
+  stdlib.put(id, key, val);
+  std.set(id, {[key]: val});
+}
+
 {
   set("if", func(
     "cond",
@@ -183,22 +188,13 @@ function set(...args) {
   );
 
   // todo: allはClassオブジェクト用のメソッドにしたい
-  stdlib.put(
+  put(
     obj,
     "all",
     exp(new LiftedNative(function(self) {
       return v(this.instanceIDs(self));
     }), "self")
   );
-  std.set(
-    obj,
-    {
-      all: exp(new LiftedNative(function(self) {
-        return v(this.instanceIDs(self));
-      }), "self")
-    }
-  );
-
 }
 
 {
