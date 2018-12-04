@@ -22,7 +22,8 @@ function set(...args) {
 
 function put(id, key, val) {
   stdlib.put(id, key, val);
-  std.set(id, {[key]: val});
+  const comp = std.get(id) || v({});
+  std.set(id, Object.assign({}, comp.origin, {[key]: val}));
 }
 
 {
