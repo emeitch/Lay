@@ -112,9 +112,11 @@ describe("stdlib", () => {
   context("accessing Object methods", () => {
     describe("all", () => {
       it("should return self instances", () => {
+        const store = new Store(std);
+
         store.set("Foo", store.new());
-        const id1 = store.new({"type": pack(path("Foo"))});
-        const id2 = store.new({"type": pack(path("Foo"))});
+        const id1 = store.new({"type": path("Foo")});
+        const id2 = store.new({"type": path("Foo")});
 
         const ids = path("Foo", "all").reduce(store);
         assert.deepStrictEqual(ids.get(0), id1);

@@ -112,7 +112,7 @@ function set(...args) {
 
 {
   const obj = new UUID();
-  stdlib.set("Object", obj);
+  set("Object", obj);
 
   stdlib.put(
     obj,
@@ -190,6 +190,15 @@ function set(...args) {
       return v(this.instanceIDs(self));
     }), "self")
   );
+  std.set(
+    obj,
+    {
+      all: exp(new LiftedNative(function(self) {
+        return v(this.instanceIDs(self));
+      }), "self")
+    }
+  );
+
 }
 
 {

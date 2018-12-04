@@ -17,7 +17,11 @@ export default class Store {
   }
 
   convertStringKey(key) {
-    return v(key).stringify();
+    return JSON.stringify(v(key).object());
+  }
+
+  convertObjectKey(key) {
+    return parseVal(JSON.parse(key));
   }
 
   set(key, val) {
@@ -95,6 +99,29 @@ export default class Store {
     }
 
     return undefined;
+  }
+
+  new(obj={}) {
+    const id = new UUID();
+    this.set(id, v(obj));
+    return id;
+  }
+
+  instanceIDs(cls) {
+    // todo: 線形探索なのを高速化
+    const results = [];
+    for (const [k, val] of this.objs) {
+      const key = this.convertObjectKey(k);
+      const tprop = val.get("type", this);
+      const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
+      for (const tref of tprops.origin) {
+        const t = tref.replaceSelfBy(key).reduce(this);
+        if (t.equals(cls)) {
+          results.push(key);
+        }
+      }
+    }
+    return results;
   }
 
   run(e, arg) {
