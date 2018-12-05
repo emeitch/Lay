@@ -161,31 +161,6 @@ describe("stdlib", () => {
 
 
     context("accessing Object's key", () => {
-      describe("#add", () => {
-        it("should return the Act which run add action", () => {
-          const typeid = new UUID();
-          const id = new UUID();
-          store.put(id, "type", typeid);
-
-          const p = new Path(id, ["add", "foo", v(1)]);
-          const a = p.reduce(store);
-          assert.deepStrictEqual(a.constructor, Act);
-          store.run(a);
-
-          const r = store.activeRel(id, "foo");
-          assert.deepStrictEqual(store.getEdgeHead(r, "object"), v(1));
-
-          const p2 = new Path(id, ["add", "foo", v(2)]);
-          const a2 = p2.reduce(store);
-          store.run(a2);
-
-          const rels = store.activeRels(id, "foo");
-          assert.deepStrictEqual(rels.length, 2);
-          assert.deepStrictEqual(store.getEdgeHead(rels[0], "object"), v(1));
-          assert.deepStrictEqual(store.getEdgeHead(rels[1], "object"), v(2));
-        });
-      });
-
       describe("#def", () => {
         it("should return the Act which run set action", () => {
           const typeid = new UUID();
@@ -257,13 +232,9 @@ describe("stdlib", () => {
         it("should return a val for key", () => {
           const id = new UUID();
 
-          const p = new Path(id, ["add", "foo", v(4)]);
+          const p = new Path(id, ["set", "foo", v(4)]);
           const a = p.reduce(store);
           store.run(a);
-
-          const p2 = new Path(id, ["add", "foo", v(5)]);
-          const a2 = p2.reduce(store);
-          store.run(a2);
 
           const val = new Path(id, ["get", "foo"]);
           assert.deepStrictEqual(val.reduce(store), v(4));
@@ -273,44 +244,11 @@ describe("stdlib", () => {
           it("should retrun a reduced val", () => {
             const id = new UUID();
 
-            const p = new Path(id, ["add", "foo", exp(plus, v(1), v(2))]);
+            const p = new Path(id, ["set", "foo", exp(plus, v(1), v(2))]);
             const a = p.reduce(store);
             store.run(a);
 
             const val = new Path(id, ["get", "foo"]);
-            assert.deepStrictEqual(val.reduce(store), v(3));
-          });
-        });
-      });
-
-      describe("#getAtIndex", () => {
-        it("should return a val for key and index", () => {
-          const id = new UUID();
-
-          const p = new Path(id, ["add", "foo", v(4)]);
-          const a = p.reduce(store);
-          store.run(a);
-
-          const p2 = new Path(id, ["add", "foo", v(5)]);
-          const a2 = p2.reduce(store);
-          store.run(a2);
-
-          const val = new Path(id, ["getAtIndex", "foo", v(0)]);
-          assert.deepStrictEqual(val.reduce(store), v(4));
-
-          const val2 = new Path(id, ["getAtIndex", "foo", v(1)]);
-          assert.deepStrictEqual(val2.reduce(store), v(5));
-        });
-
-        context("exp val", () => {
-          it("should retrun a reduced val", () => {
-            const id = new UUID();
-
-            const p = new Path(id, ["add", "foo", exp(plus, v(1), v(2))]);
-            const a = p.reduce(store);
-            store.run(a);
-
-            const val = new Path(id, ["getAtIndex", "foo", v(0)]);
             assert.deepStrictEqual(val.reduce(store), v(3));
           });
         });

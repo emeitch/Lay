@@ -138,14 +138,6 @@ function put(id, key, val) {
 
   stdlib.put(
     obj,
-    "add",
-    func("key", "val", exp(new LiftedNative(function(self, key, val) {
-      return this.putAct(self, key.reduce(this), val.reduce(this));
-    }), "self", "key", "val"))
-  );
-
-  stdlib.put(
-    obj,
     "def",
     func("key", "val", exp(new LiftedNative(function(self, key, val) {
       return this.setAct(self, key.reduce(this), val);
@@ -167,16 +159,6 @@ function put(id, key, val) {
       const rels = this.activeRels(self, key.reduce(this));
       return this.getEdgeHead(rels[0], "object");
     }), "self", "key"))
-  );
-
-  stdlib.put(
-    obj,
-    "getAtIndex",
-    func("key", "index", exp(new LiftedNative(function(self, key, index) {
-      const rels = this.activeRels(self, key.reduce(this));
-      const i = index.reduce(this).origin;
-      return this.getEdgeHead(rels[i], "object");
-    }), "self", "key", "index"))
   );
 
   // todo: allはClassオブジェクト用のメソッドにしたい
