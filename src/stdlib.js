@@ -138,14 +138,6 @@ function put(id, key, val) {
 
   stdlib.put(
     obj,
-    "def",
-    func("key", "val", exp(new LiftedNative(function(self, key, val) {
-      return this.setAct(self, key.reduce(this), val);
-    }), "self", "key", "val"))
-  );
-
-  stdlib.put(
-    obj,
     "set",
     func("key", "val", exp(new LiftedNative(function(self, key, val) {
       return this.setAct(self, key.reduce(this), val.reduce(this));

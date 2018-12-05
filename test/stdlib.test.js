@@ -161,30 +161,6 @@ describe("stdlib", () => {
 
 
     context("accessing Object's key", () => {
-      describe("#def", () => {
-        it("should return the Act which run set action", () => {
-          const typeid = new UUID();
-          const id = new UUID();
-          store.put(id, "type", typeid);
-
-          const p = new Path(id, ["def", "foo", exp(plus, v(1), v(2))]);
-          const a = p.reduce(store);
-          assert.deepStrictEqual(a.constructor, Act);
-          store.run(a);
-
-          const r = store.activeRel(id, "foo");
-          assert.deepStrictEqual(store.getEdgeHead(r, "object"), exp(plus, v(1), v(2)));
-
-          const p2 = new Path(id, ["def", "foo", exp(plus, v(2), v(3))]);
-          const a2 = p2.reduce(store);
-          store.run(a2);
-
-          const rels = store.activeRels(id, "foo");
-          assert.deepStrictEqual(rels.length, 1); // invalidated old rels
-          assert.deepStrictEqual(store.getEdgeHead(rels[0], "object"), exp(plus, v(2), v(3)));
-        });
-      });
-
       describe("#set", () => {
         it("should return the Act which run set action", () => {
           const typeid = new UUID();
