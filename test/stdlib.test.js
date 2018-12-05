@@ -129,9 +129,11 @@ describe("stdlib", () => {
 
     describe("new", () => {
       it("should return a instance creation act", () => {
+        const store = new Store(std);
+
         store.set("Foo", store.new());
         const act = path("Object", ["new", v({
-          type: pack(path("Foo")),
+          type: path("Foo"),
           foo: v("foo"),
           bar: path([plus, v(1), v(2)]),
           buz: pack(path([plus, v(1), v(2)]))

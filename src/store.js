@@ -103,7 +103,11 @@ export default class Store {
 
   new(obj={}) {
     const id = new UUID();
-    this.set(id, v(obj));
+    const reduced = {};
+    for (const key of Object.keys(obj)) {
+      reduced[key] = obj[key].reduce(this).unpack();
+    }
+    this.set(id, v(reduced));
     return id;
   }
 

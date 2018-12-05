@@ -120,7 +120,7 @@ function put(id, key, val) {
   const obj = new UUID();
   set("Object", obj);
 
-  stdlib.put(
+  put(
     obj,
     "new",
     func("props", new LiftedNative(function(pe) {
