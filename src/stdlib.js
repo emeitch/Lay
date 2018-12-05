@@ -179,15 +179,6 @@ function put(id, key, val) {
     }), "self", "key", "index"))
   );
 
-  stdlib.put(
-    obj,
-    "allOf",
-    func("key", exp(new LiftedNative(function(self, key) {
-      const rels = this.activeRels(self, key.reduce(this));
-      return v(rels.map(r => this.getEdgeHead(r, "object")));
-    }), "self", "key"))
-  );
-
   // todo: allはClassオブジェクト用のメソッドにしたい
   put(
     obj,
