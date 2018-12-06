@@ -77,7 +77,7 @@ export default class Store {
   }
 
   findPropWithType(id, key) {
-    const val = this.get(id);
+    const val = !(id instanceof Comp) ? this.get(id) : id;
     if (!val) {
       return undefined;
     }
@@ -107,11 +107,11 @@ export default class Store {
   }
 
   new(obj={}) {
-    const id = new UUID();
-    const reduced = {};
+    const reduced = {_id: new UUID()};
     for (const key of Object.keys(obj)) {
       reduced[key] = obj[key].reduce(this).unpack();
     }
+    const id = reduced._id;
     this.set(id, v(reduced));
     return id;
   }

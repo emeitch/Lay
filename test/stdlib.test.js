@@ -114,9 +114,19 @@ describe("stdlib", () => {
       it("should return self instances", () => {
         const store = new Store(std);
 
-        store.set("Foo", store.new());
-        const id1 = store.new({"type": path("Foo")});
-        const id2 = store.new({"type": path("Foo")});
+        store.put({
+          _id: "Foo",
+        });
+        const id1 = new UUID();
+        store.put({
+          _id: id1,
+          type: path("Foo")
+        });
+        const id2 = new UUID();
+        store.put({
+          _id: id2,
+          type: path("Foo"),
+        });
 
         const ids = path("Foo", "all").reduce(store);
         assert.deepStrictEqual(ids.get(0), id1);
@@ -131,7 +141,9 @@ describe("stdlib", () => {
       it("should return a instance creation act", () => {
         const store = new Store(std);
 
-        store.set("Foo", store.new());
+        store.put({
+          _id: "Foo"
+        });
         const act = path("Object", ["new", v({
           type: path("Foo"),
           foo: v("foo"),
@@ -316,6 +328,7 @@ describe("stdlib", () => {
         const m = exp.deepReduce(store);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
 
+        //todo: Store#putに置き換える
         store.set("a", exp);
         assert.deepStrictEqual(path("a").deepReduce(store), v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
       });
