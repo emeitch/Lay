@@ -35,20 +35,12 @@ describe("Sym", () => {
 
   describe("#reduce", () => {
     it("should return val of store", () => {
-      const val = v("sym val");
       const store = new Store();
-      store.set("sym", val);
-      assert.deepStrictEqual(sym("sym").reduce(store), val);
-    });
-
-    context("multi-step refering", () => {
-      it("should return val of store", () => {
-        const val = v("sym val");
-        const store = new Store();
-        store.set("sym", sym("sym2"));
-        store.set("sym2", val);
-        assert.deepStrictEqual(sym("sym").reduce(store), val);
+      const obj = v({
+        _id: "sym",
       });
+      store.put(obj);
+      assert.deepStrictEqual(sym("sym").reduce(store), obj);
     });
 
     context("unassigned", () => {
@@ -61,12 +53,14 @@ describe("Sym", () => {
 
     context("nested store", () => {
       it("should return val of nested store", () => {
-        const val = v("sym val");
         const pstore = new Store();
-        pstore.set("sym", val);
+        const obj = v({
+          _id: "sym",
+        });
+        pstore.put(obj);
         const store = new Store(pstore);
 
-        assert.deepStrictEqual(sym("sym").reduce(store), val);
+        assert.deepStrictEqual(sym("sym").reduce(store), obj);
       });
     });
   });
