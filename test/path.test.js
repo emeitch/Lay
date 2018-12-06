@@ -48,8 +48,14 @@ describe("Path", () => {
       const id3 = new UUID();
 
       beforeEach(() => {
-        store.set(id, v({foo: id2}));
-        store.set(id2, v({bar: id3}));
+        store.put({
+          _id: id,
+          foo: id2
+        });
+        store.put({
+          _id: id2,
+          bar: id3
+        });
         p = new Path(id, "foo", "bar");
       });
 
@@ -58,88 +64,24 @@ describe("Path", () => {
       });
     });
 
-    context("assigned sym path with val end", () => {
-      const id = new UUID();
-      const val = v("val0");
-
-      beforeEach(() => {
-        store.set(id, v({foo: val}));
-        store.set("a", id);
-        p = new Path("a", "foo");
-      });
-
-      it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(store), val);
-      });
-    });
-
-    context("assigned sym path chain with self", () => {
-      const id = new UUID();
-      const id2 = new UUID();
-
-      let p2;
-      let p3;
-      let p4;
-      beforeEach(() => {
-        store.set(id, v({foo: id2}));
-        store.set("a", id);
-
-        p2 = new Path("a", "foo", "bar");
-        p3 = new Path(id2, "buz");
-
-        store.set("foo", func("x", exp(plus, "x", v(1))));
-        p4 = new Path(["foo", v(2)]);
-      });
-
-      context("referencing key exists", () => {
-        beforeEach(() => {
-          store.set(id2, v({
-            bar: new Path("self", "refkey"),
-            buz: new Path("self", ["fiz", new Path("self", "refkey")]),
-            fiz: func("x", exp(plus, "x", new Path("self", "refkey"))),
-            refkey: v(2)
-          }));
-        });
-
-        it("should return the val", () => {
-          assert.deepStrictEqual(p2.reduce(store), v(2));
-          assert.deepStrictEqual(p3.reduce(store), v(4));
-          assert.deepStrictEqual(p4.reduce(store), v(3));
-        });
-      });
-
-      context("referencing key don't exists", () => {
-        beforeEach(() => {
-          store.set(id2, v({
-            bar: new Path("self", "refkey"),
-            buz: new Path("self", ["fiz", new Path("self", "refkey")]),
-            fiz: func("x", exp(plus, "x", new Path("self", "refkey"))),
-          }));
-        });
-
-        it("should return path with reduced self", () => {
-          assert.deepStrictEqual(p2.reduce(store), new Path(id2, "refkey"));
-          assert.deepStrictEqual(p3.reduce(store), exp(plus, new Path(id2, "refkey"), new Path(id2, "refkey")).reduce(store));
-        });
-      });
-    });
-
     context("complex self referencing", () => {
       const id1 = new UUID();
       const id2 = new UUID();
 
       beforeEach(() => {
-        store.set(id1, v({
+        store.put({
+          _id: id1,
           foo: v(1),
           bar: path("self", "foo"),
-        }));
+        });
 
-        store.set(id2, v({
+        store.put({
+          _id: id2,
           foo: v(2),
           bar: path("self", "foo"),
           buz: func("x", exp(plus, path(id1, "bar"), "x")),
           biz: path("self", ["buz", v(3)])
-        }));
+        });
       });
 
       it("should refer correct self", () => {
@@ -151,10 +93,11 @@ describe("Path", () => {
       const id = new UUID();
 
       beforeEach(() => {
-        store.set(id, v({
-          "foo": func("x", exp(plus, new Path("self", "bar"), "x")),
-          "bar": v(2)
-        }));
+        store.put({
+          _id: id,
+          foo: func("x", exp(plus, new Path("self", "bar"), "x")),
+          bar: v(2)
+        });
         p = new Path(id, ["foo", v(3)]);
       });
 
@@ -176,7 +119,10 @@ describe("Path", () => {
             const p = path(v(3), ["equals", path(id, "bar")]);
             assert.deepStrictEqual(p.reduce(store).constructor, Exp);
 
-            store.set(id, {bar: v(3)});
+            store.put({
+              _id: id,
+              bar: v(3)
+            });
             assert.deepStrictEqual(p.reduce(store), v(true));
           });
         });
@@ -187,30 +133,26 @@ describe("Path", () => {
       const id = new UUID();
 
       beforeEach(() => {
-        const typeid1 = new UUID();
-        const typeid2 = new UUID();
-        const typeid3 = new UUID();
-
-        store.set("parent1", typeid1);
-        store.set("parent2", typeid2);
-        store.set("grandparent", typeid3);
-
-        store.set(id, {
+        store.put({
+          _id: id,
           type: [
             path("parent1"),
             path("parent2")
           ]
         });
 
-        store.set(typeid1, {
+        store.put({
+          _id: "parent1",
           foo: v(1)
         });
-        store.set(typeid2, {
+        store.put({
+          _id: "parent2",
           type: path("grandparent"),
           foo: v(2),
           bar: v(3)
         });
-        store.set(typeid3, {
+        store.put({
+          _id: "grandparent",
           baz: v(4)
         });
       });
@@ -231,16 +173,14 @@ describe("Path", () => {
       const id = new UUID();
 
       beforeEach(() => {
-        const typeid1 = new UUID();
-
-        store.set("parent1", typeid1);
-
-        store.set(id, {
+        store.put({
+          _id: id,
           type: path("self", "baz"),
           baz: path("parent1")
         });
 
-        store.set(typeid1, {
+        store.put({
+          _id: "parent1",
           foo: v("bar")
         });
       });
@@ -255,16 +195,14 @@ describe("Path", () => {
       const id = new UUID();
 
       beforeEach(() => {
-        const typeid1 = new UUID();
-
-        store.set("parent1", typeid1);
-
-        store.set(id, {
+        store.put({
+          _id: id,
           type: path("self", ["baz", path("parent1")]),
           baz: func("arg", path("arg"))
         });
 
-        store.set(typeid1, {
+        store.put({
+          _id: "parent1",
           foo: v("bar")
         });
       });
@@ -280,7 +218,8 @@ describe("Path", () => {
 
       beforeEach(() => {
         const typeid = new UUID();
-        store.set(id, {
+        store.put({
+          _id: id,
           type: typeid
         });
       });
@@ -310,7 +249,8 @@ describe("Path", () => {
     context("path in func", () => {
       it("should replace path args", () => {
         const id = new UUID();
-        store.set(id, {
+        store.put({
+          _id: id,
           foo: func("a", exp(concat, v("f"), "a"))
         });
 
@@ -325,19 +265,23 @@ describe("Path", () => {
 
         const holder1 = new UUID();
         const context1 = new UUID();
-        store.set(holder1, {
+        store.put({
+          _id: holder1,
           [id]: context1
         });
-        store.set(context1, {
+        store.put({
+          _id: context1,
           x: 1
         });
 
         const holder2 = new UUID();
         const context2 = new UUID();
-        store.set(holder2, {
+        store.put({
+          _id: holder2,
           [id]: context2
         });
-        store.set(context2, {
+        store.put({
+          _id: context2,
           x: 2
         });
 
@@ -365,7 +309,8 @@ describe("Path", () => {
         const id0 = new UUID();
         const id1 = new UUID();
         const sid = scope(id0, id1);
-        store.set(sid, {
+        store.put({
+          _id: sid,
           foo: 3
         });
 
