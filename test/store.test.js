@@ -20,11 +20,15 @@ describe("Store", () => {
     });
   });
 
-  describe("#set (#get)", () => {
+  describe("#put (#get)", () => {
     it("should store the object", () => {
       const id = new UUID();
-      const obj = v({foo: 1, bar: "abc"});
-      store.set(id, obj);
+      const obj = v({
+        _id: id,
+        foo: 1,
+        bar: "abc"
+      });
+      store.put(obj);
 
       assert.deepStrictEqual(store.get(id), obj);
     });

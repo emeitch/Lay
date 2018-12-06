@@ -29,6 +29,11 @@ export default class Store {
     this.objs.set(k, v(val));
   }
 
+  put(obj) {
+    const o = v(obj);
+    this.set(o.get("_id"), obj);
+  }
+
   getWithoutImports(key) {
     const k = this.convertStringKey(key);
     return this.objs.get(k);
