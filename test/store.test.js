@@ -37,17 +37,18 @@ describe("Store", () => {
   describe("#findPropWithType", () => {
     let id;
     beforeEach(() => {
-      store.set("Object", {
+      store.put({
+        _id: "Object",
         foo: 1
       });
 
-      store.set("Bar", {
+      store.put({
+        _id: "Bar",
         foo: 2
       });
 
-      const buzid = new UUID();
-      store.set("Buz", buzid); // indirect referencing
-      store.set(buzid, {
+      store.put({
+        _id: "Buz",
         foo: 4,
         foz: 4
       });
@@ -57,7 +58,8 @@ describe("Store", () => {
 
     context("self prop", () => {
       it("should return self prop", () => {
-        store.set(id, {
+        store.put({
+          _id: id,
           type: path("Bar"),
           foo: 3
         });
@@ -68,7 +70,8 @@ describe("Store", () => {
 
     context("type prop", () => {
       it("should return type prop", () => {
-        store.set(id, {
+        store.put({
+          _id: id,
           type: path("Bar"),
         });
 
@@ -78,7 +81,8 @@ describe("Store", () => {
 
     context("multiple type", () => {
       it("should return first type prop", () => {
-        store.set(id, {
+        store.put({
+          _id: id,
           type: [
             path("Bar"),
             path("Buz")
@@ -92,14 +96,17 @@ describe("Store", () => {
 
     context("grandparent type", () => {
       it("should return grandparent type prop", () => {
-        store.set("Grandtype", {
+        store.put({
+          _id: "Grandtype",
           foo: 5
         });
-        store.set("Parenttype", {
+        store.put({
+          _id: "Parenttype",
           type: path("Grandtype")
         });
         const child = new UUID();
-        store.set(child, {
+        store.put({
+          _id: child,
           type: path("Parenttype"),
         });
 
@@ -109,7 +116,9 @@ describe("Store", () => {
 
     context("access Object prop", () => {
       it("should return Object prop", () => {
-        store.set(id, {});
+        store.put({
+          _id: id,
+        });
         assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(1));
       });
     });
