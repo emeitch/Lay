@@ -200,16 +200,13 @@ function parseVal(raw) {
   throw `can not identify a val: ${JSON.stringify(raw)}`;
 }
 
-export function parsePairs(raws) {
-  const pairs = [];
+export function parseObjs(raws) {
+  const objs = [];
   for (const raw of raws) {
-    const pair = {
-      key: parseVal(raw.key),
-      val: parseVal(raw.val)
-    };
-    pairs.push(pair);
+    const obj = parseVal(raw);
+    objs.push(obj);
   }
-  return pairs;
+  return objs;
 }
 
 export function parseEdges(raws) {
