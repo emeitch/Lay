@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import Book from '../src/book';
 import Hash from '../src/hash';
+import UUID from '../src/uuid';
 import { sym } from '../src/sym';
 import v from '../src/v';
 
@@ -122,12 +123,13 @@ describe("Comp", () => {
           }
         });
 
-        assert.deepStrictEqual(v({foo: 1, bar: ["2", false, null]}).object(), {
+        const id = new UUID();
+        assert.deepStrictEqual(v({foo: id, bar: ["2", false, null]}).object(), {
           type: {
             origin: "Map"
           },
           origin: {
-            foo: 1,
+            foo: id.object(),
             bar: [
               "2",
               false,

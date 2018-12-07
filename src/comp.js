@@ -211,6 +211,16 @@ export class CompMap extends Comp {
 
     return new this.constructor(org, this.head);
   }
+
+  object(book) {
+    const o = super.object(book);
+    const org = {};
+    for (const key of Object.keys(this.origin)) {
+      const val = this.origin[key];
+      org[key] = val instanceof Val ? val.object(book) : val;
+    }
+    return Object.assign(o, {origin: org});
+  }
 }
 
 export class CompDate extends Comp {
