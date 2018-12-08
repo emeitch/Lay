@@ -72,8 +72,43 @@ export default class Store {
     return this.getWithoutImports(key) || this.fetchWithImports(store => store.getWithoutImports(key));
   }
 
+  getOwnProp(id, key) {
+    const val = !(id instanceof Comp) ? this.get(id) : id;
+    if (!val) {
+      return undefined;
+    }
+
+    const prop = val.getOwnProp(key, this);
+    if (prop) {
+      return prop;
+    }
+
+    return undefined;
+  }
+
   getProp(id, key) {
     return this.findPropWithType(id, key);
+  }
+
+  findPropFromType(id, tprop, key) {
+    if (tprop) {
+      const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
+      for (const tref of tprops.origin) {
+        const t = tref.replaceSelfBy(id).reduce(this);
+        const p = t.get(key, this);
+        if (p) {
+          return p;
+        }
+      }
+    }
+
+    const ot = this.get("Object");
+    const op = ot && ot.getOwnProp(key, this);
+    if (op) {
+      return op;
+    }
+
+    return undefined;
   }
 
   findPropWithType(id, key) {
@@ -88,22 +123,7 @@ export default class Store {
     }
 
     const tprop = val.get("type", this);
-    const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
-    for (const tref of tprops.origin) {
-      const t = tref.replaceSelfBy(id).reduce(this);
-      const p = t.get(key, this);
-      if (p) {
-        return p;
-      }
-    }
-
-    const ot = this.get("Object");
-    const op = ot && ot.get(key, this);
-    if (op) {
-      return op;
-    }
-
-    return undefined;
+    return this.findPropFromType(id, tprop, key);
   }
 
   new(obj={}) {

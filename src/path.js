@@ -63,8 +63,7 @@ export default class Path extends Ref {
         key = elm;
       }
 
-      // todo: CompでObjectのメソッドを呼び出すために仕方なく下の形だがgetかgetPropかどちらかにうまく集約したい
-      let prop = val.get(key, book) || book && book.getProp(val, key);
+      let prop = val.get(key, book);
       if (prop instanceof Function) {
         // LiftedNativeの基本仕様はthisでbookを渡すだが
         // 組み込みのメソッドの場合、thisで自身を参照したいケースが大半で

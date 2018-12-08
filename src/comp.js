@@ -73,7 +73,7 @@ export default class Comp extends Val {
     return Comp.valFrom(this.origin);
   }
 
-  get(k, book) {
+  getOwnProp(k, _book) {
     const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
 
     if (
@@ -81,6 +81,15 @@ export default class Comp extends Val {
       && this.origin.hasOwnProperty(key)
     ) {
       return this.constructor.valFrom(this.origin[key]);
+    }
+  }
+
+  get(k, book) {
+    const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
+
+    const ownProp = this.getOwnProp(k);
+    if (ownProp) {
+      return ownProp;
     }
 
     if (this.head instanceof Comp) {
@@ -91,11 +100,24 @@ export default class Comp extends Val {
       return this.head;
     }
 
-    if (this.origin && this.origin.type) {
-      const tref = this.constructor.valFrom(this.origin.type);
-      const type = tref.replaceSelfBy(this).reduce(book);
-      return type.get(key, book);
+    // todo: BookからStoreへの置き換えが完了したらfindPropFromType有無のチェックは除去
+    if (book && book.findPropFromType) {
+      const id = this.getOwnProp("_id");
+      const tprop = this.getOwnProp("type");
+      return book.findPropFromType(id, tprop, key);
+    } else {
+      // todo: BookからStoreへの置き換えが完了したらこのブロックは除去
+      if (this.origin && this.origin.type) {
+        const tref = this.constructor.valFrom(this.origin.type);
+        const type = tref.replaceSelfBy(this).reduce(book);
+        return type.get(key, book);
+      }
     }
+
+
+    // if (book) {
+    //   return book.getProp(this, key);
+    // }
 
     return super.get(k, book);
   }
