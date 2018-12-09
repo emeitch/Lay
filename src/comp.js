@@ -114,11 +114,6 @@ export default class Comp extends Val {
       }
     }
 
-
-    // if (book) {
-    //   return book.getProp(this, key);
-    // }
-
     return super.get(k, book);
   }
 
