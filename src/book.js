@@ -193,6 +193,11 @@ export default class Book {
     this.setProperty(this.id, name, id);
   }
 
+  getOwnProp(id, key) {
+    const rel = this.activeRel(id, key);
+    return rel ? this.getEdgeHead(rel, "object") : undefined;
+  }
+
   getProp(id, key) {
     const rel = this.findRelWithType(id, key);
     return rel ? this.getEdgeHead(rel, "object") : undefined;

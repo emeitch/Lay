@@ -29,6 +29,20 @@ export default class Val {
     return this.origin;
   }
 
+  getJSProp(key) {
+    const val = this["_"+key];
+    if (val) {
+      return val;
+    }
+
+    return undefined;
+  }
+
+  getOwnProp(k, _book) {
+    const key = k instanceof Prim ? k.origin : k;
+    return this.getJSProp(key);
+  }
+
   get(k, book) {
     const key = k instanceof Prim ? k.origin : k;
 
@@ -39,12 +53,7 @@ export default class Val {
       }
     }
 
-    const val = this["_"+key];
-    if (val) {
-      return val;
-    }
-
-    return undefined;
+    return this.getJSProp(key);
   }
 
   equals(other) {

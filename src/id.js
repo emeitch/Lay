@@ -10,7 +10,7 @@ export default class ID extends Ref {
   }
 
   getOwnProp(key, book) {
-    return book && book.getOwnProp(this, key) || super.get(key, book);
+    return book && book.getOwnProp(this, key) || super.getOwnProp(key, book);
   }
 
   get(key, book) {
