@@ -153,6 +153,19 @@ export default class Store {
     return results;
   }
 
+  setAct(id, key, val) {
+    return new Act(() => {
+      const obj = Object.assign({}, this.get(id));
+      const k = key.origin;
+      if (val.equals(v(null))) {
+        delete obj[k];
+      } else {
+        obj[k] = val.unpack();
+      }
+      this.set(id, obj);
+    });
+  }
+
   run(e, arg) {
     let acts = e.deepReduce(this);
     if (acts instanceof Act) {

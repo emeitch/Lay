@@ -136,7 +136,7 @@ function put(id, key, val) {
     }))
   );
 
-  stdlib.put(
+  put(
     obj,
     "set",
     func("key", "val", exp(new LiftedNative(function(self, key, val) {

@@ -178,44 +178,37 @@ describe("stdlib", () => {
     context("accessing Object's key", () => {
       describe("#set", () => {
         it("should return the Act which run set action", () => {
+          const store = new Store(std);
+
           const typeid = new UUID();
           const id = new UUID();
-          store.put(id, "type", typeid);
+          store.put({
+            _id: id,
+            type: typeid
+          });
 
           const p = new Path(id, ["set", "foo", exp(plus, v(1), v(2))]);
           const a = p.reduce(store);
           assert.deepStrictEqual(a.constructor, Act);
           store.run(a);
 
-          const r = store.activeRel(id, "foo");
-          assert.deepStrictEqual(store.getEdgeHead(r, "object"), v(3));
+          const o = store.get(id);
+          assert.deepStrictEqual(o.get("foo", store), v(3));
 
           const p2 = new Path(id, ["set", "bar", pack(exp(plus, v(1), v(2)))]);
           const a2 = p2.reduce(store);
           assert.deepStrictEqual(a2.constructor, Act);
           store.run(a2);
 
-          const r2 = store.activeRel(id, "bar");
-          assert.deepStrictEqual(store.getEdgeHead(r2, "object"), exp(plus, v(1), v(2)));
+          const o2 = store.get(id);
+          assert.deepStrictEqual(o2.get("bar", store), exp(plus, v(1), v(2)));
 
-          const p3 = new Path(id, ["set", "bar", pack(exp(plus, v(2), v(1)))]);
+          const p3 = new Path(id, ["set", "bar", v(null)]);
           const a3 = p3.reduce(store);
           store.run(a3);
 
-          const p4 = new Path(id, ["set", "bar", pack(exp(plus, v(3), v(2)))]);
-          const a4 = p4.reduce(store);
-          store.run(a4);
-
-          const rels = store.activeRels(id, "bar");
-          assert.deepStrictEqual(rels.length, 1); // invalidated old rels
-          assert.deepStrictEqual(store.getEdgeHead(rels[0], "object"), exp(plus, v(3), v(2)));
-
-          const p5 = new Path(id, ["set", "bar", v(null)]);
-          const a5 = p5.reduce(store);
-          store.run(a5);
-
-          const rels5 = store.activeRels(id, "bar");
-          assert.deepStrictEqual(rels5.length, 0); // invalidated rels
+          const o3 = store.get(id);
+          assert.deepStrictEqual(o3.get("bar", store), undefined);
         });
       });
 
