@@ -231,9 +231,14 @@ describe("stdlib", () => {
 
         context("exp val", () => {
           it("should retrun a reduced val", () => {
-            const id = new UUID();
+            const store = new Store(std);
 
-            const p = new Path(id, ["set", "foo", exp(plus, v(1), v(2))]);
+            const id = new UUID();
+            store.put({
+              _id: id,
+            });
+
+            const p = new Path(id, ["set", "foo", pack(exp(plus, v(1), v(2)))]);
             const a = p.reduce(store);
             store.run(a);
 
