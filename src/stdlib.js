@@ -20,8 +20,8 @@ function set(...args) {
   std.set(...args);
 }
 
-function put(id, key, val) {
-  stdlib.put(id, key, val);
+function put(id, key, val, bookval) {
+  stdlib.put(id, key, bookval || val);
   const comp = std.get(id) || v({});
   std.set(id, Object.assign({}, comp.origin, {[key]: val}));
 }
@@ -144,9 +144,12 @@ function put(id, key, val) {
     }), "self", "key", "val"))
   );
 
-  stdlib.put(
+  put(
     obj,
     "get",
+    func("key", exp(new LiftedNative(function(self, key) {
+      return this.getProp(self, key);
+    }), "self", "key")),
     func("key", exp(new LiftedNative(function(self, key) {
       const rels = this.activeRels(self, key.reduce(this));
       return this.getEdgeHead(rels[0], "object");

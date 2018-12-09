@@ -214,7 +214,12 @@ describe("stdlib", () => {
 
       describe("#get", () => {
         it("should return a val for key", () => {
+          const store = new Store(std);
+
           const id = new UUID();
+          store.put({
+            _id: id,
+          });
 
           const p = new Path(id, ["set", "foo", v(4)]);
           const a = p.reduce(store);
