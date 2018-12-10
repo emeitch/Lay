@@ -274,7 +274,7 @@ describe("stdlib", () => {
   context("accessing default Comp methods", () => {
     describe("new", () => {
       it("should create a comp", () => {
-        // const store = new Store(std);
+        const store = new Store(std);
 
         const m = path("Comp", ["new", "Foo", v(1)]).reduce(store);
         assert.deepStrictEqual(m, v("Foo", v(1)));

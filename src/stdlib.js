@@ -194,9 +194,9 @@ function put(id, key, val, bookval) {
 
 {
   const comp = new UUID();
-  stdlib.set("Comp", comp);
+  set("Comp", comp);
 
-  stdlib.put(
+  put(
     comp,
     "new",
     func(new LiftedNative(function(...args) {
