@@ -263,6 +263,8 @@ describe("stdlib", () => {
   context("accessing Boolean methods", () => {
     describe("not", () => {
       it("should reverse logic", () => {
+        const store = new Store(std);
+
         assert.deepStrictEqual(path(v(true), "not").reduce(store), v(false));
         assert.deepStrictEqual(path(v(false), "not").reduce(store), v(true));
       });

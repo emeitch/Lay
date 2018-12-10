@@ -181,9 +181,9 @@ function put(id, key, val, bookval) {
 
 {
   const bool = new UUID();
-  stdlib.set("Boolean", bool);
+  set("Boolean", bool);
 
-  stdlib.put(
+  put(
     bool,
     "not",
     exp(new LiftedNative(function(self) {
