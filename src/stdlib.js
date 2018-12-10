@@ -168,9 +168,9 @@ function put(id, key, val, bookval) {
 
 {
   const str = new UUID();
-  stdlib.set("String", str);
+  set("String", str);
 
-  stdlib.put(
+  put(
     str,
     "trim",
     exp(new LiftedNative(function(self) {

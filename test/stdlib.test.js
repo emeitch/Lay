@@ -253,6 +253,8 @@ describe("stdlib", () => {
   context("accessing String methods", () => {
     describe("trim", () => {
       it("should trim the string", () => {
+        const store = new Store(std);
+
         assert.deepStrictEqual(path(v("hoge   "), "trim").reduce(store), v("hoge"));
       });
     });
