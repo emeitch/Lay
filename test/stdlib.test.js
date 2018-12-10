@@ -301,6 +301,8 @@ describe("stdlib", () => {
 
     describe("map", () => {
       it("should map arg func for items", () => {
+        const store = new Store(std);
+
         const mapped = path(v([1, 2, 3]), ["map", func("x", exp(plus, "x", v(1)))]).reduce(store);
         assert.deepStrictEqual(mapped, v([2, 3, 4]));
       });

@@ -226,7 +226,7 @@ function put(id, key, val, bookval) {
     }))
   );
 
-  stdlib.put(
+  put(
     arr,
     "map",
     func("fnc", exp(new LiftedNative(function(self, fnc) {
