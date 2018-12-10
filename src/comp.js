@@ -73,7 +73,7 @@ export default class Comp extends Val {
     return Comp.valFrom(this.origin);
   }
 
-  getOwnProp(k, _book) {
+  getOwnProp(k, book) {
     const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
 
     if (
@@ -82,6 +82,8 @@ export default class Comp extends Val {
     ) {
       return this.constructor.valFrom(this.origin[key]);
     }
+
+    return super.getOwnProp(k, book);
   }
 
   get(k, book) {
