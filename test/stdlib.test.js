@@ -271,6 +271,17 @@ describe("stdlib", () => {
     });
   });
 
+  context("accessing default Comp methods", () => {
+    describe("new", () => {
+      it("should create a comp", () => {
+        // const store = new Store(std);
+
+        const m = path("Comp", ["new", "Foo", v(1)]).reduce(store);
+        assert.deepStrictEqual(m, v("Foo", v(1)));
+      });
+    });
+  });
+
   context("accessing default Array methods", () => {
     describe("new", () => {
       it("should create a array", () => {
