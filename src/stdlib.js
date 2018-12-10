@@ -209,9 +209,9 @@ function put(id, key, val, bookval) {
 
 {
   const arr = new UUID();
-  stdlib.set("Array", arr);
+  set("Array", arr);
 
-  stdlib.put(
+  put(
     arr,
     "new",
     func(new LiftedNative(function(...args) {

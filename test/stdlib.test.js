@@ -274,6 +274,8 @@ describe("stdlib", () => {
   context("accessing default Array methods", () => {
     describe("new", () => {
       it("should create a array", () => {
+        const store = new Store(std);
+
         const m = path("Array", ["new", "Foo", v(1), v(2), v(3)]).reduce(store);
         assert.deepStrictEqual(m, v("Foo", [1, 2, 3]));
       });
