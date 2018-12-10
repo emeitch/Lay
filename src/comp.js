@@ -76,10 +76,7 @@ export default class Comp extends Val {
   getOwnProp(k, book) {
     const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
 
-    if (
-      this.origin !== null
-      && this.origin.hasOwnProperty(key)
-    ) {
+    if (this.origin !== null && this.origin.hasOwnProperty(key)) {
       return this.constructor.valFrom(this.origin[key]);
     }
 
