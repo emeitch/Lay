@@ -281,6 +281,8 @@ describe("stdlib", () => {
       });
 
       it("should create a nested array", () => {
+        const store = new Store(std);
+
         const m = path("Array", ["new", "Foo", v(1), v(2), path("Array", ["new", "Fiz", v(3), v(4)])]).deepReduce(store);
         assert.deepStrictEqual(m, v("Foo", [v(1), v(2), v("Fiz", [v(3), v(4)])]));
       });
