@@ -94,7 +94,8 @@ export default class Store {
     if (tprop) {
       const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
       for (const tref of tprops.origin) {
-        const t = tref.replaceSelfBy(id).reduce(this);
+        const trefSelfBound = id ? tref.replaceSelfBy(id) : tref;
+        const t = trefSelfBound.reduce(this);
         const p = t.get(key, this);
         if (p) {
           return p;
