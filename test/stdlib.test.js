@@ -310,6 +310,8 @@ describe("stdlib", () => {
 
     describe("every", () => {
       it("should all arg func returns true", () => {
+        const store = new Store(std);
+
         const f = func("x", path("x", ["equals", v(2)]));
         const e1 = path(v([2, 2, 2]), ["every", f]);
         assert.deepStrictEqual(e1.reduce(store), v(true));
