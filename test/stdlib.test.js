@@ -323,6 +323,8 @@ describe("stdlib", () => {
 
     describe("filter", () => {
       it("should filter arg func for items", () => {
+        const store = new Store(std);
+
         const filtered = path(v([1, 2, 3]), ["filter", func("x", path("x", ["equals", v(2)]))]).reduce(store);
         assert.deepStrictEqual(filtered, v([2]));
       });

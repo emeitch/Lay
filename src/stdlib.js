@@ -252,7 +252,7 @@ function put(id, key, val, bookval) {
     }), "self", "fnc"))
   );
 
-  stdlib.put(
+  put(
     arr,
     "filter",
     func("fnc", exp(new LiftedNative(function(self, fnc) {
