@@ -265,7 +265,7 @@ function put(id, key, val, bookval) {
     }), "self", "fnc"))
   );
 
-  stdlib.put(
+  put(
     arr,
     "count",
     exp(new LiftedNative(function(self) {

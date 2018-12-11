@@ -332,6 +332,8 @@ describe("stdlib", () => {
 
     describe("count", () => {
       it("should return size of array", () => {
+        const store = new Store(std);
+
         const count = path(v([1, 2, 3]), "count").reduce(store);
         assert.deepStrictEqual(count, v(3));
       });
