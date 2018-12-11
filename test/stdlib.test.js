@@ -341,6 +341,8 @@ describe("stdlib", () => {
 
     describe("join", () => {
       it("should return joined string", () => {
+        const store = new Store(std);
+
         const joined = path(v(["1", "2", "3"]), ["join", ","]).reduce(store);
         assert.deepStrictEqual(joined, v("1,2,3"));
       });

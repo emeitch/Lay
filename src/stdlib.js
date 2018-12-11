@@ -273,7 +273,7 @@ function put(id, key, val, bookval) {
     }), "self")
   );
 
-  stdlib.put(
+  put(
     arr,
     "join",
     func("sep", exp(new LiftedNative(function(self, sep) {
