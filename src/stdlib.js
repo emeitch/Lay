@@ -286,9 +286,9 @@ function put(id, key, val, bookval) {
 
 {
   const map = new UUID();
-  stdlib.set("Map", map);
+  set("Map", map);
 
-  stdlib.put(
+  put(
     map,
     "new",
     func(new LiftedNative(function(...args) {
