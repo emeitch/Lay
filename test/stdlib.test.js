@@ -407,6 +407,8 @@ describe("stdlib", () => {
 
     describe("get", () => {
       it("should return the property", () => {
+        const store = new Store(std);
+
         const val = path(v({a: 1, b: 2}), ["get", "b"]).reduce(store);
         assert.deepStrictEqual(val, v(2));
       });

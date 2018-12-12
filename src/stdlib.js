@@ -306,14 +306,6 @@ function put(id, key, val, bookval) {
       return new CompMap(o, head);
     }))
   );
-
-  stdlib.put(
-    map,
-    "get",
-    func("key", exp(new LiftedNative(function(self, key) {
-      return self.get(key, this);
-    }), "self", "key"))
-  );
 }
 
 {
