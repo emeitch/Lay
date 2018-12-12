@@ -95,9 +95,7 @@ export default class Store {
     if (tprop) {
       const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
       for (const tref of tprops.origin) {
-        // todo: typeがselfを含む複雑な式だった場合のテストが無い
-        const trefSelfBound = tref.replaceSelfBy(obj);
-        const type = trefSelfBound.reduce(this);
+        const type = tref.reduce(this);
         const p = type.getOwnProp(key, this);
         if (p) {
           return p;
@@ -120,7 +118,7 @@ export default class Store {
     if (p) {
       return p;
     }
-    
+
     const ot = this.get("Object");
     const op = ot && ot.getOwnProp(key, this);
     if (op) {

@@ -169,50 +169,6 @@ describe("Path", () => {
       });
     });
 
-    context("path referencing type", () => {
-      const id = new UUID();
-
-      beforeEach(() => {
-        store.put({
-          _id: id,
-          type: path("self", "baz"),
-          baz: path("parent1")
-        });
-
-        store.put({
-          _id: "parent1",
-          foo: v("bar")
-        });
-      });
-
-      it("should return the type's val", () => {
-        const p1 = new Path(id, "foo");
-        assert.deepStrictEqual(p1.reduce(store), v("bar"));
-      });
-    });
-
-    context("type by path with args", () => {
-      const id = new UUID();
-
-      beforeEach(() => {
-        store.put({
-          _id: id,
-          type: path("self", ["baz", path("parent1")]),
-          baz: func("arg", path("arg"))
-        });
-
-        store.put({
-          _id: "parent1",
-          foo: v("bar")
-        });
-      });
-
-      it("should return the type's val", () => {
-        const p1 = new Path(id, "foo");
-        assert.deepStrictEqual(p1.reduce(store), v("bar"));
-      });
-    });
-
     context("with type but it dosen't have the key", () => {
       const id = new UUID();
 
