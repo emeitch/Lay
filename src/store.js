@@ -90,12 +90,13 @@ export default class Store {
     return this.findPropWithType(id, key);
   }
 
-  findPropFromType(id, val, key) {
-    const tprop = val.getOwnProp("type", this);
+  findPropFromType(obj, key) {
+    const tprop = obj.getOwnProp("type", this);
     if (tprop) {
       const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
       for (const tref of tprops.origin) {
-        const trefSelfBound = id ? tref.replaceSelfBy(id) : tref;
+        // todo: typeがselfを含む複雑な式だった場合のテストが無い
+        const trefSelfBound = tref.replaceSelfBy(obj);
         const type = trefSelfBound.reduce(this);
         const p = type.getOwnProp(key, this);
         if (p) {
@@ -103,8 +104,8 @@ export default class Store {
         }
 
         // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
-        if (!val.equals(type)) {
-          const p = this.findPropFromType(id, type, key);
+        if (!obj.equals(type)) {
+          const p = this.findPropFromType(type, key);
           if (p) {
             return p;
           }
@@ -123,17 +124,17 @@ export default class Store {
   }
 
   findPropWithType(id, key) {
-    const val = !(id instanceof Comp) ? this.get(id) : id;
-    if (!val) {
+    const obj = !(id instanceof Comp) ? this.get(id) : id;
+    if (!obj) {
       return undefined;
     }
 
-    const prop = val.get(key, this);
+    const prop = obj.get(key, this);
     if (prop) {
       return prop;
     }
 
-    return this.findPropFromType(id, val, key);
+    return this.findPropFromType(obj, key);
   }
 
   new(obj={}) {
