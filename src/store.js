@@ -90,27 +90,29 @@ export default class Store {
     return this.findPropWithType(id, key);
   }
 
-  findPropFromType(id, tprop, key) {
+  findPropFromType(id, val, key) {
+    const tprop = val.getOwnProp("type", this);
     if (tprop) {
       const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
       for (const tref of tprops.origin) {
         const trefSelfBound = id ? tref.replaceSelfBy(id) : tref;
-        const t = trefSelfBound.reduce(this);
-        const p = t.getOwnProp(key, this);
+        const type = trefSelfBound.reduce(this);
+        const p = type.getOwnProp(key, this);
         if (p) {
           return p;
-        } else {
-          const tp = t.getOwnProp("type", this);
-          if (tp && !tp.equals(tprop)) {
-            const p = this.findPropFromType(id, tp, key);
-            if (p) {
-              return p;
-            }
+        }
+
+        // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
+        if (!val.equals(type)) {
+          const p = this.findPropFromType(id, type, key);
+          if (p) {
+            return p;
           }
         }
       }
     }
 
+    // todo: typeが複数の場合で2つめのtypeにObjectと同じメソッドが存在する場合にObjectの方が優先されてしまう
     const ot = this.get("Object");
     const op = ot && ot.getOwnProp(key, this);
     if (op) {
@@ -131,8 +133,7 @@ export default class Store {
       return prop;
     }
 
-    const tprop = val.get("type", this);
-    return this.findPropFromType(id, tprop, key);
+    return this.findPropFromType(id, val, key);
   }
 
   new(obj={}) {

@@ -101,9 +101,8 @@ export default class Comp extends Val {
 
     // todo: BookからStoreへの置き換えが完了したらfindPropFromType有無のチェックは除去
     if (book && book.findPropFromType) {
-      const id = this.getOwnProp("_id");
-      const tprop = this.getOwnProp("type");
-      return book.findPropFromType(id, tprop, key);
+      const id = this.getOwnProp("_id", book);
+      return book.findPropFromType(id, this, key);
     } else {
       // todo: BookからStoreへの置き換えが完了したらこのブロックは除去
       if (this.origin && this.origin.type) {
