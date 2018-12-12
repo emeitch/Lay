@@ -96,9 +96,17 @@ export default class Store {
       for (const tref of tprops.origin) {
         const trefSelfBound = id ? tref.replaceSelfBy(id) : tref;
         const t = trefSelfBound.reduce(this);
-        const p = t.get(key, this);
+        const p = t.getOwnProp(key, this);
         if (p) {
           return p;
+        } else {
+          const tp = t.getOwnProp("type", this);
+          if (tp && !tp.equals(tprop)) {
+            const p = this.findPropFromType(id, tp, key);
+            if (p) {
+              return p;
+            }
+          }
         }
       }
     }
