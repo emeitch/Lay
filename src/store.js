@@ -90,7 +90,7 @@ export default class Store {
     return this.findPropWithType(id, key);
   }
 
-  findPropFromType(obj, key) {
+  traversePropFromType(obj, key) {
     const tprop = obj.getOwnProp("type", this);
     if (tprop) {
       const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
@@ -105,15 +105,22 @@ export default class Store {
 
         // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
         if (!obj.equals(type)) {
-          const p = this.findPropFromType(type, key);
+          const p = this.traversePropFromType(type, key);
           if (p) {
             return p;
           }
         }
       }
     }
+  }
 
-    // todo: typeが複数の場合で2つめのtypeにObjectと同じメソッドが存在する場合にObjectの方が優先されてしまう
+
+  findPropFromType(obj, key) {
+    const p = this.traversePropFromType(obj, key);
+    if (p) {
+      return p;
+    }
+    
     const ot = this.get("Object");
     const op = ot && ot.getOwnProp(key, this);
     if (op) {

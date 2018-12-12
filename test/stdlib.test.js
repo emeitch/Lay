@@ -247,6 +247,32 @@ describe("stdlib", () => {
           });
         });
       });
+
+      context("multiple type and calling latest type method that's same Object method name", () => {
+        it("should call the type method", () => {
+          const store = new Store(std);
+          store.put(v({
+            _id: "Foo",
+            foo: v(1)
+          }));
+          store.put(v({
+            _id: "Bar",
+            get: func("x", v(2))
+          }));
+
+          const id = new UUID();
+          store.put(v({
+            _id: id,
+            type: [
+              path("Foo"),
+              path("Bar")
+            ]
+          }));
+
+          const p = new Path(id, ["get", "foo"]);
+          assert.deepStrictEqual(p.reduce(store), v(2));
+        });
+      });
     });
   });
 
