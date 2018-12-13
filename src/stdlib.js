@@ -310,7 +310,7 @@ function put(id, key, val, bookval) {
 
 {
   const date = new UUID();
-  stdlib.set("Date", date);
+  set("Date", date);
 }
 
 {
@@ -338,7 +338,7 @@ function put(id, key, val, bookval) {
 
 {
   const app = new UUID();
-  stdlib.set("App", app);
+  set("App", app);
 }
 
 {
