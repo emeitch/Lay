@@ -343,9 +343,9 @@ function put(id, key, val, bookval) {
 
 {
   const cnsl = new UUID();
-  stdlib.set("Console", cnsl);
+  set("Console", cnsl);
 
-  stdlib.put(
+  put(
     cnsl,
     "puts",
     func("val", new LiftedNative(function(val) {

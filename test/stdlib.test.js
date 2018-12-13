@@ -418,6 +418,8 @@ describe("stdlib", () => {
   context("accessing Console methods", () => {
     describe("puts", () => {
       it("should return a Act", () => {
+        const store = new Store(std);
+
         const o = path("Console", ["puts", v("foo")]).reduce(store);
 
         // stub
