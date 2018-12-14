@@ -436,6 +436,8 @@ describe("stdlib", () => {
   context("accessing Act methods", () => {
     describe("then", () => {
       it("should return a chained Act", () => {
+        const store = new Store(std);
+
         const f1 = () => {};
         const f2 = () => {};
         const a1 = new Act(f1);

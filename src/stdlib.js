@@ -317,15 +317,7 @@ function put(id, key, val, bookval) {
   const act = new UUID();
   set("Act", act);
 
-  std.set(act, {
-    then: func("next", exp(new LiftedNative(function(self, next) {
-      const act = self.deepReduce(this);
-      const nact = next.deepReduce(this);
-      return act.then(nact);
-    }), "self", "next"))
-  });
-
-  stdlib.put(
+  put(
     act,
     "then",
     func("next", exp(new LiftedNative(function(self, next) {
