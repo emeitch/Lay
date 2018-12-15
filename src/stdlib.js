@@ -409,6 +409,14 @@ function put(id, key, val, bookval) {
     generateStoreFunc,
     generateBookFunc
   );
+
+  put(
+    store,
+    "generateStoreAs",
+    generateStoreFunc,
+    generateBookFunc
+  );
+
 }
 
 export function n(...args) {
