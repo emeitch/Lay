@@ -5,7 +5,7 @@ import { plus } from '../src/func';
 import UUID from '../src/uuid';
 import Path from '../src/path';
 import { exp } from '../src/exp';
-import Book from '../src/book';
+import Store from '../src/store';
 import { path } from '../src/path';
 
 describe("Exp", () => {
@@ -13,13 +13,13 @@ describe("Exp", () => {
     context("simple", () => {
       it("should evalutate one step the expression", () => {
         const e = exp(plus, v(1), v(2));
-        const book = new Book();
+        const store = new Store();
 
-        const e2 = e.step(book);
+        const e2 = e.step(store);
         const native = plus.exp;
         assert.deepStrictEqual(e2, exp(native, v(1), v(2)));
 
-        const e3 = e2.step(book);
+        const e3 = e2.step(store);
         assert.deepStrictEqual(e3, v(3));
       });
     });
@@ -45,23 +45,23 @@ describe("Exp", () => {
 
     context("multiple hopped operator", () => {
       it("should evalutate one step the expression", () => {
-        const book = new Book();
-        book.set("plus0", plus);
-        book.set("plus1", path("plus0"));
+        const store = new Store();
+        store.set("plus0", plus);
+        store.set("plus1", path("plus0"));
 
         const e = exp("plus1", v(1), v(2));
 
-        const e2 = e.step(book);
+        const e2 = e.step(store);
         assert.deepStrictEqual(e2, exp(path("plus0"), v(1), v(2)));
 
-        const e3 = e2.step(book);
+        const e3 = e2.step(store);
         assert.deepStrictEqual(e3, exp(plus, v(1), v(2)));
 
-        const e4 = e3.step(book);
+        const e4 = e3.step(store);
         const native = plus.exp;
         assert.deepStrictEqual(e4, exp(native, v(1), v(2)));
 
-        const e5 = e4.step(book);
+        const e5 = e4.step(store);
         assert.deepStrictEqual(e5, v(3));
       });
     });
@@ -71,8 +71,8 @@ describe("Exp", () => {
     context("val args", () => {
       it("should reduce the expression", () => {
         const e = exp(plus, v(1), v(2));
-        const book = new Book();
-        assert.deepStrictEqual(e.reduce(book), v(3));
+        const store = new Store();
+        assert.deepStrictEqual(e.reduce(store), v(3));
       });
     });
 
