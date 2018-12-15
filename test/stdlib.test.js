@@ -473,7 +473,7 @@ describe("stdlib", () => {
         assert.deepStrictEqual(path("foo", "type").reduce(store), storeClass);
       });
 
-      context("currentBookId", () => {
+      context("currentStoreId", () => {
         it("should generate new store and give name", () => {
           const store = new Store(std);
 
@@ -485,7 +485,7 @@ describe("stdlib", () => {
         });
       });
 
-      context("rename generateBookAs", () => {
+      context("rename generateStoreAs", () => {
         it("should generate new store and give name", () => {
           const store = new Store(std);
 
