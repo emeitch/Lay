@@ -3,7 +3,6 @@ import assert from 'assert';
 import { std, n } from '../src/stdlib';
 import v from '../src/v';
 import UUID from '../src/uuid';
-//import Book from '../src/book';
 import Store from '../src/store';
 import Act from '../src/act';
 import Path, { path } from '../src/path';
@@ -402,7 +401,7 @@ describe("stdlib", () => {
   });
 
   context("accessing Store methods", () => {
-    describe("Book", () => {
+    describe("Store", () => {
       it("should return a Store type object", () => {
         const storeClass = path("Store").reduce(store);
 
