@@ -16,14 +16,14 @@ export default class Exp extends Val {
     return new this.constructor(...terms);
   }
 
-  step(book) {
+  step(store) {
     const [op, ...args] = this.terms;
-    const f = op.step(book);
+    const f = op.step(store);
     if (f != op || !f.apply) {
       return new this.constructor(f, ...args);
     }
 
-    return f.apply(book, ...args);
+    return f.apply(store, ...args);
   }
 }
 

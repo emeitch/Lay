@@ -9,11 +9,11 @@ export default class ID extends Ref {
     return this.prefix() + this.origin;
   }
 
-  getOwnProp(key, book) {
-    return book && book.getOwnProp(this, key) || super.getOwnProp(key, book);
+  getOwnProp(key, store) {
+    return store && store.getOwnProp(this, key) || super.getOwnProp(key, store);
   }
 
-  get(key, book) {
-    return book && book.getProp(this, key) || super.get(key, book);
+  get(key, store) {
+    return store && store.getProp(this, key) || super.get(key, store);
   }
 }

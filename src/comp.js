@@ -73,17 +73,17 @@ export default class Comp extends Val {
     return Comp.valFrom(this.origin);
   }
 
-  getOwnProp(k, book) {
+  getOwnProp(k, store) {
     const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
 
     if (this.origin !== null && this.origin.hasOwnProperty(key)) {
       return this.constructor.valFrom(this.origin[key]);
     }
 
-    return super.getOwnProp(k, book);
+    return super.getOwnProp(k, store);
   }
 
-  get(k, book) {
+  get(k, store) {
     const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
 
     const ownProp = this.getOwnProp(k);
@@ -100,18 +100,18 @@ export default class Comp extends Val {
     }
 
     // todo: BookからStoreへの置き換えが完了したらfindPropFromType有無のチェックは除去
-    if (book && book.findPropFromType) {
-      return book.findPropFromType(this, key);
+    if (store && store.findPropFromType) {
+      return store.findPropFromType(this, key);
     } else {
       // todo: BookからStoreへの置き換えが完了したらこのブロックは除去
       if (this.origin && this.origin.type) {
         const tref = this.constructor.valFrom(this.origin.type);
-        const type = tref.replaceSelfBy(this).reduce(book);
-        return type.get(key, book);
+        const type = tref.replaceSelfBy(this).reduce(store);
+        return type.get(key, store);
       }
     }
 
-    return super.get(k, book);
+    return super.get(k, store);
   }
 
   set(key, val) {
@@ -140,10 +140,10 @@ export default class Comp extends Val {
     return this.origin.collate(Comp.valFrom(target.origin));
   }
 
-  object(book) {
-    const o = super.object(book);
+  object(store) {
+    const o = super.object(store);
     if (!this.head.equals(NullVal)) {
-      Object.assign(o, {head: this.head.object(book)});
+      Object.assign(o, {head: this.head.object(store)});
     }
     return o;
   }
@@ -175,15 +175,15 @@ export class CompArray extends Comp {
     return { pattern: this, target, result };
   }
 
-  deepReduce(book) {
-    const org = this.origin.map(i => i.deepReduce ? i.deepReduce(book) : i);
+  deepReduce(store) {
+    const org = this.origin.map(i => i.deepReduce ? i.deepReduce(store) : i);
     return new this.constructor(org, this.head);
   }
 
-  object(book) {
-    const o = super.object(book);
+  object(store) {
+    const o = super.object(store);
     return Object.assign(o, {
-      origin: this.origin.map(o => o instanceof Val ? o.object(book) : o)
+      origin: this.origin.map(o => o instanceof Val ? o.object(store) : o)
     });
   }
 }
@@ -216,22 +216,22 @@ export class CompMap extends Comp {
     return { pattern: this, target, result };
   }
 
-  deepReduce(book) {
+  deepReduce(store) {
     const org = {};
     for (const key of Object.keys(this.origin)) {
       const val = this.origin[key];
-      org[key] = val.deepReduce ? val.deepReduce(book) : val;
+      org[key] = val.deepReduce ? val.deepReduce(store) : val;
     }
 
     return new this.constructor(org, this.head);
   }
 
-  object(book) {
-    const o = super.object(book);
+  object(store) {
+    const o = super.object(store);
     const org = {};
     for (const key of Object.keys(this.origin)) {
       const val = this.origin[key];
-      org[key] = val instanceof Val ? val.object(book) : val;
+      org[key] = val instanceof Val ? val.object(store) : val;
     }
     return Object.assign(o, {origin: org});
   }
@@ -242,8 +242,8 @@ export class CompDate extends Comp {
      return sym("Date");
   }
 
-  object(book) {
-    const o = super.object(book);
+  object(store) {
+    const o = super.object(store);
     return Object.assign(o, {
       origin: this.origin.toISOString()
     });

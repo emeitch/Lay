@@ -44,12 +44,12 @@ export default class Path extends Ref {
     return new this.constructor(...this.origin.map(id => Array.isArray(id) ? id.map(i => i.replace(matches)) : id.replace(matches)));
   }
 
-  step(book) {
+  step(store) {
     let val;
     if (Array.isArray(this.receiver)) {
-      val = exp(...this.receiver).reduce(book);
+      val = exp(...this.receiver).reduce(store);
     } else {
-      val = this.receiver.reduce(book);
+      val = this.receiver.reduce(store);
     }
 
     for (const elm of this.keys) {
@@ -63,14 +63,14 @@ export default class Path extends Ref {
         key = elm;
       }
 
-      let prop = val.get(key, book);
+      let prop = val.get(key, store);
       if (prop instanceof Function) {
-        // LiftedNativeの基本仕様はthisでbookを渡すだが
+        // LiftedNativeの基本仕様はthisでstoreを渡すだが
         // 組み込みのメソッドの場合、thisで自身を参照したいケースが大半で
-        // bookを渡すわけにいかないので、自身の値をbindする
+        // storeを渡すわけにいかないので、自身の値をbindする
         const f = prop.bind(val);
         const nf = (...args) => {
-          const as = args.map(a => a.reduce(book));
+          const as = args.map(a => a.reduce(store));
           if (as.some(a => a.reducible)) {
             return exp(new LiftedNative(nf), ...as);
           }
@@ -80,27 +80,27 @@ export default class Path extends Ref {
         prop = func(new LiftedNative(nf));
       }
       if (prop === undefined) {
-        return super.step(book);
+        return super.step(store);
       }
 
       if (prop instanceof Case) {
         const c = prop.replaceSelfBy(val);
         const as = args.map(a => a.replaceSelfBy(val));
         const e = exp(c, ...as);
-        val = e.reduce(book).replaceSelfBy(val);
+        val = e.reduce(store).replaceSelfBy(val);
       } else {
         const replaced = prop.replaceSelfBy(val);
-        val = replaced.reduce(book);
+        val = replaced.reduce(store);
       }
     }
 
     return val;
   }
 
-  object(_book) {
-    const base = super.object(_book);
+  object(_store) {
+    const base = super.object(_store);
     return Object.assign({}, base, {
-      origin: this.origin.map(i => i.object(_book))
+      origin: this.origin.map(i => i.object(_store))
     });
   }
 }

@@ -132,10 +132,10 @@ export default class Act extends Val {
     return this.then(...args);
   }
 
-  deepReduce(book) {
+  deepReduce(store) {
     return this.clone({
-      next: this.next ? this.next.deepReduce(book) : this.next,
-      recovery: this.recovery ? this.recovery.deepReduce(book) : this.recovery
+      next: this.next ? this.next.deepReduce(store) : this.next,
+      recovery: this.recovery ? this.recovery.deepReduce(store) : this.recovery
     });
   }
 

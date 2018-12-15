@@ -4,10 +4,10 @@ import { sym } from './sym';
 import { exp } from './exp';
 
 export class Native extends Val {
-  apply(book, ...args) {
+  apply(store, ...args) {
     for (let i = 0; i < args.length; i++) {
       const a = args[i];
-      const na = a.step(book);
+      const na = a.step(store);
 
       if (!na.equals(a)) {
         const nargs = args.concat();
@@ -21,7 +21,7 @@ export class Native extends Val {
     }
 
     const oargs = args.map(a => a.origin);
-    const orig = this.origin.apply(book, oargs);
+    const orig = this.origin.apply(store, oargs);
     return v(orig);
   }
 
@@ -36,8 +36,8 @@ export class Native extends Val {
 }
 
 export class LiftedNative extends Native {
-  apply(book, ...args) {
-    return this.origin.apply(book, args);
+  apply(store, ...args) {
+    return this.origin.apply(store, args);
   }
 
   stringify(indent) {
@@ -167,7 +167,7 @@ export default class Case extends Val {
     });
   }
 
-  apply(book, ...args) {
+  apply(store, ...args) {
     for (const alt of this.alts) {
       const matches = this.matches(alt.pats, args);
       if (matches.every(match => match.result !== null)) {
@@ -177,7 +177,7 @@ export default class Case extends Val {
         }
 
         for (const grd of nalt.grds) {
-          if (grd.cond.reduce(book).origin) {
+          if (grd.cond.reduce(store).origin) {
             return grd.exp;
           }
         }
@@ -197,11 +197,11 @@ export class Func extends Case {
     return this.alts[0].grds[0].exp;
   }
 
-  reduce(book) {
+  reduce(store) {
     if (this.alts[0].pats.length === 0) {
-      return exp(this).reduce(book);
+      return exp(this).reduce(store);
     }
 
-    return super.reduce(book);
+    return super.reduce(store);
   }
 }

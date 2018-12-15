@@ -38,18 +38,18 @@ export default class Val {
     return undefined;
   }
 
-  getOwnProp(k, _book) {
+  getOwnProp(k, _store) {
     const key = k instanceof Prim ? k.origin : k;
     return this.getJSProp(key);
   }
 
-  get(k, book) {
+  get(k, store) {
     const key = k instanceof Prim ? k.origin : k;
 
-    if (book) {
-      const proto = this.type.reduce(book);
+    if (store) {
+      const proto = this.type.reduce(store);
       if (!(proto instanceof Sym)) {
-        return proto.get(key, book);
+        return proto.get(key, store);
       }
     }
 
@@ -70,24 +70,24 @@ export default class Val {
     return true;
   }
 
-  step(_book) {
+  step(_store) {
     return this;
   }
 
-  reduce(book) {
+  reduce(store) {
     let prev = this;
-    let e = this.step(book);
+    let e = this.step(store);
     while(!e.equals(prev)) {
       prev = e;
-      e = e.step(book);
+      e = e.step(store);
     }
     return e;
   }
 
-  deepReduce(book) {
-    let r = this.reduce(book);
+  deepReduce(store) {
+    let r = this.reduce(store);
     if (!r.equals(this)) {
-      r = r.deepReduce(book);
+      r = r.deepReduce(store);
     }
     return r;
   }
@@ -143,9 +143,9 @@ export default class Val {
     return Val.stringify(this.origin, _indent);
   }
 
-  object(_book) {
+  object(_store) {
     return {
-      type: this.type.object(_book),
+      type: this.type.object(_store),
       origin: this.origin
     };
   }
@@ -179,8 +179,8 @@ export class Sym extends Val {
     return this;
   }
 
-  step(book) {
-    const val = book.get(this.origin);
+  step(store) {
+    const val = store.get(this.origin);
     return val !== undefined ? val : this;
   }
 
@@ -188,7 +188,7 @@ export class Sym extends Val {
     return this.origin;
   }
 
-  object(_book) {
+  object(_store) {
     return {
       origin: this.origin
     };
@@ -214,7 +214,7 @@ export class Prim extends Val {
     return new Sym(type[0].toUpperCase() + type.substring(1));
   }
 
-  object(_book) {
+  object(_store) {
     return this.origin;
   }
 }
