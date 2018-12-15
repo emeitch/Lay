@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import Book from '../src/book';
+import Store from '../src/store';
 import { path } from '../src/path';
 import Act from '../src/act';
 
@@ -271,7 +271,7 @@ describe("Act", () => {
   describe("deepReduce", () => {
     it("should reduce next and recovery", () => {
       const act = new Act(() => 0).then(path(new Act(() => 1))).catch(path(new Act(() => 2)));
-      const deepReduced = act.deepReduce(new Book());
+      const deepReduced = act.deepReduce(new Store());
 
       assert(!(act.next instanceof Act));
       assert(deepReduced.next instanceof Act);
