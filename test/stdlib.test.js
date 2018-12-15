@@ -1,9 +1,9 @@
 import assert from 'assert';
 
-import { std, stdlib, n } from '../src/stdlib';
+import { std, n } from '../src/stdlib';
 import v from '../src/v';
 import UUID from '../src/uuid';
-import Book from '../src/book';
+//import Book from '../src/book';
 import Store from '../src/store';
 import Act from '../src/act';
 import Path, { path } from '../src/path';
@@ -15,13 +15,11 @@ import { sym } from '../src/sym';
 describe("stdlib", () => {
   let store;
   beforeEach(() => {
-    store = new Book(stdlib);
+    store = new Store(std);
   });
 
   describe("if", () => {
     it("should test cond and reduce then exp or else exp", () => {
-      const store = new Store(std);
-
       const t = exp("if", v(true), v(1), v(2)).reduce(store);
       assert.deepStrictEqual(t, v(1));
 
@@ -32,8 +30,6 @@ describe("stdlib", () => {
 
   describe("load", () => {
     it("should load prev act json string val to store", () => {
-      const store = new Store(std);
-
       const id = new UUID();
       const val = v({
         _id: id,
@@ -51,7 +47,6 @@ describe("stdlib", () => {
     });
 
     it("should nothing to do without prev act json string", () => {
-      const store = new Store(std);
       const size = store.objs.size;
       store.run(exp("load").deepReduce(store));
       assert(size === store.objs.size);
@@ -61,7 +56,6 @@ describe("stdlib", () => {
 
   describe("filterPiars", () => {
     it("should filter act arg log by pattern", () => {
-      const store = new Store(std);
       const pair1 = {
         key: new UUID(),
         val: v({
@@ -113,8 +107,6 @@ describe("stdlib", () => {
   context("accessing Object methods", () => {
     describe("all", () => {
       it("should return self instances", () => {
-        const store = new Store(std);
-
         store.put({
           _id: "Foo",
         });
@@ -140,8 +132,6 @@ describe("stdlib", () => {
 
     describe("new", () => {
       it("should return a instance creation act", () => {
-        const store = new Store(std);
-
         store.put({
           _id: "Foo"
         });
@@ -178,8 +168,6 @@ describe("stdlib", () => {
     context("accessing Object's key", () => {
       describe("#set", () => {
         it("should return the Act which run set action", () => {
-          const store = new Store(std);
-
           const typeid = new UUID();
           const id = new UUID();
           store.put({
@@ -214,8 +202,6 @@ describe("stdlib", () => {
 
       describe("#get", () => {
         it("should return a val for key", () => {
-          const store = new Store(std);
-
           const id = new UUID();
           store.put({
             _id: id,
@@ -231,8 +217,6 @@ describe("stdlib", () => {
 
         context("exp val", () => {
           it("should retrun a reduced val", () => {
-            const store = new Store(std);
-
             const id = new UUID();
             store.put({
               _id: id,
@@ -250,7 +234,6 @@ describe("stdlib", () => {
 
       context("multiple type and calling latest type method that's same Object method name", () => {
         it("should call the type method", () => {
-          const store = new Store(std);
           store.put(v({
             _id: "Foo",
             foo: v(1)
@@ -279,8 +262,6 @@ describe("stdlib", () => {
   context("accessing String methods", () => {
     describe("trim", () => {
       it("should trim the string", () => {
-        const store = new Store(std);
-
         assert.deepStrictEqual(path(v("hoge   "), "trim").reduce(store), v("hoge"));
       });
     });
@@ -289,8 +270,6 @@ describe("stdlib", () => {
   context("accessing Boolean methods", () => {
     describe("not", () => {
       it("should reverse logic", () => {
-        const store = new Store(std);
-
         assert.deepStrictEqual(path(v(true), "not").reduce(store), v(false));
         assert.deepStrictEqual(path(v(false), "not").reduce(store), v(true));
       });
@@ -300,8 +279,6 @@ describe("stdlib", () => {
   context("accessing default Comp methods", () => {
     describe("new", () => {
       it("should create a comp", () => {
-        const store = new Store(std);
-
         const m = path("Comp", ["new", "Foo", v(1)]).reduce(store);
         assert.deepStrictEqual(m, v("Foo", v(1)));
       });
@@ -311,15 +288,11 @@ describe("stdlib", () => {
   context("accessing default Array methods", () => {
     describe("new", () => {
       it("should create a array", () => {
-        const store = new Store(std);
-
         const m = path("Array", ["new", "Foo", v(1), v(2), v(3)]).reduce(store);
         assert.deepStrictEqual(m, v("Foo", [1, 2, 3]));
       });
 
       it("should create a nested array", () => {
-        const store = new Store(std);
-
         const m = path("Array", ["new", "Foo", v(1), v(2), path("Array", ["new", "Fiz", v(3), v(4)])]).deepReduce(store);
         assert.deepStrictEqual(m, v("Foo", [v(1), v(2), v("Fiz", [v(3), v(4)])]));
       });
@@ -327,8 +300,6 @@ describe("stdlib", () => {
 
     describe("map", () => {
       it("should map arg func for items", () => {
-        const store = new Store(std);
-
         const mapped = path(v([1, 2, 3]), ["map", func("x", exp(plus, "x", v(1)))]).reduce(store);
         assert.deepStrictEqual(mapped, v([2, 3, 4]));
       });
@@ -336,8 +307,6 @@ describe("stdlib", () => {
 
     describe("every", () => {
       it("should all arg func returns true", () => {
-        const store = new Store(std);
-
         const f = func("x", path("x", ["equals", v(2)]));
         const e1 = path(v([2, 2, 2]), ["every", f]);
         assert.deepStrictEqual(e1.reduce(store), v(true));
@@ -349,8 +318,6 @@ describe("stdlib", () => {
 
     describe("filter", () => {
       it("should filter arg func for items", () => {
-        const store = new Store(std);
-
         const filtered = path(v([1, 2, 3]), ["filter", func("x", path("x", ["equals", v(2)]))]).reduce(store);
         assert.deepStrictEqual(filtered, v([2]));
       });
@@ -358,8 +325,6 @@ describe("stdlib", () => {
 
     describe("count", () => {
       it("should return size of array", () => {
-        const store = new Store(std);
-
         const count = path(v([1, 2, 3]), "count").reduce(store);
         assert.deepStrictEqual(count, v(3));
       });
@@ -367,8 +332,6 @@ describe("stdlib", () => {
 
     describe("join", () => {
       it("should return joined string", () => {
-        const store = new Store(std);
-
         const joined = path(v(["1", "2", "3"]), ["join", ","]).reduce(store);
         assert.deepStrictEqual(joined, v("1,2,3"));
       });
@@ -378,15 +341,11 @@ describe("stdlib", () => {
   context("accessing default Map methods", () => {
     describe("new", () => {
       it("should create a map", () => {
-        const store = new Store(std);
-
         const m = path("Map", ["new", "Foo", "bar", v(1), "buz", v(2)]).reduce(store);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v(2)}));
       });
 
       it("should create a nested map", () => {
-        const store = new Store(std);
-
         const exp = path("Map", ["new", "Foo", "bar", v(1), "buz", path("Map", ["new", "Fiz", "faz", v(3)])]);
         const m = exp.deepReduce(store);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
@@ -398,8 +357,6 @@ describe("stdlib", () => {
 
       context("illegal arguments", () => {
         it("should throw error", () => {
-          const store = new Store(std);
-
           assert.throws(() => path("Map", ["new", "Foo", "bar", v(1), "buz"]).reduce(store), /short arguments error/);
         });
       });
@@ -407,8 +364,6 @@ describe("stdlib", () => {
 
     describe("get", () => {
       it("should return the property", () => {
-        const store = new Store(std);
-
         const val = path(v({a: 1, b: 2}), ["get", "b"]).reduce(store);
         assert.deepStrictEqual(val, v(2));
       });
@@ -418,8 +373,6 @@ describe("stdlib", () => {
   context("accessing Console methods", () => {
     describe("puts", () => {
       it("should return a Act", () => {
-        const store = new Store(std);
-
         const o = path("Console", ["puts", v("foo")]).reduce(store);
 
         // stub
@@ -436,8 +389,6 @@ describe("stdlib", () => {
   context("accessing Act methods", () => {
     describe("then", () => {
       it("should return a chained Act", () => {
-        const store = new Store(std);
-
         const f1 = () => {};
         const f2 = () => {};
         const a1 = new Act(f1);
@@ -453,8 +404,6 @@ describe("stdlib", () => {
   context("accessing Store methods", () => {
     describe("Book", () => {
       it("should return a Store type object", () => {
-        const store = new Store(std);
-
         const storeClass = path("Store").reduce(store);
 
         assert.deepStrictEqual(storeClass.constructor, UUID);
@@ -464,8 +413,6 @@ describe("stdlib", () => {
 
     describe("generateAs", () => {
       it("should generate new store and give name", () => {
-        const store = new Store(std);
-
         const act = path("Store", ["generateAs", "foo"]).reduce(store);
         store.run(act);
 
@@ -475,8 +422,6 @@ describe("stdlib", () => {
 
       context("currentStoreId", () => {
         it("should generate new store and give name", () => {
-          const store = new Store(std);
-
           const act = path("currentStoreId", ["generateAs", "foo"]).reduce(store);
           store.run(act);
 
@@ -487,8 +432,6 @@ describe("stdlib", () => {
 
       context("rename generateStoreAs", () => {
         it("should generate new store and give name", () => {
-          const store = new Store(std);
-
           const act = path("currentStoreId", ["generateStoreAs", "foo"]).reduce(store);
           store.run(act);
 
@@ -500,8 +443,6 @@ describe("stdlib", () => {
 
     describe("importedStores", () => {
       it("should return imported stores", () => {
-        const store = new Store(std);
-
         const s1 = new Store();
         store.import(s1);
 
@@ -513,8 +454,6 @@ describe("stdlib", () => {
 
       context("specified a importedStore", () => {
         it("should return imported stores", () => {
-          const store = new Store(std);
-
           const s1 = new Store();
           store.import(s1);
 
@@ -531,8 +470,6 @@ describe("stdlib", () => {
 
     describe("set", () => {
       it("should set obj's property", () => {
-        const store = new Store(std);
-
         const id = new UUID();
         const pact = path(store.id, ["set", id, "foo", v(1)]).reduce(store);
         store.run(pact);
@@ -542,8 +479,6 @@ describe("stdlib", () => {
 
       context("other store", () => {
         it("should set obj's property", () => {
-          const store = new Store(std);
-
           const b = new Store(std);
           store.import(b);
 
