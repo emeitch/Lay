@@ -450,9 +450,9 @@ describe("stdlib", () => {
     });
   });
 
-  context("accessing Book methods", () => {
+  context("accessing Store methods", () => {
     describe("Book", () => {
-      it("should return a Book type object", () => {
+      it("should return a Store type object", () => {
         const store = new Store(std);
 
         const storeClass = path("Store").reduce(store);
