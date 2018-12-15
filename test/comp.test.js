@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import Book from '../src/book';
+import Store from '../src/store';
 import Hash from '../src/hash';
 import UUID from '../src/uuid';
 import { sym } from '../src/sym';
@@ -45,9 +45,9 @@ describe("Comp", () => {
 
     describe("#object", () => {
       it("should return js object", () => {
-        const book = new Book();
+        const store = new Store();
 
-        assert.deepStrictEqual(v("foo", 1).object(book), {
+        assert.deepStrictEqual(v("foo", 1).object(store), {
           type: {
             origin: "Comp"
           },
@@ -55,7 +55,7 @@ describe("Comp", () => {
           origin: 1
         });
 
-        assert.deepStrictEqual(v("foo", null).object(book), {
+        assert.deepStrictEqual(v("foo", null).object(store), {
           type: {
             origin: "Comp"
           },
@@ -63,7 +63,7 @@ describe("Comp", () => {
           origin: null
         });
 
-        assert.deepStrictEqual(v({a: 1, b: 2}).object(book), {
+        assert.deepStrictEqual(v({a: 1, b: 2}).object(store), {
           type: {
             origin: "Map"
           },
@@ -73,14 +73,14 @@ describe("Comp", () => {
           }
         });
 
-        assert.deepStrictEqual(v([1, 2, 3]).object(book), {
+        assert.deepStrictEqual(v([1, 2, 3]).object(store), {
           type: {
             origin: "Array"
           },
           origin: [1, 2, 3]
         });
 
-        assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(book), {
+        assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(store), {
           type: {
             origin: "Map"
           },
@@ -91,7 +91,7 @@ describe("Comp", () => {
           }
         });
 
-        assert.deepStrictEqual(v("bar", [1, 2, 3]).object(book), {
+        assert.deepStrictEqual(v("bar", [1, 2, 3]).object(store), {
           type: {
             origin: "Array"
           },
@@ -223,8 +223,8 @@ describe("CompDate", () => {
       const date = new Date("2018-01-01T00:00:00z");
       const cd = v(date);
 
-      const book = new Book();
-      assert.deepStrictEqual(cd.object(book), {
+      const store = new Store();
+      assert.deepStrictEqual(cd.object(store), {
         origin: "2018-01-01T00:00:00.000Z",
         type: {
           origin: "Date",
