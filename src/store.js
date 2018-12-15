@@ -66,9 +66,9 @@ export default class Store {
   iterateImports(block) {
     let stop = block(this);
     for (const imported of this.imports) {
-      // if (stop) {
-      //   break;
-      // }
+      if (stop) {
+        break;
+      }
       stop = imported.iterateImports(block);
     }
     return stop;

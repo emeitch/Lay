@@ -498,15 +498,17 @@ describe("stdlib", () => {
       });
     });
 
-    describe("importedBooks", () => {
+    describe("importedStores", () => {
       it("should return imported stores", () => {
-        const b1 = new Book();
-        store.import(b1);
+        const store = new Store(std);
 
-        const b2 = new Book();
-        store.import(b2);
+        const s1 = new Store();
+        store.import(s1);
 
-        assert.deepStrictEqual(path("currentBookId", "importedBooks").reduce(store), v([stdlib.id, b1.id, b2.id]));
+        const s2 = new Store();
+        store.import(s2);
+        
+        assert.deepStrictEqual(path("currentStoreId", "importedStores").reduce(store), v([std.id, s1.id, s2.id]));
       });
 
       context("specified a importedBook", () => {

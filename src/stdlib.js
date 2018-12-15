@@ -362,6 +362,15 @@ function put(id, key, val, bookval) {
 
     return decorate(baseBook);
   };
+  const findAndDecorateStore = (baseStore, targetStoreId, decorate) => {
+    for (const i of baseStore.imports) {
+      if (i.id.equals(targetStoreId)) {
+        return decorate(i);
+      }
+    }
+
+    return decorate(baseStore);
+  };
 
   stdlib.put(
     store,
@@ -371,11 +380,18 @@ function put(id, key, val, bookval) {
     }), "self", "id", "key", "val"))
   );
 
-  stdlib.put(
+  put(
     store,
     "importedBooks",
     exp(new LiftedNative(function(self) {
       return findAndDecorateBook(this, self, b => v(b.imports.map(i => i.id)));
+    }), "self")
+  );
+  put(
+    store,
+    "importedStores",
+    exp(new LiftedNative(function(self) {
+      return findAndDecorateStore(this, self, s => v(s.imports.map(i => i.id)));
     }), "self")
   );
 
@@ -387,7 +403,6 @@ function put(id, key, val, bookval) {
       return this.import(b, n);
     });
   }), "self", "name"));
-
   const generateStoreFunc = func("name", exp(new LiftedNative(function(self, name) {
     const s = new Store();
     const n = name.reduce(this).origin;
@@ -409,14 +424,12 @@ function put(id, key, val, bookval) {
     generateStoreFunc,
     generateBookFunc
   );
-
   put(
     store,
     "generateStoreAs",
     generateStoreFunc,
     generateBookFunc
   );
-
 }
 
 export function n(...args) {
