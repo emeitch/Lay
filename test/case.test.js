@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import v from '../src/v';
 import { sym } from '../src/sym';
-import Book from '../src/book';
+import Store from '../src/store';
 import { exp } from '../src/exp';
 import { kase, alt, grd, otherwise, Func } from '../src/case';
 
@@ -16,8 +16,8 @@ describe("Case", () => {
           ),
           v(1)
         );
-        const book = new Book();
-        assert.throws(() => e.reduce(book), /matched pattern not found/);
+        const store = new Store();
+        assert.throws(() => e.reduce(store), /matched pattern not found/);
       });
     });
 
