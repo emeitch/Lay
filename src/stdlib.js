@@ -349,8 +349,9 @@ function put(id, key, val, bookval) {
 }
 
 {
-  const book = new UUID();
-  stdlib.set("Book", book);
+  const store = new UUID();
+  stdlib.set("Book", store);
+  std.set("Store", store);
 
   const findAndDecorateBook = (baseBook, targetBookId, decorate) => {
     for (const i of baseBook.imports) {
@@ -363,7 +364,7 @@ function put(id, key, val, bookval) {
   };
 
   stdlib.put(
-    book,
+    store,
     "put",
     func("id", "key", "val", exp(new LiftedNative(function(self, id, key, val) {
       return findAndDecorateBook(this, self, b => b.putAct(id, key, val));
@@ -371,7 +372,7 @@ function put(id, key, val, bookval) {
   );
 
   stdlib.put(
-    book,
+    store,
     "importedBooks",
     exp(new LiftedNative(function(self) {
       return findAndDecorateBook(this, self, b => v(b.imports.map(i => i.id)));
@@ -388,13 +389,13 @@ function put(id, key, val, bookval) {
   }), "self", "name"));
 
   stdlib.put(
-    book,
+    store,
     "generateAs",
     generateFunc
   );
 
   stdlib.put(
-    book,
+    store,
     "generateBookAs",
     generateFunc
   );

@@ -453,7 +453,9 @@ describe("stdlib", () => {
   context("accessing Book methods", () => {
     describe("Book", () => {
       it("should return a Book type object", () => {
-        const storeClass = path("Book").reduce(store);
+        const store = new Store(std);
+
+        const storeClass = path("Store").reduce(store);
 
         assert.deepStrictEqual(storeClass.constructor, UUID);
         assert.deepStrictEqual(path(store.id, "type").reduce(store), storeClass);

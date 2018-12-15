@@ -10,6 +10,12 @@ export default class Store {
   constructor(...imports) {
     this.objs = new Map();
 
+    this.id = new UUID();
+    this.put({
+      _id: this.id,
+      type: path("Store")
+    });
+
     this.imports = [];
     for (const i of imports) {
       this.import(i);
