@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import v from '../src/v';
 import { exp } from '../src/exp';
-import Book from '../src/book';
+import Store from '../src/store';
 import { kase, alt, grd, otherwise, Native, LiftedNative } from '../src/case';
 import Func, { func, plus, concat } from '../src/func';
 
@@ -64,10 +64,10 @@ describe("Func", () => {
 
     context("defined function", () => {
       it("should reduce the expression", () => {
-        const book = new Book();
-        book.set("f", func("y", exp(plus, v(3), "y")));
+        const store = new Store();
+        store.set("f", func("y", exp(plus, v(3), "y")));
 
-        assert.deepStrictEqual(exp("f", v(2)).reduce(book), v(5));
+        assert.deepStrictEqual(exp("f", v(2)).reduce(store), v(5));
       });
     });
 
@@ -91,8 +91,8 @@ describe("Func", () => {
 
     context("recursive function", () => {
       it("should reduce the expression", () => {
-        const book = new Book();
-        book.set("f", func(
+        const store = new Store();
+        store.set("f", func(
           "x",
           exp(
             kase(
@@ -128,7 +128,7 @@ describe("Func", () => {
           )
         ));
 
-        assert.deepStrictEqual(exp("f", v(4)).reduce(book), v(8));
+        assert.deepStrictEqual(exp("f", v(4)).reduce(store), v(8));
       });
     });
 
@@ -200,12 +200,12 @@ describe("Func", () => {
 
     context("with infinite recursive exp", () => {
       it("should not reduce the infinite recursive exp", () => {
-        const book = new Book();
-        book.set("f", func(
+        const store = new Store();
+        store.set("f", func(
           "x",
           exp("f", "x")
         ));
-        book.set("if", func(
+        store.set("if", func(
           "cond",
           "then",
           "else",
@@ -236,7 +236,7 @@ describe("Func", () => {
           v("else")
         );
 
-        assert.deepStrictEqual(e.reduce(book), v("else"));
+        assert.deepStrictEqual(e.reduce(store), v("else"));
       });
     });
 
