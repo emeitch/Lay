@@ -40,18 +40,26 @@ export default class Store {
     this.set(o.get("_id"), obj);
   }
 
+  // patch(key, diff) {
+  //   const k = this.convertStringKey(key);
+  //   const d = v(diff);
+  //   const obj = this.get(k);
+  //   const newObj = Object.assign({}, obj.origin, d.origin);
+  //   this.set(k, newObj);
+  // }
+
   getWithoutImports(key) {
     const k = this.convertStringKey(key);
     return this.objs.get(k);
   }
 
-  import(other, _name) {
+  import(other, name) {
     this.imports.push(other);
     // this.handleOnInport(other);
 
-    // if (typeof(name) === "string") {
-    //   this.set(name, other.id);
-    // }
+    if (typeof(name) === "string") {
+      this.set(name, other.id);
+    }
   }
 
   iterateImports(block) {

@@ -380,7 +380,7 @@ function put(id, key, val, bookval) {
   );
 
   // todo: 本来は片方を参照して共通化したいが、うまく行かないのでJSレベルの値で共通化
-  const generateFunc = func("name", exp(new LiftedNative(function(self, name) {
+  const generateBookFunc = func("name", exp(new LiftedNative(function(self, name) {
     const b = new Book();
     const n = name.reduce(this).origin;
     return new Act(() => {
@@ -388,16 +388,26 @@ function put(id, key, val, bookval) {
     });
   }), "self", "name"));
 
-  stdlib.put(
+  const generateStoreFunc = func("name", exp(new LiftedNative(function(self, name) {
+    const s = new Store();
+    const n = name.reduce(this).origin;
+    return new Act(() => {
+      return this.import(s, n);
+    });
+  }), "self", "name"));
+
+  put(
     store,
     "generateAs",
-    generateFunc
+    generateStoreFunc,
+    generateBookFunc
   );
 
-  stdlib.put(
+  put(
     store,
     "generateBookAs",
-    generateFunc
+    generateStoreFunc,
+    generateBookFunc
   );
 }
 
