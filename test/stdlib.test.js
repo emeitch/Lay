@@ -507,22 +507,24 @@ describe("stdlib", () => {
 
         const s2 = new Store();
         store.import(s2);
-        
+
         assert.deepStrictEqual(path("currentStoreId", "importedStores").reduce(store), v([std.id, s1.id, s2.id]));
       });
 
-      context("specified a importedBook", () => {
+      context("specified a importedStore", () => {
         it("should return imported stores", () => {
-          const b1 = new Book();
-          store.import(b1);
+          const store = new Store(std);
 
-          const bc1 = new Book();
-          b1.import(bc1);
+          const s1 = new Store();
+          store.import(s1);
 
-          const bc2 = new Book();
-          b1.import(bc2);
+          const sc1 = new Store();
+          s1.import(sc1);
 
-          assert.deepStrictEqual(path(b1.id, "importedBooks").reduce(store), v([bc1.id, bc2.id]));
+          const sc2 = new Store();
+          s1.import(sc2);
+
+          assert.deepStrictEqual(path(s1.id, "importedStores").reduce(store), v([sc1.id, sc2.id]));
         });
       });
     });
