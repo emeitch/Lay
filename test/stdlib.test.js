@@ -349,9 +349,12 @@ describe("stdlib", () => {
         const m = exp.deepReduce(store);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
 
-        //todo: Store#putに置き換える
-        store.set("a", exp);
-        assert.deepStrictEqual(path("a").deepReduce(store), v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
+        const id = new UUID();
+        store.put({
+          _id: id,
+          a: exp
+        });
+        assert.deepStrictEqual(path(id, "a").deepReduce(store), v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
       });
 
       context("illegal arguments", () => {
