@@ -529,22 +529,26 @@ describe("stdlib", () => {
       });
     });
 
-    describe("put", () => {
-      it("should put a log", () => {
+    describe("set", () => {
+      it("should set obj's property", () => {
+        const store = new Store(std);
+
         const id = new UUID();
-        const pact = path(store.id, ["put", id, "foo", v(1)]).reduce(store);
+        const pact = path(store.id, ["set", id, "foo", v(1)]).reduce(store);
         store.run(pact);
 
         assert.deepStrictEqual(path(id, "foo").reduce(store), v(1));
       });
 
       context("other store", () => {
-        it("should put a log", () => {
-          const b = new Book(stdlib);
+        it("should set obj's property", () => {
+          const store = new Store(std);
+
+          const b = new Store(std);
           store.import(b);
 
           const id = new UUID();
-          const pact = path(b.id, ["put", id, "foo", v(1)]).reduce(store);
+          const pact = path(b.id, ["set", id, "foo", v(1)]).reduce(store);
           store.run(pact);
 
           assert.deepStrictEqual(path(id, "foo").reduce(store), v(1));

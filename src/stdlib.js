@@ -372,9 +372,12 @@ function put(id, key, val, bookval) {
     return decorate(baseStore);
   };
 
-  stdlib.put(
+  put(
     store,
-    "put",
+    "set",
+    func("id", "key", "val", exp(new LiftedNative(function(self, id, key, val) {
+      return findAndDecorateStore(this, self, s => s.setAct(id, key, val));
+    }), "self", "id", "key", "val")),
     func("id", "key", "val", exp(new LiftedNative(function(self, id, key, val) {
       return findAndDecorateBook(this, self, b => b.putAct(id, key, val));
     }), "self", "id", "key", "val"))
