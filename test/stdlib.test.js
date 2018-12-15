@@ -475,10 +475,12 @@ describe("stdlib", () => {
 
       context("currentBookId", () => {
         it("should generate new store and give name", () => {
-          const bact = path("currentBookId", ["generateAs", "foo"]).reduce(store);
-          store.run(bact);
+          const store = new Store(std);
 
-          const storeClass = path("Book").reduce(store);
+          const act = path("currentStoreId", ["generateAs", "foo"]).reduce(store);
+          store.run(act);
+
+          const storeClass = path("Store").reduce(store);
           assert.deepStrictEqual(path("foo", "type").reduce(store), storeClass);
         });
       });

@@ -15,6 +15,7 @@ export default class Store {
       _id: this.id,
       type: path("Store")
     });
+    this.set("currentStoreId", this.id);
 
     this.imports = [];
     for (const i of imports) {
