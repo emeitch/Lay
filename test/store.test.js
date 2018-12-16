@@ -167,6 +167,33 @@ describe("Store", () => {
     });
   });
 
+  describe("#run", () => {
+    it("should run act", () => {
+      store.run(v(1)); // pass
+      
+      let a = 0;
+      const act1 = new Act(() => {
+        a = 1;
+      });
+
+      let b = 0;
+      const act2 = new Act(() => {
+        b = 2;
+      });
+
+      store.run(v([act1, act2]));
+      assert.deepStrictEqual(a, 1);
+      assert.deepStrictEqual(b, 2);
+    });
+
+    context("invalid act", () => {
+      it("should throw error", () => {
+        assert.throws(() => {
+          store.run(v([1]));
+        }, /not Act instance:/);
+      });
+    });
+  });
 });
 
 describe("parseObjs", () => {
