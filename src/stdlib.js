@@ -2,7 +2,6 @@ import Val from './val';
 import v from './v';
 import UUID from './uuid';
 import Act from './act';
-import Book from './book';
 import Store from './store';
 import Prim from './prim';
 import Comp, { CompArray, CompMap } from  './comp';
@@ -10,18 +9,15 @@ import { exp } from './exp';
 import { kase, alt, grd, otherwise } from './case';
 import { func, LiftedNative } from './func';
 import { path } from './path';
-import { parseObjs, parseEdges } from './store';
+import { parseObjs } from './store';
 
-export const stdlib = new Book();
 export const std = new Store();
 
 function set(...args) {
-  stdlib.set(...args);
   std.set(...args);
 }
 
-function put(id, key, val, bookval) {
-  stdlib.put(id, key, bookval || val);
+function put(id, key, val) {
   const comp = std.get(id) || v({});
   std.set(id, Object.assign({}, comp.origin, {[key]: val}));
 }
@@ -51,16 +47,6 @@ function put(id, key, val, bookval) {
     )
   ));
 
-  stdlib.set("load", func(new LiftedNative(function() {
-    const book = this;
-    return new Act(edgesStr => {
-      const jsobj = edgesStr ? JSON.parse(edgesStr) : [];
-      const edges = parseEdges(jsobj);
-      for (const edge of edges) {
-        book.appendEdge(edge.tail, edge.label, edge.head, edge.rev);
-      }
-    });
-  })));
   std.set("load", func(new LiftedNative(function() {
     const store = this;
     return new Act(objsStr => {
@@ -73,33 +59,6 @@ function put(id, key, val, bookval) {
   })));
 
 
-  stdlib.set("filterEdges", func("pattern", new LiftedNative(function(pattern) {
-    const book = this;
-    const p = pattern.deepReduce(book).origin;
-    return new Act(edges => {
-      const filtered = [];
-      for (const edge of edges) {
-        const id = book.getEdgeHead(edge.tail, "subject");
-        const key = book.getEdgeHead(edge.tail, "type");
-        const idtype = path(id, "type").deepReduce(book);
-        const typename = book.name(idtype);
-
-        if (filtered.find(e => e.rev.equals(id))) {
-          filtered.push(edge);
-          continue;
-        }
-
-        for (const type of Object.keys(p)) {
-          const keys = p[type];
-          if ((idtype.origin === type || typename.origin === type) && keys.includes(key.origin)) {
-            filtered.push(edge);
-            break;
-          }
-        }
-      }
-      return filtered;
-    });
-  })));
   std.set("filterPiars", func("pattern", new LiftedNative(function(pattern) {
     const store = this;
     const types = pattern.deepReduce(store).origin;
@@ -350,18 +309,8 @@ function put(id, key, val, bookval) {
 
 {
   const store = new UUID();
-  stdlib.set("Book", store);
   std.set("Store", store);
 
-  const findAndDecorateBook = (baseBook, targetBookId, decorate) => {
-    for (const i of baseBook.imports) {
-      if (i.id.equals(targetBookId)) {
-        return decorate(i);
-      }
-    }
-
-    return decorate(baseBook);
-  };
   const findAndDecorateStore = (baseStore, targetStoreId, decorate) => {
     for (const i of baseStore.imports) {
       if (i.id.equals(targetStoreId)) {
@@ -377,19 +326,9 @@ function put(id, key, val, bookval) {
     "set",
     func("id", "key", "val", exp(new LiftedNative(function(self, id, key, val) {
       return findAndDecorateStore(this, self, s => s.setAct(id, key, val));
-    }), "self", "id", "key", "val")),
-    func("id", "key", "val", exp(new LiftedNative(function(self, id, key, val) {
-      return findAndDecorateBook(this, self, b => b.putAct(id, key, val));
     }), "self", "id", "key", "val"))
   );
 
-  put(
-    store,
-    "importedBooks",
-    exp(new LiftedNative(function(self) {
-      return findAndDecorateBook(this, self, b => v(b.imports.map(i => i.id)));
-    }), "self")
-  );
   put(
     store,
     "importedStores",
@@ -399,13 +338,6 @@ function put(id, key, val, bookval) {
   );
 
   // todo: 本来は片方を参照して共通化したいが、うまく行かないのでJSレベルの値で共通化
-  const generateBookFunc = func("name", exp(new LiftedNative(function(self, name) {
-    const b = new Book();
-    const n = name.reduce(this).origin;
-    return new Act(() => {
-      return this.import(b, n);
-    });
-  }), "self", "name"));
   const generateStoreFunc = func("name", exp(new LiftedNative(function(self, name) {
     const s = new Store();
     const n = name.reduce(this).origin;
@@ -417,21 +349,13 @@ function put(id, key, val, bookval) {
   put(
     store,
     "generateAs",
-    generateStoreFunc,
-    generateBookFunc
+    generateStoreFunc
   );
 
   put(
     store,
-    "generateBookAs",
-    generateStoreFunc,
-    generateBookFunc
-  );
-  put(
-    store,
     "generateStoreAs",
-    generateStoreFunc,
-    generateBookFunc
+    generateStoreFunc
   );
 }
 
