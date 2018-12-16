@@ -178,6 +178,13 @@ describe("Comp", () => {
         assert.deepStrictEqual(val.get("a"), v(1));
         assert.deepStrictEqual(val.get(v("a")), v(1));
       });
+
+      context("not exist prop", () => {
+        it("should return undefined", () => {
+          const val = v({a: 1, b: 2});
+          assert.deepStrictEqual(val.get("c"), undefined);
+        });
+      });
     });
 
     describe("#field", () => {

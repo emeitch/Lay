@@ -99,7 +99,11 @@ export default class Comp extends Val {
       return this.head;
     }
 
-    return store.findPropFromType(this, key);
+    if (store) {
+      return store.findPropFromType(this, key);
+    }
+
+    return super.get(k, store);
   }
 
   set(key, val) {
