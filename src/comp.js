@@ -99,19 +99,7 @@ export default class Comp extends Val {
       return this.head;
     }
 
-    // todo: BookからStoreへの置き換えが完了したらfindPropFromType有無のチェックは除去
-    if (store && store.findPropFromType) {
-      return store.findPropFromType(this, key);
-    } else {
-      // todo: BookからStoreへの置き換えが完了したらこのブロックは除去
-      if (this.origin && this.origin.type) {
-        const tref = this.constructor.valFrom(this.origin.type);
-        const type = tref.replaceSelfBy(this).reduce(store);
-        return type.get(key, store);
-      }
-    }
-
-    return super.get(k, store);
+    return store.findPropFromType(this, key);
   }
 
   set(key, val) {
