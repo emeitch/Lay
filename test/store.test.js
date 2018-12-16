@@ -4,6 +4,7 @@ import UUID from '../src/uuid';
 import { path } from '../src/path';
 import v from '../src/v';
 import { sym } from '../src/sym';
+import Act from '../src/act';
 import Store, { parseObjs } from '../src/store';
 
 describe("Store", () => {
@@ -119,6 +120,26 @@ describe("Store", () => {
         });
         assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(1));
       });
+    });
+  });
+
+  describe("handle onPut", () => {
+    it("should handle onPut handler", () => {
+      let a = 0;
+      store.set("onPut", new Act(pairs => {
+        if (pairs[0].val.get("foo").equals(v("bar"))) {
+          a = 1;
+        }
+      }));
+
+      assert.deepStrictEqual(a, 0);
+
+      store.put({
+        _id: new UUID(),
+        foo: "bar"
+      });
+
+      assert.deepStrictEqual(a, 1);
     });
   });
 });
