@@ -1,7 +1,7 @@
 /* eslint-env browser */
-import Book from './book';
+import Store from './store';
 import Act from './act';
-import { stdlib, n } from './stdlib';
+import { std, n } from './stdlib';
 import { exp } from './exp';
 import { pack } from './pack';
 import { path } from './path';
@@ -9,11 +9,11 @@ import { func } from './func';
 import v from './v';
 import { dom, e } from './dom';
 
-const d = new Book(stdlib);
+const d = new Store(std);
 
 {
   const Task = d.new();
-  d.put(Task,
+  d.patchProp(Task,
     "toggle",
     exp("if",
       path("self", "state", ["equals", n("active")]),
@@ -21,19 +21,19 @@ const d = new Book(stdlib);
       path("self", ["set", "state", n("active")])
     )
   );
-  d.put(Task, "editing", v(false));
+  d.patchProp(Task, "editing", v(false));
   d.set("Task", Task);
 }
 
 {
   const todos = d.new();
   d.set("todos", todos);
-  d.put(todos, "type", path("App"));
-  d.put(todos, "var", v("0.2.0"));
-  d.put(todos, "state", n("all"));
-  d.put(todos, "newTaskTitle", v(""));
-  d.put(todos, "changeState", func("s", path("self", ["set", "state", path("s")])));
-  d.put(todos, "changeStateByHash", func(
+  d.patchProp(todos, "type", path("App"));
+  d.patchProp(todos, "var", v("0.2.0"));
+  d.patchProp(todos, "state", n("all"));
+  d.patchProp(todos, "newTaskTitle", v(""));
+  d.patchProp(todos, "changeState", func("s", path("self", ["set", "state", path("s")])));
+  d.patchProp(todos, "changeStateByHash", func(
     "hash",
     exp(
       "if",
@@ -555,18 +555,18 @@ const d = new Book(stdlib);
   );
 
   const doc = path("document").deepReduce(d);
-  d.put(doc, "body", domtree);
+  d.patchProp(doc, "body", domtree);
   const eventListeners = path("document", "eventListeners").deepReduce(d);
-  d.put(eventListeners, "DOMContentLoaded", func("win",
+  d.patchProp(eventListeners, "DOMContentLoaded", func("win",
     path(
       "todos", ["changeStateByHash", path("win", "location", "hash")],
-      ["then", path("localStorage", ["read", v("todos-lay-edges")])],
+      ["then", path("localStorage", ["read", v("todos-lay-objs")])],
       ["then", exp("load")]
     )
   ));
   d.set("onPut", path(
-    exp("filterEdges", v({"Task": ["type", "exists", "title", "state"]})),
-    ["then", path("localStorage", ["appendEdges", v("todos-lay-edges")])],
-    ["then", path("localStorage", ["write", v("todos-lay-edges")])]
+    exp("filterPiars", v(["Task"])),
+    ["then", path("localStorage", ["appendObjs", v("todos-lay-objs")])],
+    ["then", path("localStorage", ["write", v("todos-lay-objs")])]
   ));
 }

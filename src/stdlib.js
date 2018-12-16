@@ -67,7 +67,7 @@ function put(id, key, val, bookval) {
       const jsobj = objsStr ? JSON.parse(objsStr) : [];
       const objs = parseObjs(jsobj);
       for (const obj of objs) {
-        store.put(obj);
+        store.doPut(obj);
       }
     });
   })));

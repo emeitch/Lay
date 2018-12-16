@@ -1,7 +1,7 @@
 /* eslint-env browser */
 import { h, createProjector } from 'maquette';
 
-import Book from './book';
+import Store from './store';
 import Prim from './prim';
 import Act from './act';
 import UUID from './uuid';
@@ -13,16 +13,16 @@ import { n } from './stdlib';
 
 let dirty = false;
 let vdomCache = null;
-export const dom = new Book();
+export const dom = new Store();
 const doc = new UUID();
 dom.set("document", doc);
-dom.put(doc, "eventListeners", new UUID());
+dom.patchProp(doc, "eventListeners", new UUID());
 const projector = createProjector();
 dom.set(
   "onImport",
   func(
     new LiftedNative(function() { return new Act(() => {
-      const book = this;
+      const store = this;
       function render(elm) {
         if (elm === undefined) {
           return undefined;
@@ -36,7 +36,7 @@ dom.set(
             if (c instanceof Prim) {
               children.push(c.origin);
             } else {
-              children.push(render(c, book));
+              children.push(render(c, store));
             }
           }
         }
@@ -58,8 +58,8 @@ dom.set(
                 }
               };
               const event = v("Event", eo);
-              const act = path(elm, [key, event]).deepReduce(book);
-              return book.run(act);
+              const act = path(elm, [key, event]).deepReduce(store);
+              return store.run(act);
             };
 
             if (elm.head.equals(v("body"))) {
@@ -75,11 +75,11 @@ dom.set(
           } else if (key.match(/^after/)) {
             attr[key] = element => {
               const env = {element};
-              const act = path(elm, key).deepReduce(book);
-              return book.run(new Act(() => env).then(act));
+              const act = path(elm, key).deepReduce(store);
+              return store.run(new Act(() => env).then(act));
             };
           } else {
-            const val = path(elm, key).deepReduce(book);
+            const val = path(elm, key).deepReduce(store);
             attr[key] = val.origin;
           }
         }
@@ -89,7 +89,7 @@ dom.set(
       function renderMaquette() {
         if (dirty || !vdomCache) {
           const placeholder = path("document", "body");
-          const domtree = placeholder.deepReduce(book);
+          const domtree = placeholder.deepReduce(store);
           dirty = false;
           vdomCache = render(domtree);
         }
@@ -103,8 +103,8 @@ dom.set(
             hash: window.location.hash
           }
         });
-        const act = exp(placeholder, win).deepReduce(book);
-        book.run(act);
+        const act = exp(placeholder, win).deepReduce(store);
+        store.run(act);
 
         projector.append(document.body, renderMaquette);
       });
@@ -133,7 +133,7 @@ dom.set(
 
 const localStorage = new UUID();
 dom.set("localStorage", localStorage);
-dom.put(
+dom.patchProp(
   localStorage,
   "read",
   func(
@@ -146,21 +146,21 @@ dom.put(
     })
   )
 );
-dom.put(
+dom.patchProp(
   localStorage,
-  "appendEdges",
+  "appendObjs",
   func(
     new LiftedNative(function(key) {
       const k = key.deepReduce(this);
-      return new Act(edges => {
+      return new Act(objs => {
         const storage = JSON.parse(window.localStorage.getItem(k.origin)) || [];
-        storage.push(...edges.map(e => e.object(this)));
+        storage.push(...objs.map(e => e.val.object(this)));
         return JSON.stringify(storage);
       });
     })
   )
 );
-dom.put(
+dom.patchProp(
   localStorage,
   "write",
   func(

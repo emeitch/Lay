@@ -3,11 +3,16 @@ import { sym } from './sym';
 import { path } from './path';
 import v from './v';
 import Act from '../src/act';
-import Comp from './comp';
+import Comp, { CompMap } from './comp';
 
 export default class Store {
   constructor(...imports) {
     this.objs = new Map();
+
+    this.imports = [];
+    for (const i of imports) {
+      this.import(i);
+    }
 
     this.id = new UUID();
     this.put({
@@ -15,11 +20,6 @@ export default class Store {
       type: path("Store")
     });
     this.set("currentStoreId", this.id);
-
-    this.imports = [];
-    for (const i of imports) {
-      this.import(i);
-    }
   }
 
   convertStringKey(key) {
@@ -27,12 +27,26 @@ export default class Store {
   }
 
   convertObjectKey(key) {
-    return parseVal(JSON.parse(key));
+    return v(parseVal(JSON.parse(key)));
+  }
+
+  doSet(key, val) {
+    const pair = {
+      key: this.convertStringKey(key),
+      val: v(val)
+    };
+    this.objs.set(pair.key, pair.val);
+    return pair;
   }
 
   set(key, val) {
-    const k = this.convertStringKey(key);
-    this.objs.set(k, v(val));
+    const pair = this.doSet(key, val);
+    this.handleOnPut([pair]);
+  }
+
+  doPut(obj) {
+    const o = v(obj);
+    this.doSet(o.get("_id"), obj);
   }
 
   put(obj) {
@@ -40,22 +54,57 @@ export default class Store {
     this.set(o.get("_id"), obj);
   }
 
-  // patch(key, diff) {
-  //   const k = this.convertStringKey(key);
-  //   const d = v(diff);
-  //   const obj = this.get(k);
-  //   const newObj = Object.assign({}, obj.origin, d.origin);
-  //   this.set(k, newObj);
-  // }
+  handleOnPut(objs) {
+    this.iterateImports(store => {
+      const actexp = store.get("onPut");
+      if (actexp) {
+        const act = actexp.reduce(this);
+        this.run(act, objs);
+      }
+    });
+  }
+
+  patch(key, diff) {
+    const o = this.get(key);
+
+    let d = v(diff).origin;
+    let oo = {};
+    if (o && o instanceof CompMap) {
+      oo = Object.assign({}, o.origin);
+      for (const k of Object.keys(d)) {
+        if (d[k] === null || (d[k].equals && d[k].equals(v(null)))) {
+          delete oo[k];
+          delete d[k];
+        }
+      }
+    }
+    const newObj = Object.assign({}, oo, d);
+    this.set(key, newObj);
+  }
+
+  patchProp(id, key, val) {
+    const k = v(key);
+    this.patch(id, {
+      [k.origin]: val
+    });
+  }
 
   getWithoutImports(key) {
     const k = this.convertStringKey(key);
     return this.objs.get(k);
   }
 
+  handleOnInport(other) {
+    const actexp = other.get("onImport");
+    if (actexp) {
+      const act = actexp.reduce(this);
+      this.run(act);
+    }
+  }
+
   import(other, name) {
     this.imports.push(other);
-    // this.handleOnInport(other);
+    this.handleOnInport(other);
 
     if (typeof(name) === "string") {
       this.set(name, other.id);
@@ -170,6 +219,11 @@ export default class Store {
     // todo: 線形探索なのを高速化
     const results = [];
     for (const [k, val] of this.objs) {
+      const exists = val.get("exists", this);
+      if (exists && !exists.reduce(this).origin) {
+        continue;
+      }
+
       const key = this.convertObjectKey(k);
       const tprop = val.get("type", this);
       const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
@@ -185,14 +239,15 @@ export default class Store {
 
   setAct(id, key, val) {
     return new Act(() => {
-      const obj = Object.assign({}, this.get(id));
-      const k = key.origin;
-      if (val.equals(v(null))) {
-        delete obj[k];
-      } else {
-        obj[k] = val.unpack();
-      }
-      this.set(id, obj);
+      this.patchProp(id, key, val.unpack());
+      // const obj = Object.assign({}, this.get(id).origin);
+      // const k = key.origin;
+      // if (val.equals(v(null))) {
+      //   delete obj[k];
+      // } else {
+      //   obj[k] = val.unpack();
+      // }
+      // this.set(id, obj);
     });
   }
 
