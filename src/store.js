@@ -238,14 +238,6 @@ export default class Store {
   setAct(id, key, val) {
     return new Act(() => {
       this.patchProp(id, key, val.unpack());
-      // const obj = Object.assign({}, this.get(id).origin);
-      // const k = key.origin;
-      // if (val.equals(v(null))) {
-      //   delete obj[k];
-      // } else {
-      //   obj[k] = val.unpack();
-      // }
-      // this.set(id, obj);
     });
   }
 
