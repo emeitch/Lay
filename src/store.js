@@ -1,5 +1,4 @@
 import UUID from './uuid';
-import Edge from './edge';
 import { sym } from './sym';
 import { path } from './path';
 import v from './v';
@@ -271,17 +270,4 @@ export function parseObjs(raws) {
     objs.push(obj);
   }
   return objs;
-}
-
-export function parseEdges(raws) {
-  const edges = [];
-  for (const raw of raws) {
-    const tail = parseVal(raw.tail);
-    const label = raw.label;
-    const head = parseVal(raw.head);
-    const rev = parseVal(raw.rev);
-    const edge = new Edge(v(tail), label, v(head), rev);
-    edges.push(edge);
-  }
-  return edges;
 }
