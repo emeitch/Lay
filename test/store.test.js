@@ -142,6 +142,23 @@ describe("Store", () => {
       assert.deepStrictEqual(a, 1);
     });
   });
+
+  describe("handle onImport", () => {
+    it("should handle onImport handler", () => {
+      const lib = new Store();
+      let a = 0;
+      lib.set("onImport", new Act(() => {
+        a = 1;
+      }));
+
+      assert.deepStrictEqual(a, 0);
+
+      store.import(lib);
+
+      assert.deepStrictEqual(a, 1);
+    });
+  });
+
 });
 
 describe("parseObjs", () => {
