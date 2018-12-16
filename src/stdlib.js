@@ -108,10 +108,6 @@ function put(id, key, val) {
     "get",
     func("key", exp(new LiftedNative(function(self, key) {
       return this.getProp(self, key);
-    }), "self", "key")),
-    func("key", exp(new LiftedNative(function(self, key) {
-      const rels = this.activeRels(self, key.reduce(this));
-      return this.getEdgeHead(rels[0], "object");
     }), "self", "key"))
   );
 
