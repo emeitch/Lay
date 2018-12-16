@@ -120,6 +120,12 @@ describe("Val", () => {
       });
     });
 
+    describe("Val.stringify", () => {
+      it("should return original value string", () => {
+        assert.deepStrictEqual(Val.stringify(v(0)), "0");
+      });
+    });
+
     describe("#stringify", () => {
       it("should return original value string", () => {
         assert.deepStrictEqual(val.stringify(), "0");
