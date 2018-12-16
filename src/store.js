@@ -30,28 +30,32 @@ export default class Store {
     return v(parseVal(JSON.parse(key)));
   }
 
-  doSet(key, val) {
+  doSet(key, val, block) {
     const pair = {
       key: this.convertStringKey(key),
       val: v(val)
     };
     this.objs.set(pair.key, pair.val);
-    return pair;
+
+    if (block) {
+      block(pair);
+    }
   }
 
   set(key, val) {
-    const pair = this.doSet(key, val);
-    this.handleOnPut([pair]);
+    this.doSet(key, val, pair => {
+      this.handleOnPut([pair]);
+    });
   }
 
-  doPut(obj) {
+  putWithoutHandler(obj) {
     const o = v(obj);
-    this.doSet(o.get("_id"), obj);
+    this.doSet(o.get("_id"), o);
   }
 
   put(obj) {
     const o = v(obj);
-    this.set(o.get("_id"), obj);
+    this.set(o.get("_id"), o);
   }
 
   handleOnPut(objs) {

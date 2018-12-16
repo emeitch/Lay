@@ -53,7 +53,7 @@ function put(id, key, val) {
       const jsobj = objsStr ? JSON.parse(objsStr) : [];
       const objs = parseObjs(jsobj);
       for (const obj of objs) {
-        store.doPut(obj);
+        store.putWithoutHandler(obj);
       }
     });
   })));
