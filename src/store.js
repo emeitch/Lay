@@ -155,21 +155,19 @@ export default class Store {
 
   traversePropFromType(obj, key) {
     const tprop = obj.getOwnProp("type", this);
-    if (tprop) {
-      const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
-      for (const tref of tprops.origin) {
-        const type = tref.reduce(this);
-        const p = type.getOwnProp(key, this);
+    const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
+    for (const tref of tprops.origin) {
+      const type = tref.reduce(this);
+      const p = type.getOwnProp(key, this);
+      if (p) {
+        return p;
+      }
+
+      // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
+      if (!obj.equals(type)) {
+        const p = this.traversePropFromType(type, key);
         if (p) {
           return p;
-        }
-
-        // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
-        if (!obj.equals(type)) {
-          const p = this.traversePropFromType(type, key);
-          if (p) {
-            return p;
-          }
         }
       }
     }

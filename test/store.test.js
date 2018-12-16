@@ -33,6 +33,14 @@ describe("Store", () => {
     });
   });
 
+  describe("#getOwnProp", () => {
+    context("receiver as a comp", () => {
+      it("return a property", () => {
+        assert.deepStrictEqual(store.getOwnProp(v({foo: 3}), "foo"), v(3));
+      });
+    });
+  });
+
   describe("#findPropWithType", () => {
     let id;
     beforeEach(() => {
