@@ -117,7 +117,13 @@ describe("stdlib", () => {
         const id2 = new UUID();
         store.put({
           _id: id2,
+          type: [path("Foo"), path("Bar")], // multi type
+        });
+        const id3 = new UUID();
+        store.put({
+          _id: id3,
           type: path("Foo"),
+          exists: false, // not exists
         });
 
         const ids = path("Foo", "all").reduce(store);
