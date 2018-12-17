@@ -33,6 +33,21 @@ describe("Store", () => {
     });
   });
 
+  describe("#merge", () => {
+    it("should merge the patch", () => {
+      store.merge({
+        foo: {
+          a: 1,
+          b: "c"
+        },
+        bar: 1
+      });
+
+      assert.deepStrictEqual(store.get("foo"), v({a:1, b:"c"}));
+      assert.deepStrictEqual(store.get("bar"), v(1));
+    });
+  });
+
   describe("#getOwnProp", () => {
     context("receiver as a comp", () => {
       it("return a property", () => {
@@ -170,7 +185,7 @@ describe("Store", () => {
   describe("#run", () => {
     it("should run act", () => {
       store.run(v(1)); // pass
-      
+
       let a = 0;
       const act1 = new Act(() => {
         a = 1;

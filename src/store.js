@@ -48,6 +48,13 @@ export default class Store {
     });
   }
 
+  merge(diff) {
+    for (const key of Object.keys(diff)) {
+      const val = diff[key];
+      this.set(key, val);
+    }
+  }
+
   putWithoutHandler(obj) {
     const o = v(obj);
     this.doSet(o.get("_id"), o);
