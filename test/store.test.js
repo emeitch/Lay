@@ -182,6 +182,12 @@ describe("Store", () => {
     });
   });
 
+  describe("#currentStoreId", () => {
+    it("should return the store ID", () => {
+      assert.deepStrictEqual(store.get("currentStoreId"), store.id);
+    });
+  });
+
   describe("#run", () => {
     it("should run act", () => {
       store.run(v(1)); // pass
