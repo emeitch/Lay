@@ -51,7 +51,7 @@ export default class Store {
   merge(diff) {
     for (const key of Object.keys(diff)) {
       const val = diff[key];
-      this.set(key, val);
+      this.patch(key, val);
     }
   }
 
@@ -76,9 +76,14 @@ export default class Store {
   }
 
   patch(key, diff) {
+    let d = v(diff).origin;
+    if (typeof(d) !== "object") {
+      this.set(key, diff);
+      return;
+    }
+
     const o = this.get(key);
 
-    let d = v(diff).origin;
     let oo = {};
     if (o && o instanceof CompMap) {
       oo = Object.assign({}, o.origin);

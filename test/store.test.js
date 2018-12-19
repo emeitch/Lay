@@ -46,6 +46,26 @@ describe("Store", () => {
       assert.deepStrictEqual(store.get("foo"), v({a:1, b:"c"}));
       assert.deepStrictEqual(store.get("bar"), v(1));
     });
+
+    context("an object exists", () => {
+      it("should merge the properties", () => {
+        store.merge({
+          foo: {
+            a: 1,
+          },
+        });
+
+        assert.deepStrictEqual(store.get("foo"), v({a:1}));
+
+        store.merge({
+          foo: {
+            b: 2,
+            c: 3
+          },
+        });
+        assert.deepStrictEqual(store.get("foo"), v({a:1, b:2, c:3}));
+      });
+    });
   });
 
   describe("#getOwnProp", () => {
