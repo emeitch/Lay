@@ -76,8 +76,7 @@ function put(id, key, val) {
 }
 
 {
-  const obj = new UUID();
-  set("Object", obj);
+  const obj = "Object";
 
   put(
     obj,
