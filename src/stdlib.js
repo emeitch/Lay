@@ -121,8 +121,7 @@ function put(id, key, val) {
 }
 
 {
-  const str = new UUID();
-  set("String", str);
+  const str = "String";
 
   put(
     str,
