@@ -133,8 +133,7 @@ function put(id, key, val) {
 }
 
 {
-  const bool = new UUID();
-  set("Boolean", bool);
+  const bool = "Boolean";
 
   put(
     bool,
