@@ -145,8 +145,7 @@ function put(id, key, val) {
 }
 
 {
-  const comp = new UUID();
-  set("Comp", comp);
+  const comp = "Comp";
 
   put(
     comp,
