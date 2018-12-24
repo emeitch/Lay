@@ -159,8 +159,7 @@ function put(id, key, val) {
 }
 
 {
-  const arr = new UUID();
-  set("Array", arr);
+  const arr = "Array";
 
   put(
     arr,
