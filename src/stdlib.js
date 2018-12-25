@@ -276,14 +276,13 @@ function put(id, key, val) {
   );
 }
 
-{
-  const app = new UUID();
-  set("App", app);
-}
+// {
+//   const app = new UUID();
+//   set("App", app);
+// }
 
 {
-  const cnsl = new UUID();
-  set("Console", cnsl);
+  const cnsl = "Console";
 
   put(
     cnsl,
