@@ -257,14 +257,13 @@ function put(id, key, val) {
   );
 }
 
-{
-  const date = new UUID();
-  set("Date", date);
-}
+// {
+//   const date = new UUID();
+//   set("Date", date);
+// }
 
 {
-  const act = new UUID();
-  set("Act", act);
+  const act = "Act";
 
   put(
     act,
