@@ -157,12 +157,7 @@ export default class Store {
       return undefined;
     }
 
-    const prop = val.getOwnProp(key, this);
-    if (prop) {
-      return prop;
-    }
-
-    return undefined;
+    return val.getOwnProp(key, this);
   }
 
   getProp(id, key) {
