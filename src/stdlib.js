@@ -235,8 +235,7 @@ function put(id, key, val) {
 }
 
 {
-  const map = new UUID();
-  set("Map", map);
+  const map = "Map";
 
   put(
     map,
