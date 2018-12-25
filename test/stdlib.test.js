@@ -414,7 +414,6 @@ describe("stdlib", () => {
       it("should return a Store type object", () => {
         const storeClass = path("Store").reduce(store);
 
-        assert.deepStrictEqual(storeClass.constructor, UUID);
         assert.deepStrictEqual(path(store.id, "type").reduce(store), storeClass);
       });
     });

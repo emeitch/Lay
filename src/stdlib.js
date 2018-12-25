@@ -1,6 +1,5 @@
 import Val from './val';
 import v from './v';
-import UUID from './uuid';
 import Act from './act';
 import Store from './store';
 import Prim from './prim';
@@ -296,8 +295,7 @@ function put(id, key, val) {
 }
 
 {
-  const store = new UUID();
-  std.set("Store", store);
+  const store = "Store";
 
   const findAndDecorateStore = (baseStore, targetStoreId, decorate) => {
     for (const i of baseStore.imports) {
