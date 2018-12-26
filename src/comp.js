@@ -208,6 +208,11 @@ export class CompMap extends Comp {
     return { pattern: this, target, result };
   }
 
+  step(store) {
+    const target = this.getOwnProp("_target", store);
+    return target ? target.step(store) : super.step(store);
+  }
+
   deepReduce(store) {
     const org = {};
     for (const key of Object.keys(this.origin)) {

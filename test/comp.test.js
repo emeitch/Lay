@@ -4,6 +4,8 @@ import Store from '../src/store';
 import Hash from '../src/hash';
 import UUID from '../src/uuid';
 import { sym } from '../src/sym';
+import { exp } from '../src/exp';
+import { plus } from '../src/func';
 import v from '../src/v';
 
 describe("Comp", () => {
@@ -183,6 +185,24 @@ describe("Comp", () => {
         it("should return undefined", () => {
           const val = v({a: 1, b: 2});
           assert.deepStrictEqual(val.get("c"), undefined);
+        });
+      });
+    });
+
+    describe("#reduce", () => {
+      it("should return self value", () => {
+        const store = new Store();
+
+        const val = v({a: 1, b: 2});
+        assert.deepStrictEqual(val.reduce(store), v({a: 1, b: 2}));
+      });
+
+      context("with _target property", () => {
+        it("should reduce _val property", () => {
+          const store = new Store();
+
+          const val = v({a: 1, b: 2, _target: exp(plus, v(1), v(2))});
+          assert.deepStrictEqual(val.reduce(store), v(3));
         });
       });
     });
