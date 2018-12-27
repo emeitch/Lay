@@ -12,17 +12,13 @@ import { parseObjs } from './store';
 
 export const std = new Store();
 
-function set(...args) {
-  std.set(...args);
-}
-
 function put(id, key, val) {
   const comp = std.get(id) || v({});
   std.set(id, Object.assign({}, comp.origin, {[key]: val}));
 }
 
 {
-  set("if", func(
+  put("if", "_target", func(
     "cond",
     "then",
     "else",
@@ -46,7 +42,7 @@ function put(id, key, val) {
     )
   ));
 
-  std.set("load", func(new LiftedNative(function() {
+  put("load", "_target", func(new LiftedNative(function() {
     const store = this;
     return new Act(objsStr => {
       const jsobj = objsStr ? JSON.parse(objsStr) : [];
@@ -58,7 +54,7 @@ function put(id, key, val) {
   })));
 
 
-  std.set("filterPiars", func("pattern", new LiftedNative(function(pattern) {
+  put("filterPiars", "_target", func("pattern", new LiftedNative(function(pattern) {
     const store = this;
     const types = pattern.deepReduce(store).origin;
     return new Act(pairs => {
