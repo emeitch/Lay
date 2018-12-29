@@ -30,10 +30,10 @@ export default class Store {
     return v(parseVal(JSON.parse(key)));
   }
 
-  doSet(key, val, block) {
+  doPut(obj, block) {
     const pair = {
-      key: this.convertStringKey(key),
-      val: v(val)
+      key: this.convertStringKey(obj.getOwnProp("_id")),
+      val: obj
     };
     this.objs.set(pair.key, pair.val);
 
@@ -43,9 +43,17 @@ export default class Store {
   }
 
   set(key, val) {
-    this.doSet(key, val, pair => {
-      this.handleOnPut([pair]);
-    });
+    let obj = v(val);
+    if (obj instanceof CompMap) {
+      obj = v(Object.assign({}, {_id: key}, obj.origin));
+    } else {
+      obj = v({
+        _id: key,
+        _target: obj
+      });
+    }
+
+    this.put(obj);
   }
 
   merge(diff) {
@@ -57,12 +65,14 @@ export default class Store {
 
   putWithoutHandler(obj) {
     const o = v(obj);
-    this.doSet(o.get("_id"), o);
+    this.doPut(o);
   }
 
   put(obj) {
     const o = v(obj);
-    this.set(o.get("_id"), o);
+    this.doPut(o, pair => {
+      this.handleOnPut([pair]);
+    });
   }
 
   handleOnPut(objs) {

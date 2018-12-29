@@ -43,8 +43,15 @@ describe("Store", () => {
         bar: 1
       });
 
-      assert.deepStrictEqual(store.get("foo"), v({a:1, b:"c"}));
-      assert.deepStrictEqual(store.get("bar"), v(1));
+      assert.deepStrictEqual(store.get("foo"), v({
+        _id: "foo",
+        a: 1,
+        b: "c"
+      }));
+      assert.deepStrictEqual(store.get("bar"), v({
+        _id: "bar",
+        _target: 1
+      }));
     });
 
     context("an object exists", () => {
@@ -55,7 +62,10 @@ describe("Store", () => {
           },
         });
 
-        assert.deepStrictEqual(store.get("foo"), v({a:1}));
+        assert.deepStrictEqual(store.get("foo").reduce(store), v({
+          _id: "foo",
+          a:1
+        }));
 
         store.merge({
           foo: {
@@ -63,7 +73,12 @@ describe("Store", () => {
             c: 3
           },
         });
-        assert.deepStrictEqual(store.get("foo"), v({a:1, b:2, c:3}));
+        assert.deepStrictEqual(store.get("foo").reduce(store), v({
+          _id: "foo",
+          a:1,
+          b:2,
+          c:3
+        }));
       });
     });
   });
@@ -204,7 +219,7 @@ describe("Store", () => {
 
   describe("#currentStoreId", () => {
     it("should return the store ID", () => {
-      assert.deepStrictEqual(store.get("currentStoreId"), store.id);
+      assert.deepStrictEqual(store.get("currentStoreId").reduce(store), store.id);
     });
   });
 

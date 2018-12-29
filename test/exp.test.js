@@ -51,18 +51,8 @@ describe("Exp", () => {
 
         const e = exp("plus1", v(1), v(2));
 
-        const e2 = e.step(store);
-        assert.deepStrictEqual(e2, exp(path("plus0"), v(1), v(2)));
-
-        const e3 = e2.step(store);
-        assert.deepStrictEqual(e3, exp(plus, v(1), v(2)));
-
-        const e4 = e3.step(store);
-        const native = plus.exp;
-        assert.deepStrictEqual(e4, exp(native, v(1), v(2)));
-
-        const e5 = e4.step(store);
-        assert.deepStrictEqual(e5, v(3));
+        const reduced = e.reduce(store);
+        assert.deepStrictEqual(reduced, v(3));
       });
     });
   });
