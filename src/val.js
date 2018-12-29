@@ -21,6 +21,10 @@ export default class Val {
     return this.type;
   }
 
+  get __type() {
+    return this._type;
+  }
+
   get _toStr() {
     return new Prim(this.stringify());
   }
@@ -47,7 +51,7 @@ export default class Val {
     const key = k instanceof Prim ? k.origin : k;
 
     if (store) {
-      const proto = this.type.reduce(store);
+      const proto = this._type.reduce(store);
       if (!(proto instanceof Sym)) {
         return proto.get(key, store);
       }
@@ -145,7 +149,7 @@ export default class Val {
 
   object(_store) {
     return {
-      type: this.type.object(_store),
+      _type: this._type.object(_store),
       origin: this.origin
     };
   }

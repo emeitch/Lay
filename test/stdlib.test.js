@@ -58,14 +58,14 @@ describe("stdlib", () => {
       const pair1 = {
         key: new UUID(),
         val: v({
-          type: path("Foo"),
+          _type: path("Foo"),
           foo: 1
         })
       };
       const pair2 = {
         key: new UUID(),
         val: v({
-          type: path("Bar"),
+          _type: path("Bar"),
           foo: 1
         })
       };
@@ -112,17 +112,17 @@ describe("stdlib", () => {
         const id1 = new UUID();
         store.put({
           _id: id1,
-          type: path("Foo")
+          _type: path("Foo")
         });
         const id2 = new UUID();
         store.put({
           _id: id2,
-          type: [path("Foo"), path("Bar")], // multi type
+          _type: [path("Foo"), path("Bar")], // multi type
         });
         const id3 = new UUID();
         store.put({
           _id: id3,
-          type: path("Foo"),
+          _type: path("Foo"),
           exists: false, // not exists
         });
 
@@ -141,7 +141,7 @@ describe("stdlib", () => {
           _id: "Foo"
         });
         const act = path("Object", ["new", v({
-          type: path("Foo"),
+          _type: path("Foo"),
           foo: v("foo"),
           bar: path([plus, v(1), v(2)]),
           buz: pack(path([plus, v(1), v(2)]))
@@ -177,7 +177,7 @@ describe("stdlib", () => {
           const id = new UUID();
           store.put({
             _id: id,
-            type: typeid
+            _type: typeid
           });
 
           const p = new Path(id, ["set", "foo", exp(plus, v(1), v(2))]);
@@ -251,7 +251,7 @@ describe("stdlib", () => {
           const id = new UUID();
           store.put(v({
             _id: id,
-            type: [
+            _type: [
               path("Foo"),
               path("Bar")
             ]
@@ -414,7 +414,7 @@ describe("stdlib", () => {
       it("should return a Store type object", () => {
         const storeClass = path("Store").reduce(store);
 
-        assert.deepStrictEqual(path(store.id, "type").reduce(store), storeClass);
+        assert.deepStrictEqual(path(store.id, "_type").reduce(store), storeClass);
       });
     });
 
@@ -424,7 +424,7 @@ describe("stdlib", () => {
         store.run(act);
 
         const storeClass = path("Store").reduce(store);
-        assert.deepStrictEqual(path("foo", "type").reduce(store), storeClass);
+        assert.deepStrictEqual(path("foo", "_type").reduce(store), storeClass);
       });
 
       context("currentStoreId", () => {
@@ -433,7 +433,7 @@ describe("stdlib", () => {
           store.run(act);
 
           const storeClass = path("Store").reduce(store);
-          assert.deepStrictEqual(path("foo", "type").reduce(store), storeClass);
+          assert.deepStrictEqual(path("foo", "_type").reduce(store), storeClass);
         });
       });
 
@@ -443,7 +443,7 @@ describe("stdlib", () => {
           store.run(act);
 
           const storeClass = path("Store").reduce(store);
-          assert.deepStrictEqual(path("foo", "type").reduce(store), storeClass);
+          assert.deepStrictEqual(path("foo", "_type").reduce(store), storeClass);
         });
       });
     });
@@ -506,34 +506,34 @@ describe("stdlib", () => {
       assert.deepStrictEqual(arr.constructor, Path);
       assert.deepStrictEqual(arr.reduce(store).get(v(0)), v(10));
       assert.deepStrictEqual(arr.reduce(store).get("head"), v("Arr"));
-      assert.deepStrictEqual(arr.reduce(store).get("type"), sym("Array"));
+      assert.deepStrictEqual(arr.reduce(store).get("_type"), sym("Array"));
 
       const narr = n([v(10), v(11), v(12)]);
       assert.deepStrictEqual(narr.constructor, Path);
       assert.deepStrictEqual(narr.reduce(store).get(v(0)), v(10));
       assert.deepStrictEqual(narr.reduce(store).get("head"), v(null));
-      assert.deepStrictEqual(narr.reduce(store).get("type"), sym("Array"));
+      assert.deepStrictEqual(narr.reduce(store).get("_type"), sym("Array"));
 
       const map = n("Mp", {foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(map.constructor, Path);
       assert.deepStrictEqual(map.reduce(store).get("foo"), v("bar"));
       assert.deepStrictEqual(map.reduce(store).get("head"), v("Mp"));
-      assert.deepStrictEqual(map.reduce(store).get("type"), sym("Map"));
+      assert.deepStrictEqual(map.reduce(store).get("_type"), sym("Map"));
 
       const nmap = n({foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(nmap.constructor, Path);
       assert.deepStrictEqual(nmap.reduce(store).get("foo"), v("bar"));
-      assert.deepStrictEqual(nmap.reduce(store).get("type"), sym("Map"));
+      assert.deepStrictEqual(nmap.reduce(store).get("_type"), sym("Map"));
 
       const nested = n({foo: {bar: v("baz")}, fiz: v("buz")});
       assert.deepStrictEqual(nested.constructor, Path);
       assert.deepStrictEqual(nested.reduce(store).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested.reduce(store).get("type"), sym("Map"));
+      assert.deepStrictEqual(nested.reduce(store).get("_type"), sym("Map"));
 
       const nested2 = n({foo: n({bar: v("baz")}), fiz: v("buz")});
       assert.deepStrictEqual(nested2.constructor, Path);
       assert.deepStrictEqual(nested2.deepReduce(store).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested2.deepReduce(store).get("type"), sym("Map"));
+      assert.deepStrictEqual(nested2.deepReduce(store).get("_type"), sym("Map"));
 
       const headonly = n("foo");
       assert.deepStrictEqual(headonly.constructor, Path);

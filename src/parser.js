@@ -20,11 +20,11 @@ export function parseVal(raw) {
   }
 
   if (type === "object") {
-    if (!raw.type) {
+    if (!raw._type) {
       return sym(raw.origin);
     }
 
-    const klass = parseVal(raw.type);
+    const klass = parseVal(raw._type);
     if (klass.origin === "Comp") {
       return v(head, parseVal(raw.origin));
     } else if (klass.origin === "Array") {

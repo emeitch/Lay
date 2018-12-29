@@ -40,8 +40,8 @@ describe("Comp", () => {
 
     describe("#type", () => {
       it("should return type sym", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2}).type, sym("Map"));
-        assert.deepStrictEqual(v([1, 2, 3]).type, sym("Array"));
+        assert.deepStrictEqual(v({a: 1, b: 2})._type, sym("Map"));
+        assert.deepStrictEqual(v([1, 2, 3])._type, sym("Array"));
       });
     });
 
@@ -50,7 +50,7 @@ describe("Comp", () => {
         const store = new Store();
 
         assert.deepStrictEqual(v("foo", 1).object(store), {
-          type: {
+          _type: {
             origin: "Comp"
           },
           head: "foo",
@@ -58,7 +58,7 @@ describe("Comp", () => {
         });
 
         assert.deepStrictEqual(v("foo", null).object(store), {
-          type: {
+          _type: {
             origin: "Comp"
           },
           head: "foo",
@@ -66,7 +66,7 @@ describe("Comp", () => {
         });
 
         assert.deepStrictEqual(v({a: 1, b: 2}).object(store), {
-          type: {
+          _type: {
             origin: "Map"
           },
           origin: {
@@ -76,14 +76,14 @@ describe("Comp", () => {
         });
 
         assert.deepStrictEqual(v([1, 2, 3]).object(store), {
-          type: {
+          _type: {
             origin: "Array"
           },
           origin: [1, 2, 3]
         });
 
         assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(store), {
-          type: {
+          _type: {
             origin: "Map"
           },
           head: "foo",
@@ -94,7 +94,7 @@ describe("Comp", () => {
         });
 
         assert.deepStrictEqual(v("bar", [1, 2, 3]).object(store), {
-          type: {
+          _type: {
             origin: "Array"
           },
           head: "bar",
@@ -102,7 +102,7 @@ describe("Comp", () => {
         });
 
         assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(), {
-          type: {
+          _type: {
             origin: "Array"
           },
           origin: [
@@ -114,7 +114,7 @@ describe("Comp", () => {
         });
 
         assert.deepStrictEqual(v({foo: 1, bar: {buz: "2"}}).object(), {
-          type: {
+          _type: {
             origin: "Map"
           },
           origin: {
@@ -127,7 +127,7 @@ describe("Comp", () => {
 
         const id = new UUID();
         assert.deepStrictEqual(v({foo: id, bar: ["2", false, null]}).object(), {
-          type: {
+          _type: {
             origin: "Map"
           },
           origin: {
@@ -141,13 +141,13 @@ describe("Comp", () => {
         });
 
         assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(), {
-          type: {
+          _type: {
             origin: "Array"
           },
           origin: [
             "foo",
             {
-              type: {
+              _type: {
                 origin: "Map"
               },
               origin: {
@@ -241,7 +241,7 @@ describe("CompDate", () => {
   describe("#type", () => {
     it("should return a sym to Date", () => {
       const cd = v(new Date());
-      assert.deepStrictEqual(cd.type, sym("Date"));
+      assert.deepStrictEqual(cd._type, sym("Date"));
     });
   });
 
@@ -253,7 +253,7 @@ describe("CompDate", () => {
       const store = new Store();
       assert.deepStrictEqual(cd.object(store), {
         origin: "2018-01-01T00:00:00.000Z",
-        type: {
+        _type: {
           origin: "Date",
         },
       });

@@ -26,10 +26,10 @@ describe("Prim", () => {
 
     describe("#type", () => {
       it("should return type sym", () => {
-        assert.deepStrictEqual(v(1).type, sym("Number"));
-        assert.deepStrictEqual(v("foo").type, sym("String"));
-        assert.deepStrictEqual(v(true).type, sym("Boolean"));
-        assert.deepStrictEqual(v(null).type, sym("Null"));
+        assert.deepStrictEqual(v(1)._type, sym("Number"));
+        assert.deepStrictEqual(v("foo")._type, sym("String"));
+        assert.deepStrictEqual(v(true)._type, sym("Boolean"));
+        assert.deepStrictEqual(v(null)._type, sym("Null"));
       });
     });
 

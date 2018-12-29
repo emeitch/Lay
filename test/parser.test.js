@@ -10,9 +10,9 @@ import { parseObjs } from '../src/parser';
 describe("parseObjs", () => {
   it("should parse raw number", () => {
     const objs = parseObjs([{
-      type: {origin: "Map"},
+      _type: {origin: "Map"},
       origin: {
-        _id: {type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
         foo: 1
       }
     }]);
@@ -24,9 +24,9 @@ describe("parseObjs", () => {
   context("string head", () => {
     it("should parse a string val", () => {
       const objs = parseObjs([{
-        type: {origin: "Map"},
+        _type: {origin: "Map"},
         origin: {
-          _id: {type: {origin: "UUID"}, origin: "uuidexample"},
+          _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
           foo: "2"
         }
       }]);
@@ -38,10 +38,10 @@ describe("parseObjs", () => {
   context("comp head", () => {
     it("should parse a comp val", () => {
       const objs = parseObjs([{
-        type: {origin: "Map"},
+        _type: {origin: "Map"},
         origin: {
-          _id: {type: {origin: "UUID"}, origin: "uuidexample"},
-          foo: {type: {origin: "Comp"}, head: "foo", origin: 3}
+          _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+          foo: {_type: {origin: "Comp"}, head: "foo", origin: 3}
         }
       }]);
 
@@ -52,10 +52,10 @@ describe("parseObjs", () => {
   context("array head", () => {
     it("should parse a array val", () => {
       const objs = parseObjs([{
-        type: {origin: "Map"},
+        _type: {origin: "Map"},
         origin: {
-          _id: {type: {origin: "UUID"}, origin: "uuidexample"},
-          foo: {type: {origin: "Array"}, origin: [1, 2, 3]}
+          _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+          foo: {_type: {origin: "Array"}, origin: [1, 2, 3]}
         }
       }]);
 
@@ -66,10 +66,10 @@ describe("parseObjs", () => {
   context("array map head", () => {
     it("should parse a array map val", () => {
       const objs = parseObjs([{
-        type: {origin: "Map"},
+        _type: {origin: "Map"},
         origin: {
-          _id: {type: {origin: "UUID"}, origin: "uuidexample"},
-          foo: {type: {origin: "Array"}, head: "foo", origin: [{type: {origin: "Map"}, head: "bar", origin: {a: 1, b: 2}}]},
+          _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+          foo: {_type: {origin: "Array"}, head: "foo", origin: [{_type: {origin: "Map"}, head: "bar", origin: {a: 1, b: 2}}]},
         }
       }]);
 
@@ -80,10 +80,10 @@ describe("parseObjs", () => {
   context("map array head", () => {
     it("should parse a map array val", () => {
       const objs = parseObjs([{
-        type: {origin: "Map"},
+        _type: {origin: "Map"},
         origin: {
-          _id: {type: {origin: "UUID"}, origin: "uuidexample"},
-          foo: {type: {origin: "Map"}, head: "foo", origin: {a: {type: {origin: "Array"}, head: "bar", origin: [1, 2, 3]}}},
+          _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+          foo: {_type: {origin: "Map"}, head: "foo", origin: {a: {_type: {origin: "Array"}, head: "bar", origin: [1, 2, 3]}}},
         }
       }]);
 
@@ -94,10 +94,10 @@ describe("parseObjs", () => {
   context("comp comp head", () => {
     it("should parse a comp comp val", () => {
       const objs = parseObjs([{
-        type: {origin: "Map"},
+        _type: {origin: "Map"},
         origin: {
-          _id: {type: {origin: "UUID"}, origin: "uuidexample"},
-          foo: {type: {origin: "Comp"}, head: "foo", origin: {type: {origin: "Comp"}, head: "bar", origin: 1} },
+          _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+          foo: {_type: {origin: "Comp"}, head: "foo", origin: {_type: {origin: "Comp"}, head: "bar", origin: 1} },
         }
       }]);
 
@@ -108,10 +108,10 @@ describe("parseObjs", () => {
   context("comp as enum head", () => {
     it("should parse a comp as enum val", () => {
       const objs = parseObjs([{
-        type: {origin: "Map"},
+        _type: {origin: "Map"},
         origin: {
-          _id: {type: {origin: "UUID"}, origin: "uuidexample"},
-          foo: {type: {origin: "Comp"}, head: "foo", origin: null },
+          _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+          foo: {_type: {origin: "Comp"}, head: "foo", origin: null },
         }
       }]);
 
@@ -122,10 +122,10 @@ describe("parseObjs", () => {
   context("path head", () => {
     it("should parse a path val", () => {
       const objs = parseObjs([{
-        type: {origin: "Map"},
+        _type: {origin: "Map"},
         origin: {
-          _id: {type: {origin: "UUID"}, origin: "uuidexample"},
-          foo: {type: {origin: "Path"}, origin: [{origin: "Foo"}] },
+          _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+          foo: {_type: {origin: "Path"}, origin: [{origin: "Foo"}] },
         }
       }]);
 
@@ -136,9 +136,9 @@ describe("parseObjs", () => {
   context("sym head", () => {
     it("should parse a sym val", () => {
       const objs = parseObjs([{
-        type: {origin: "Map"},
+        _type: {origin: "Map"},
         origin: {
-          _id: {type: {origin: "UUID"}, origin: "uuidexample"},
+          _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
           foo: {origin: "Foo"},
         }
       }]);
@@ -150,10 +150,10 @@ describe("parseObjs", () => {
   context("date head", () => {
     it("should parse a date val", () => {
       const objs = parseObjs([{
-        type: {origin: "Map"},
+        _type: {origin: "Map"},
         origin: {
-          _id: {type: {origin: "UUID"}, origin: "uuidexample"},
-          foo: {type: {origin: "Date"}, origin: "2018-04-01T00:00:00z"},
+          _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+          foo: {_type: {origin: "Date"}, origin: "2018-04-01T00:00:00z"},
         }
       }]);
 
@@ -165,10 +165,10 @@ describe("parseObjs", () => {
     it("should raise error unparsed raw objs", () => {
       assert.throws(() => parseObjs([
         {
-          type: {origin: "Map"},
+          _type: {origin: "Map"},
           origin: {
-            _id: {type: {origin: "UUID"}, origin: "uuidexample"},
-            foo: {type: {origin: "Dummy"}},
+            _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+            foo: {_type: {origin: "Dummy"}},
           }
         }
       ]),

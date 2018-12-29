@@ -18,7 +18,7 @@ export default class Store {
     this.id = new UUID();
     this.put({
       _id: this.id,
-      type: path("Store")
+      _type: path("Store")
     });
     this.assign("currentStoreId", this.id);
   }
@@ -182,8 +182,8 @@ export default class Store {
   }
 
   traversePropFromType(obj, key) {
-    const tprop = obj.getOwnProp("type", this);
-    const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
+    const tprop = obj.getOwnProp("_type", this);
+    const tprops = tprop._type.equals(sym("Array")) ? tprop : v([tprop]);
     for (const tref of tprops.origin) {
       const type = tref.reduce(this);
       const p = type.getOwnProp(key, this);
@@ -251,8 +251,8 @@ export default class Store {
       }
 
       const key = this.convertObjectKey(k);
-      const tprop = val.get("type", this);
-      const tprops = tprop.type.equals(sym("Array")) ? tprop : v([tprop]);
+      const tprop = val.get("_type", this);
+      const tprops = tprop._type.equals(sym("Array")) ? tprop : v([tprop]);
       for (const tref of tprops.origin) {
         const t = tref.replaceSelfBy(key).reduce(this);
         if (t.equals(cls)) {

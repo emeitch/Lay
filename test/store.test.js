@@ -134,7 +134,7 @@ describe("Store", () => {
       it("should return self prop", () => {
         store.put({
           _id: id,
-          type: path("Bar"),
+          _type: path("Bar"),
           foo: 3
         });
 
@@ -146,7 +146,7 @@ describe("Store", () => {
       it("should return type prop", () => {
         store.put({
           _id: id,
-          type: path("Bar"),
+          _type: path("Bar"),
         });
 
         assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(2));
@@ -157,7 +157,7 @@ describe("Store", () => {
       it("should return first type prop", () => {
         store.put({
           _id: id,
-          type: [
+          _type: [
             path("Bar"),
             path("Buz")
           ]
@@ -176,12 +176,12 @@ describe("Store", () => {
         });
         store.put({
           _id: "Parenttype",
-          type: path("Grandtype")
+          _type: path("Grandtype")
         });
         const child = new UUID();
         store.put({
           _id: child,
-          type: path("Parenttype"),
+          _type: path("Parenttype"),
         });
 
         assert.deepStrictEqual(store.findPropWithType(child, "foo"), v(5));
