@@ -59,7 +59,13 @@ export default class Store {
   merge(diff) {
     for (const key of Object.keys(diff)) {
       const val = diff[key];
-      this.patch(key, val);
+
+      let k = key;
+      const m = key.match(/^urn:uuid:(.*)/);
+      if (m && m[1]) {
+        k = new UUID(m[1]);
+      }
+      this.patch(k, val);
     }
   }
 

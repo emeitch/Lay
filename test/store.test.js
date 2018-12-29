@@ -54,6 +54,23 @@ describe("Store", () => {
       }));
     });
 
+    context("uuid", () => {
+      it("should merge the patch", () => {
+        const id = new UUID();
+        const patch = {
+          [id.stringify()]: {
+            a: 1
+          }
+        };
+        store.merge(patch);
+
+        assert.deepStrictEqual(store.get(id), v({
+          _id: id,
+          a: 1
+        }));
+      });
+    });
+
     context("an object exists", () => {
       it("should merge the properties", () => {
         store.merge({
