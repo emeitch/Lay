@@ -114,7 +114,7 @@ export default class Store {
     this.assign(key, newObj);
   }
 
-  patchProp(id, key, val) {
+  set(id, key, val) {
     const k = v(key);
     this.patch(id, {
       [k.origin]: val
@@ -264,7 +264,7 @@ export default class Store {
 
   setAct(id, key, val) {
     return new Act(() => {
-      this.patchProp(id, key, val.unpack());
+      this.set(id, key, val.unpack());
     });
   }
 

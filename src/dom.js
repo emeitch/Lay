@@ -16,7 +16,7 @@ let vdomCache = null;
 export const dom = new Store();
 const doc = new UUID();
 dom.assign("document", doc);
-dom.patchProp(doc, "eventListeners", new UUID());
+dom.set(doc, "eventListeners", new UUID());
 const projector = createProjector();
 dom.assign(
   "onImport",
@@ -133,7 +133,7 @@ dom.assign(
 
 const localStorage = new UUID();
 dom.assign("localStorage", localStorage);
-dom.patchProp(
+dom.set(
   localStorage,
   "read",
   func(
@@ -146,7 +146,7 @@ dom.patchProp(
     })
   )
 );
-dom.patchProp(
+dom.set(
   localStorage,
   "appendObjs",
   func(
@@ -160,7 +160,7 @@ dom.patchProp(
     })
   )
 );
-dom.patchProp(
+dom.set(
   localStorage,
   "write",
   func(

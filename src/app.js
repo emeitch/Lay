@@ -13,7 +13,7 @@ const d = new Store(std);
 
 {
   const Task = d.new();
-  d.patchProp(Task,
+  d.set(Task,
     "toggle",
     exp("if",
       path("self", "state", ["equals", n("active")]),
@@ -21,19 +21,19 @@ const d = new Store(std);
       path("self", ["set", "state", n("active")])
     )
   );
-  d.patchProp(Task, "editing", v(false));
+  d.set(Task, "editing", v(false));
   d.assign("Task", Task);
 }
 
 {
   const todos = d.new();
   d.assign("todos", todos);
-  d.patchProp(todos, "type", path("App"));
-  d.patchProp(todos, "var", v("0.2.0"));
-  d.patchProp(todos, "state", n("all"));
-  d.patchProp(todos, "newTaskTitle", v(""));
-  d.patchProp(todos, "changeState", func("s", path("self", ["set", "state", path("s")])));
-  d.patchProp(todos, "changeStateByHash", func(
+  d.set(todos, "type", path("App"));
+  d.set(todos, "var", v("0.2.0"));
+  d.set(todos, "state", n("all"));
+  d.set(todos, "newTaskTitle", v(""));
+  d.set(todos, "changeState", func("s", path("self", ["set", "state", path("s")])));
+  d.set(todos, "changeStateByHash", func(
     "hash",
     exp(
       "if",
@@ -555,9 +555,9 @@ const d = new Store(std);
   );
 
   const doc = path("document").deepReduce(d);
-  d.patchProp(doc, "body", domtree);
+  d.set(doc, "body", domtree);
   const eventListeners = path("document", "eventListeners").deepReduce(d);
-  d.patchProp(eventListeners, "DOMContentLoaded", func("win",
+  d.set(eventListeners, "DOMContentLoaded", func("win",
     path(
       "todos", ["changeStateByHash", path("win", "location", "hash")],
       ["then", path("localStorage", ["read", v("todos-lay-objs")])],
