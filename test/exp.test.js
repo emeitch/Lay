@@ -68,10 +68,11 @@ describe("Exp", () => {
 
     context("with ref arg", () => {
       it("should keep the expression with evaluated exp args", () => {
+        const store = new Store();
         const path = new Path(new UUID(), new UUID());
         const e = exp(plus, path, exp(plus, v(1), v(2)));
         const native = plus.exp;
-        assert.deepStrictEqual(e.reduce(), exp(native, path, v(3)));
+        assert.deepStrictEqual(e.reduce(store), exp(native, path, v(3)));
       });
     });
 

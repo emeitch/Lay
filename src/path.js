@@ -63,6 +63,13 @@ export default class Path extends Ref {
         key = elm;
       }
 
+      while(val instanceof Ref) {
+        val = store.get(val);
+      }
+      if (!val) {
+        return this;
+      }
+
       let prop = val.get(key, store);
       if (prop instanceof Function) {
         // LiftedNativeの基本仕様はthisでstoreを渡すだが

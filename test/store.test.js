@@ -121,8 +121,6 @@ describe("Store", () => {
       });
 
       assert.deepStrictEqual(store.getOwnProp(id, "foo"), v(3));
-      assert.deepStrictEqual(id.getOwnProp("foo", store), v(3));
-      assert.deepStrictEqual(id.getOwnProp("foo"), undefined);
     });
 
     context("unknown id", () => {

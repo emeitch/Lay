@@ -293,9 +293,9 @@ function put(id, key, val) {
 {
   const store = "Store";
 
-  const findAndDecorateStore = (baseStore, targetStoreId, decorate) => {
+  const findAndDecorateStore = (baseStore, targetStore, decorate) => {
     for (const i of baseStore.imports) {
-      if (i.id.equals(targetStoreId)) {
+      if (i.id.equals(targetStore.getOwnProp("_id"))) {
         return decorate(i);
       }
     }

@@ -1,5 +1,6 @@
 import UUID from './uuid';
 import v from './v';
+import Ref from './ref';
 import Sym, { sym } from './sym';
 import Act from './act';
 import Comp, { CompMap } from './comp';
@@ -184,8 +185,11 @@ export default class Store {
 
   traversePropFromType(obj, key) {
     const tref = obj.getOwnProp("_type", this);
-    const type = tref.reduce(this);
-    const p = type.getOwnProp(key, this);
+    let type = tref.reduce(this);
+    while(type instanceof Ref) {
+      type = this.get(type);
+    }
+    const p = type && type.getOwnProp(key, this);
     if (p) {
       return p;
     }
@@ -250,15 +254,21 @@ export default class Store {
 
       const key = this.convertObjectKey(k);
       const tref = val.get("_type", this);
-      const t = tref.replaceSelfBy(key).reduce(this);
-      if (t.equals(cls)) {
+
+      let type = tref.replaceSelfBy(key).reduce(this);
+      while(type instanceof Ref) {
+        type = this.get(type);
+      }
+
+      if (type.equals(cls)) {
         results.push(key);
       }
     }
     return results;
   }
 
-  setAct(id, key, val) {
+  setAct(obj, key, val) {
+    const id = obj instanceof CompMap ? obj.getOwnProp("_id", this) : obj;
     return new Act(() => {
       this.set(id, key, val.unpack());
     });
