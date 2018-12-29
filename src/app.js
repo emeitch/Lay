@@ -22,12 +22,12 @@ const d = new Store(std);
     )
   );
   d.patchProp(Task, "editing", v(false));
-  d.set("Task", Task);
+  d.assign("Task", Task);
 }
 
 {
   const todos = d.new();
-  d.set("todos", todos);
+  d.assign("todos", todos);
   d.patchProp(todos, "type", path("App"));
   d.patchProp(todos, "var", v("0.2.0"));
   d.patchProp(todos, "state", n("all"));
@@ -564,7 +564,7 @@ const d = new Store(std);
       ["then", exp("load")]
     )
   ));
-  d.set("onPut", path(
+  d.assign("onPut", path(
     exp("filterPiars", v(["Task"])),
     ["then", path("localStorage", ["appendObjs", v("todos-lay-objs")])],
     ["then", path("localStorage", ["write", v("todos-lay-objs")])]

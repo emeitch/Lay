@@ -19,7 +19,7 @@ export default class Store {
       _id: this.id,
       type: path("Store")
     });
-    this.set("currentStoreId", this.id);
+    this.assign("currentStoreId", this.id);
   }
 
   convertStringKey(key) {
@@ -42,7 +42,7 @@ export default class Store {
     }
   }
 
-  set(key, val) {
+  assign(key, val) {
     let obj = v(val);
     if (obj instanceof CompMap) {
       obj = v(Object.assign({}, {_id: key}, obj.origin));
@@ -94,7 +94,7 @@ export default class Store {
   patch(key, diff) {
     let d = v(diff).origin;
     if (typeof(d) !== "object") {
-      this.set(key, diff);
+      this.assign(key, diff);
       return;
     }
 
@@ -111,7 +111,7 @@ export default class Store {
       }
     }
     const newObj = Object.assign({}, oo, d);
-    this.set(key, newObj);
+    this.assign(key, newObj);
   }
 
   patchProp(id, key, val) {
@@ -139,7 +139,7 @@ export default class Store {
     this.handleOnInport(other);
 
     if (typeof(name) === "string") {
-      this.set(name, other.id);
+      this.assign(name, other.id);
     }
   }
 
@@ -236,7 +236,7 @@ export default class Store {
       reduced[key] = obj[key].reduce(this).unpack();
     }
     const id = reduced._id;
-    this.set(id, v(reduced));
+    this.assign(id, v(reduced));
     return id;
   }
 

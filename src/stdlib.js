@@ -14,7 +14,7 @@ export const std = new Store();
 
 function put(id, key, val) {
   const comp = std.get(id) || v({});
-  std.set(id, Object.assign({}, comp.origin, {[key]: val}));
+  std.assign(id, Object.assign({}, comp.origin, {[key]: val}));
 }
 
 {

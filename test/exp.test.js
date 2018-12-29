@@ -46,8 +46,8 @@ describe("Exp", () => {
     context("multiple hopped operator", () => {
       it("should evalutate one step the expression", () => {
         const store = new Store();
-        store.set("plus0", plus);
-        store.set("plus1", path("plus0"));
+        store.assign("plus0", plus);
+        store.assign("plus1", path("plus0"));
 
         const e = exp("plus1", v(1), v(2));
 

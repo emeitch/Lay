@@ -201,7 +201,7 @@ describe("Store", () => {
   describe("handle onPut", () => {
     it("should handle onPut handler", () => {
       let a = 0;
-      store.set("onPut", new Act(pairs => {
+      store.assign("onPut", new Act(pairs => {
         if (pairs[0].val.get("foo").equals(v("bar"))) {
           a = 1;
         }
@@ -222,7 +222,7 @@ describe("Store", () => {
     it("should handle onImport handler", () => {
       const lib = new Store();
       let a = 0;
-      lib.set("onImport", new Act(() => {
+      lib.assign("onImport", new Act(() => {
         a = 1;
       }));
 

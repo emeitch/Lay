@@ -65,7 +65,7 @@ describe("Func", () => {
     context("defined function", () => {
       it("should reduce the expression", () => {
         const store = new Store();
-        store.set("f", func("y", exp(plus, v(3), "y")));
+        store.assign("f", func("y", exp(plus, v(3), "y")));
 
         assert.deepStrictEqual(exp("f", v(2)).reduce(store), v(5));
       });
@@ -92,7 +92,7 @@ describe("Func", () => {
     context("recursive function", () => {
       it("should reduce the expression", () => {
         const store = new Store();
-        store.set("f", func(
+        store.assign("f", func(
           "x",
           exp(
             kase(
@@ -201,11 +201,11 @@ describe("Func", () => {
     context("with infinite recursive exp", () => {
       it("should not reduce the infinite recursive exp", () => {
         const store = new Store();
-        store.set("f", func(
+        store.assign("f", func(
           "x",
           exp("f", "x")
         ));
-        store.set("if", func(
+        store.assign("if", func(
           "cond",
           "then",
           "else",

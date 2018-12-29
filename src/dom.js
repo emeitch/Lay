@@ -15,10 +15,10 @@ let dirty = false;
 let vdomCache = null;
 export const dom = new Store();
 const doc = new UUID();
-dom.set("document", doc);
+dom.assign("document", doc);
 dom.patchProp(doc, "eventListeners", new UUID());
 const projector = createProjector();
-dom.set(
+dom.assign(
   "onImport",
   func(
     new LiftedNative(function() { return new Act(() => {
@@ -112,7 +112,7 @@ dom.set(
   }))
 );
 
-dom.set(
+dom.assign(
   "onPut",
   func(
     new LiftedNative(function() { return new Act(() => {
@@ -121,7 +121,7 @@ dom.set(
   }))
 );
 
-dom.set(
+dom.assign(
   "focusAfterAct",
   new Act(env => {
     const e = env.element;
@@ -132,7 +132,7 @@ dom.set(
 );
 
 const localStorage = new UUID();
-dom.set("localStorage", localStorage);
+dom.assign("localStorage", localStorage);
 dom.patchProp(
   localStorage,
   "read",
