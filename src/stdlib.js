@@ -54,15 +54,15 @@ function put(id, key, val) {
   })));
 
 
-  put("filterPiars", "_target", func("pattern", new LiftedNative(function(pattern) {
+  put("filterObjs", "_target", func("pattern", new LiftedNative(function(pattern) {
     const store = this;
     const types = pattern.deepReduce(store).origin;
-    return new Act(pairs => {
+    return new Act(objs => {
       const filtered = [];
-      for (const pair of pairs) {
-        const typename = pair.val.get("_type").origin;
+      for (const obj of objs) {
+        const typename = obj.get("_type").origin;
         if (types.includes(typename)) {
-          filtered.push(pair);
+          filtered.push(obj);
         }
       }
       return filtered;

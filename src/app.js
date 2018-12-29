@@ -566,7 +566,7 @@ const d = new Store(std);
     )
   ));
   d.assign("onPut", path(
-    exp("filterPiars", v(["Task"])),
+    exp("filterObjs", v(["Task"])),
     ["then", path("localStorage", ["appendObjs", v("todos-lay-objs")])],
     ["then", path("localStorage", ["write", v("todos-lay-objs")])]
   ));

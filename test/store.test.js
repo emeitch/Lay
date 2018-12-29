@@ -217,8 +217,8 @@ describe("Store", () => {
   describe("handle onPut", () => {
     it("should handle onPut handler", () => {
       let a = 0;
-      store.assign("onPut", new Act(pairs => {
-        if (pairs[0].val.get("foo").equals(v("bar"))) {
+      store.assign("onPut", new Act(objs => {
+        if (objs[0].get("foo").equals(v("bar"))) {
           a = 1;
         }
       }));

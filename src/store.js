@@ -36,14 +36,11 @@ export default class Store {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 
-    const pair = {
-      key: this.convertStringKey(obj.getOwnProp("_id")),
-      val: obj
-    };
-    this.objs.set(pair.key, pair.val);
+    const key = this.convertStringKey(obj.getOwnProp("_id"));
+    this.objs.set(key, obj);
 
     if (block) {
-      block(pair);
+      block(obj);
     }
   }
 
@@ -81,8 +78,8 @@ export default class Store {
 
   put(obj) {
     const o = v(obj);
-    this.doPut(o, pair => {
-      this.handleOnPut([pair]);
+    this.doPut(o, obj => {
+      this.handleOnPut([obj]);
     });
   }
 

@@ -154,7 +154,7 @@ dom.set(
       const k = key.deepReduce(this);
       return new Act(objs => {
         const storage = JSON.parse(window.localStorage.getItem(k.origin)) || [];
-        storage.push(...objs.map(e => e.val.object(this)));
+        storage.push(...objs.map(o => o.object(this)));
         return JSON.stringify(storage);
       });
     })

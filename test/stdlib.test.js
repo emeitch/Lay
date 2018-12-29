@@ -55,25 +55,21 @@ describe("stdlib", () => {
 
   describe("filterPiars", () => {
     it("should filter act arg log by pattern", () => {
-      const pair1 = {
-        key: new UUID(),
-        val: v({
-          _type: sym("Foo"),
-          foo: 1
-        })
-      };
-      const pair2 = {
-        key: new UUID(),
-        val: v({
-          _type: sym("Bar"),
-          foo: 1
-        })
-      };
+      const obj1 = v({
+        _id: new UUID(),
+        _type: sym("Foo"),
+        foo: 1
+      });
+      const obj2 = v({
+        _id: new UUID(),
+        _type: sym("Bar"),
+        foo: 1
+      });
 
       const act = new Act(() => {
         return [
-          pair1,
-          pair2,
+          obj1,
+          obj2,
         ];
       });
       let passedObjs;
@@ -81,23 +77,23 @@ describe("stdlib", () => {
         passedObjs = objs;
       });
 
-      store.run(path(act, ["then", exp("filterPiars", v(["Foo"]))], ["then", act2]).deepReduce(store));
+      store.run(path(act, ["then", exp("filterObjs", v(["Foo"]))], ["then", act2]).deepReduce(store));
       assert.deepStrictEqual(passedObjs, [
-        pair1,
+        obj1,
       ]);
 
-      store.run(path(act, ["then", exp("filterPiars", v(["Bar"]))], ["then", act2]).deepReduce(store));
+      store.run(path(act, ["then", exp("filterObjs", v(["Bar"]))], ["then", act2]).deepReduce(store));
       assert.deepStrictEqual(passedObjs, [
-        pair2
+        obj2
       ]);
 
-      store.run(path(act, ["then", exp("filterPiars", v(["Foo", "Bar"]))], ["then", act2]).deepReduce(store));
+      store.run(path(act, ["then", exp("filterObjs", v(["Foo", "Bar"]))], ["then", act2]).deepReduce(store));
       assert.deepStrictEqual(passedObjs, [
-        pair1,
-        pair2
+        obj1,
+        obj2
       ]);
 
-      store.run(path(act, ["then", exp("filterPiars", v(["Other"]))], ["then", act2]).deepReduce(store));
+      store.run(path(act, ["then", exp("filterObjs", v(["Other"]))], ["then", act2]).deepReduce(store));
       assert.deepStrictEqual(passedObjs, [
       ]);
     });
