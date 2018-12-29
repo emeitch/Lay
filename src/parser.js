@@ -4,7 +4,7 @@ import { path } from './path';
 import v from './v';
 
 export function parseVal(raw) {
-  const head = !raw || raw.head === undefined ? null : parseVal(raw.head);
+  const head = !raw || raw._head === undefined ? null : parseVal(raw._head);
   const type = typeof(raw);
   if (
     raw === null ||
@@ -37,20 +37,18 @@ export function parseVal(raw) {
       return path(...parseVal(raw.origin));
     } else {
       const org = {};
-      let _head;
       for (const key of Object.keys(raw)) {
         if (key == "_type" && klass.origin === "Map") {
           continue;
         }
 
         if (key == "_head") {
-          _head = parseVal(raw[key]);
           continue;
         }
 
         org[key] = parseVal(raw[key]);
       }
-      return v(_head, org);
+      return v(head, org);
     }
   }
 

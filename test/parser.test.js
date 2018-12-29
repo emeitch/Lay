@@ -36,7 +36,7 @@ describe("parseObjs", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
         _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
-        foo: {_type: {origin: "Comp"}, head: "foo", origin: 3}
+        foo: {_type: {origin: "Comp"}, _head: "foo", origin: 3}
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), v("foo", 3));
@@ -64,7 +64,7 @@ describe("parseObjs", () => {
           _type: {
             origin: "Array"
           },
-          head: "foo",
+          _head: "foo",
           origin: [
             {
               _type: {
@@ -94,7 +94,7 @@ describe("parseObjs", () => {
             _type: {
               origin: "Array"
             },
-            head: "bar",
+            _head: "bar",
             origin: [1, 2, 3]
           }
         },
@@ -109,7 +109,7 @@ describe("parseObjs", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
         _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
-        foo: {_type: {origin: "Comp"}, head: "foo", origin: {_type: {origin: "Comp"}, head: "bar", origin: 1} },
+        foo: {_type: {origin: "Comp"}, _head: "foo", origin: {_type: {origin: "Comp"}, _head: "bar", origin: 1} },
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), v("foo", v("bar", 1)));
@@ -121,7 +121,7 @@ describe("parseObjs", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
         _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
-        foo: {_type: {origin: "Comp"}, head: "foo", origin: null },
+        foo: {_type: {origin: "Comp"}, _head: "foo", origin: null },
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), v("foo", null));

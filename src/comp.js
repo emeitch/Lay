@@ -135,7 +135,7 @@ export default class Comp extends Val {
   object(store) {
     const o = super.object(store);
     if (!this.head.equals(NullVal)) {
-      Object.assign(o, {head: this.head.object(store)});
+      Object.assign(o, {_head: this.head.object(store)});
     }
     return o;
   }

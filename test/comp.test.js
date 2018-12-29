@@ -53,7 +53,7 @@ describe("Comp", () => {
           _type: {
             origin: "Comp"
           },
-          head: "foo",
+          _head: "foo",
           origin: 1
         });
 
@@ -61,7 +61,7 @@ describe("Comp", () => {
           _type: {
             origin: "Comp"
           },
-          head: "foo",
+          _head: "foo",
           origin: null
         });
 
@@ -93,7 +93,7 @@ describe("Comp", () => {
           _type: {
             origin: "Array"
           },
-          head: "bar",
+          _head: "bar",
           origin: [1, 2, 3]
         });
 
