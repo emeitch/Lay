@@ -1,7 +1,6 @@
 import UUID from './uuid';
-import { sym } from './sym';
-import { path } from './path';
 import v from './v';
+import Sym, { sym } from './sym';
 import Act from './act';
 import Comp, { CompMap } from './comp';
 import { parseVal } from './parser';
@@ -18,7 +17,7 @@ export default class Store {
     this.id = new UUID();
     this.put({
       _id: this.id,
-      _type: path("Store")
+      _type: sym("Store")
     });
     this.assign("currentStoreId", this.id);
   }
@@ -32,6 +31,11 @@ export default class Store {
   }
 
   doPut(obj, block) {
+    const tprop = obj.getOwnProp("_type", this);
+    if (!(tprop instanceof Sym)) {
+      throw `bad type reference style: ${tprop.stringify()}`;
+    }
+
     const pair = {
       key: this.convertStringKey(obj.getOwnProp("_id")),
       val: obj
@@ -182,21 +186,18 @@ export default class Store {
   }
 
   traversePropFromType(obj, key) {
-    const tprop = obj.getOwnProp("_type", this);
-    const tprops = tprop._type.equals(sym("Array")) ? tprop : v([tprop]);
-    for (const tref of tprops.origin) {
-      const type = tref.reduce(this);
-      const p = type.getOwnProp(key, this);
+    const tref = obj.getOwnProp("_type", this);
+    const type = tref.reduce(this);
+    const p = type.getOwnProp(key, this);
+    if (p) {
+      return p;
+    }
+
+    // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
+    if (!obj.equals(type)) {
+      const p = this.traversePropFromType(type, key);
       if (p) {
         return p;
-      }
-
-      // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
-      if (!obj.equals(type)) {
-        const p = this.traversePropFromType(type, key);
-        if (p) {
-          return p;
-        }
       }
     }
   }
@@ -251,13 +252,10 @@ export default class Store {
       }
 
       const key = this.convertObjectKey(k);
-      const tprop = val.get("_type", this);
-      const tprops = tprop._type.equals(sym("Array")) ? tprop : v([tprop]);
-      for (const tref of tprops.origin) {
-        const t = tref.replaceSelfBy(key).reduce(this);
-        if (t.equals(cls)) {
-          results.push(key);
-        }
+      const tref = val.get("_type", this);
+      const t = tref.replaceSelfBy(key).reduce(this);
+      if (t.equals(cls)) {
+        results.push(key);
       }
     }
     return results;

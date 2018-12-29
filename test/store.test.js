@@ -1,8 +1,9 @@
 import assert from 'assert';
 
 import UUID from '../src/uuid';
-import { path } from '../src/path';
 import v from '../src/v';
+import { sym } from '../src/sym';
+import { path } from '../src/path';
 import Act from '../src/act';
 import Store from '../src/store';
 
@@ -30,6 +31,17 @@ describe("Store", () => {
       store.put(obj);
 
       assert.deepStrictEqual(store.get(id), obj);
+    });
+
+    context("not sym type", () => {
+      it("should throw error", () => {
+        assert.throws(() => {
+          store.put({
+            _id: new UUID(),
+            _type: path("Foo") // error type
+          });
+        }, /bad type reference style:/);
+      });
     });
   });
 
@@ -101,6 +113,25 @@ describe("Store", () => {
   });
 
   describe("#getOwnProp", () => {
+    it("should return id prop", () => {
+      const id = new UUID();
+      store.put({
+        _id: id,
+        foo: 3
+      });
+
+      assert.deepStrictEqual(store.getOwnProp(id, "foo"), v(3));
+      assert.deepStrictEqual(id.getOwnProp("foo", store), v(3));
+      assert.deepStrictEqual(id.getOwnProp("foo"), undefined);
+    });
+
+    context("unknown id", () => {
+      it("should return undefined", () => {
+        const unknown = new UUID();
+        assert.deepStrictEqual(store.getOwnProp(unknown, "foo"), undefined);
+      });
+    });
+
     context("receiver as a comp", () => {
       it("return a property", () => {
         assert.deepStrictEqual(store.getOwnProp(v({foo: 3}), "foo"), v(3));
@@ -134,7 +165,7 @@ describe("Store", () => {
       it("should return self prop", () => {
         store.put({
           _id: id,
-          _type: path("Bar"),
+          _type: sym("Bar"),
           foo: 3
         });
 
@@ -146,25 +177,10 @@ describe("Store", () => {
       it("should return type prop", () => {
         store.put({
           _id: id,
-          _type: path("Bar"),
+          _type: sym("Bar"),
         });
 
         assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(2));
-      });
-    });
-
-    context("multiple type", () => {
-      it("should return first type prop", () => {
-        store.put({
-          _id: id,
-          _type: [
-            path("Bar"),
-            path("Buz")
-          ]
-        });
-
-        assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(2));
-        assert.deepStrictEqual(store.findPropWithType(id, "foz"), v(4));
       });
     });
 
@@ -176,12 +192,12 @@ describe("Store", () => {
         });
         store.put({
           _id: "Parenttype",
-          _type: path("Grandtype")
+          _type: sym("Grandtype")
         });
         const child = new UUID();
         store.put({
           _id: child,
-          _type: path("Parenttype"),
+          _type: sym("Parenttype"),
         });
 
         assert.deepStrictEqual(store.findPropWithType(child, "foo"), v(5));

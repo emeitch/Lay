@@ -58,14 +58,14 @@ describe("stdlib", () => {
       const pair1 = {
         key: new UUID(),
         val: v({
-          _type: path("Foo"),
+          _type: sym("Foo"),
           foo: 1
         })
       };
       const pair2 = {
         key: new UUID(),
         val: v({
-          _type: path("Bar"),
+          _type: sym("Bar"),
           foo: 1
         })
       };
@@ -112,17 +112,17 @@ describe("stdlib", () => {
         const id1 = new UUID();
         store.put({
           _id: id1,
-          _type: path("Foo")
+          _type: sym("Foo")
         });
         const id2 = new UUID();
         store.put({
           _id: id2,
-          _type: [path("Foo"), path("Bar")], // multi type
+          _type: sym("Foo")
         });
         const id3 = new UUID();
         store.put({
           _id: id3,
-          _type: path("Foo"),
+          _type: sym("Foo"),
           exists: false, // not exists
         });
 
@@ -141,7 +141,7 @@ describe("stdlib", () => {
           _id: "Foo"
         });
         const act = path("Object", ["new", v({
-          _type: path("Foo"),
+          _type: pack(sym("Foo")),
           foo: v("foo"),
           bar: path([plus, v(1), v(2)]),
           buz: pack(path([plus, v(1), v(2)]))
@@ -173,7 +173,7 @@ describe("stdlib", () => {
     context("accessing Object's key", () => {
       describe("#set", () => {
         it("should return the Act which run set action", () => {
-          const typeid = new UUID();
+          const typeid = sym("Foo");
           const id = new UUID();
           store.put({
             _id: id,
@@ -234,31 +234,6 @@ describe("stdlib", () => {
             const val = new Path(id, ["get", "foo"]);
             assert.deepStrictEqual(val.reduce(store), v(3));
           });
-        });
-      });
-
-      context("multiple type and calling latest type method that's same Object method name", () => {
-        it("should call the type method", () => {
-          store.put(v({
-            _id: "Foo",
-            foo: v(1)
-          }));
-          store.put(v({
-            _id: "Bar",
-            get: func("x", v(2))
-          }));
-
-          const id = new UUID();
-          store.put(v({
-            _id: id,
-            _type: [
-              path("Foo"),
-              path("Bar")
-            ]
-          }));
-
-          const p = new Path(id, ["get", "foo"]);
-          assert.deepStrictEqual(p.reduce(store), v(2));
         });
       });
     });

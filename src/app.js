@@ -7,6 +7,7 @@ import { pack } from './pack';
 import { path } from './path';
 import { func } from './func';
 import v from './v';
+import { sym } from './sym';
 import { dom, e } from './dom';
 
 const d = new Store(std);
@@ -28,7 +29,7 @@ const d = new Store(std);
 {
   const todos = d.new();
   d.assign("todos", todos);
-  d.set(todos, "_type", path("App"));
+  d.set(todos, "_type", "App");
   d.set(todos, "var", v("0.2.0"));
   d.set(todos, "state", n("all"));
   d.set(todos, "newTaskTitle", v(""));
@@ -81,7 +82,7 @@ const d = new Store(std);
                     [
                       "new",
                       n({
-                        "_type": pack(path("Task")),
+                        "_type": pack(sym("Task")),
                         "title": path("ev", "value", "trim"),
                         "state": n("active"),
                       })

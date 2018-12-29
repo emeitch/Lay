@@ -4,7 +4,7 @@ import v from '../src/v';
 import Path, { path } from '../src/path';
 import UUID from '../src/uuid';
 import Exp, { exp } from '../src/exp';
-import Sym from '../src/sym';
+import Sym, { sym } from '../src/sym';
 import { func, plus, concat } from '../src/func';
 import Store from '../src/store';
 
@@ -142,19 +142,12 @@ describe("Path", () => {
       beforeEach(() => {
         store.put({
           _id: id,
-          _type: [
-            path("parent1"),
-            path("parent2")
-          ]
+          _type: sym("parent")
         });
 
         store.put({
-          _id: "parent1",
-          foo: v(1)
-        });
-        store.put({
-          _id: "parent2",
-          _type: path("grandparent"),
+          _id: "parent",
+          _type: sym("grandparent"),
           foo: v(2),
           bar: v(3)
         });
@@ -166,7 +159,7 @@ describe("Path", () => {
 
       it("should return the type's val", () => {
         const p1 = new Path(id, "foo");
-        assert.deepStrictEqual(p1.reduce(store), v(1));
+        assert.deepStrictEqual(p1.reduce(store), v(2));
 
         const p2 = new Path(id, "bar");
         assert.deepStrictEqual(p2.reduce(store), v(3));
@@ -180,7 +173,7 @@ describe("Path", () => {
       const id = new UUID();
 
       beforeEach(() => {
-        const typeid = new UUID();
+        const typeid = sym("Foo");
         store.put({
           _id: id,
           _type: typeid

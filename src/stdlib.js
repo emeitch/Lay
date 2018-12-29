@@ -60,7 +60,7 @@ function put(id, key, val) {
     return new Act(pairs => {
       const filtered = [];
       for (const pair of pairs) {
-        const typename = pair.val.get("_type").origin[0].origin;
+        const typename = pair.val.get("_type").origin;
         if (types.includes(typename)) {
           filtered.push(pair);
         }
