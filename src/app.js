@@ -29,7 +29,7 @@ const d = new Store(std);
 {
   const todos = d.new();
   d.assign("todos", todos);
-  d.set(todos, "_type", "App");
+  d.set(todos, "_type", sym("App"));
   d.set(todos, "var", v("0.2.0"));
   d.set(todos, "state", n("all"));
   d.set(todos, "newTaskTitle", v(""));
