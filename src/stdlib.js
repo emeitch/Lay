@@ -8,7 +8,7 @@ import { exp } from './exp';
 import { kase, alt, grd, otherwise } from './case';
 import { func, LiftedNative } from './func';
 import { path } from './path';
-import { parseObjs } from './store';
+import { parseObjs } from './parser';
 
 export const std = new Store();
 
