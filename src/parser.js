@@ -29,12 +29,6 @@ export function parseVal(raw) {
       return v(head, parseVal(raw.origin));
     } else if (klass.origin === "Array") {
       return v(head, raw.origin.map(i => parseVal(i)));
-    } else if (klass.origin === "Map") {
-      const org = {};
-      for (const key of Object.keys(raw.origin)) {
-        org[key] = parseVal(raw.origin[key]);
-      }
-      return v(head, org);
     } else if (klass.origin === "Date") {
       return v(head, new Date(raw.origin));
     } else if (klass.origin === "UUID") {
@@ -42,7 +36,21 @@ export function parseVal(raw) {
     } else if (klass.origin === "Path") {
       return path(...parseVal(raw.origin));
     } else {
-      throw `unsupported type: ${JSON.stringify(raw)}`;
+      const org = {};
+      let _head;
+      for (const key of Object.keys(raw)) {
+        if (key == "_type" && klass.origin === "Map") {
+          continue;
+        }
+
+        if (key == "_head") {
+          _head = parseVal(raw[key]);
+          continue;
+        }
+
+        org[key] = parseVal(raw[key]);
+      }
+      return v(_head, org);
     }
   }
 

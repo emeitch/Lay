@@ -69,10 +69,8 @@ describe("Comp", () => {
           _type: {
             origin: "Map"
           },
-          origin: {
-            a: 1,
-            b: 2
-          }
+          a: 1,
+          b: 2
         });
 
         assert.deepStrictEqual(v([1, 2, 3]).object(store), {
@@ -83,14 +81,12 @@ describe("Comp", () => {
         });
 
         assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(store), {
+          _head: "foo",
           _type: {
             origin: "Map"
           },
-          head: "foo",
-          origin: {
-            a: 1,
-            b: 2
-          }
+          a: 1,
+          b: 2
         });
 
         assert.deepStrictEqual(v("bar", [1, 2, 3]).object(store), {
@@ -117,11 +113,9 @@ describe("Comp", () => {
           _type: {
             origin: "Map"
           },
-          origin: {
-            foo: 1,
-            bar: {
-              buz: "2"
-            }
+          foo: 1,
+          bar: {
+            buz: "2"
           }
         });
 
@@ -130,14 +124,24 @@ describe("Comp", () => {
           _type: {
             origin: "Map"
           },
-          origin: {
-            foo: id.object(),
-            bar: [
-              "2",
-              false,
-              null
-            ]
-          }
+          foo: id.object(),
+          bar: [
+            "2",
+            false,
+            null
+          ]
+        });
+
+        assert.deepStrictEqual(v({
+          _id: id,
+          _type: sym("Foo"),
+          foo: v(1)
+        }).object(), {
+          _id: id.object(),
+          _type: {
+            origin: "Foo"
+          },
+          foo: 1,
         });
 
         assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(), {
@@ -150,10 +154,8 @@ describe("Comp", () => {
               _type: {
                 origin: "Map"
               },
-              origin: {
-                bar: 1,
-                buz: false
-              }
+              bar: 1,
+              buz: false
             }
           ]
         });

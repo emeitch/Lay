@@ -224,13 +224,20 @@ export class CompMap extends Comp {
   }
 
   object(store) {
-    const o = super.object(store);
-    const org = {};
+    const org = {
+      _type: this._type.object(store)
+    };
+
+    if (!this.head.equals(NullVal)) {
+      org._head = this.head.object(store);
+    }
+
     for (const key of Object.keys(this.origin)) {
       const val = this.origin[key];
       org[key] = val instanceof Val ? val.object(store) : val;
     }
-    return Object.assign(o, {origin: org});
+
+    return org;
   }
 }
 
