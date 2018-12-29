@@ -135,7 +135,7 @@ export default class Comp extends Val {
   object(store) {
     const o = super.object(store);
     if (!this.head.equals(NullVal)) {
-      Object.assign(o, {_head: this.head.object(store)});
+      o._head = this.head.object(store);
     }
     return o;
   }
@@ -174,9 +174,8 @@ export class CompArray extends Comp {
 
   object(store) {
     const o = super.object(store);
-    return Object.assign(o, {
-      origin: this.origin.map(o => o instanceof Val ? o.object(store) : o)
-    });
+    o.origin = this.origin.map(o => o instanceof Val ? o.object(store) : o);
+    return o;
   }
 }
 
@@ -224,20 +223,15 @@ export class CompMap extends Comp {
   }
 
   object(store) {
-    const org = {
-      _type: this._type.object(store)
-    };
-
-    if (!this.head.equals(NullVal)) {
-      org._head = this.head.object(store);
-    }
+    const o = super.object(store);
+    delete o.origin;
 
     for (const key of Object.keys(this.origin)) {
       const val = this.origin[key];
-      org[key] = val instanceof Val ? val.object(store) : val;
+      o[key] = val instanceof Val ? val.object(store) : val;
     }
 
-    return org;
+    return o;
   }
 }
 
