@@ -112,31 +112,6 @@ describe("Store", () => {
     });
   });
 
-  describe("#getOwnProp", () => {
-    it("should return id prop", () => {
-      const id = new UUID();
-      store.put({
-        _id: id,
-        foo: 3
-      });
-
-      assert.deepStrictEqual(store.getOwnProp(id, "foo"), v(3));
-    });
-
-    context("unknown id", () => {
-      it("should return undefined", () => {
-        const unknown = new UUID();
-        assert.deepStrictEqual(store.getOwnProp(unknown, "foo"), undefined);
-      });
-    });
-
-    context("receiver as a comp", () => {
-      it("return a property", () => {
-        assert.deepStrictEqual(store.getOwnProp(v({foo: 3}), "foo"), v(3));
-      });
-    });
-  });
-
   describe("#findPropWithType", () => {
     let id;
     beforeEach(() => {

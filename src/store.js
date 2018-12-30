@@ -170,15 +170,6 @@ export default class Store {
     return this.getWithoutImports(key) || this.fetchWithImports(store => store.getWithoutImports(key));
   }
 
-  getOwnProp(id, key) {
-    const val = !(id instanceof Comp) ? this.get(id) : id;
-    if (!val) {
-      return undefined;
-    }
-
-    return val.getOwnProp(key);
-  }
-
   getProp(id, key) {
     return this.findPropWithType(id, key);
   }
