@@ -4,7 +4,6 @@ import { h, createProjector } from 'maquette';
 import Store from './store';
 import Prim from './prim';
 import Act from './act';
-import UUID from './uuid';
 import v from './v';
 import { exp } from './exp';
 import { path } from './path';
@@ -14,8 +13,6 @@ import { n } from './stdlib';
 let dirty = false;
 let vdomCache = null;
 export const dom = new Store();
-const doc = "document";
-dom.set(doc, "eventListeners", new UUID());
 const projector = createProjector();
 dom.assign(
   "onImport",
