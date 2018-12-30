@@ -44,6 +44,17 @@ describe("Store", () => {
     });
   });
 
+  describe("#patch", () => {
+    it("should patch the diff", () => {
+      const id = new UUID();
+      store.patch(id, {
+        foo: 3
+      });
+
+      assert.deepStrictEqual(store.fetch(id).getOwnProp("foo"), v(3));
+    });
+  });
+
   describe("#merge", () => {
     it("should merge the patch", () => {
       store.merge({
