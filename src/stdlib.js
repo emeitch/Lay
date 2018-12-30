@@ -13,7 +13,7 @@ import { parseObjs } from './parser';
 export const std = new Store();
 
 function put(id, key, val) {
-  const comp = std.get(id) || v({});
+  const comp = std.fetch(id) || v({});
   std.assign(id, Object.assign({}, comp.origin, {[key]: val}));
 }
 

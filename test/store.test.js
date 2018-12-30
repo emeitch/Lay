@@ -30,7 +30,7 @@ describe("Store", () => {
       });
       store.put(obj);
 
-      assert.deepStrictEqual(store.get(id), obj);
+      assert.deepStrictEqual(store.fetch(id), obj);
     });
 
     context("not sym type", () => {
@@ -55,12 +55,12 @@ describe("Store", () => {
         bar: 1
       });
 
-      assert.deepStrictEqual(store.get("foo"), v({
+      assert.deepStrictEqual(store.fetch("foo"), v({
         _id: "foo",
         a: 1,
         b: "c"
       }));
-      assert.deepStrictEqual(store.get("bar"), v({
+      assert.deepStrictEqual(store.fetch("bar"), v({
         _id: "bar",
         _target: 1
       }));
@@ -76,7 +76,7 @@ describe("Store", () => {
         };
         store.merge(patch);
 
-        assert.deepStrictEqual(store.get(id), v({
+        assert.deepStrictEqual(store.fetch(id), v({
           _id: id,
           a: 1
         }));
@@ -91,7 +91,7 @@ describe("Store", () => {
           },
         });
 
-        assert.deepStrictEqual(store.get("foo").reduce(store), v({
+        assert.deepStrictEqual(store.fetch("foo").reduce(store), v({
           _id: "foo",
           a:1
         }));
@@ -102,7 +102,7 @@ describe("Store", () => {
             c: 3
           },
         });
-        assert.deepStrictEqual(store.get("foo").reduce(store), v({
+        assert.deepStrictEqual(store.fetch("foo").reduce(store), v({
           _id: "foo",
           a:1,
           b:2,
@@ -233,7 +233,7 @@ describe("Store", () => {
 
   describe("#currentStoreId", () => {
     it("should return the store ID", () => {
-      assert.deepStrictEqual(store.get("currentStoreId").reduce(store), store.id);
+      assert.deepStrictEqual(store.fetch("currentStoreId").reduce(store), store.id);
     });
   });
 

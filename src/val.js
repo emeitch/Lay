@@ -184,7 +184,7 @@ export class Sym extends Val {
   }
 
   step(store) {
-    const val = store.get(this.origin);
+    const val = store.fetch(this.origin);
     return val !== undefined ? val : this;
   }
 

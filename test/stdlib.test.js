@@ -42,7 +42,7 @@ describe("stdlib", () => {
       store.run(path(act, ["then", exp("load")]).deepReduce(store));
       store.run(path(new Act(() => undefined), ["then", exp("load")]).deepReduce(store)); // invalid act
 
-      assert.deepStrictEqual(store.get(id), val);
+      assert.deepStrictEqual(store.fetch(id), val);
     });
 
     it("should nothing to do without prev act json string", () => {
@@ -176,7 +176,7 @@ describe("stdlib", () => {
           assert.deepStrictEqual(a.constructor, Act);
           store.run(a);
 
-          const o = store.get(id);
+          const o = store.fetch(id);
           assert.deepStrictEqual(o.get("foo", store), v(3));
 
           const p2 = new Path(id, ["set", "bar", pack(exp(plus, v(1), v(2)))]);
@@ -184,14 +184,14 @@ describe("stdlib", () => {
           assert.deepStrictEqual(a2.constructor, Act);
           store.run(a2);
 
-          const o2 = store.get(id);
+          const o2 = store.fetch(id);
           assert.deepStrictEqual(o2.get("bar", store), exp(plus, v(1), v(2)));
 
           const p3 = new Path(id, ["set", "bar", v(null)]);
           const a3 = p3.reduce(store);
           store.run(a3);
 
-          const o3 = store.get(id);
+          const o3 = store.fetch(id);
           assert.deepStrictEqual(o3.get("bar", store), undefined);
         });
       });

@@ -86,7 +86,7 @@ export default class Store {
 
   handleOnPut(objs) {
     this.iterateImports(store => {
-      const actexp = store.get("onPut");
+      const actexp = store.fetch("onPut");
       if (actexp) {
         const act = actexp.reduce(this);
         this.run(act, objs);
@@ -101,7 +101,7 @@ export default class Store {
       return;
     }
 
-    const o = this.get(key);
+    const o = this.fetch(key);
 
     let oo = {};
     if (o && o instanceof CompMap) {
@@ -124,13 +124,13 @@ export default class Store {
     });
   }
 
-  getWithoutImports(key) {
+  fetchWithoutImports(key) {
     const k = this.convertStringKey(key);
     return this.objs.get(k);
   }
 
   handleOnInport(other) {
-    const actexp = other.get("onImport");
+    const actexp = other.fetch("onImport");
     if (actexp) {
       const act = actexp.reduce(this);
       this.run(act);
@@ -166,8 +166,8 @@ export default class Store {
     return result;
   }
 
-  get(key) {
-    return this.getWithoutImports(key) || this.fetchWithImports(store => store.getWithoutImports(key));
+  fetch(key) {
+    return this.fetchWithoutImports(key) || this.fetchWithImports(store => store.fetchWithoutImports(key));
   }
 
   getProp(id, key) {
@@ -182,7 +182,7 @@ export default class Store {
   resolve(ref) {
     let obj = ref.reduce(this);
     while(obj instanceof Ref) {
-      obj = this.get(obj);
+      obj = this.fetch(obj);
     }
 
     return obj;
@@ -211,7 +211,7 @@ export default class Store {
       return p;
     }
 
-    const ot = this.get("Object");
+    const ot = this.fetch("Object");
     const op = ot && ot.getOwnProp(key);
     if (op) {
       return op;
