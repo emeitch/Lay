@@ -171,13 +171,22 @@ export default class Store {
   }
 
   fetch(key) {
+    if (typeof(key) === "string") {
+      key = sym(key);
+    }
+
     return this.fetchWithoutImports(key) || this.fetchWithImports(store => store.fetchWithoutImports(key));
   }
 
   resolve(ref) {
-    let obj = ref.reduce(this);
-    while(obj instanceof Ref) {
+    let obj = ref;
+    while(obj instanceof Ref || obj instanceof Sym) {
       obj = this.fetch(obj);
+
+      const target = obj && obj.getOwnProp("_target");
+      if (target) {
+        obj = target;
+      }
     }
 
     return obj;
@@ -192,7 +201,7 @@ export default class Store {
     }
 
     // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
-    if (!obj.equals(tobj)) {
+    if (tobj && !obj.equals(tobj)) {
       const p = this.traversePropFromType(tobj, key);
       if (p) {
         return p;
@@ -237,10 +246,11 @@ export default class Store {
       const key = this.strToObj(kstr);
       const tref = val.get("_type", this);
       const tobj = this.resolve(tref);
-      if (tobj.equals(cls)) {
+      if (tobj && tobj.equals(cls)) {
         results.push(key);
       }
     }
+
     return results;
   }
 

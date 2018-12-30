@@ -193,6 +193,14 @@ export class CompMap extends Comp {
     return ret;
   }
 
+  constructor(origin, head) {
+    if (origin._id && typeof(origin._id) === "string") {
+      origin._id = sym(origin._id);
+    }
+
+    super(origin, head);
+  }
+
   collate(target) {
     if (!this.sameType(target)) {
       return super.collate(target);
