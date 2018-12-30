@@ -133,10 +133,10 @@ describe("parseObjs", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
         _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
-        foo: {_type: {origin: "Path"}, origin: [{origin: "Foo"}] },
+        foo: {_type: {origin: "Path"}, origin: [{origin: "Foo"}, ["bar", "buz"]] },
       }]);
 
-      assert.deepStrictEqual(objs[0].get("foo"), path("Foo"));
+      assert.deepStrictEqual(objs[0].get("foo"), path("Foo", ["bar", "buz"]));
     });
   });
 
