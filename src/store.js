@@ -32,7 +32,7 @@ export default class Store {
   }
 
   doPut(obj, block) {
-    const tprop = obj.getOwnProp("_type", this);
+    const tprop = obj.getOwnProp("_type");
     if (!(tprop instanceof Sym)) {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
@@ -176,7 +176,7 @@ export default class Store {
       return undefined;
     }
 
-    return val.getOwnProp(key, this);
+    return val.getOwnProp(key);
   }
 
   getProp(id, key) {
@@ -184,12 +184,12 @@ export default class Store {
   }
 
   traversePropFromType(obj, key) {
-    const tref = obj.getOwnProp("_type", this);
+    const tref = obj.getOwnProp("_type");
     let type = tref.reduce(this);
     while(type instanceof Ref) {
       type = this.get(type);
     }
-    const p = type && type.getOwnProp(key, this);
+    const p = type && type.getOwnProp(key);
     if (p) {
       return p;
     }
@@ -211,7 +211,7 @@ export default class Store {
     }
 
     const ot = this.get("Object");
-    const op = ot && ot.getOwnProp(key, this);
+    const op = ot && ot.getOwnProp(key);
     if (op) {
       return op;
     }
@@ -268,7 +268,7 @@ export default class Store {
   }
 
   setAct(obj, key, val) {
-    const id = obj instanceof CompMap ? obj.getOwnProp("_id", this) : obj;
+    const id = obj instanceof CompMap ? obj.getOwnProp("_id") : obj;
     return new Act(() => {
       this.set(id, key, val.unpack());
     });

@@ -42,7 +42,7 @@ export default class Val {
     return undefined;
   }
 
-  getOwnProp(k, _store) {
+  getOwnProp(k) {
     const key = k instanceof Prim ? k.origin : k;
     return this.getJSProp(key);
   }

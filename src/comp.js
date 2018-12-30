@@ -73,14 +73,14 @@ export default class Comp extends Val {
     return Comp.valFrom(this.origin);
   }
 
-  getOwnProp(k, store) {
+  getOwnProp(k) {
     const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
 
     if (this.origin !== null && this.origin.hasOwnProperty(key)) {
       return this.constructor.valFrom(this.origin[key]);
     }
 
-    return super.getOwnProp(k, store);
+    return super.getOwnProp(k);
   }
 
   get(k, store) {
@@ -208,7 +208,7 @@ export class CompMap extends Comp {
   }
 
   step(store) {
-    const target = this.getOwnProp("_target", store);
+    const target = this.getOwnProp("_target");
     return target ? target.step(store) : super.step(store);
   }
 
