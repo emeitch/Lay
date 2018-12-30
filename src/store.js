@@ -174,7 +174,7 @@ export default class Store {
     return this.findPropWithType(id, key);
   }
 
-  fetch(ref) {
+  resolve(ref) {
     let obj = ref.reduce(this);
     while(obj instanceof Ref) {
       obj = this.get(obj);
@@ -185,7 +185,7 @@ export default class Store {
 
   traversePropFromType(obj, key) {
     const tref = obj.getOwnProp("_type");
-    const type = this.fetch(tref);
+    const type = this.resolve(tref);
     const p = type && type.getOwnProp(key);
     if (p) {
       return p;
@@ -250,7 +250,7 @@ export default class Store {
 
       const key = this.convertObjectKey(k);
       const tref = val.get("_type", this);
-      const type = this.fetch(tref);
+      const type = this.resolve(tref);
       if (type.equals(cls)) {
         results.push(key);
       }

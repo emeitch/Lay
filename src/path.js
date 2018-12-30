@@ -63,7 +63,7 @@ export default class Path extends Ref {
         key = elm;
       }
 
-      val = store.fetch(val);
+      val = store.resolve(val);
       if (!val) {
         return this;
       }
