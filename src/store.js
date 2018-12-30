@@ -107,19 +107,26 @@ export default class Store {
       return;
     }
 
-    const o = this.fetch(key);
+    const remove = obj => {
+      for (const k of Object.keys(obj)) {
+        if (obj[k] === null || (obj[k].equals && obj[k].equals(v(null)))) {
+          delete obj[k];
+        }
 
+        if (typeof(obj[k]) === "object") {
+          remove(obj[k]);
+        }
+      }
+
+      return obj;
+    };
+
+    const o = this.fetch(key);
     let oo = {};
     if (o && o instanceof CompMap) {
       oo = Object.assign({}, o.origin);
-      for (const k of Object.keys(d)) {
-        if (d[k] === null || (d[k].equals && d[k].equals(v(null)))) {
-          delete oo[k];
-          delete d[k];
-        }
-      }
     }
-    const newObj = _.merge({}, oo, d);
+    const newObj = remove(_.merge({}, oo, d));
     this.assign(key, newObj);
   }
 
