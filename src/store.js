@@ -182,11 +182,6 @@ export default class Store {
     let obj = ref;
     while(obj instanceof Ref || obj instanceof Sym) {
       obj = this.fetch(obj);
-
-      const target = obj && obj.getOwnProp("_target");
-      if (target) {
-        obj = target;
-      }
     }
 
     return obj;
