@@ -112,7 +112,7 @@ describe("Store", () => {
     });
   });
 
-  describe("#findPropWithType", () => {
+  describe("#getProp", () => {
     let id;
     beforeEach(() => {
       store.put({
@@ -142,7 +142,7 @@ describe("Store", () => {
           foo: 3
         });
 
-        assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(3));
+        assert.deepStrictEqual(store.getProp(id, "foo"), v(3));
       });
     });
 
@@ -153,7 +153,15 @@ describe("Store", () => {
           _type: sym("Bar"),
         });
 
-        assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(2));
+        assert.deepStrictEqual(store.getProp(id, "foo"), v(2));
+      });
+    });
+
+    context("unknown id", () => {
+      it("should return undefined", () => {
+        const unknown = new UUID();
+
+        assert.deepStrictEqual(store.getProp(unknown, "foo"), undefined);
       });
     });
 
@@ -173,7 +181,7 @@ describe("Store", () => {
           _type: sym("Parenttype"),
         });
 
-        assert.deepStrictEqual(store.findPropWithType(child, "foo"), v(5));
+        assert.deepStrictEqual(store.getProp(child, "foo"), v(5));
       });
     });
 
@@ -182,7 +190,7 @@ describe("Store", () => {
         store.put({
           _id: id,
         });
-        assert.deepStrictEqual(store.findPropWithType(id, "foo"), v(1));
+        assert.deepStrictEqual(store.getProp(id, "foo"), v(1));
       });
     });
   });

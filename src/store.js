@@ -171,7 +171,12 @@ export default class Store {
   }
 
   getProp(id, key) {
-    return this.findPropWithType(id, key);
+    const obj = this.resolve(id);
+    if (!obj) {
+      return undefined;
+    }
+
+    return obj.get(key, this);
   }
 
   resolve(ref) {
@@ -213,20 +218,6 @@ export default class Store {
     }
 
     return undefined;
-  }
-
-  findPropWithType(id, key) {
-    const obj = !(id instanceof Comp) ? this.get(id) : id;
-    if (!obj) {
-      return undefined;
-    }
-
-    const prop = obj.get(key, this);
-    if (prop) {
-      return prop;
-    }
-
-    return this.findPropFromType(obj, key);
   }
 
   new(obj={}) {
