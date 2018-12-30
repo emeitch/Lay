@@ -53,6 +53,26 @@ describe("Store", () => {
 
       assert.deepStrictEqual(store.fetch(id).getOwnProp("foo"), v(3));
     });
+
+    context("pach child properties", () => {
+      it("should patch the partial diff", () => {
+        const id = new UUID();
+        store.patch(id, {
+          foo: {
+            bar: 2
+          }
+        });
+        assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(2));
+
+        store.patch(id, {
+          foo: {
+            buz: 4
+          }
+        });
+        assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(2)); // keep
+        assert.deepStrictEqual(path(id, "foo", "buz").reduce(store), v(4));
+      });
+    });
   });
 
   describe("#merge", () => {

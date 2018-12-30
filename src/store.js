@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import UUID from './uuid';
 import v from './v';
 import Ref from './ref';
@@ -117,7 +119,7 @@ export default class Store {
         }
       }
     }
-    const newObj = Object.assign({}, oo, d);
+    const newObj = _.merge({}, oo, d);
     this.assign(key, newObj);
   }
 
