@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import UUID from './uuid';
 import v from './v';
+import Val from './val';
 import Ref from './ref';
 import Sym, { sym } from './sym';
 import Act from './act';
@@ -109,15 +110,15 @@ export default class Store {
 
     const remove = obj => {
       for (const k of Object.keys(obj)) {
-        if (obj[k] === null || (obj[k].equals && obj[k].equals(v(null)))) {
+        const prop = obj[k];
+        if (prop === null || (prop.equals && prop.equals(v(null)))) {
           delete obj[k];
         }
 
-        if (typeof(obj[k]) === "object") {
-          remove(obj[k]);
+        if (typeof(prop) === "object" && prop !== null && !(prop instanceof Val)) {
+          remove(prop);
         }
       }
-
       return obj;
     };
 
