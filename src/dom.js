@@ -14,8 +14,7 @@ import { n } from './stdlib';
 let dirty = false;
 let vdomCache = null;
 export const dom = new Store();
-const doc = new UUID();
-dom.assign("document", doc);
+const doc = "document";
 dom.set(doc, "eventListeners", new UUID());
 const projector = createProjector();
 dom.assign(
@@ -131,8 +130,7 @@ dom.assign(
   })
 );
 
-const localStorage = new UUID();
-dom.assign("localStorage", localStorage);
+const localStorage = "localStorage";
 dom.set(
   localStorage,
   "read",

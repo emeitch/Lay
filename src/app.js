@@ -13,8 +13,7 @@ import { dom, e } from './dom';
 const d = new Store(std);
 
 {
-  const Task = d.new();
-  d.set(Task,
+  d.set("Task",
     "toggle",
     exp("if",
       path("self", "state", ["equals", n("active")]),
@@ -22,19 +21,16 @@ const d = new Store(std);
       path("self", ["set", "state", n("active")])
     )
   );
-  d.set(Task, "editing", v(false));
-  d.assign("Task", Task);
+  d.set("Task", "editing", v(false));
 }
 
 {
-  const todos = d.new();
-  d.assign("todos", todos);
-  d.set(todos, "_type", sym("App"));
-  d.set(todos, "var", v("0.2.0"));
-  d.set(todos, "state", n("all"));
-  d.set(todos, "newTaskTitle", v(""));
-  d.set(todos, "changeState", func("s", path("self", ["set", "state", path("s")])));
-  d.set(todos, "changeStateByHash", func(
+  d.set("todos", "_type", sym("App"));
+  d.set("todos", "var", v("0.2.0"));
+  d.set("todos", "state", n("all"));
+  d.set("todos", "newTaskTitle", v(""));
+  d.set("todos", "changeState", func("s", path("self", ["set", "state", path("s")])));
+  d.set("todos", "changeStateByHash", func(
     "hash",
     exp(
       "if",
@@ -48,7 +44,7 @@ const d = new Store(std);
       )
     )
   ));
-  d.run(path("Console", ["puts", path(todos, "var")]));
+  d.run(path("Console", ["puts", path("todos", "var")]));
 }
 
 {
@@ -554,17 +550,20 @@ const d = new Store(std);
       )
     )
   );
+  d.set("document", "body", domtree);
 
-  const doc = path("document").deepReduce(d);
-  d.set(doc, "body", domtree);
-  const eventListeners = path("document", "eventListeners").deepReduce(d);
-  d.set(eventListeners, "DOMContentLoaded", func("win",
-    path(
-      "todos", ["changeStateByHash", path("win", "location", "hash")],
-      ["then", path("localStorage", ["read", v("todos-lay-objs")])],
-      ["then", exp("load")]
-    )
-  ));
+  d.patch("document", {
+    eventListeners: {
+      DOMContentLoaded: func("win",
+        path(
+          "todos", ["changeStateByHash", path("win", "location", "hash")],
+          ["then", path("localStorage", ["read", v("todos-lay-objs")])],
+          ["then", exp("load")]
+        )
+      )
+    }
+  });
+
   d.assign("onPut", path(
     exp("filterObjs", v(["Task"])),
     ["then", path("localStorage", ["appendObjs", v("todos-lay-objs")])],
