@@ -105,7 +105,13 @@ export default class Path extends Ref {
   object(_store) {
     const base = super.object(_store);
     return Object.assign({}, base, {
-      origin: this.origin.map(i => i.object(_store))
+      origin: this.origin.map(o => {
+        if (Array.isArray(o)) {
+          return o.map(i => i.object(_store));
+        } else {
+          return o.object(_store);
+        }
+      })
     });
   }
 }
