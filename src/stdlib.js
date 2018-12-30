@@ -12,13 +12,8 @@ import { parseObjs } from './parser';
 
 export const std = new Store();
 
-function put(id, key, val) {
-  const comp = std.fetch(id) || v({});
-  std.assign(id, Object.assign({}, comp.origin, {[key]: val}));
-}
-
 {
-  put("if", "_target", func(
+  std.set("if", "_target", func(
     "cond",
     "then",
     "else",
@@ -42,7 +37,7 @@ function put(id, key, val) {
     )
   ));
 
-  put("load", "_target", func(new LiftedNative(function() {
+  std.set("load", "_target", func(new LiftedNative(function() {
     const store = this;
     return new Act(objsStr => {
       const jsobj = objsStr ? JSON.parse(objsStr) : [];
@@ -54,7 +49,7 @@ function put(id, key, val) {
   })));
 
 
-  put("filterObjs", "_target", func("pattern", new LiftedNative(function(pattern) {
+  std.set("filterObjs", "_target", func("pattern", new LiftedNative(function(pattern) {
     const store = this;
     const types = pattern.deepReduce(store).origin;
     return new Act(objs => {
@@ -73,7 +68,7 @@ function put(id, key, val) {
 {
   const obj = "Object";
 
-  put(
+  std.set(
     obj,
     "new",
     func("props", new LiftedNative(function(pe) {
@@ -89,7 +84,7 @@ function put(id, key, val) {
     }))
   );
 
-  put(
+  std.set(
     obj,
     "set",
     func("key", "val", exp(new LiftedNative(function(self, key, val) {
@@ -97,7 +92,7 @@ function put(id, key, val) {
     }), "self", "key", "val"))
   );
 
-  put(
+  std.set(
     obj,
     "get",
     func("key", exp(new LiftedNative(function(self, key) {
@@ -106,7 +101,7 @@ function put(id, key, val) {
   );
 
   // todo: allはClassオブジェクト用のメソッドにしたい
-  put(
+  std.set(
     obj,
     "all",
     exp(new LiftedNative(function(self) {
@@ -118,7 +113,7 @@ function put(id, key, val) {
 {
   const str = "String";
 
-  put(
+  std.set(
     str,
     "trim",
     exp(new LiftedNative(function(self) {
@@ -130,7 +125,7 @@ function put(id, key, val) {
 {
   const bool = "Boolean";
 
-  put(
+  std.set(
     bool,
     "not",
     exp(new LiftedNative(function(self) {
@@ -142,7 +137,7 @@ function put(id, key, val) {
 {
   const comp = "Comp";
 
-  put(
+  std.set(
     comp,
     "new",
     func(new LiftedNative(function(...args) {
@@ -156,7 +151,7 @@ function put(id, key, val) {
 {
   const arr = "Array";
 
-  put(
+  std.set(
     arr,
     "new",
     func(new LiftedNative(function(...args) {
@@ -171,7 +166,7 @@ function put(id, key, val) {
     }))
   );
 
-  put(
+  std.set(
     arr,
     "map",
     func("fnc", exp(new LiftedNative(function(self, fnc) {
@@ -184,7 +179,7 @@ function put(id, key, val) {
     }), "self", "fnc"))
   );
 
-  put(
+  std.set(
     arr,
     "every",
     func("fnc", exp(new LiftedNative(function(self, fnc) {
@@ -197,7 +192,7 @@ function put(id, key, val) {
     }), "self", "fnc"))
   );
 
-  put(
+  std.set(
     arr,
     "filter",
     func("fnc", exp(new LiftedNative(function(self, fnc) {
@@ -210,7 +205,7 @@ function put(id, key, val) {
     }), "self", "fnc"))
   );
 
-  put(
+  std.set(
     arr,
     "count",
     exp(new LiftedNative(function(self) {
@@ -218,7 +213,7 @@ function put(id, key, val) {
     }), "self")
   );
 
-  put(
+  std.set(
     arr,
     "join",
     func("sep", exp(new LiftedNative(function(self, sep) {
@@ -232,7 +227,7 @@ function put(id, key, val) {
 {
   const map = "Map";
 
-  put(
+  std.set(
     map,
     "new",
     func(new LiftedNative(function(...args) {
@@ -260,7 +255,7 @@ function put(id, key, val) {
 {
   const act = "Act";
 
-  put(
+  std.set(
     act,
     "then",
     func("next", exp(new LiftedNative(function(self, next) {
@@ -279,7 +274,7 @@ function put(id, key, val) {
 {
   const cnsl = "Console";
 
-  put(
+  std.set(
     cnsl,
     "puts",
     func("val", new LiftedNative(function(val) {
@@ -303,7 +298,7 @@ function put(id, key, val) {
     return decorate(baseStore);
   };
 
-  put(
+  std.set(
     store,
     "set",
     func("id", "key", "val", exp(new LiftedNative(function(self, id, key, val) {
@@ -311,7 +306,7 @@ function put(id, key, val) {
     }), "self", "id", "key", "val"))
   );
 
-  put(
+  std.set(
     store,
     "importedStores",
     exp(new LiftedNative(function(self) {
@@ -328,13 +323,13 @@ function put(id, key, val) {
     });
   }), "self", "name"));
 
-  put(
+  std.set(
     store,
     "generateAs",
     generateStoreFunc
   );
 
-  put(
+  std.set(
     store,
     "generateStoreAs",
     generateStoreFunc
