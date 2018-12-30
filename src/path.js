@@ -45,11 +45,11 @@ export default class Path extends Ref {
   }
 
   step(store) {
-    let val;
+    let obj;
     if (Array.isArray(this.receiver)) {
-      val = exp(...this.receiver).reduce(store);
+      obj = exp(...this.receiver).reduce(store);
     } else {
-      val = this.receiver.reduce(store);
+      obj = this.receiver.reduce(store);
     }
 
     for (const elm of this.keys) {
@@ -63,17 +63,17 @@ export default class Path extends Ref {
         key = elm;
       }
 
-      val = store.resolve(val);
-      if (!val) {
+      obj = store.resolve(obj);
+      if (!obj) {
         return this;
       }
 
-      let prop = val.get(key, store);
+      let prop = obj.get(key, store);
       if (prop instanceof Function) {
         // LiftedNativeの基本仕様はthisでstoreを渡すだが
         // 組み込みのメソッドの場合、thisで自身を参照したいケースが大半で
         // storeを渡すわけにいかないので、自身の値をbindする
-        const f = prop.bind(val);
+        const f = prop.bind(obj);
         const nf = (...args) => {
           const as = args.map(a => a.reduce(store));
           if (as.some(a => a.reducible)) {
@@ -89,17 +89,17 @@ export default class Path extends Ref {
       }
 
       if (prop instanceof Case) {
-        const c = prop.replaceSelfBy(val);
-        const as = args.map(a => a.replaceSelfBy(val));
+        const c = prop.replaceSelfBy(obj);
+        const as = args.map(a => a.replaceSelfBy(obj));
         const e = exp(c, ...as);
-        val = e.reduce(store).replaceSelfBy(val);
+        obj = e.reduce(store).replaceSelfBy(obj);
       } else {
-        const replaced = prop.replaceSelfBy(val);
-        val = replaced.reduce(store);
+        const replaced = prop.replaceSelfBy(obj);
+        obj = replaced.reduce(store);
       }
     }
 
-    return val;
+    return obj;
   }
 
   object(_store) {

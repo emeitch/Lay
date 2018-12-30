@@ -181,15 +181,15 @@ export default class Store {
 
   traversePropFromType(obj, key) {
     const tref = obj.getOwnProp("_type");
-    const type = this.resolve(tref);
-    const p = type && type.getOwnProp(key);
+    const tobj = this.resolve(tref);
+    const p = tobj && tobj.getOwnProp(key);
     if (p) {
       return p;
     }
 
     // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
-    if (!obj.equals(type)) {
-      const p = this.traversePropFromType(type, key);
+    if (!obj.equals(tobj)) {
+      const p = this.traversePropFromType(tobj, key);
       if (p) {
         return p;
       }
@@ -232,8 +232,8 @@ export default class Store {
 
       const key = this.convertObjectKey(k);
       const tref = val.get("_type", this);
-      const type = this.resolve(tref);
-      if (type.equals(cls)) {
+      const tobj = this.resolve(tref);
+      if (tobj.equals(cls)) {
         results.push(key);
       }
     }
