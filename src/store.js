@@ -4,7 +4,6 @@ import Ref from './ref';
 import Sym, { sym } from './sym';
 import Act from './act';
 import Comp, { CompMap } from './comp';
-import { parseVal } from './parser';
 
 export default class Store {
   constructor(...imports) {
@@ -23,12 +22,17 @@ export default class Store {
     this.assign("currentStoreId", this.id);
   }
 
-  convertStringKey(key) {
-    return JSON.stringify(v(key).object());
+  objToStr(key) {
+    return v(key).stringify();
   }
 
-  convertObjectKey(key) {
-    return v(parseVal(JSON.parse(key)));
+  strToObj(kstr) {
+    const m = kstr.match(/^urn:uuid:(.*)/);
+    if (m && m[1]) {
+      return new UUID(m[1]);
+    }
+
+    return sym(kstr);
   }
 
   doPut(obj, block) {
@@ -37,8 +41,8 @@ export default class Store {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 
-    const key = this.convertStringKey(obj.getOwnProp("_id"));
-    this.objs.set(key, obj);
+    const kstr = this.objToStr(obj.getOwnProp("_id"));
+    this.objs.set(kstr, obj);
 
     if (block) {
       block(obj);
@@ -125,8 +129,8 @@ export default class Store {
   }
 
   fetchWithoutImports(key) {
-    const k = this.convertStringKey(key);
-    return this.objs.get(k);
+    const kstr = this.objToStr(key);
+    return this.objs.get(kstr);
   }
 
   handleOnInport(other) {
@@ -224,13 +228,13 @@ export default class Store {
   instanceIDs(cls) {
     // todo: 線形探索なのを高速化
     const results = [];
-    for (const [k, val] of this.objs) {
+    for (const [kstr, val] of this.objs) {
       const exists = val.get("exists", this);
       if (exists && !exists.reduce(this).origin) {
         continue;
       }
 
-      const key = this.convertObjectKey(k);
+      const key = this.strToObj(kstr);
       const tref = val.get("_type", this);
       const tobj = this.resolve(tref);
       if (tobj.equals(cls)) {
