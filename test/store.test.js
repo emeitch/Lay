@@ -2,7 +2,6 @@ import assert from 'assert';
 
 import UUID from '../src/uuid';
 import v from '../src/v';
-import { sym } from '../src/sym';
 import { path } from '../src/path';
 import Act from '../src/act';
 import Store from '../src/store';
@@ -108,89 +107,6 @@ describe("Store", () => {
           b:2,
           c:3
         }));
-      });
-    });
-  });
-
-  describe("#getProp", () => {
-    let id;
-    beforeEach(() => {
-      store.put({
-        _id: "Object",
-        foo: 1
-      });
-
-      store.put({
-        _id: "Bar",
-        foo: 2
-      });
-
-      store.put({
-        _id: "Buz",
-        foo: 4,
-        foz: 4
-      });
-
-      id = new UUID();
-    });
-
-    context("self prop", () => {
-      it("should return self prop", () => {
-        store.put({
-          _id: id,
-          _type: sym("Bar"),
-          foo: 3
-        });
-
-        assert.deepStrictEqual(store.getProp(id, "foo"), v(3));
-      });
-    });
-
-    context("type prop", () => {
-      it("should return type prop", () => {
-        store.put({
-          _id: id,
-          _type: sym("Bar"),
-        });
-
-        assert.deepStrictEqual(store.getProp(id, "foo"), v(2));
-      });
-    });
-
-    context("unknown id", () => {
-      it("should return undefined", () => {
-        const unknown = new UUID();
-
-        assert.deepStrictEqual(store.getProp(unknown, "foo"), undefined);
-      });
-    });
-
-    context("grandparent type", () => {
-      it("should return grandparent type prop", () => {
-        store.put({
-          _id: "Grandtype",
-          foo: 5
-        });
-        store.put({
-          _id: "Parenttype",
-          _type: sym("Grandtype")
-        });
-        const child = new UUID();
-        store.put({
-          _id: child,
-          _type: sym("Parenttype"),
-        });
-
-        assert.deepStrictEqual(store.getProp(child, "foo"), v(5));
-      });
-    });
-
-    context("access Object prop", () => {
-      it("should return Object prop", () => {
-        store.put({
-          _id: id,
-        });
-        assert.deepStrictEqual(store.getProp(id, "foo"), v(1));
       });
     });
   });

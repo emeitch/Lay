@@ -170,15 +170,6 @@ export default class Store {
     return this.fetchWithoutImports(key) || this.fetchWithImports(store => store.fetchWithoutImports(key));
   }
 
-  getProp(id, key) {
-    const obj = this.resolve(id);
-    if (!obj) {
-      return undefined;
-    }
-
-    return obj.get(key, this);
-  }
-
   resolve(ref) {
     let obj = ref.reduce(this);
     while(obj instanceof Ref) {

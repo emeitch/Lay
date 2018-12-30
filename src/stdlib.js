@@ -101,7 +101,7 @@ function put(id, key, val) {
     obj,
     "get",
     func("key", exp(new LiftedNative(function(self, key) {
-      return this.getProp(self, key);
+      return self.get(key, this);
     }), "self", "key"))
   );
 
