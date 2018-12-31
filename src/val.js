@@ -51,10 +51,9 @@ export default class Val {
     const key = k instanceof Prim ? k.origin : k;
 
     if (store) {
-      // todo: findPropFromTypeが使えるのでは?
-      const proto = store && store.resolve(this._type);
-      if (proto && !(proto instanceof Sym)) {
-        return proto.get(key, store);
+      const type = store.resolve(this._type);
+      if (type) {
+        return type.get(key, store);
       }
     }
 
