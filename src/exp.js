@@ -18,7 +18,9 @@ export default class Exp extends Val {
 
   step(store) {
     const [op, ...args] = this.terms;
-    const f = op.step(store);
+    // todo: sym対応でresolveとreduce/stepが入り混じっていて醜いのを修正
+    const o = store && store.resolve(op) || op;
+    const f = o.step(store);
     if (f != op || !f.apply) {
       return new this.constructor(f, ...args);
     }

@@ -6,7 +6,7 @@ import UUID from '../src/uuid';
 import Path from '../src/path';
 import { exp } from '../src/exp';
 import Store from '../src/store';
-import { path } from '../src/path';
+import { sym } from '../src/sym';
 
 describe("Exp", () => {
   describe("#step", () => {
@@ -47,7 +47,7 @@ describe("Exp", () => {
       it("should evalutate one step the expression", () => {
         const store = new Store();
         store.assign("plus0", plus);
-        store.assign("plus1", path("plus0"));
+        store.assign("plus1", sym("plus0"));
 
         const e = exp("plus1", v(1), v(2));
 

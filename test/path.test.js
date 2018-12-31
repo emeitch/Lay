@@ -63,11 +63,15 @@ describe("Path", () => {
           _id: id2,
           bar: id3
         });
+        store.put({
+          _id: id3,
+          buz: 1
+        });
         p = new Path(id, "foo", "bar");
       });
 
       it("should return the val", () => {
-        assert.deepStrictEqual(p.reduce(store), id3);
+        assert.deepStrictEqual(p.reduce(store), store.fetch(id3));
       });
     });
 

@@ -51,8 +51,9 @@ export default class Val {
     const key = k instanceof Prim ? k.origin : k;
 
     if (store) {
-      const proto = this._type.reduce(store);
-      if (!(proto instanceof Sym)) {
+      // todo: findPropFromTypeが使えるのでは?
+      const proto = store && store.resolve(this._type);
+      if (proto && !(proto instanceof Sym)) {
         return proto.get(key, store);
       }
     }
@@ -181,11 +182,6 @@ export class Sym extends Val {
       }
     }
     return this;
-  }
-
-  step(store) {
-    const val = store.fetch(this.origin);
-    return val !== undefined ? val : this;
   }
 
   stringify(_indent) {
