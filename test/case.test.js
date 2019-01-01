@@ -7,6 +7,11 @@ import { exp } from '../src/exp';
 import { kase, alt, grd, otherwise, Func } from '../src/case';
 
 describe("Case", () => {
+  let store;
+  beforeEach(() => {
+    store = new Store();
+  });
+
   describe("#reduce", () => {
     context("unmatching", () => {
       it("should throws a error", () => {
@@ -16,7 +21,6 @@ describe("Case", () => {
           ),
           v(1)
         );
-        const store = new Store();
         assert.throws(() => e.reduce(store), /matched pattern not found/);
       });
     });
@@ -29,7 +33,7 @@ describe("Case", () => {
           ),
           v(1)
         );
-        assert.deepStrictEqual(e.reduce(), v("result"));
+        assert.deepStrictEqual(e.reduce(store), v("result"));
       });
     });
 
@@ -43,7 +47,7 @@ describe("Case", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(e.reduce(), v("result3"));
+        assert.deepStrictEqual(e.reduce(store), v("result3"));
       });
     });
 
@@ -62,7 +66,7 @@ describe("Case", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(e.reduce(), v(20));
+        assert.deepStrictEqual(e.reduce(store), v(20));
       });
     });
 
@@ -81,7 +85,7 @@ describe("Case", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(e.reduce(), v(9));
+        assert.deepStrictEqual(e.reduce(store), v(9));
       });
     });
 
@@ -107,10 +111,10 @@ describe("Case", () => {
           ]
         );
 
-        const r1 = exp(kase(a), v(3)).reduce();
+        const r1 = exp(kase(a), v(3)).reduce(store);
         assert.deepStrictEqual(r1, v(5));
 
-        const r2 = exp(kase(a), v(8)).reduce();
+        const r2 = exp(kase(a), v(8)).reduce(store);
         assert.deepStrictEqual(r2, v(10));
       });
     });
@@ -134,10 +138,10 @@ describe("Case", () => {
           ]
         );
 
-        const r1 = exp(kase(a), v(3)).reduce();
+        const r1 = exp(kase(a), v(3)).reduce(store);
         assert.deepStrictEqual(r1, v(5));
 
-        const r2 = exp(kase(a), v(8)).reduce();
+        const r2 = exp(kase(a), v(8)).reduce(store);
         assert.deepStrictEqual(r2, v(10));
       });
     });
@@ -165,10 +169,10 @@ describe("Case", () => {
           ]
         );
 
-        const r1 = exp(kase(a), v(3), v(3), v(3)).reduce();
+        const r1 = exp(kase(a), v(3), v(3), v(3)).reduce(store);
         assert.deepStrictEqual(r1, v(5));
 
-        const r2 = exp(kase(a), v(3), v(4), v(5)).reduce();
+        const r2 = exp(kase(a), v(3), v(4), v(5)).reduce(store);
         assert.deepStrictEqual(r2, v(10));
       });
     });
@@ -184,7 +188,7 @@ describe("Case", () => {
           ),
           v("Bar", [2, 3])
         );
-        assert.throws(() => e.reduce(), /matched pattern not found/);
+        assert.throws(() => e.reduce(store), /matched pattern not found/);
       });
     });
 
@@ -203,7 +207,7 @@ describe("Case", () => {
           ),
           v("Foo", [2, 3])
         );
-        assert.deepStrictEqual(e.reduce(), v(6));
+        assert.deepStrictEqual(e.reduce(store), v(6));
       });
     });
 
@@ -222,7 +226,7 @@ describe("Case", () => {
           ),
           v("Foo", [v("Bar", [3, 4])])
         );
-        assert.deepStrictEqual(e.reduce(), v(12));
+        assert.deepStrictEqual(e.reduce(store), v(12));
       });
     });
 
@@ -241,7 +245,7 @@ describe("Case", () => {
           ),
           v("Foo", {a: 2, b: 3})
         );
-        assert.deepStrictEqual(e.reduce(), v(6));
+        assert.deepStrictEqual(e.reduce(store), v(6));
       });
     });
 
@@ -259,7 +263,7 @@ describe("Case", () => {
           ),
           v("Foo", 2)
         );
-        assert.deepStrictEqual(e.reduce(), v(6));
+        assert.deepStrictEqual(e.reduce(store), v(6));
       });
     });
 
@@ -278,18 +282,18 @@ describe("Case", () => {
           ),
           v("Foo", {nested: v("Bar", {a: 2}), b: 3})
         );
-        assert.deepStrictEqual(e.reduce(), v(6));
+        assert.deepStrictEqual(e.reduce(store), v(6));
       });
     });
 
     context("0 arity func", () => {
       it("should reduce the func", () => {
         const f = Func.func(() => 2 * 3);
-        assert.deepStrictEqual(f.reduce(), v(6));
+        assert.deepStrictEqual(f.reduce(store), v(6));
 
         const f2 = Func.func("x", x => x * 3);
-        assert.deepStrictEqual(f2.reduce().constructor, Func);
-        assert.deepStrictEqual(exp(f2, v(4)).reduce(), v(12));
+        assert.deepStrictEqual(f2.reduce(store).constructor, Func);
+        assert.deepStrictEqual(exp(f2, v(4)).reduce(store), v(12));
       });
     });
   });

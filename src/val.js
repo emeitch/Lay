@@ -52,7 +52,7 @@ export default class Val {
 
     if (store) {
       const type = store.resolve(this._type);
-      if (type) {
+      if (type && !(type instanceof Sym)) {
         return type.get(key, store);
       }
     }

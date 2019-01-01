@@ -9,11 +9,15 @@ import Store from '../src/store';
 import { sym } from '../src/sym';
 
 describe("Exp", () => {
+  let store;
+  beforeEach(() => {
+    store = new Store();
+  });
+
   describe("#step", () => {
     context("simple", () => {
       it("should evalutate one step the expression", () => {
         const e = exp(plus, v(1), v(2));
-        const store = new Store();
 
         const e2 = e.step(store);
         const native = plus.exp;
@@ -28,24 +32,23 @@ describe("Exp", () => {
       it("should evalutate one step the expression", () => {
         const e = exp(plus, v(1), exp(plus, v(2), v(3)));
 
-        const e2 = e.step();
+        const e2 = e.step(store);
         const native = plus.exp;
         assert.deepStrictEqual(e2, exp(native, v(1), exp(plus, v(2), v(3))));
 
-        const e3 = e2.step();
+        const e3 = e2.step(store);
         assert.deepStrictEqual(e3, exp(native, v(1), exp(native, v(2), v(3))));
 
-        const e4 = e3.step();
+        const e4 = e3.step(store);
         assert.deepStrictEqual(e4, exp(native, v(1), v(5)));
 
-        const e5 = e4.step();
+        const e5 = e4.step(store);
         assert.deepStrictEqual(e5, v(6));
       });
     });
 
     context("multiple hopped operator", () => {
       it("should evalutate one step the expression", () => {
-        const store = new Store();
         store.assign("plus0", plus);
         store.assign("plus1", sym("plus0"));
 
@@ -61,14 +64,12 @@ describe("Exp", () => {
     context("val args", () => {
       it("should reduce the expression", () => {
         const e = exp(plus, v(1), v(2));
-        const store = new Store();
         assert.deepStrictEqual(e.reduce(store), v(3));
       });
     });
 
     context("with ref arg", () => {
       it("should keep the expression with evaluated exp args", () => {
-        const store = new Store();
         const path = new Path(new UUID(), new UUID());
         const e = exp(plus, path, exp(plus, v(1), v(2)));
         const native = plus.exp;
@@ -79,7 +80,7 @@ describe("Exp", () => {
     context("nested", () => {
       it("should reduce the nested expression", () => {
         const e = exp(plus, v(1), exp(plus, v(2), v(3)));
-        assert.deepStrictEqual(e.reduce(), v(6));
+        assert.deepStrictEqual(e.reduce(store), v(6));
       });
     });
   });

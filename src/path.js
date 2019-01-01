@@ -51,22 +51,9 @@ export default class Path extends Ref {
     } else {
       obj = this.receiver.reduce(store);
     }
-
-    // todo: sym対応でresolveとreduce/stepが入り混じっていて醜いのを修正
-    // todo: _target用の1回分特殊処理になっているので除去すべき!!
     obj = store.resolve(obj);
-    if (!obj) {
-      return super.step(store);
-    }
-    obj = obj.reduce(store);
 
     for (const elm of this.keys) {
-      // todo: sym対応でresolveとreduce/stepが入り混じっていて醜いのを修正
-      obj = store.resolve(obj);
-      if (!obj) {
-        return super.step(store);
-      }
-
       let key;
       let args = [];
       if (Array.isArray(elm)) {
@@ -106,12 +93,11 @@ export default class Path extends Ref {
         const replaced = prop.replaceSelfBy(obj);
         obj = replaced.reduce(store);
       }
+
+      obj = store.resolve(obj);
     }
 
-    // todo: sym対応でresolveとreduce/stepが入り混じっていて醜いのを修正
-    const base = obj;
-    obj = store.resolve(base);
-    return obj ? obj : base;
+    return obj;
   }
 
   object(_store) {

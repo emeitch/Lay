@@ -192,9 +192,10 @@ export default class Store {
     let obj = ref;
     while(obj instanceof Ref || obj instanceof Sym) {
       obj = this.fetch(obj);
+      obj = obj && obj.reduce(this); // for _target reducing
     }
 
-    return obj;
+    return obj ? obj : ref;
   }
 
   traversePropFromType(obj, key) {

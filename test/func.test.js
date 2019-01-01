@@ -7,6 +7,11 @@ import { kase, alt, grd, otherwise, Native, LiftedNative } from '../src/case';
 import Func, { func, plus, concat } from '../src/func';
 
 describe("Func", () => {
+  let store;
+  beforeEach(() => {
+    store = new Store();
+  });
+
   describe("func", () => {
     context("arity mismatched for native function", () => {
       it("should throw error", () => {
@@ -31,7 +36,7 @@ describe("Func", () => {
           v(2),
           v(3)
         );
-        assert.deepStrictEqual(e.reduce(), v(5));
+        assert.deepStrictEqual(e.reduce(store), v(5));
       });
     });
 
@@ -44,7 +49,7 @@ describe("Func", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(e.reduce(), v(5));
+        assert.deepStrictEqual(e.reduce(store), v(5));
       });
     });
 
@@ -52,19 +57,18 @@ describe("Func", () => {
       it("should reduce the expression", () => {
         const e = exp(plus, v(2));
 
-        const reduced = e.reduce();
+        const reduced = e.reduce(store);
         assert(reduced instanceof Func);
         assert.deepStrictEqual(reduced.alts[0].pats.length, 1);
         assert.deepStrictEqual(reduced.alts[0].grds[0].exp.terms[0], plus.alts[0].grds[0].exp);
 
         const e2 = exp(reduced, v(3));
-        assert.deepStrictEqual(e2.reduce(), v(5));
+        assert.deepStrictEqual(e2.reduce(store), v(5));
       });
     });
 
     context("defined function", () => {
       it("should reduce the expression", () => {
-        const store = new Store();
         store.assign("f", func("y", exp(plus, v(3), "y")));
 
         assert.deepStrictEqual(exp("f", v(2)).reduce(store), v(5));
@@ -78,20 +82,19 @@ describe("Func", () => {
           v(2),
           v(3)
         );
-        assert.deepStrictEqual(e.reduce(), v(5));
+        assert.deepStrictEqual(e.reduce(store), v(5));
 
         const e2 = exp(
           func((...args) => args[0] + args[1]),
           v(2),
           v(3)
         );
-        assert.deepStrictEqual(e2.reduce(), v(5));
+        assert.deepStrictEqual(e2.reduce(store), v(5));
       });
     });
 
     context("recursive function", () => {
       it("should reduce the expression", () => {
-        const store = new Store();
         store.assign("f", func(
           "x",
           exp(
@@ -146,10 +149,10 @@ describe("Func", () => {
           )
         );
 
-        const reduced = exp(f, v(3)).reduce();
+        const reduced = exp(f, v(3)).reduce(store);
         assert(reduced instanceof Func);
 
-        assert.deepStrictEqual(exp(reduced, v(2)).reduce(), v(5));
+        assert.deepStrictEqual(exp(reduced, v(2)).reduce(store), v(5));
       });
     });
 
@@ -168,7 +171,7 @@ describe("Func", () => {
           ),
           v(3)
         );
-        assert.deepStrictEqual(e.reduce(), v(5));
+        assert.deepStrictEqual(e.reduce(store), v(5));
       });
     });
 
@@ -179,7 +182,7 @@ describe("Func", () => {
           v(2),
           v(3)
         );
-        assert.deepStrictEqual(e.reduce(), v(6));
+        assert.deepStrictEqual(e.reduce(store), v(6));
       });
     });
 
@@ -190,17 +193,16 @@ describe("Func", () => {
           v(2)
         );
 
-        const reduced = e.reduce();
+        const reduced = e.reduce(store);
         assert(reduced instanceof Func);
 
         const e2 = exp(reduced, v(3));
-        assert.deepStrictEqual(e2.reduce(), v(6));
+        assert.deepStrictEqual(e2.reduce(store), v(6));
       });
     });
 
     context("with infinite recursive exp", () => {
       it("should not reduce the infinite recursive exp", () => {
-        const store = new Store();
         store.assign("f", func(
           "x",
           exp("f", "x")
@@ -251,13 +253,13 @@ describe("Func", () => {
                 v(2)
               )
             )
-          ).reduce(),
+          ).reduce(store),
           v(3));
 
         assert.deepStrictEqual(
           exp(
             func(
-              v(3))).reduce(),
+              v(3))).reduce(store),
           v(3));
       });
     });
@@ -275,7 +277,7 @@ describe("Func", () => {
 
   describe("concat", () => {
     it("should concatenate arg strings", () => {
-      assert.deepStrictEqual(exp(concat, v("foo"), v("bar")).reduce(), v("foobar"));
+      assert.deepStrictEqual(exp(concat, v("foo"), v("bar")).reduce(store), v("foobar"));
     });
   });
 });
