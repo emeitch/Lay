@@ -119,7 +119,7 @@ describe("stdlib", () => {
         store.put({
           _id: id3,
           _type: sym("Foo"),
-          exists: false, // not exists
+          _status: v("deleted", null), // not exists
         });
 
         const ids = path("Foo", "all").reduce(store);

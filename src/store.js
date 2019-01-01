@@ -244,8 +244,8 @@ export default class Store {
     // todo: 線形探索なのを高速化
     const results = [];
     for (const [kstr, val] of this.objs) {
-      const exists = val.get("exists", this);
-      if (exists && !exists.reduce(this).origin) {
+      const status = val.get("_status", this);
+      if (status.reduce(this).equals(v("deleted", null))) {
         continue;
       }
 
