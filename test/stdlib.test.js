@@ -160,6 +160,16 @@ describe("stdlib", () => {
       });
     });
 
+    describe("_status", () => {
+      it("should return active status", () => {
+        const id = new UUID();
+        store.put({
+          _id: id
+        });
+
+        assert.deepStrictEqual(path(id, "_status").reduce(store), v("active", null));
+      });
+    });
 
     context("accessing Object's key", () => {
       describe("#set", () => {

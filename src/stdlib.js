@@ -86,6 +86,12 @@ export const std = new Store();
 
   std.set(
     obj,
+    "_status",
+    v("active", null)
+  );
+
+  std.set(
+    obj,
     "set",
     func("key", "val", exp(new LiftedNative(function(self, key, val) {
       return this.setAct(self, key.reduce(this), val.reduce(this));
