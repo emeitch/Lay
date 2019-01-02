@@ -105,11 +105,6 @@ export default class Comp extends Val {
     return super.get(k, store);
   }
 
-  merge(diff) {
-    const o = Object.assign({}, this.origin, diff);
-    return this.constructor(o, this.head);
-  }
-
   sameType(val) {
     return (
       val.constructor === this.constructor

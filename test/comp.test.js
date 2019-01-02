@@ -162,13 +162,6 @@ describe("Comp", () => {
       });
     });
 
-    describe("#merge", () => {
-      it("should return merged comp", () => {
-        const val = v({a: 1, b: 2});
-        assert.deepStrictEqual(val.merge({b: 3, c: 4}), v({a: 1, b: 3, c: 4}));
-      });
-    });
-
     describe("#get", () => {
       it("should return arg index val", () => {
         const val = v({a: 1, b: 2});
