@@ -1,6 +1,5 @@
 import Val from './val';
 import Prim from './prim';
-import Hash from './hash';
 import Sym, { sym } from './sym';
 
 const NullVal = new Prim(null);
@@ -54,14 +53,6 @@ export default class Comp extends Val {
   stringify(_indent=0) {
     const head = !this.head.equals(NullVal) ? this.head.stringify() + " " : "";
     return head + Val.stringify(this.origin, _indent);
-  }
-
-  get hash() {
-    return new Hash(this.origin);
-  }
-
-  get id() {
-    return this.hash;
   }
 
   get reducible() {

@@ -1,7 +1,6 @@
 import assert from 'assert';
 
 import Store from '../src/store';
-import Hash from '../src/hash';
 import UUID from '../src/uuid';
 import { sym } from '../src/sym';
 import { exp } from '../src/exp';
@@ -10,20 +9,6 @@ import v from '../src/v';
 
 describe("Comp", () => {
   context("complex value", () => {
-    describe("#hash", () => {
-      it("should return a hash val", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2}).hash, new Hash({a: 1, b: 2}));
-        assert.deepStrictEqual(v([1, 2, 3]).hash, new Hash([1, 2, 3]));
-      });
-    });
-
-    describe("#id", () => {
-      it("should return a hash", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2}).id, new Hash({a: 1, b: 2}));
-        assert.deepStrictEqual(v([1, 2, 3]).id, new Hash([1, 2, 3]));
-      });
-    });
-
     describe("#jsObj", () => {
       it("should return a js object", () => {
         const c = v({a: "e", b: v([1, v({c: 2}), 3])});
