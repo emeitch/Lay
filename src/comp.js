@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import Val from './val';
 import Prim from './prim';
 import Hash from './hash';
@@ -104,12 +103,6 @@ export default class Comp extends Val {
     }
 
     return super.get(k, store);
-  }
-
-  set(key, val) {
-    const o = _.clone(this.origin);
-    o[key] = val.origin;
-    return this.constructor.valFrom(o);
   }
 
   merge(diff) {
