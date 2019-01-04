@@ -44,11 +44,21 @@ export default class Store {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 
+    const tid = new UUID();
+    const tx = v({
+      _id: tid,
+      _type: sym("Transaction"),
+      _tx: tid
+    });
+    const tkstr = this.objToStr(tid);
+    this.objs.set(tkstr, tx);
+
     const kstr = this.objToStr(obj.getOwnProp("_id"));
-    this.objs.set(kstr, obj);
+    const o = v(Object.assign({}, obj.origin, {_tx: tid}));
+    this.objs.set(kstr, o);
 
     if (block) {
-      block(obj);
+      block(o);
     }
   }
 

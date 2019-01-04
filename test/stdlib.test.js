@@ -42,7 +42,7 @@ describe("stdlib", () => {
       store.run(path(act, ["then", exp("load")]).deepReduce(store));
       store.run(path(new Act(() => undefined), ["then", exp("load")]).deepReduce(store)); // invalid act
 
-      assert.deepStrictEqual(store.fetch(id), val);
+      assert.deepStrictEqual(store.fetch(id).getOwnProp("foo"), v(1));
     });
 
     it("should nothing to do without prev act json string", () => {

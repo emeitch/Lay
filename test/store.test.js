@@ -29,7 +29,10 @@ describe("Store", () => {
       });
       store.put(obj);
 
-      assert.deepStrictEqual(store.fetch(id), obj);
+      const o = store.fetch(id);
+      assert.deepStrictEqual(o.getOwnProp("_id"), id);
+
+      assert.deepStrictEqual(path(id, "_tx", "_type").reduce(store), path("Transaction").reduce(store));
     });
 
     context("not sym type", () => {
@@ -108,15 +111,10 @@ describe("Store", () => {
         bar: 1
       });
 
-      assert.deepStrictEqual(store.fetch("foo"), v({
-        _id: "foo",
-        a: 1,
-        b: "c"
-      }));
-      assert.deepStrictEqual(store.fetch("bar"), v({
-        _id: "bar",
-        _target: 1
-      }));
+      assert.deepStrictEqual(store.fetch("foo").getOwnProp("a"), v(1));
+      assert.deepStrictEqual(store.fetch("foo").getOwnProp("b"), v("c"));
+
+      assert.deepStrictEqual(store.fetch("bar").getOwnProp("_target"), v(1));
     });
 
     context("uuid", () => {
@@ -129,10 +127,7 @@ describe("Store", () => {
         };
         store.merge(patch);
 
-        assert.deepStrictEqual(store.fetch(id), v({
-          _id: id,
-          a: 1
-        }));
+        assert.deepStrictEqual(store.fetch(id).getOwnProp("a"), v(1));
       });
     });
 
@@ -144,10 +139,7 @@ describe("Store", () => {
           },
         });
 
-        assert.deepStrictEqual(store.fetch("foo").reduce(store), v({
-          _id: "foo",
-          a:1
-        }));
+        assert.deepStrictEqual(store.fetch("foo").getOwnProp("a"), v(1));
 
         store.merge({
           foo: {
@@ -155,12 +147,9 @@ describe("Store", () => {
             c: 3
           },
         });
-        assert.deepStrictEqual(store.fetch("foo").reduce(store), v({
-          _id: "foo",
-          a:1,
-          b:2,
-          c:3
-        }));
+        assert.deepStrictEqual(store.fetch("foo").getOwnProp("a"), v(1));
+        assert.deepStrictEqual(store.fetch("foo").getOwnProp("b"), v(2));
+        assert.deepStrictEqual(store.fetch("foo").getOwnProp("c"), v(3));
       });
     });
   });
