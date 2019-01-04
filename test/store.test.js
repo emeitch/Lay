@@ -32,6 +32,7 @@ describe("Store", () => {
       assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
 
       assert.deepStrictEqual(path(id, "_tx", "_type").reduce(store), path("Transaction").reduce(store));
+      assert.deepStrictEqual(path(id, "_tx", "at", "_type").reduce(store), path("Date").reduce(store));
     });
 
     context("not sym type", () => {

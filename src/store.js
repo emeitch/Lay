@@ -45,10 +45,12 @@ export default class Store {
     }
 
     const tid = new UUID();
+    const at = v(new Date());
     const tx = v({
       _id: tid,
       _type: sym("Transaction"),
-      _tx: tid
+      _tx: tid,
+      at
     });
     const tkstr = this.objToStr(tid);
     this.objs.set(tkstr, tx);
