@@ -160,7 +160,11 @@ describe("Store", () => {
     it("should handle onPut handler", () => {
       let a = 0;
       store.assign("onPut", new Act(objs => {
-        if (objs[0].get("foo").equals(v("bar"))) {
+        const hasProp = objs.some(o => {
+          const foo = o.get("foo", store);
+          return foo && foo.equals(v("bar"));
+        });
+        if (hasProp) {
           a = 1;
         }
       }));

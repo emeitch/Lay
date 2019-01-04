@@ -54,13 +54,20 @@ export const std = new Store();
     const types = pattern.deepReduce(store).origin;
     return new Act(objs => {
       const filtered = [];
+      const transactions = [];
       for (const obj of objs) {
-        const typename = obj.get("_type").origin;
+        const typename = obj.get("_type", store).origin;
         if (types.includes(typename)) {
           filtered.push(obj);
         }
+
+        if (typename === "Transaction") {
+          transactions.push(obj);
+        }
       }
-      return filtered;
+
+      const txs = transactions.filter(tx => filtered.some(f => tx.getOwnProp("_id").equals(f.getOwnProp("_tx"))));
+      return txs.concat(filtered);
     });
   })));
 }

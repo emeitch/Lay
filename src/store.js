@@ -67,7 +67,7 @@ export default class Store {
     this.objs.set(kstr, o);
 
     if (block) {
-      block(o);
+      block([tx, o]);
     }
   }
 
@@ -105,8 +105,8 @@ export default class Store {
 
   put(obj) {
     const o = v(obj);
-    this.doPut(o, obj => {
-      this.handleOnPut([obj]);
+    this.doPut(o, objs => {
+      this.handleOnPut(objs);
     });
   }
 
