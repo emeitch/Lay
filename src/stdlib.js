@@ -61,12 +61,12 @@ export const std = new Store();
           filtered.push(obj);
         }
 
-        if (typename === "Transaction") {
+        if (typename === "Revision") {
           transactions.push(obj);
         }
       }
 
-      const txs = transactions.filter(tx => filtered.some(f => tx.getOwnProp("_id").equals(f.getOwnProp("_tx"))));
+      const txs = transactions.filter(tx => filtered.some(f => tx.getOwnProp("_id").equals(f.getOwnProp("_rev"))));
       return txs.concat(filtered);
     });
   })));

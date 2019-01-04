@@ -44,30 +44,30 @@ export default class Store {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 
-    const tid = new UUID();
+    const rid = new UUID();
     const at = v(new Date());
-    const tx = v({
-      _id: tid,
-      _type: sym("Transaction"),
-      _tx: tid,
+    const rev = v({
+      _id: rid,
+      _rev: rid,
+      _type: sym("Revision"),
       at
     });
-    const tkstr = this.objToStr(tid);
-    this.objs.set(tkstr, tx);
+    const ridstr = this.objToStr(rid);
+    this.objs.set(ridstr, rev);
 
-    const ptx = obj.getOwnProp("_tx");
+    const prid = obj.getOwnProp("_rev");
     const prev = {};
-    if (ptx) {
-      prev._ptx = ptx;
+    if (prid) {
+      prev._prev = prid;
     }
 
     const kstr = this.objToStr(obj.getOwnProp("_id"));
-    const origin = Object.assign({}, prev, obj.origin, {_tx: tid});
+    const origin = Object.assign({}, obj.origin, prev, {_rev: rid});
     const o = v(origin);
     this.objs.set(kstr, o);
 
     if (block) {
-      block([tx, o]);
+      block([rev, o]);
     }
   }
 

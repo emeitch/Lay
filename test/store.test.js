@@ -31,8 +31,8 @@ describe("Store", () => {
 
       assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
 
-      assert.deepStrictEqual(path(id, "_tx", "_type").reduce(store), path("Transaction").reduce(store));
-      assert.deepStrictEqual(path(id, "_tx", "at", "_type").reduce(store), path("Date").reduce(store));
+      assert.deepStrictEqual(path(id, "_rev", "_type").reduce(store), path("Revision").reduce(store));
+      assert.deepStrictEqual(path(id, "_rev", "at", "_type").reduce(store), path("Date").reduce(store));
     });
 
     context("not sym type", () => {
@@ -87,7 +87,7 @@ describe("Store", () => {
           }
         });
         assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(2));
-        const ptx = path(id, "_tx").reduce(store);
+        const rev = path(id, "_rev").reduce(store);
 
         store.patch(id, {
           foo: {
@@ -97,7 +97,7 @@ describe("Store", () => {
         assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(2)); // keep
         const p = path(id, "foo", "buz");
         assert.deepStrictEqual(p.reduce(store), p);
-        assert.deepStrictEqual(path(id, "_ptx").reduce(store), ptx);
+        assert.deepStrictEqual(path(id, "_prev").reduce(store), rev);
       });
     });
 

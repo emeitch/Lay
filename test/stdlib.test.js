@@ -55,29 +55,29 @@ describe("stdlib", () => {
 
   describe("filterPiars", () => {
     it("should filter act arg log by pattern", () => {
-      const tid = new UUID();
-      const tx = v({
-        _id: tid,
-        _type: sym("Transaction"),
-        _tx: tid,
+      const rid = new UUID();
+      const rev = v({
+        _id: rid,
+        _type: sym("Revision"),
+        _rev: rid,
         at: v(new Date())
       });
       const obj1 = v({
         _id: new UUID(),
         _type: sym("Foo"),
-        _tx: tid,
+        _rev: rid,
         foo: 1
       });
       const obj2 = v({
         _id: new UUID(),
         _type: sym("Bar"),
-        _tx: tid,
+        _rev: rid,
         foo: 1
       });
 
       const act = new Act(() => {
         return [
-          tx,
+          rev,
           obj1,
           obj2,
         ];
@@ -89,19 +89,19 @@ describe("stdlib", () => {
 
       store.run(path(act, ["then", exp("filterObjs", v(["Foo"]))], ["then", act2]).deepReduce(store));
       assert.deepStrictEqual(passedObjs, [
-        tx,
+        rev,
         obj1,
       ]);
 
       store.run(path(act, ["then", exp("filterObjs", v(["Bar"]))], ["then", act2]).deepReduce(store));
       assert.deepStrictEqual(passedObjs, [
-        tx,
+        rev,
         obj2
       ]);
 
       store.run(path(act, ["then", exp("filterObjs", v(["Foo", "Bar"]))], ["then", act2]).deepReduce(store));
       assert.deepStrictEqual(passedObjs, [
-        tx,
+        rev,
         obj1,
         obj2
       ]);
