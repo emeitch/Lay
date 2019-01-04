@@ -53,8 +53,15 @@ export default class Store {
     const tkstr = this.objToStr(tid);
     this.objs.set(tkstr, tx);
 
+    const ptx = obj.getOwnProp("_tx");
+    const prev = {};
+    if (ptx) {
+      prev._ptx = ptx;
+    }
+
     const kstr = this.objToStr(obj.getOwnProp("_id"));
-    const o = v(Object.assign({}, obj.origin, {_tx: tid}));
+    const origin = Object.assign({}, prev, obj.origin, {_tx: tid});
+    const o = v(origin);
     this.objs.set(kstr, o);
 
     if (block) {

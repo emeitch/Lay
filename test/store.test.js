@@ -29,8 +29,7 @@ describe("Store", () => {
       });
       store.put(obj);
 
-      const o = store.fetch(id);
-      assert.deepStrictEqual(o.getOwnProp("_id"), id);
+      assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
 
       assert.deepStrictEqual(path(id, "_tx", "_type").reduce(store), path("Transaction").reduce(store));
     });
@@ -87,6 +86,7 @@ describe("Store", () => {
           }
         });
         assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(2));
+        const ptx = path(id, "_tx").reduce(store);
 
         store.patch(id, {
           foo: {
@@ -96,6 +96,7 @@ describe("Store", () => {
         assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(2)); // keep
         const p = path(id, "foo", "buz");
         assert.deepStrictEqual(p.reduce(store), p);
+        assert.deepStrictEqual(path(id, "_ptx").reduce(store), ptx);
       });
     });
 
