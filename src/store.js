@@ -42,25 +42,25 @@ export default class Store {
     }
 
     const rid = new UUID();
-    const at = v(new Date());
     const rev = v({
       _id: rid,
       _rev: rid,
       _type: sym("Revision"),
-      at
+      at: v(new Date())
     });
     const ridstr = this.objToStr(rid);
     this.objs.set(ridstr, rev);
 
+    const diff = {
+      _rev: rid
+    };
     const prid = obj.getOwnProp("_rev");
-    const prev = {};
     if (prid) {
-      prev._prev = prid;
+      diff._prev = prid;
     }
 
     const kstr = this.objToStr(obj.getOwnProp("_id"));
-    const origin = Object.assign({}, obj.origin, prev, {_rev: rid});
-    const o = v(origin);
+    const o = obj.patch(diff);
     this.objs.set(kstr, o);
 
     if (block) {
