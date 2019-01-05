@@ -57,7 +57,7 @@ describe("Store", () => {
       assert.deepStrictEqual(store.fetch(id).getOwnProp("foo"), v(3));
     });
 
-    context("pach child properties", () => {
+    context("patch child properties", () => {
       it("should patch the partial diff", () => {
         const id = new UUID();
         store.patch(id, {
@@ -77,7 +77,7 @@ describe("Store", () => {
       });
     });
 
-    context("pach child properties to null", () => {
+    context("patch child properties to null", () => {
       it("should patch the partial diff", () => {
         const id = new UUID();
         store.patch(id, {
@@ -87,6 +87,7 @@ describe("Store", () => {
           }
         });
         assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(2));
+        assert.deepStrictEqual(path(id, "foo", "buz").reduce(store), v(4));
         const rev = path(id, "_rev").reduce(store);
 
         store.patch(id, {
@@ -100,7 +101,6 @@ describe("Store", () => {
         assert.deepStrictEqual(path(id, "_prev").reduce(store), rev);
       });
     });
-
   });
 
   describe("#merge", () => {
