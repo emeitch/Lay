@@ -61,7 +61,10 @@ export default class Store {
     const old = this.fetch(id);
     const orid = old && old.getOwnProp("_rev");
     const prid = obj.getOwnProp("_rev");
-    if (prid && orid && !prid.equals(orid)) {
+    if (orid && !prid) {
+      throw "optimistic locked: _rev is not specified";
+    }
+    if (orid && !orid.equals(prid)) {
       throw "optimistic locked: specified _rev is not latest";
     }
 
@@ -81,13 +84,34 @@ export default class Store {
 
   assign(key, val) {
     let obj = v(val);
+
+    const old = this.fetch(key);
+    const orev = old && old.getOwnProp("_rev");
+    const rev = {};
+    if (orev) {
+      rev._rev = orev;
+    }
+
     if (obj instanceof CompMap) {
-      obj = v(Object.assign({}, {_id: key}, obj.origin));
+      const origin = Object.assign(
+        {},
+        {
+          _id: key
+        },
+        obj.origin,
+        rev
+      );
+      obj = v(origin);
     } else {
-      obj = v({
-        _id: key,
-        _target: obj
-      });
+      const origin = Object.assign(
+        {},
+        {
+          _id: key,
+          _target: obj
+        },
+        rev
+      );
+      obj = v(origin);
     }
 
     this.put(obj);

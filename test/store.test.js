@@ -67,6 +67,13 @@ describe("Store", () => {
             foo: 5
           }));
         }, /optimistic locked: specified _rev is not latest/);
+
+        assert.throws(() => {
+          store.put(old.patch({
+            _rev: null,
+            foo: 5
+          }));
+        }, /optimistic locked: _rev is not specified/);
       });
     });
   });
