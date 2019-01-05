@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import Val from './val';
 import Prim from './prim';
 import Sym, { sym } from './sym';
@@ -94,6 +96,28 @@ export default class Comp extends Val {
     }
 
     return super.get(k, store);
+  }
+
+  patch(diff) {
+    let d = Comp.valFrom(diff).origin;
+
+    const remove = obj => {
+      for (const k of Object.keys(obj)) {
+        const prop = obj[k];
+        if (prop === null || (prop.equals && prop.equals(Comp.valFrom(null)))) {
+          delete obj[k];
+        }
+
+        if (typeof(prop) === "object" && prop !== null && !(prop instanceof Val)) {
+          remove(prop);
+        }
+      }
+      return obj;
+    };
+
+    const oo = Object.assign({}, this.origin);
+    const newObj = remove(_.merge({}, oo, d));
+    return new this.constructor(newObj);
   }
 
   sameType(val) {

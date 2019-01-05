@@ -162,6 +162,42 @@ describe("Comp", () => {
       });
     });
 
+    describe("patch", () => {
+      it("should merge diff object", () => {
+        const val1 = v({a: 1, b: 2});
+        const val2 = val1.patch({c: 3});
+
+        assert.deepStrictEqual(val2.get("a"), v(1));
+        assert.deepStrictEqual(val2.get("b"), v(2));
+        assert.deepStrictEqual(val2.get("c"), v(3));
+      });
+
+      context("patch child properties to null", () => {
+        it("should patch the partial diff", () => {
+          const val1 = v({
+            foo: {
+              bar: 2,
+              buz: 4,
+              fiz: 6
+            }
+          });
+          assert.deepStrictEqual(val1.get("foo").get("bar"), v(2));
+          assert.deepStrictEqual(val1.get("foo").get("buz"), v(4));
+          assert.deepStrictEqual(val1.get("foo").get("fiz"), v(6));
+
+          const val2 = val1.patch({
+            foo: {
+              buz: null,
+              fiz: v(null)
+            }
+          });
+          assert.deepStrictEqual(val2.get("foo").get("bar"), v(2));
+          assert.deepStrictEqual(val2.get("foo").get("buz"), undefined);
+          assert.deepStrictEqual(val2.get("foo").get("fiz"), undefined);
+        });
+      });
+    });
+
     describe("#reduce", () => {
       it("should return self value", () => {
         const store = new Store();
