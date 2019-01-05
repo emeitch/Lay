@@ -294,8 +294,8 @@ const d = new Store(std);
                                 path("tid",
                                   [
                                     "set",
-                                    "exists",
-                                    v(false)
+                                    "_status",
+                                    v("deleted", null)
                                   ]
                                 )
                               ),
