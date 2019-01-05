@@ -213,7 +213,7 @@ const d = new Store(std);
                             [
                               "set",
                               "editing",
-                              v("true")
+                              v(true)
                             ],
                             [
                               "then",
