@@ -1,8 +1,5 @@
-import _ from 'lodash';
-
 import UUID from './uuid';
 import v from './v';
-import Val from './val';
 import Ref from './ref';
 import Sym, { sym } from './sym';
 import Act from './act';
@@ -127,27 +124,8 @@ export default class Store {
       return;
     }
 
-    const remove = obj => {
-      for (const k of Object.keys(obj)) {
-        const prop = obj[k];
-        if (prop === null || (prop.equals && prop.equals(v(null)))) {
-          delete obj[k];
-        }
-
-        if (typeof(prop) === "object" && prop !== null && !(prop instanceof Val)) {
-          remove(prop);
-        }
-      }
-      return obj;
-    };
-
-    const o = this.fetch(key);
-    let oo = {};
-    if (o && o instanceof CompMap) {
-      oo = Object.assign({}, o.origin);
-    }
-    const newObj = remove(_.merge({}, oo, d));
-    this.assign(key, newObj);
+    const obj = this.fetch(key);
+    this.assign(key, obj ? obj.patch(d) : d);
   }
 
   set(id, key, val) {
