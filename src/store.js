@@ -35,7 +35,15 @@ export default class Store {
     return sym(kstr);
   }
 
-  doPut(obj, block) {
+  doPut(obj) {
+    const id = obj.getOwnProp("_id");
+    const idstr = this.objToStr(id);
+    this.objs.set(idstr, obj);
+  }
+
+  putWithHandler(obj, block) {
+    // todo: ロックが実現の為に下記の一連の処理がアトミックな操作となるよううまく保証する
+
     const tprop = obj.getOwnProp("_type");
     if (!(tprop instanceof Sym)) {
       throw `bad type reference style: ${tprop.stringify()}`;
@@ -48,24 +56,27 @@ export default class Store {
       _type: sym("Revision"),
       at: v(new Date())
     });
-    const ridstr = this.objToStr(rid);
-    this.objs.set(ridstr, rev);
+
+    const id = obj.getOwnProp("_id");
+    const old = this.fetch(id);
+    const orid = old && old.getOwnProp("_rev");
+    const prid = obj.getOwnProp("_rev");
+    if (prid && orid && !prid.equals(orid)) {
+      throw "optimistic locked: specified _rev is not latest";
+    }
 
     const diff = {
       _rev: rid
     };
-    const prid = obj.getOwnProp("_rev");
     if (prid) {
       diff._prev = prid;
     }
 
-    const kstr = this.objToStr(obj.getOwnProp("_id"));
     const o = obj.patch(diff);
-    this.objs.set(kstr, o);
+    this.doPut(rev);
+    this.doPut(o);
 
-    if (block) {
-      block([rev, o]);
-    }
+    block([rev, o]);
   }
 
   assign(key, val) {
@@ -102,7 +113,7 @@ export default class Store {
 
   put(obj) {
     const o = v(obj);
-    this.doPut(o, objs => {
+    this.putWithHandler(o, objs => {
       this.handleOnPut(objs);
     });
   }

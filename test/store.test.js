@@ -45,6 +45,30 @@ describe("Store", () => {
         }, /bad type reference style:/);
       });
     });
+
+    context("different _rev", () => {
+      it("should optimistic lock", () => {
+        const id = new UUID();
+        store.put({
+          _id: id,
+          foo: 3
+        });
+        assert.deepStrictEqual(store.fetch(id).get("foo"), v(3));
+
+        const old = store.fetch(id);
+
+        store.put(old.patch({
+          foo: 4
+        })); // update _rev
+        assert.deepStrictEqual(store.fetch(id).get("foo"), v(4));
+
+        assert.throws(() => {
+          store.put(old.patch({
+            foo: 5
+          }));
+        }, /optimistic locked: specified _rev is not latest/);
+      });
+    });
   });
 
   describe("#patch", () => {
