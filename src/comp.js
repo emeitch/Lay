@@ -65,8 +65,25 @@ export default class Comp extends Val {
     return Comp.valFrom(this.origin);
   }
 
+  keyStr(key) {
+    if (typeof(key) !== "object") {
+      return key;
+    }
+
+    if (key instanceof Sym || key instanceof Prim) {
+      return key.origin;
+    }
+
+    const id = key.getOwnProp("_id");
+    if (id) {
+      return id.stringify();
+    }
+
+    return key.stringify();
+  }
+
   getOwnProp(k) {
-    const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
+    const key = this.keyStr(k);
 
     if (this.origin !== null && this.origin.hasOwnProperty(key)) {
       return this.constructor.valFrom(this.origin[key]);
@@ -76,7 +93,7 @@ export default class Comp extends Val {
   }
 
   get(k, store) {
-    const key = k instanceof Sym || k instanceof Prim ? k.origin : k;
+    const key = this.keyStr(k);
 
     const ownProp = this.getOwnProp(k);
     if (ownProp) {
