@@ -82,11 +82,19 @@ export default class Comp extends Val {
     return key.stringify();
   }
 
-  getOwnProp(k) {
+  getCompProp(k) {
     const key = this.keyStr(k);
-
     if (this.origin !== null && this.origin.hasOwnProperty(key)) {
       return this.constructor.valFrom(this.origin[key]);
+    }
+
+    return undefined;
+  }
+
+  getOwnProp(k) {
+    const prop = this.getCompProp(k);
+    if (prop) {
+      return prop;
     }
 
     return super.getOwnProp(k);

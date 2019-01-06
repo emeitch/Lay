@@ -2,6 +2,7 @@ import UUID from './uuid';
 import v from './v';
 import Ref from './ref';
 import Sym, { sym } from './sym';
+import Prim from './prim';
 import Act from './act';
 import Comp, { CompMap } from './comp';
 
@@ -163,10 +164,27 @@ export default class Store {
     this.assign(key, obj ? obj.patch(d) : d);
   }
 
+  keyStr(key) {
+    if (typeof(key) !== "object") {
+      return key;
+    }
+
+    if (key instanceof Sym || key instanceof Prim) {
+      return key.origin;
+    }
+
+    const id = key.getOwnProp("_id");
+    if (id) {
+      return id.stringify();
+    }
+
+    return key.stringify();
+  }
+
   set(id, key, val) {
-    const k = v(key);
+    const kstr = this.keyStr(key);
     this.patch(id, {
-      [k.origin]: val
+      [kstr]: val
     });
   }
 
@@ -233,13 +251,17 @@ export default class Store {
   traversePropFromType(obj, key) {
     const tref = obj.getOwnProp("_type");
     const tobj = this.resolve(tref);
-    const p = tobj && tobj.getOwnProp(key);
+    if (tref.equals(tobj)) {
+      return undefined;
+    }
+
+    const p = tobj.getOwnProp(key);
     if (p) {
       return p;
     }
 
     // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
-    if (tobj && !obj.equals(tobj)) {
+    if (!obj.equals(tobj)) {
       const p = this.traversePropFromType(tobj, key);
       if (p) {
         return p;
@@ -254,7 +276,7 @@ export default class Store {
     }
 
     const ot = this.fetch("Object");
-    const op = ot && ot.getOwnProp(key);
+    const op = ot && ot.getCompProp(key);
     if (op) {
       return op;
     }
@@ -306,16 +328,26 @@ export default class Store {
     }
 
     let act = null;
-    if (acts instanceof Comp && Array.isArray(acts.origin)) {
-      for (act of acts.origin) {
-        if (!(act instanceof Act)) {
-          throw `not Act instance: ${act}`;
-        }
 
-        do {
-          act = act.proceed(arg);
-        } while(act.canProceed());
+    do {
+      if (acts instanceof Comp && Array.isArray(acts.origin)) {
+        for (act of acts.origin) {
+          if (!(act instanceof Act)) {
+            throw `not Act instance: ${act}`;
+          }
+
+          do {
+            act = act.proceed(arg);
+          } while(act.canProceed());
+        }
       }
-    }
+
+      acts = act && act.val;
+    } while(
+      acts instanceof Comp &&
+      Array.isArray(acts.origin) &&
+      acts.origin.length > 0 &&
+      acts.origin.every(o => o instanceof Act)
+    );
   }
 }

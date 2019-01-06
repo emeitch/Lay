@@ -51,7 +51,10 @@ export default class Val {
     const key = k instanceof Prim ? k.origin : k;
 
     if (store) {
-      return store.findPropFromType(this, key);
+      const prop = store.findPropFromType(this, key);
+      if (prop) {
+        return prop;
+      }
     }
 
     return this.getJSProp(key);

@@ -3,6 +3,7 @@ import v from './v';
 import Act from './act';
 import Store from './store';
 import Prim from './prim';
+import UUID from './uuid';
 import Comp, { CompArray, CompMap } from  './comp';
 import { exp } from './exp';
 import { kase, alt, grd, otherwise } from './case';
@@ -45,6 +46,7 @@ export const std = new Store();
       for (const obj of objs) {
         store.putWithoutHandler(obj);
       }
+      return v(objs);
     });
   })));
 
@@ -143,6 +145,18 @@ export const std = new Store();
     "not",
     exp(new LiftedNative(function(self) {
       return v(!self.origin);
+    }), "self")
+  );
+}
+
+{
+  const uuid = "UUID";
+
+  std.set(
+    uuid,
+    "new",
+    exp(new LiftedNative(function(_self) {
+      return new UUID();
     }), "self")
   );
 }
@@ -267,6 +281,17 @@ export const std = new Store();
 
 {
   const act = "Act";
+
+  std.set(
+    act,
+    "new",
+    func("func", exp(new LiftedNative(function(self, func) {
+      const store = this;
+      return new Act(arg => {
+        return exp(func, arg).reduce(store);
+      });
+    }), "self", "func"))
+  );
 
   std.set(
     act,

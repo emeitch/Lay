@@ -48,6 +48,17 @@ const d = new Store(std);
 }
 
 {
+  d.set("TaskView", "editing", v(false));
+}
+
+{
+  const viewmodel = "viewmodel";
+  d.put({
+    _id: viewmodel
+  });
+}
+
+{
   d.import(dom);
   const domtree = e.body(
     {
@@ -82,6 +93,39 @@ const d = new Store(std);
                         "title": path("ev", "value", "trim"),
                         "state": n("active"),
                       })
+                    ],
+                    // todo: 本来ならviewmodel構築のロジックは入れるべきでないので下記を取り除きたい
+                    [
+                      "then",
+                      path(
+                        "Act",
+                        [
+                          "new",
+                          func("id",
+                            path("Object",
+                            [
+                              "new",
+                              n({
+                                "_type": pack(sym("TaskView")),
+                              })
+                            ],
+                            [
+                              "then",
+                              path(
+                                "Act",
+                                [
+                                  "new",
+                                  func(
+                                    "vid",
+                                    path("viewmodel", ["set", sym("id"), sym("vid")])
+                                  )
+                                ]
+                              )
+                            ]
+                            )
+                          )
+                        ]
+                      )
                     ],
                     [
                       "then",
@@ -187,7 +231,7 @@ const d = new Store(std);
                         path("tid", "state", "head"),
                         exp(
                           "if",
-                          path("tid", "editing"),
+                          path("viewmodel", sym("tid"), "editing"),
                           "editing",
                           v(null)
                         )
@@ -209,7 +253,8 @@ const d = new Store(std);
                     e.label({
                         ondblclick: func("ev",
                           path(
-                            "tid",
+                            "viewmodel",
+                            sym("tid"),
                             [
                               "set",
                               "editing",
@@ -218,7 +263,8 @@ const d = new Store(std);
                             [
                               "then",
                               path(
-                                "tid",
+                                "viewmodel",
+                                sym("tid"),
                                 [
                                   "set",
                                   "editingTitle",
@@ -246,10 +292,10 @@ const d = new Store(std);
                   ),
                   e.input({
                     class: "edit",
-                    value: path("tid", "editingTitle"),
+                    value: path("viewmodel", sym("tid"), "editingTitle"),
                     afterUpdate: exp(
                       "if",
-                      path("tid", "editing"),
+                      path("viewmodel", sym("tid"), "editing"),
                       path("focusAfterAct"),
                       new Act(() => {})
                     ),
@@ -259,7 +305,8 @@ const d = new Store(std);
                         "if",
                         path("ev", "keyCode", ["equals", v(27)]),
                         path(
-                          "tid",
+                          "viewmodel",
+                          sym("tid"),
                           [
                             "set",
                             "editingTitle",
@@ -268,7 +315,8 @@ const d = new Store(std);
                           [
                             "then",
                             path(
-                              "tid",
+                              "viewmodel",
+                              sym("tid"),
                               [
                                 "set",
                                 "editing",
@@ -309,7 +357,8 @@ const d = new Store(std);
                                 [
                                   "then",
                                   path(
-                                    "tid",
+                                    "viewmodel",
+                                    sym("tid"),
                                     [
                                       "set",
                                       "editing",
@@ -357,7 +406,8 @@ const d = new Store(std);
                               [
                                 "then",
                                 path(
-                                  "tid",
+                                  "viewmodel",
+                                  sym("tid"),
                                   [
                                     "set",
                                     "editing",
@@ -377,7 +427,8 @@ const d = new Store(std);
                     ),
                     oninput: func("ev",
                       path(
-                        "tid",
+                        "viewmodel",
+                        sym("tid"),
                         [
                           "set",
                           "editingTitle",
@@ -558,7 +609,43 @@ const d = new Store(std);
         path(
           "todos", ["changeStateByHash", path("win", "location", "hash")],
           ["then", path("localStorage", ["read", v("todos-lay-objs")])],
-          ["then", exp("load")]
+          ["then", exp("load")],
+          // todo: 本来ならviewmodel構築のロジックは入れるべきでないので下記を取り除きたい
+          ["then", path(
+            "Act",
+            [
+              "new",
+              func("objs",
+                path(
+                "objs",
+                [
+                  "map",
+                  func("obj",
+                    path("Object",
+                    [
+                      "new",
+                      n({
+                        "_type": pack(sym("TaskView")),
+                      })
+                    ],
+                    [
+                      "then",
+                      path(
+                        "Act",
+                        [
+                          "new",
+                          func(
+                            "vid",
+                            path("viewmodel", ["set", sym("obj"), sym("vid")])
+                          )
+                        ]
+                      )
+                    ])
+                  )
+                ]
+              ))
+            ]
+          )]
         )
       )
     }

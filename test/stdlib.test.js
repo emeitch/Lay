@@ -223,19 +223,15 @@ describe("stdlib", () => {
             const id = new UUID();
             store.put({
               _id: id,
-              foo: v(2)
             });
 
             const context = new UUID();
             const holder = new UUID();
-            store.put({
-              _id: holder,
-              [id.stringify()]: context // context obj no exist
-            });
+            const a1 = path(holder, ["set", id, context]).reduce(store);
+            store.run(a1);
 
-            const p = path(holder, id, ["set", "buz", v(5)]);
-            const a = p.reduce(store);
-            store.run(a);
+            const a2 = path(holder, id, ["set", "buz", v(5)]).reduce(store);
+            store.run(a2);
 
             assert.deepStrictEqual(path(holder, id, "buz").reduce(store), v(5));
           });
