@@ -51,10 +51,7 @@ export default class Val {
     const key = k instanceof Prim ? k.origin : k;
 
     if (store) {
-      const type = store.resolve(this._type);
-      if (type && !(type instanceof Sym)) {
-        return type.get(key, store);
-      }
+      return store.findPropFromType(this, key);
     }
 
     return this.getJSProp(key);
