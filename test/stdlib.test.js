@@ -218,6 +218,29 @@ describe("stdlib", () => {
           assert.deepStrictEqual(o3.get("bar", store), undefined);
         });
 
+        context("with context", () => {
+          it("should set context properties", () => {
+            const id = new UUID();
+            store.put({
+              _id: id,
+              foo: v(2)
+            });
+
+            const context = new UUID();
+            const holder = new UUID();
+            store.put({
+              _id: holder,
+              [id.stringify()]: context // context obj no exist
+            });
+
+            const p = path(holder, id, ["set", "buz", v(5)]);
+            const a = p.reduce(store);
+            store.run(a);
+
+            assert.deepStrictEqual(path(holder, id, "buz").reduce(store), v(5));
+          });
+        });
+
         // todo: CompMapの部分更新はあとで実装する
         // context("with nested obj properties", () => {
         //   it("should set nested properties", () => {
