@@ -217,6 +217,35 @@ describe("stdlib", () => {
           const o3 = store.fetch(id);
           assert.deepStrictEqual(o3.get("bar", store), undefined);
         });
+
+        // todo: CompMapの部分更新はあとで実装する
+        // context("with nested obj properties", () => {
+        //   it("should set nested properties", () => {
+        //     const id = new UUID();
+        //     store.put({
+        //       _id: id,
+        //       foo: {
+        //         bar: v(3),
+        //         buz: {
+        //           fiz: v(4),
+        //         }
+        //       }
+        //     });
+        //
+        //     assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(3));
+        //     assert.deepStrictEqual(path(id, "foo", "buz", "fiz").reduce(store), v(4));
+        //
+        //     const p = path(id, "foo", "buz", ["set", "fiz", v(5)]);
+        //     const a = p.reduce(store);
+        //     store.run(a);
+        //
+        //     console.log(path(id, "foo", "buz").reduce(store));
+        //     console.log(path(id, "foo", "buz", "set").reduce(store));
+        //
+        //     assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(3));
+        //     assert.deepStrictEqual(path(id, "foo", "buz", "fiz").reduce(store), v(5));
+        //   });
+        // });
       });
 
       describe("#get", () => {
