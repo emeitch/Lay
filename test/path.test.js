@@ -235,27 +235,15 @@ describe("Path", () => {
         });
 
         const holder2 = new UUID();
-        const context2 = new UUID();
         store.put({
           _id: holder2,
-          [id]: context2
-        });
-        store.put({
-          _id: context2,
-          x: 2
-        });
-
-        const holder3 = new UUID();
-        store.put({
-          _id: holder3,
           [id]: {
-            x: 3
+            x: 2
           }
         });
 
         assert.deepStrictEqual(path(holder1, id, "x").reduce(store), v(1));
         assert.deepStrictEqual(path(holder2, id, "x").reduce(store), v(2));
-        assert.deepStrictEqual(path(holder3, id, "x").reduce(store), v(3));
       });
     });
 
