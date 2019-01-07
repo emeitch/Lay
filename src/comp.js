@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import Val from './val';
 import Prim from './prim';
-import Sym, { sym } from './sym';
+import { sym } from './sym';
 
 const NullVal = new Prim(null);
 
@@ -63,23 +63,6 @@ export default class Comp extends Val {
 
   get field() {
     return Comp.valFrom(this.origin);
-  }
-
-  keyStr(key) {
-    if (typeof(key) !== "object") {
-      return key;
-    }
-
-    if (key instanceof Sym || key instanceof Prim) {
-      return key.origin;
-    }
-
-    const id = key.getOwnProp("_id");
-    if (id) {
-      return id.stringify();
-    }
-
-    return key.stringify();
   }
 
   getCompProp(k) {

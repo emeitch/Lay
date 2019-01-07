@@ -42,13 +42,30 @@ export default class Val {
     return undefined;
   }
 
+  keyStr(key) {
+    if (typeof(key) !== "object") {
+      return key;
+    }
+
+    if (key instanceof Sym || key instanceof Prim) {
+      return key.origin;
+    }
+
+    const id = key.getOwnProp("_id");
+    if (id) {
+      return id.stringify();
+    }
+
+    return key.stringify();
+  }
+
   getOwnProp(k) {
-    const key = k instanceof Prim ? k.origin : k;
+    const key = this.keyStr(k);
     return this.getJSProp(key);
   }
 
   get(k, store) {
-    const key = k instanceof Prim ? k.origin : k;
+    const key = this.keyStr(k);
 
     if (store) {
       const prop = store.findPropFromType(this, key);

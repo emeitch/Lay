@@ -20,7 +20,7 @@ describe("Path", () => {
 
   describe("constructor", () => {
     it("should complete prim string", () => {
-      assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), new Path("foo", [v("bar"), v("buz")], v("fiz")));
+      assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), new Path("foo", [sym("bar"), sym("buz")], sym("fiz")));
     });
 
     context("call a func", () => {
@@ -283,8 +283,8 @@ describe("Path", () => {
             },
             origin: "foo"
           },
-          "bar",
-          ["buz", "fiz"]
+          { origin: "bar" },
+          [{ origin: "buz" }, { origin: "fiz" }]
         ]
       });
     });

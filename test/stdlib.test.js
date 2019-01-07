@@ -321,7 +321,7 @@ describe("stdlib", () => {
   context("accessing default Comp methods", () => {
     describe("new", () => {
       it("should create a comp", () => {
-        const m = path("Comp", ["new", "Foo", v(1)]).reduce(store);
+        const m = path("Comp", ["new", v("Foo"), v(1)]).reduce(store);
         assert.deepStrictEqual(m, v("Foo", v(1)));
       });
     });
