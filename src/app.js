@@ -225,7 +225,7 @@ const d = new Store(std);
                 )],
                 ["map", func("tid",
                 e.li({
-                    key: "tid",
+                    key: path("tid", "_id"),
                     class: path(
                       n([
                         path("tid", "state", "head"),
@@ -293,7 +293,7 @@ const d = new Store(std);
                   e.input({
                     class: "edit",
                     value: path("viewmodel", sym("tid"), "editingTitle"),
-                    afterUpdate: exp(
+                    afterCreate: exp(
                       "if",
                       path("viewmodel", sym("tid"), "editing"),
                       path("focusAfterAct"),
@@ -425,17 +425,17 @@ const d = new Store(std);
                         )
                       )
                     ),
-                    oninput: func("ev",
-                      path(
-                        "viewmodel",
-                        sym("tid"),
-                        [
-                          "set",
-                          "editingTitle",
-                          path("ev", "value")
-                        ]
-                      )
-                    )
+                    // oninput: func("ev",
+                    //   path(
+                    //     "viewmodel",
+                    //     sym("tid"),
+                    //     [
+                    //       "set",
+                    //       "editingTitle",
+                    //       path("ev", "value")
+                    //     ]
+                    //   )
+                    // )
                   })
                 )
               )])
