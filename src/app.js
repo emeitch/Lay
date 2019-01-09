@@ -424,18 +424,7 @@ const d = new Store(std);
                           "trim"
                         )
                       )
-                    ),
-                    // oninput: func("ev",
-                    //   path(
-                    //     "viewmodel",
-                    //     sym("tid"),
-                    //     [
-                    //       "set",
-                    //       "editingTitle",
-                    //       path("ev", "value")
-                    //     ]
-                    //   )
-                    // )
+                    )
                   })
                 )
               )])
