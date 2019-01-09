@@ -255,7 +255,7 @@ export default class Store {
       return undefined;
     }
 
-    const p = tobj.getOwnProp(key);
+    const p = tobj.getCompProp(key);
     if (p) {
       return p;
     }
