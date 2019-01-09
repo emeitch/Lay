@@ -225,7 +225,7 @@ const d = new Store(std);
                 )],
                 ["map", func("tid",
                 e.li({
-                    key: path("tid", "_id"),
+                    key: path("tid", "_id", "toStr"),
                     class: path(
                       n([
                         path("tid", "state", "head"),
@@ -293,7 +293,7 @@ const d = new Store(std);
                   e.input({
                     class: "edit",
                     value: path("viewmodel", sym("tid"), "editingTitle"),
-                    afterCreate: exp(
+                    afterUpdate: exp(
                       "if",
                       path("viewmodel", sym("tid"), "editing"),
                       path("focusAfterAct"),
