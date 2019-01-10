@@ -117,7 +117,7 @@ const d = new Store(std);
                                   "new",
                                   func(
                                     "vid",
-                                    path("viewmodel", ["set", sym("id"), sym("vid")])
+                                    path("viewmodel", ["set", "id", "vid"])
                                   )
                                 ]
                               )
@@ -231,7 +231,7 @@ const d = new Store(std);
                         path("tid", "state", "head"),
                         exp(
                           "if",
-                          path("viewmodel", sym("tid"), "editing"),
+                          path("viewmodel", "tid", "editing"),
                           "editing",
                           v(null)
                         )
@@ -254,7 +254,7 @@ const d = new Store(std);
                         ondblclick: func("ev",
                           path(
                             "viewmodel",
-                            sym("tid"),
+                            "tid",
                             [
                               "set",
                               "editing",
@@ -264,7 +264,7 @@ const d = new Store(std);
                               "then",
                               path(
                                 "viewmodel",
-                                sym("tid"),
+                                "tid",
                                 [
                                   "set",
                                   "editingTitle",
@@ -292,10 +292,10 @@ const d = new Store(std);
                   ),
                   e.input({
                     class: "edit",
-                    value: path("viewmodel", sym("tid"), "editingTitle"),
+                    value: path("viewmodel", "tid", "editingTitle"),
                     afterUpdate: exp(
                       "if",
-                      path("viewmodel", sym("tid"), "editing"),
+                      path("viewmodel", "tid", "editing"),
                       path("focusAfterAct"),
                       new Act(() => {})
                     ),
@@ -306,7 +306,7 @@ const d = new Store(std);
                         path("ev", "keyCode", ["equals", v(27)]),
                         path(
                           "viewmodel",
-                          sym("tid"),
+                          "tid",
                           [
                             "set",
                             "editingTitle",
@@ -316,7 +316,7 @@ const d = new Store(std);
                             "then",
                             path(
                               "viewmodel",
-                              sym("tid"),
+                              "tid",
                               [
                                 "set",
                                 "editing",
@@ -358,7 +358,7 @@ const d = new Store(std);
                                   "then",
                                   path(
                                     "viewmodel",
-                                    sym("tid"),
+                                    "tid",
                                     [
                                       "set",
                                       "editing",
@@ -407,7 +407,7 @@ const d = new Store(std);
                                 "then",
                                 path(
                                   "viewmodel",
-                                  sym("tid"),
+                                  "tid",
                                   [
                                     "set",
                                     "editing",
