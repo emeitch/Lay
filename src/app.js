@@ -143,7 +143,7 @@ const d = new Store(std);
                 v(null)
               )
             ),
-            // todo: maquette利用の都合上、前回vdomと実DOMのプロパティが一緒でないと値の書き換えができないので、oninputで毎度newTaskTitleを書き換えている。後ほど是正したい。
+            // todo: maquetteの都合上、前回vdomと新vdomのプロパティ値に差分がないと実DOMの書き換えができないので、oninputで毎度newTaskTitleを書き換える。後ほど是正したい。
             oninput: func("ev",
               path(
                 "todos",
@@ -423,6 +423,18 @@ const d = new Store(std);
                           "value",
                           "trim"
                         )
+                      )
+                    ),
+                    oninput: func(
+                      "ev",
+                      path(
+                        "viewmodel",
+                        "tid",
+                        [
+                          "set",
+                          "editingTitle",
+                          path("ev", "value")
+                        ]
                       )
                     )
                   })
