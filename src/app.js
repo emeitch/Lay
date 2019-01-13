@@ -348,22 +348,27 @@ const d = new Store(std);
                                 )
                               ),
                               path(
+                                "viewmodel",
                                 "tid",
                                 [
                                   "set",
-                                  "title",
-                                  path("t")
+                                  "editing",
+                                  v(false)
                                 ],
                                 [
                                   "then",
-                                  path(
-                                    "viewmodel",
-                                    "tid",
-                                    [
-                                      "set",
-                                      "editing",
-                                      v(false)
-                                    ]
+                                  exp(
+                                    "if",
+                                    path("t", ["equals", path("tid", "title")]),
+                                    v(null),
+                                    path(
+                                      "tid",
+                                      [
+                                        "set",
+                                        "title",
+                                        path("t")
+                                      ]
+                                    )
                                   )
                                 ]
                               )
@@ -397,22 +402,27 @@ const d = new Store(std);
                               )
                             ),
                             path(
+                              "viewmodel",
                               "tid",
                               [
                                 "set",
-                                "title",
-                                path("t")
+                                "editing",
+                                v(false)
                               ],
                               [
                                 "then",
-                                path(
-                                  "viewmodel",
-                                  "tid",
-                                  [
-                                    "set",
-                                    "editing",
-                                    v(false)
-                                  ]
+                                exp(
+                                  "if",
+                                  path("t", ["equals", path("tid", "title")]),
+                                  v(null),
+                                  path(
+                                    "tid",
+                                    [
+                                      "set",
+                                      "title",
+                                      path("t")
+                                    ]
+                                  )
                                 )
                               ]
                             )
