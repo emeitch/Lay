@@ -1,4 +1,5 @@
 import Val from './val';
+import v from './v';
 
 const ActStatus = {
   PENDING: Symbol(),
@@ -120,6 +121,10 @@ export default class Act extends Val {
   }
 
   then(act) {
+    if (!act || act.equals(v(null))) {
+      return this;
+    }
+
     const next = this.next ? this.next.then(act) : act;
     return this.clone({next});
   }
