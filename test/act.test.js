@@ -3,6 +3,7 @@ import assert from 'assert';
 import Store from '../src/store';
 import { path } from '../src/path';
 import Act from '../src/act';
+import v from '../src/v';
 
 describe("Act", () => {
   describe("#proceed", () => {
@@ -213,6 +214,20 @@ describe("Act", () => {
 
         assert.throws(() => { act.proceed(); }, /next act not found error/);
       });
+    });
+
+    context("with null as next", () => {
+      const first = new Act(() => { return "go"; });
+      const second = null;
+      const third = v(null);
+
+      let act = first.then(second).then(third);
+
+      act = act.proceed();
+
+      assert(act.fulfilled);
+      assert(act.val === "go");
+      assert(act.next === null);
     });
   });
 
