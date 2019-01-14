@@ -231,7 +231,7 @@ const d = new Store(std);
                         path("tid", "state", "head"),
                         exp(
                           "if",
-                          path("viewmodel", "tid", "editing"),
+                          path("viewmodel", sym("tid"), "editing"),
                           "editing",
                           v(null)
                         )
@@ -254,7 +254,7 @@ const d = new Store(std);
                         ondblclick: func("ev",
                           path(
                             "viewmodel",
-                            "tid",
+                            sym("tid"),
                             [
                               "set",
                               "editing",
@@ -264,7 +264,7 @@ const d = new Store(std);
                               "then",
                               path(
                                 "viewmodel",
-                                "tid",
+                                sym("tid"),
                                 [
                                   "set",
                                   "editingTitle",
@@ -292,10 +292,10 @@ const d = new Store(std);
                   ),
                   e.input({
                     class: "edit",
-                    value: path("viewmodel", "tid", "editingTitle"),
+                    value: path("viewmodel", sym("tid"), "editingTitle"),
                     afterUpdate: exp(
                       "if",
-                      path("viewmodel", "tid", "editing"),
+                      path("viewmodel", sym("tid"), "editing"),
                       path("focusAfterAct"),
                       new Act(() => {})
                     ),
@@ -306,7 +306,7 @@ const d = new Store(std);
                         path("ev", "keyCode", ["equals", v(27)]),
                         path(
                           "viewmodel",
-                          "tid",
+                          sym("tid"),
                           [
                             "set",
                             "editingTitle",
@@ -316,7 +316,7 @@ const d = new Store(std);
                             "then",
                             path(
                               "viewmodel",
-                              "tid",
+                              sym("tid"),
                               [
                                 "set",
                                 "editing",
@@ -349,7 +349,7 @@ const d = new Store(std);
                               ),
                               path(
                                 "viewmodel",
-                                "tid",
+                                sym("tid"),
                                 [
                                   "set",
                                   "editing",
@@ -403,7 +403,7 @@ const d = new Store(std);
                             ),
                             path(
                               "viewmodel",
-                              "tid",
+                              sym("tid"),
                               [
                                 "set",
                                 "editing",
@@ -439,7 +439,7 @@ const d = new Store(std);
                       "ev",
                       path(
                         "viewmodel",
-                        "tid",
+                        sym("tid"),
                         [
                           "set",
                           "editingTitle",

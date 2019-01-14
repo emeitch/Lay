@@ -1,19 +1,20 @@
 import Ref from './ref';
 import Val from './val';
 import Case from './case';
+import v from './v';
 import { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
 
 export default class Path extends Ref {
   constructor(...ids) {
-    ids = ids.map(id => {
+    ids = ids.map((id, index) => {
       if (typeof(id) === "string") {
-        return sym(id);
+        return index === 0 ? sym(id) : v(id);
       } else if (Array.isArray(id)) {
-        return id.map(i => {
+        return id.map((i, idx) => {
           if (typeof(i) === "string") {
-            return sym(i);
+            return index === 0 && idx === 0 ? sym(i) : v(i);
           } else {
             return i;
           }
