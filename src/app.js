@@ -117,7 +117,7 @@ const d = new Store(std);
                                   "new",
                                   func(
                                     "vid",
-                                    path("viewmodel", ["set", "id", "vid"])
+                                    path("viewmodel", ["set", sym("id"), sym("vid")])
                                   )
                                 ]
                               )
