@@ -1,12 +1,11 @@
 {
   "presets": [
-    "env"
-  ],
-  "env": {
-    "test": {
-      "presets": [
-        "power-assert"
-      ]
-    }
-  }
+    [
+     "@babel/preset-env",
+     {
+       "useBuiltIns": "entry"
+     }
+    ],
+    "power-assert"
+  ]
 }
