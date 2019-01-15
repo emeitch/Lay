@@ -318,6 +318,14 @@ describe("stdlib", () => {
     });
   });
 
+  context("accessing UUID methods", () => {
+    describe("new", () => {
+      it("should return new UUID", () => {
+        assert(path("UUID", "new").reduce(store) instanceof UUID);
+      });
+    });
+  });
+
   context("accessing default Comp methods", () => {
     describe("new", () => {
       it("should create a comp", () => {
