@@ -94,7 +94,7 @@ export default class Path extends Ref {
         obj = replaced.reduce(store);
       }
 
-      if (!key.equals(sym("_id"))) {
+      if (!key.equals(v("_id"))) {
         // _idの場合だけ特別にIDそのものを返す特別処理
         obj = store.resolve(obj);
       }
