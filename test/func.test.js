@@ -257,10 +257,14 @@ describe("Func", () => {
           v(3));
 
         assert.deepStrictEqual(
-          exp(
-            func(
-              v(3))).reduce(store),
-          v(3));
+          exp(func(v(3))).reduce(store),
+          v(3)
+        );
+
+        assert.deepStrictEqual(
+          exp(func(v(3)), undefined).reduce(store),
+          v(3)
+        );
       });
     });
   });

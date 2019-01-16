@@ -3,7 +3,7 @@ import { sym } from './sym';
 
 export default class Exp extends Val {
   constructor(...terms) {
-    super(terms.map(t => typeof(t) === "string" ? sym(t) : t));
+    super(terms.filter(t => t).map(t => typeof(t) === "string" ? sym(t) : t));
     this.head = sym(this.constructor.name);
   }
 
