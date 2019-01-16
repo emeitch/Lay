@@ -449,7 +449,6 @@ describe("stdlib", () => {
         const act = path("Act", [
           "new",
           func(
-            "x",
             path("Object", [
               "new",
               v({
@@ -460,8 +459,7 @@ describe("stdlib", () => {
         ).reduce(store);
         assert(act instanceof Act);
 
-        const a1 = new Act(() => v(1));
-        store.run(a1.then(act));
+        store.run(act);
         assert.deepStrictEqual(path("Foo", "all", "count").reduce(store), v(1));
       });
     });
