@@ -440,6 +440,32 @@ describe("stdlib", () => {
   });
 
   context("accessing Act methods", () => {
+    describe("new", () => {
+      it("should return a new Act instance", () => {
+        store.put({
+          _id: "Foo"
+        });
+
+        const act = path("Act", [
+          "new",
+          func(
+            "x",
+            path("Object", [
+              "new",
+              v({
+                _type: pack(sym("Foo"))
+              })
+            ])
+          )]
+        ).reduce(store);
+        assert(act instanceof Act);
+
+        const a1 = new Act(() => v(1));
+        store.run(a1.then(act));
+        assert.deepStrictEqual(path("Foo", "all", "count").reduce(store), v(1));
+      });
+    });
+
     describe("then", () => {
       it("should return a chained Act", () => {
         const f1 = () => {};
