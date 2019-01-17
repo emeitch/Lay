@@ -88,6 +88,20 @@ describe("Store", () => {
         }, /optimistic locked: _rev is not specified/);
       });
     });
+
+    context("path as id", () => {
+      it("should store the object", () => {
+        const p = path(new UUID(), new UUID());
+        const obj = v({
+          _id: p,
+          foo: 1,
+          bar: "abc"
+        });
+        store.put(obj);
+
+        assert.deepStrictEqual(store.fetch(p).get("foo"), v(1));
+      });
+    });
   });
 
   describe("#patch", () => {
