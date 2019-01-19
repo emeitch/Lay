@@ -102,6 +102,21 @@ describe("Store", () => {
         assert.deepStrictEqual(store.fetch(p).get("foo"), v(1));
       });
     });
+
+    context("with path whose last key is string", () => {
+      it("should store the partial object", () => {
+        const id = new UUID();
+        const p = path(id, "k");
+        const obj = v({
+          _id: p,
+          foo: 1,
+          bar: "abc",
+        });
+        store.put(obj);
+
+        assert.deepStrictEqual(store.fetch(p).get("foo"), v(1));
+      });
+    });
   });
 
   describe("#patch", () => {
