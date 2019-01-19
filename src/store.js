@@ -4,6 +4,8 @@ import Ref from './ref';
 import Sym, { sym } from './sym';
 import Prim from './prim';
 import Act from './act';
+import ID from './id';
+import Path from './path';
 import Comp, { CompMap } from './comp';
 
 export default class Store {
@@ -38,8 +40,27 @@ export default class Store {
 
   doPut(obj) {
     const id = obj.getOwnProp("_id");
-    const idstr = this.objToStr(id);
-    this.objs.set(idstr, obj);
+
+    // todo: Pathのif文が醜過ぎるのを修正
+    if (id instanceof Path) {
+      if (id.origin.every(i => i instanceof ID)) {
+        const idstr = this.objToStr(id);
+        this.objs.set(idstr, obj);
+      } else {
+        const base = this.fetch(id.receiver) || v({_id: id});
+        const keys = id.keys.concat();
+        keys.reverse();
+        const diff = keys.reduce((a, c) => {
+          return {[c.origin]: a};
+        }, obj);
+        const o = base.patch(diff);
+        const idstr = this.objToStr(id.receiver);
+        this.objs.set(idstr, o);
+      }
+    } else {
+      const idstr = this.objToStr(id);
+      this.objs.set(idstr, obj);
+    }
   }
 
   putWithHandler(obj, block) {

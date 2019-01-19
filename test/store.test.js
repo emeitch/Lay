@@ -104,9 +104,9 @@ describe("Store", () => {
     });
 
     context("with path whose last key is string", () => {
-      it("should store the partial object", () => {
+      it("should store the partial object for new object", () => {
         const id = new UUID();
-        const p = path(id, "k");
+        const p = path(id, "k1", "k2");
         const obj = v({
           _id: p,
           foo: 1,
@@ -114,7 +114,26 @@ describe("Store", () => {
         });
         store.put(obj);
 
-        assert.deepStrictEqual(store.fetch(p).get("foo"), v(1));
+        assert.deepStrictEqual(path(id, "k1", "k2", "foo").reduce(store), v(1));
+      });
+
+      context("exist obj", () => {
+        it("should update the partial object", () => {
+          const id = new UUID();
+          store.put({
+            _id: id,
+          });
+
+          const p = path(id, "k1", "k2");
+          const obj = v({
+            _id: p,
+            foo: 1,
+            bar: "abc",
+          });
+          store.put(obj);
+
+          assert.deepStrictEqual(path(id, "k1", "k2", "foo").reduce(store), v(1));
+        });
       });
     });
   });
