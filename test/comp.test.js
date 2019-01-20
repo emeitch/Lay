@@ -178,22 +178,37 @@ describe("Comp", () => {
             foo: {
               bar: 2,
               buz: 4,
-              fiz: 6
+              fiz: 6,
+              dos: {
+                a: 1,
+                b: 2,
+                c: 3
+              }
             }
           });
           assert.deepStrictEqual(val1.get("foo").get("bar"), v(2));
           assert.deepStrictEqual(val1.get("foo").get("buz"), v(4));
           assert.deepStrictEqual(val1.get("foo").get("fiz"), v(6));
+          assert.deepStrictEqual(val1.get("foo").get("dos").get("a"), v(1));
+          assert.deepStrictEqual(val1.get("foo").get("dos").get("b"), v(2));
+          assert.deepStrictEqual(val1.get("foo").get("dos").get("c"), v(3));
 
           const val2 = val1.patch({
             foo: {
               buz: null,
-              fiz: v(null)
+              fiz: v(null),
+              dos: {
+                a: v(8),
+                c: null
+              }
             }
           });
           assert.deepStrictEqual(val2.get("foo").get("bar"), v(2));
           assert.deepStrictEqual(val2.get("foo").get("buz"), undefined);
           assert.deepStrictEqual(val2.get("foo").get("fiz"), undefined);
+          assert.deepStrictEqual(val1.get("foo").get("dos").get("a"), v(8));
+          assert.deepStrictEqual(val1.get("foo").get("dos").get("b"), v(2));
+          assert.deepStrictEqual(val1.get("foo").get("dos").get("c"), undefined);
         });
       });
     });

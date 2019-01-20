@@ -120,7 +120,7 @@ export default class Comp extends Val {
     };
 
     const oo = Object.assign({}, this.origin);
-    const newObj = remove(_.merge({}, oo, d));
+    const newObj = remove(_.merge(oo, d));
     return new this.constructor(newObj);
   }
 
