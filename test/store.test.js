@@ -135,6 +135,32 @@ describe("Store", () => {
           assert.deepStrictEqual(path(id, "k1", "k2", "foo").reduce(store), v(1));
         });
       });
+
+      context("exist partial obj", () => {
+        it("should update the partial object", () => {
+          const id = new UUID();
+          store.put({
+            _id: id,
+            k1: {
+              k2: {
+                foo: 1,
+                bar: "abc"
+              }
+            }
+          });
+          assert.deepStrictEqual(path(id, "k1", "k2", "foo").reduce(store), v(1));
+          assert.deepStrictEqual(path(id, "k1", "k2", "bar").reduce(store), v("abc"));
+
+          const p = path(id, "k1", "k2");
+          const obj = v({
+            _id: p,
+            foo: 2,
+          });
+          store.put(obj);
+          assert.deepStrictEqual(path(id, "k1", "k2", "foo").reduce(store), v(2));
+          assert.deepStrictEqual(path(id, "k1", "k2", "bar").reduce(store), v("abc"));
+        });
+      });
     });
   });
 

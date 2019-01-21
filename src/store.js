@@ -41,26 +41,8 @@ export default class Store {
   doPut(obj) {
     const id = obj.getOwnProp("_id");
 
-    // todo: Pathのif文が醜過ぎるのを修正
-    if (id instanceof Path) {
-      if (id.origin.every(i => i instanceof ID)) {
-        const idstr = this.objToStr(id);
-        this.objs.set(idstr, obj);
-      } else {
-        const base = this.fetch(id.receiver) || v({_id: id});
-        const keys = id.keys.concat();
-        keys.reverse();
-        const diff = keys.reduce((a, c) => {
-          return {[c.origin]: a};
-        }, obj);
-        const o = base.patch(diff);
-        const idstr = this.objToStr(id.receiver);
-        this.objs.set(idstr, o);
-      }
-    } else {
-      const idstr = this.objToStr(id);
-      this.objs.set(idstr, obj);
-    }
+    const idstr = this.objToStr(id);
+    this.objs.set(idstr, obj);
   }
 
   putWithHandler(obj, block) {
@@ -79,7 +61,25 @@ export default class Store {
       at: v(new Date())
     });
 
-    const id = obj.getOwnProp("_id");
+    let id = obj.getOwnProp("_id");
+
+    // todo: Pathのif文が醜過ぎるのを修正
+    if (id instanceof Path) {
+      const pth = id;
+      if (!pth.origin.every(i => i instanceof ID)) {
+        id = id.receiver;
+        const base = this.fetch(id) || v({_id: id});
+        const keys = pth.keys.concat();
+        keys.reverse();
+        const po = Object.assign({}, obj.origin);
+        delete po._id;
+        const diff = keys.reduce((a, c) => {
+          return {[c.origin]: a};
+        }, po);
+        obj = base.patch(diff);
+      }
+    }
+
     const old = this.fetch(id);
     const orid = old && old.getOwnProp("_rev");
     const prid = obj.getOwnProp("_rev");
@@ -90,14 +90,14 @@ export default class Store {
       throw "optimistic locked: specified _rev is not latest";
     }
 
-    const diff = {
+    const withRev = {
       _rev: rid
     };
     if (prid) {
-      diff._prev = prid;
+      withRev._prev = prid;
     }
 
-    const o = obj.patch(diff);
+    const o = obj.patch(withRev);
     this.doPut(rev);
     this.doPut(o);
 
