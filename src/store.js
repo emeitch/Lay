@@ -371,4 +371,12 @@ export default class Store {
       acts.origin.every(o => o instanceof Act)
     );
   }
+
+  path(base, key) {
+    if (base instanceof Path) {
+      return new Path(...base.origin.concat([key]));
+    } else {
+      return new Path(base, key);
+    }
+  }
 }

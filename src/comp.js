@@ -86,8 +86,13 @@ export default class Comp extends Val {
   get(k, store) {
     const key = this.keyStr(k);
 
-    const ownProp = this.getOwnProp(k);
+    let ownProp = this.getOwnProp(k);
     if (ownProp) {
+      const base = this.getOwnProp("_id");
+      if (store && base && ownProp instanceof CompMap) {
+        const _id = store.path(base, k);
+        return ownProp.patch({_id});
+      }
       return ownProp;
     }
 

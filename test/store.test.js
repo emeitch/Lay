@@ -148,8 +148,11 @@ describe("Store", () => {
               }
             }
           });
-          assert.deepStrictEqual(path(id, "k1", "k2", "foo").reduce(store), v(1));
-          assert.deepStrictEqual(path(id, "k1", "k2", "bar").reduce(store), v("abc"));
+          assert.deepStrictEqual(path(id, "k1", "k2").reduce(store), v({
+            _id: path(id, "k1", "k2"), // with _id
+            foo: 1,
+            bar: "abc"
+          }));
 
           const p = path(id, "k1", "k2");
           const obj = v({
@@ -157,8 +160,11 @@ describe("Store", () => {
             foo: 2,
           });
           store.put(obj);
-          assert.deepStrictEqual(path(id, "k1", "k2", "foo").reduce(store), v(2));
-          assert.deepStrictEqual(path(id, "k1", "k2", "bar").reduce(store), v("abc"));
+          assert.deepStrictEqual(path(id, "k1", "k2").reduce(store), v({
+            _id: path(id, "k1", "k2"), // with _id
+            foo: 2,
+            bar: "abc"
+          }));
         });
       });
     });
