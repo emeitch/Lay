@@ -218,6 +218,20 @@ describe("stdlib", () => {
           assert.deepStrictEqual(o3.get("bar", store), undefined);
         });
 
+        it("should set partial obj's property", () => {
+          const id = new UUID();
+          store.put(v({
+            _id: id,
+            foo: {
+              bar: 1
+            }
+          }));
+          const pact = path(id, "foo", ["set", "bar", v(2)]).reduce(store);
+          store.run(pact);
+
+          assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(2));
+        });
+
         context("with context", () => {
           it("should set context properties", () => {
             const id = new UUID();
