@@ -63,21 +63,12 @@ export default class Store {
 
     let id = obj.getOwnProp("_id");
 
-    // todo: Pathのif文が醜過ぎるのを修正
-    if (id instanceof Path) {
+    if (id instanceof Path && !id.origin.every(i => i instanceof ID)) {
       const pth = id;
-      if (!pth.origin.every(i => i instanceof ID)) {
-        id = id.receiver;
-        const base = this.fetch(id) || v({_id: id});
-        const keys = pth.keys.concat();
-        keys.reverse();
-        const po = Object.assign({}, obj.origin);
-        delete po._id;
-        const diff = keys.reduce((a, c) => {
-          return {[c.origin]: a};
-        }, po);
-        obj = base.patch(diff);
-      }
+      id = pth.receiver;
+      const base = this.fetch(id) || v({_id: id});
+      const diff = pth.diff(obj);
+      obj = base.patch(diff);
     }
 
     const old = this.fetch(id);

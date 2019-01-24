@@ -115,6 +115,15 @@ export default class Path extends Ref {
       })
     });
   }
+
+  diff(leaf) {
+    const keys = this.keys.concat();
+    keys.reverse();
+    const lf = Object.assign({}, leaf.origin);
+    return keys.reduce((a, c) => {
+      return {[c.origin]: a};
+    }, lf);
+  }
 }
 
 export function path(...args) {
