@@ -36,7 +36,7 @@ describe("Many", () => {
 
       store.put({
         _id: bid,
-        foo: new Many("Foo", "bar", bid),
+        foo: new Many("Foo", "bar"),
       });
 
       assert.deepStrictEqual(path(bid, "foo", v(0), "_id").reduce(store), fid1);

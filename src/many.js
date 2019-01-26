@@ -11,6 +11,11 @@ export default class Many extends Val {
     });
   }
 
+  replaceSelfBy(obj) {
+    const {type, prop} = this.origin;
+    return new this.constructor(type, prop, obj);
+  }
+
   get(k, store) {
     const {type, prop, target} = this.origin;
     const p = path(
@@ -23,7 +28,6 @@ export default class Many extends Val {
           path(
             "id",
             prop,
-            "_id",
             ["equals", target]
           )
         )
