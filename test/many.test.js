@@ -41,5 +41,39 @@ describe("Many", () => {
 
       assert.deepStrictEqual(path(bid, "foo", v(0), "_id").reduce(store), fid1);
     });
+
+    context("the prop name is same the type name", () => {
+      it("should enumrate each objs", () => {
+        const store = new Store(std);
+
+        const bid = new UUID();
+
+        store.put({
+          _id: "Foo"
+        });
+
+        const fid1 = new UUID();
+        store.put({
+          _id: fid1,
+          _type: sym("Foo"),
+          bar: bid
+        });
+
+        const fid2 = new UUID();
+        store.put({
+          _id: fid2,
+          _type: sym("Foo"),
+          bar: bid
+        });
+
+        store.put({
+          _id: bid,
+          _type: sym("Bar"),
+          foo: new Many("Foo"),
+        });
+
+        assert.deepStrictEqual(path(bid, "foo", v(0), "_id").reduce(store), fid1);
+      });
+    });
   });
 });

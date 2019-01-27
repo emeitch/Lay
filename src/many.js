@@ -13,7 +13,12 @@ export default class Many extends Val {
 
   replaceSelfBy(obj) {
     const {type, prop} = this.origin;
-    return new this.constructor(type, prop, obj);
+    let p = prop;
+    if (!p) {
+      const tsym = obj.getOwnProp("_type");
+      p = tsym && tsym.origin.replace(/^(.)/, s => s.toLowerCase());
+    }
+    return new this.constructor(type, p, obj);
   }
 
   get(k, store) {
