@@ -3,6 +3,7 @@ import v from './v';
 import Act from './act';
 import Store from './store';
 import Prim from './prim';
+import Path from './path';
 import UUID from './uuid';
 import Comp, { CompArray, CompMap } from  './comp';
 import { exp } from './exp';
@@ -213,7 +214,8 @@ export const std = new Store();
       const arr = self;
       const result = arr.origin.every(o => {
         const e = exp(fnc, v(o));
-        return e.reduce(this).origin;
+        const val = e.reduce(this);
+        return !(val instanceof Path) && val.origin;
       });
       return v(result);
     }), "self", "fnc"))
@@ -226,7 +228,8 @@ export const std = new Store();
       const arr = self;
       const narr = arr.origin.filter(o => {
         const e = exp(fnc, v(o));
-        return e.reduce(this).origin;
+        const val = e.reduce(this);
+        return !(val instanceof Path) && val.origin;
       });
       return v(narr);
     }), "self", "fnc"))
