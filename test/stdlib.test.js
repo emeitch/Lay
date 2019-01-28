@@ -53,7 +53,7 @@ describe("stdlib", () => {
   });
 
 
-  describe("filterPiars", () => {
+  describe("filterObjs", () => {
     it("should filter act arg log by pattern", () => {
       const rid = new UUID();
       const rev = v({
