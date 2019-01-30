@@ -1,7 +1,7 @@
-import Val from './val';
+import { Ref } from './val';
 
-export default class Ref extends Val {
-  stringify(_indent) {
-    throw "Ref is abstruct class";
-  }
+export default Ref;
+
+export function ref(...args) {
+  return new Ref(...args);
 }

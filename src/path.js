@@ -81,7 +81,7 @@ export default class Path extends Ref {
         prop = func(new LiftedNative(nf));
       }
       if (prop === undefined) {
-        return super.step(store);
+        return this;
       }
 
       if (prop instanceof Case) {

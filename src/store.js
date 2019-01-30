@@ -252,7 +252,7 @@ export default class Store {
 
   resolve(ref) {
     let obj = ref;
-    while(obj instanceof Ref || obj instanceof Sym) {
+    while(obj instanceof Ref || obj instanceof ID || obj instanceof Sym) {
       obj = this.fetch(obj);
       obj = obj && obj.reduce(this); // for _target reducing
     }

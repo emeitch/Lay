@@ -1,6 +1,6 @@
-import Ref from './ref';
+import Val from './val';
 
-export default class ID extends Ref {
+export default class ID extends Val {
   get reducible() {
     return false;
   }

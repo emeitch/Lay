@@ -234,3 +234,15 @@ export class Prim extends Val {
     return this.origin;
   }
 }
+
+/*********************************************************************/
+export class Ref extends Val {
+  constructor(key) {
+    super(typeof(key) === "string" ? new Prim(key) : key);
+  }
+
+  step(store) {
+    const fetched = store.fetch(this.origin.origin);
+    return fetched ? fetched : this;
+  }
+}
