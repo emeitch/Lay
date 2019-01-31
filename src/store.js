@@ -49,7 +49,7 @@ export default class Store {
     // todo: ロックが実現の為に下記の一連の処理がアトミックな操作となるよううまく保証する
 
     const tprop = obj.getOwnProp("_type");
-    if (!(tprop instanceof Sym)) {
+    if (!(tprop instanceof Sym) && tprop.constructor !== Ref) {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 
@@ -262,7 +262,7 @@ export default class Store {
 
   traversePropFromType(obj, key) {
     const tref = obj.getOwnProp("_type");
-    const tobj = this.resolve(tref);
+    const tobj = tref instanceof Sym ? this.resolve(tref) : tref.reduce(this);
     if (tref.equals(tobj)) {
       return undefined;
     }
