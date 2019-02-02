@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import Val from './val';
 import Prim from './prim';
-import { sym } from './sym';
+import v from './v';
 import { ref } from './ref';
 
 const NullVal = new Prim(null);
@@ -208,7 +208,7 @@ export class CompMap extends Comp {
 
   constructor(origin, head) {
     if (origin._id && typeof(origin._id) === "string") {
-      origin._id = sym(origin._id);
+      origin._id = v(origin._id);
     }
 
     super(origin, head);

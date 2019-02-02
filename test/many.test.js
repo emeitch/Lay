@@ -49,7 +49,7 @@ describe("Many", () => {
         const bid = new UUID();
 
         store.put({
-          _id: "Foo"
+          _id: v("Foo")
         });
 
         const fid1 = new UUID();

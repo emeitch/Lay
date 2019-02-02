@@ -21,7 +21,7 @@ describe("Path", () => {
 
   describe("constructor", () => {
     it("should complete prim string", () => {
-      assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), new Path(sym("foo"), [v("bar"), v("buz")], v("fiz")));
+      assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), new Path(ref("foo"), [v("bar"), v("buz")], v("fiz")));
     });
 
     context("call a func", () => {
@@ -84,15 +84,15 @@ describe("Path", () => {
         store.put({
           _id: id1,
           foo: v(1),
-          bar: path("self", "foo"),
+          bar: path(sym("self"), "foo"),
         });
 
         store.put({
           _id: id2,
           foo: v(2),
-          bar: path("self", "foo"),
+          bar: path(sym("self"), "foo"),
           buz: func("x", exp(plus, path(id1, "bar"), "x")),
-          biz: path("self", ["buz", v(3)])
+          biz: path(sym("self"), ["buz", v(3)])
         });
       });
 
@@ -107,7 +107,7 @@ describe("Path", () => {
       beforeEach(() => {
         store.put({
           _id: id,
-          foo: func("x", exp(plus, new Path("self", "bar"), "x")),
+          foo: func("x", exp(plus, new Path(sym("self"), "bar"), "x")),
           bar: v(2)
         });
         p = new Path(id, ["foo", v(3)]);
@@ -215,7 +215,7 @@ describe("Path", () => {
           foo: func("a", exp(concat, v("f"), "a"))
         });
 
-        const e = exp(func("x", new Path(id, ["foo", path("x")])), v("bar"));
+        const e = exp(func("x", new Path(id, ["foo", path(sym("x"))])), v("bar"));
         assert.deepStrictEqual(e.reduce(store), v("fbar"));
       });
     });
@@ -301,7 +301,7 @@ describe("Path", () => {
 
   describe("stringify", () => {
     it("should return string dump", () => {
-      const p = new Path("self", v("foo"));
+      const p = new Path(sym("self"), v("foo"));
       assert(p.stringify() === "Path [\n  self, \n  \"foo\"\n]");
     });
   });

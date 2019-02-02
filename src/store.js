@@ -1,7 +1,7 @@
 import UUID from './uuid';
 import v from './v';
 import Ref, { ref } from './ref';
-import Sym, { sym } from './sym';
+import Sym from './sym';
 import Act from './act';
 import ID from './id';
 import Path from './path';
@@ -24,10 +24,6 @@ export default class Store {
     this.assign("currentStoreId", this.id);
   }
 
-  objToStr(key) {
-    return v(key).stringify();
-  }
-
   strToObj(kstr) {
     const m = kstr.match(/^urn:uuid:(.*)/);
     if (m && m[1]) {
@@ -40,8 +36,7 @@ export default class Store {
   doPut(obj) {
     const id = obj.getOwnProp("_id");
 
-    const idstr = this.objToStr(id);
-    this.objs.set(idstr, obj);
+    this.objs.set(id.keyString(), obj);
   }
 
   putWithHandler(obj, block) {
@@ -183,8 +178,7 @@ export default class Store {
   }
 
   fetchWithoutImports(key) {
-    const kstr = this.objToStr(key);
-    return this.objs.get(kstr);
+    return this.objs.get(key.keyString());
   }
 
   handleOnInport(other) {
@@ -226,7 +220,7 @@ export default class Store {
 
   fetch(key) {
     if (typeof(key) === "string") {
-      key = sym(key);
+      key = v(key);
     }
 
     return this.fetchWithoutImports(key) || this.fetchWithImports(store => store.fetchWithoutImports(key));

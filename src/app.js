@@ -17,9 +17,9 @@ const d = new Store(std);
   d.set("Task",
     "toggle",
     exp("if",
-      path("self", "state", ["equals", n("active")]),
-      path("self", ["set", "state", n("completed")]),
-      path("self", ["set", "state", n("active")])
+      path(sym("self"), "state", ["equals", n("active")]),
+      path(sym("self"), ["set", "state", n("completed")]),
+      path(sym("self"), ["set", "state", n("active")])
     )
   );
   d.set("Task", "editing", v(false));
@@ -30,16 +30,16 @@ const d = new Store(std);
   d.set("todos", "var", v("0.2.0"));
   d.set("todos", "state", n("all"));
   d.set("todos", "newTaskTitle", v(""));
-  d.set("todos", "changeState", func("s", path("self", ["set", "state", path("s")])));
+  d.set("todos", "changeState", func("s", path(sym("self"), ["set", "state", path(sym("s"))])));
   d.set("todos", "changeStateByHash", func(
     "hash",
     exp(
       "if",
-      path("hash", ["equals", v("#/active")]),
+      path(sym("hash"), ["equals", v("#/active")]),
       path("todos", ["changeState", n("active")]),
       exp(
         "if",
-        path("hash", ["equals", v("#/completed")]),
+        path(sym("hash"), ["equals", v("#/completed")]),
         path("todos", ["changeState", n("completed")]),
         path("todos", ["changeState", n("all")])
       )
@@ -64,7 +64,7 @@ const d = new Store(std);
   const domtree = e.body(
     {
       onhashchange: func("ev",
-        path("todos", ["changeStateByHash", path("ev", "location", "hash")])
+        path("todos", ["changeStateByHash", path(sym("ev"), "location", "hash")])
       )
     },
     e.section({class: "todoapp"},
@@ -80,10 +80,10 @@ const d = new Store(std);
             value: path("todos", "newTaskTitle"),
             onkeypress: func("ev",
               exp("if",
-                path("ev", "keyCode", ["equals", v(13)]),
+                path(sym("ev"), "keyCode", ["equals", v(13)]),
                 exp(
                   "if",
-                  path("ev", "value", "trim", ["equals", v("")]),
+                  path(sym("ev"), "value", "trim", ["equals", v("")]),
                   v(null),
                   path(
                     "Object",
@@ -91,7 +91,7 @@ const d = new Store(std);
                       "new",
                       n({
                         "_type": pack(ref("Task")),
-                        "title": path("ev", "value", "trim"),
+                        "title": path(sym("ev"), "value", "trim"),
                         "state": n("active"),
                       })
                     ],
@@ -151,7 +151,7 @@ const d = new Store(std);
                 [
                   "set",
                   "newTaskTitle",
-                  path("ev", "value")
+                  path(sym("ev"), "value")
                 ]
               )
             )
@@ -170,7 +170,7 @@ const d = new Store(std);
               [
                 "every",
                 func("tid",
-                  path("tid", "state", ["equals", n("completed")]))
+                  path(sym("tid"), "state", ["equals", n("completed")]))
               ]
             ),
             onchange:
@@ -183,7 +183,7 @@ const d = new Store(std);
                     [
                       "every",
                       func("tid",
-                        path("tid", "state", ["equals", n("completed")]))
+                        path(sym("tid"), "state", ["equals", n("completed")]))
                     ]
                   ),
                   path(
@@ -192,7 +192,7 @@ const d = new Store(std);
                     [
                       "map",
                       func("tid",
-                        path("tid", ["set", "state", n("active")]))
+                        path(sym("tid"), ["set", "state", n("active")]))
                     ]
                   ),
                   path(
@@ -201,7 +201,7 @@ const d = new Store(std);
                     [
                       "map",
                       func("tid",
-                        path("tid", ["set", "state", n("completed")]))
+                        path(sym("tid"), ["set", "state", n("completed")]))
                     ]
                   )
                 )
@@ -219,17 +219,17 @@ const d = new Store(std);
                     exp(
                       "if",
                       path("todos", "state", ["equals", n("active")]),
-                      path("tid", "state", ["equals", n("active")]),
-                      path("tid", "state", ["equals", n("completed")])
+                      path(sym("tid"), "state", ["equals", n("active")]),
+                      path(sym("tid"), "state", ["equals", n("completed")])
                     )
                   )
                 )],
                 ["map", func("tid",
                 e.li({
-                    key: path("tid", "_id", "toStr"),
+                    key: path(sym("tid"), "_id", "toStr"),
                     class: path(
                       n([
-                        path("tid", "state", "head"),
+                        path(sym("tid"), "state", "head"),
                         exp(
                           "if",
                           path("viewmodel", sym("tid"), "editing"),
@@ -237,7 +237,7 @@ const d = new Store(std);
                           v(null)
                         )
                       ]),
-                      ["filter", func("i", path("i", ["equals", v(null)], "not"))],
+                      ["filter", func("i", path(sym("i"), ["equals", v(null)], "not"))],
                       ["join", v(" ")]
                     )
                   },
@@ -245,10 +245,10 @@ const d = new Store(std);
                     e.input({
                       class: "toggle",
                       type: "checkbox",
-                      checked: path("tid", "state", ["equals", n("completed")]),
+                      checked: path(sym("tid"), "state", ["equals", n("completed")]),
                       onchange:
                         func("ev",
-                          path("tid", "toggle")
+                          path(sym("tid"), "toggle")
                         )
                     }),
                     e.label({
@@ -269,19 +269,19 @@ const d = new Store(std);
                                 [
                                   "set",
                                   "editingTitle",
-                                  path("tid", "title")
+                                  path(sym("tid"), "title")
                                 ]
                               )
                             ]
                           )
                         )
                       },
-                      path("tid", "title")
+                      path(sym("tid"), "title")
                     ),
                     e.button({
                       class: "destroy",
                       onclick: func("ev",
-                        path("tid",
+                        path(sym("tid"),
                           [
                             "set",
                             "_status",
@@ -304,14 +304,14 @@ const d = new Store(std);
                       "ev",
                       exp(
                         "if",
-                        path("ev", "keyCode", ["equals", v(27)]),
+                        path(sym("ev"), "keyCode", ["equals", v(27)]),
                         path(
                           "viewmodel",
                           sym("tid"),
                           [
                             "set",
                             "editingTitle",
-                            path("tid", "title")
+                            path(sym("tid"), "title")
                           ],
                           [
                             "then",
@@ -332,15 +332,15 @@ const d = new Store(std);
                     onkeypress: func("ev",
                       exp(
                         "if",
-                        path("ev", "keyCode", ["equals", v(13)]),
+                        path(sym("ev"), "keyCode", ["equals", v(13)]),
                         exp(
                           func(
                             "t",
                             exp(
                               "if",
-                              path("t", ["equals", v("")]),
+                              path(sym("t"), ["equals", v("")]),
                               path(
-                                path("tid",
+                                path(sym("tid"),
                                   [
                                     "set",
                                     "_status",
@@ -360,14 +360,14 @@ const d = new Store(std);
                                   "then",
                                   exp(
                                     "if",
-                                    path("t", ["equals", path("tid", "title")]),
+                                    path(sym("t"), ["equals", path(sym("tid"), "title")]),
                                     v(null),
                                     path(
-                                      "tid",
+                                      sym("tid"),
                                       [
                                         "set",
                                         "title",
-                                        path("t")
+                                        path(sym("t"))
                                       ]
                                     )
                                   )
@@ -376,7 +376,7 @@ const d = new Store(std);
                             )
                           ),
                           path(
-                            "ev",
+                            sym("ev"),
                             "value",
                             "trim"
                           )
@@ -391,10 +391,10 @@ const d = new Store(std);
                           "t",
                           exp(
                             "if",
-                            path("t", ["equals", v("")]),
+                            path(sym("t"), ["equals", v("")]),
                             path(
                               path(
-                                "tid",
+                                sym("tid"),
                                 [
                                   "set",
                                   "_status",
@@ -414,14 +414,14 @@ const d = new Store(std);
                                 "then",
                                 exp(
                                   "if",
-                                  path("t", ["equals", path("tid", "title")]),
+                                  path(sym("t"), ["equals", path(sym("tid"), "title")]),
                                   v(null),
                                   path(
-                                    "tid",
+                                    sym("tid"),
                                     [
                                       "set",
                                       "title",
-                                      path("t")
+                                      path(sym("t"))
                                     ]
                                   )
                                 )
@@ -430,7 +430,7 @@ const d = new Store(std);
                           )
                         ),
                         path(
-                          "ev",
+                          sym("ev"),
                           "value",
                           "trim"
                         )
@@ -444,7 +444,7 @@ const d = new Store(std);
                         [
                           "set",
                           "editingTitle",
-                          path("ev", "value")
+                          path(sym("ev"), "value")
                         ]
                       )
                     )
@@ -466,7 +466,7 @@ const d = new Store(std);
                 ["filter",
                   func("tid",
                     path(
-                      "tid",
+                      sym("tid"),
                       "state",
                       ["equals", n("active")]))],
                 "count",
@@ -481,7 +481,7 @@ const d = new Store(std);
                   ["filter",
                     func("tid",
                       path(
-                        "tid",
+                        sym("tid"),
                         "state",
                         ["equals", n("active")]))],
                   "count",
@@ -545,7 +545,7 @@ const d = new Store(std);
               [
                 "filter",
                 func("tid",
-                  path("tid", "state", ["equals", n("completed")]))
+                  path(sym("tid"), "state", ["equals", n("completed")]))
               ],
               "count",
               ["equals", v(0)],
@@ -562,7 +562,7 @@ const d = new Store(std);
                       func(
                         "tid",
                         path(
-                          "tid",
+                          sym("tid"),
                           "state",
                           [
                             "equals",
@@ -576,7 +576,7 @@ const d = new Store(std);
                       func(
                         "tid",
                         path(
-                          "tid",
+                          sym("tid"),
                           [
                             "set",
                             "_status",
@@ -619,7 +619,7 @@ const d = new Store(std);
     eventListeners: {
       DOMContentLoaded: func("win",
         path(
-          "todos", ["changeStateByHash", path("win", "location", "hash")],
+          "todos", ["changeStateByHash", path(sym("win"), "location", "hash")],
           ["then", path("localStorage", ["read", v("todos-lay-objs")])],
           ["then", exp("load")],
           // todo: 本来ならviewmodel構築のロジックは入れるべきでないので下記を取り除きたい
@@ -629,7 +629,7 @@ const d = new Store(std);
               "new",
               func("objs",
                 path(
-                "objs",
+                sym("objs"),
                 [
                   "map",
                   func("obj",

@@ -10,6 +10,7 @@ import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
 import { pack } from '../src/pack';
 import { ref } from '../src/ref';
+import { sym } from '../src/sym';
 
 describe("stdlib", () => {
   let store;
@@ -367,7 +368,7 @@ describe("stdlib", () => {
 
     describe("every", () => {
       it("should all arg func returns true", () => {
-        const f = func("x", path("x", ["equals", v(2)]));
+        const f = func("x", path(sym("x"), ["equals", v(2)]));
         const e1 = path(v([2, 2, 2]), ["every", f]);
         assert.deepStrictEqual(e1.reduce(store), v(true));
 
@@ -378,7 +379,7 @@ describe("stdlib", () => {
 
     describe("filter", () => {
       it("should filter arg func for items", () => {
-        const filtered = path(v([1, 2, 3]), ["filter", func("x", path("x", ["equals", v(2)]))]).reduce(store);
+        const filtered = path(v([1, 2, 3]), ["filter", func("x", path(sym("x"), ["equals", v(2)]))]).reduce(store);
         assert.deepStrictEqual(filtered, v([2]));
       });
     });

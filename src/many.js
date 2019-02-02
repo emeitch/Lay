@@ -1,4 +1,5 @@
 import Val from './val';
+import { sym } from './sym';
 import { path } from './path';
 import { func } from './func';
 
@@ -31,7 +32,7 @@ export default class Many extends Val {
         func(
           "id",
           path(
-            "id",
+            sym("id"),
             prop,
             ["equals", target]
           )

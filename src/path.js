@@ -1,4 +1,4 @@
-import Ref from './ref';
+import Ref, { ref } from './ref';
 import Val from './val';
 import Case from './case';
 import v from './v';
@@ -10,7 +10,7 @@ export default class Path extends Ref {
   constructor(...ids) {
     ids = ids.map((id, index) => {
       if (typeof(id) === "string") {
-        return index === 0 ? sym(id) : v(id);
+        return index === 0 ? ref(id) : v(id);
       } else if (Array.isArray(id)) {
         return id.map((i, idx) => {
           if (typeof(i) === "string") {
@@ -123,6 +123,10 @@ export default class Path extends Ref {
     return keys.reduce((a, c) => {
       return {[c.origin]: a};
     }, lf);
+  }
+
+  keyString() {
+    return this.stringify();
   }
 }
 
