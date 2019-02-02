@@ -170,6 +170,10 @@ export default class Val {
       origin: this.origin
     };
   }
+
+  keyString() {
+    return this.stringify();
+  }
 }
 
 /*********************************************************************/
@@ -233,6 +237,10 @@ export class Prim extends Val {
   object(_store) {
     return this.origin;
   }
+
+  keyString() {
+    return this.origin.toString();
+  }
 }
 
 /*********************************************************************/
@@ -250,5 +258,9 @@ export class Ref extends Val {
     return {
       origin: this.origin.object(_store)
     };
+  }
+
+  keyString() {
+    return this.origin.keyString();
   }
 }
