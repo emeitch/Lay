@@ -5,6 +5,7 @@ import Path, { path } from '../src/path';
 import UUID from '../src/uuid';
 import Exp, { exp } from '../src/exp';
 import Sym, { sym } from '../src/sym';
+import { ref } from '../src/ref';
 import { func, plus, concat } from '../src/func';
 import Store from '../src/store';
 
@@ -146,12 +147,12 @@ describe("Path", () => {
       beforeEach(() => {
         store.put({
           _id: id,
-          _type: sym("parent")
+          _type: ref("parent")
         });
 
         store.put({
           _id: "parent",
-          _type: sym("grandparent"),
+          _type: ref("grandparent"),
           foo: v(2),
           bar: v(3)
         });
@@ -177,7 +178,7 @@ describe("Path", () => {
       const id = new UUID();
 
       beforeEach(() => {
-        const typeid = sym("Foo");
+        const typeid = ref("Foo");
         store.put({
           _id: id,
           _type: typeid

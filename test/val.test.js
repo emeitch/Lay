@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import Val from '../src/val';
-import { sym } from '../src/sym';
+import { ref } from '../src/ref';
 import v from '../src/v';
 
 describe("Val", () => {
@@ -17,7 +17,7 @@ describe("Val", () => {
 
     describe("#type", () => {
       it("should return type sym", () => {
-        assert.deepStrictEqual(val._type, sym("ExtendedVal"));
+        assert.deepStrictEqual(val._type, ref("ExtendedVal"));
       });
     });
 
@@ -41,8 +41,8 @@ describe("Val", () => {
 
     describe("#get", () => {
       it("should return underscore prefix _key's val", () => {
-        assert.deepStrictEqual(val.get("_type"), sym("ExtendedVal"));
-        assert.deepStrictEqual(val.get(v("_type")), sym("ExtendedVal"));
+        assert.deepStrictEqual(val.get("_type"), ref("ExtendedVal"));
+        assert.deepStrictEqual(val.get(v("_type")), ref("ExtendedVal"));
       });
 
       context("not exists key", () => {

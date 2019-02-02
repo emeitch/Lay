@@ -14,7 +14,7 @@ export default class Val {
   }
 
   get type() {
-    return new Sym(this.constructor.name);
+    return new Ref(this.constructor.name);
   }
 
   get _type() {
@@ -223,11 +223,11 @@ export class Prim extends Val {
 
   get type() {
     if (this.origin === null) {
-      return new Sym("Null");
+      return new Ref("Null");
     }
 
     const type = typeof(this.origin);
-    return new Sym(type[0].toUpperCase() + type.substring(1));
+    return new Ref(type[0].toUpperCase() + type.substring(1));
   }
 
   object(_store) {

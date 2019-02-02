@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import Store from '../src/store';
 import UUID from '../src/uuid';
-import { sym } from '../src/sym';
+import { ref } from '../src/ref';
 import { exp } from '../src/exp';
 import { plus } from '../src/func';
 import v from '../src/v';
@@ -25,8 +25,8 @@ describe("Comp", () => {
 
     describe("#type", () => {
       it("should return type sym", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2})._type, sym("Map"));
-        assert.deepStrictEqual(v([1, 2, 3])._type, sym("Array"));
+        assert.deepStrictEqual(v({a: 1, b: 2})._type, ref("Map"));
+        assert.deepStrictEqual(v([1, 2, 3])._type, ref("Array"));
       });
     });
 
@@ -119,7 +119,7 @@ describe("Comp", () => {
 
         assert.deepStrictEqual(v({
           _id: id,
-          _type: sym("Foo"),
+          _type: ref("Foo"),
           foo: v(1)
         }).object(), {
           _id: id.object(),
@@ -265,7 +265,7 @@ describe("CompDate", () => {
   describe("#type", () => {
     it("should return a sym to Date", () => {
       const cd = v(new Date());
-      assert.deepStrictEqual(cd._type, sym("Date"));
+      assert.deepStrictEqual(cd._type, ref("Date"));
     });
   });
 

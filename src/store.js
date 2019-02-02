@@ -1,6 +1,6 @@
 import UUID from './uuid';
 import v from './v';
-import Ref from './ref';
+import Ref, { ref } from './ref';
 import Sym, { sym } from './sym';
 import Prim from './prim';
 import Act from './act';
@@ -20,7 +20,7 @@ export default class Store {
     this.id = new UUID();
     this.put({
       _id: this.id,
-      _type: sym("Store")
+      _type: ref("Store")
     });
     this.assign("currentStoreId", this.id);
   }
@@ -57,7 +57,7 @@ export default class Store {
     const rev = v({
       _id: rid,
       _rev: rid,
-      _type: sym("Revision"),
+      _type: ref("Revision"),
       at: v(new Date())
     });
 
@@ -181,8 +181,12 @@ export default class Store {
       return key;
     }
 
-    if (key instanceof Sym || key instanceof Prim) {
+    if (key instanceof Prim) {
       return key.origin;
+    }
+
+    if (key instanceof Ref) {
+      return key.origin.origin;
     }
 
     const id = key.getOwnProp("_id");
@@ -262,7 +266,7 @@ export default class Store {
 
   traversePropFromType(obj, key) {
     const tref = obj.getOwnProp("_type");
-    const tobj = tref instanceof Sym ? this.resolve(tref) : tref.reduce(this);
+    const tobj = tref.reduce(this);
     if (tref.equals(tobj)) {
       return undefined;
     }
@@ -319,8 +323,8 @@ export default class Store {
 
       const key = this.strToObj(kstr);
       const tref = val.get("_type", this);
-      const tname = tref instanceof Ref ? tref.origin.origin : tref.origin;
-      if (tname === cid.origin) { // todo: sym排除時にrefの比較に修正する
+      const tname = tref.origin.origin;
+      if (tname === cid.origin) {
         results.push(key);
       }
     }

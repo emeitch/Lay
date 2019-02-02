@@ -3,7 +3,7 @@ import assert from 'assert';
 import UUID from '../src/uuid';
 import v from '../src/v';
 import { path } from '../src/path';
-import { sym } from '../src/sym';
+import { ref } from '../src/ref';
 import Act from '../src/act';
 import Store from '../src/store';
 
@@ -23,7 +23,7 @@ describe("Store", () => {
   describe("keyStr", () => {
     it("should return string for key", () => {
       assert(store.keyStr("foo") === "foo");
-      assert(store.keyStr(sym("foo")) === "foo");
+      assert(store.keyStr(ref("foo")) === "foo");
       assert(store.keyStr(v("foo")) === "foo");
       assert(store.keyStr(v({_id: v("foo")})) === "foo");
       assert(store.keyStr(v({_id: new UUID()})).match(/urn:uuid:.*/));
@@ -43,8 +43,8 @@ describe("Store", () => {
 
       assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
 
-      assert.deepStrictEqual(path(id, "_rev", "_type").reduce(store), path("Revision").reduce(store));
-      assert.deepStrictEqual(path(id, "_rev", "at", "_type").reduce(store), path("Date").reduce(store));
+      assert.deepStrictEqual(path(id, "_rev", "_type").reduce(store), ref("Revision").reduce(store));
+      assert.deepStrictEqual(path(id, "_rev", "at", "_type").reduce(store), ref("Date").reduce(store));
     });
 
     context("not sym type", () => {
