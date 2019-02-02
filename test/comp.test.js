@@ -284,3 +284,20 @@ describe("CompDate", () => {
     });
   });
 });
+
+describe("CompMap", () => {
+  describe("#keyString", () => {
+    it("should return a key string", () => {
+      assert.deepStrictEqual(v({foo: 1}).keyString(), "{\n  foo: 1\n}");
+    });
+
+    context("with _id", () => {
+      it("should return a key string of id", () => {
+        const cm = v({
+          _id: "foo"
+        });
+        assert.deepStrictEqual(cm.keyString(), "foo");
+      });
+    });
+  });
+});

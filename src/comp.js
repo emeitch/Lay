@@ -254,6 +254,11 @@ export class CompMap extends Comp {
 
     return o;
   }
+
+  keyString() {
+    const id = this.get("_id");
+    return id ? id.keyString() : super.keyString();
+  }
 }
 
 export class CompDate extends Comp {
