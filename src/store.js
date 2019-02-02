@@ -301,7 +301,7 @@ export default class Store {
 
       const key = this.strToObj(kstr);
       const tref = val.get("_type", this);
-      const tname = tref.origin.origin;
+      const tname = tref.keyString();
       if (tname === cid.origin) {
         results.push(key);
       }

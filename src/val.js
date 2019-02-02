@@ -250,7 +250,7 @@ export class Ref extends Val {
   }
 
   step(store) {
-    const fetched = store.fetch(this.origin.origin);
+    const fetched = store.fetch(this.keyString());
     return fetched ? fetched : this;
   }
 
