@@ -2,7 +2,6 @@ import UUID from './uuid';
 import v from './v';
 import Ref, { ref } from './ref';
 import Sym, { sym } from './sym';
-import Prim from './prim';
 import Act from './act';
 import ID from './id';
 import Path from './path';
@@ -35,7 +34,7 @@ export default class Store {
       return new UUID(m[1]);
     }
 
-    return sym(kstr);
+    return ref(kstr);
   }
 
   doPut(obj) {
@@ -176,31 +175,10 @@ export default class Store {
     this.assign(key, obj ? obj.patch(d) : d);
   }
 
-  keyStr(key) {
-    if (typeof(key) !== "object") {
-      return key;
-    }
-
-    if (key instanceof Prim) {
-      return key.origin;
-    }
-
-    if (key instanceof Ref) {
-      return key.origin.origin;
-    }
-
-    const id = key.getOwnProp("_id");
-    if (id) {
-      return id.stringify();
-    }
-
-    return key.stringify();
-  }
-
   set(id, key, val) {
-    const kstr = this.keyStr(key);
+    const k = v(key);
     this.patch(id, {
-      [kstr]: val
+      [k.keyString()]: val
     });
   }
 

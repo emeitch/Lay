@@ -20,17 +20,6 @@ describe("Store", () => {
     });
   });
 
-  describe("keyStr", () => {
-    it("should return string for key", () => {
-      assert(store.keyStr("foo") === "foo");
-      assert(store.keyStr(ref("foo")) === "foo");
-      assert(store.keyStr(v("foo")) === "foo");
-      assert(store.keyStr(v({_id: v("foo")})) === "foo");
-      assert(store.keyStr(v({_id: new UUID()})).match(/urn:uuid:.*/));
-      assert(store.keyStr(new UUID()).match(/urn:uuid:.*/));
-    });
-  });
-
   describe("#put (#get)", () => {
     it("should store the object", () => {
       const id = new UUID();
