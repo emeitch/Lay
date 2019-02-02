@@ -245,4 +245,10 @@ export class Ref extends Val {
     const fetched = store.fetch(this.origin.origin);
     return fetched ? fetched : this;
   }
+
+  object(_store) {
+    return {
+      origin: this.origin.object(_store)
+    };
+  }
 }

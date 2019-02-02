@@ -1,6 +1,7 @@
 import assert from 'assert';
 
 import UUID from '../src/uuid';
+import { ref } from '../src/ref';
 import { path } from '../src/path';
 import v from '../src/v';
 import { sym } from '../src/sym';
@@ -128,12 +129,24 @@ describe("parseObjs", () => {
     });
   });
 
+  context("ref head", () => {
+    it("should parse a ref val", () => {
+      const objs = parseObjs([{
+        _type: {origin: "Map"},
+        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        foo: {origin: "Foo"},
+      }]);
+
+      assert.deepStrictEqual(objs[0].get("foo"), ref("Foo"));
+    });
+  });
+
   context("path head", () => {
     it("should parse a path val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
         _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
-        foo: {_type: {origin: "Path"}, origin: [{origin: "Foo"}, ["bar", "buz"]] },
+        foo: {_type: {origin: "Path"}, origin: [{_type: {origin: "Sym"}, origin: "Foo"}, ["bar", "buz"]] },
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), path("Foo", ["bar", "buz"]));
@@ -145,7 +158,7 @@ describe("parseObjs", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
         _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
-        foo: {origin: "Foo"},
+        foo: {_type: {origin: "Sym"},  origin: "Foo"},
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), sym("Foo"));

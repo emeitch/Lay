@@ -308,6 +308,8 @@ export default class Store {
 
   instanceIDs(cls) {
     // todo: 線形探索なのを高速化
+
+    const cid = cls.get("_id", this);
     const results = [];
     for (const [kstr, val] of this.objs) {
       const status = val.get("_status", this);
@@ -317,8 +319,8 @@ export default class Store {
 
       const key = this.strToObj(kstr);
       const tref = val.get("_type", this);
-      const tobj = this.resolve(tref);
-      if (tobj && tobj.equals(cls)) {
+      const tname = tref instanceof Ref ? tref.origin.origin : tref.origin;
+      if (tname === cid.origin) { // todo: sym排除時にrefの比較に修正する
         results.push(key);
       }
     }

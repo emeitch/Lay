@@ -59,7 +59,9 @@ export const std = new Store();
       const filtered = [];
       const transactions = [];
       for (const obj of objs) {
-        const typename = obj.get("_type", store).origin;
+        const tref = obj.get("_type", store);
+        // todo: sym排除時にrefの比較に修正する
+        const typename = tref.origin instanceof Val ? tref.origin.origin : tref.origin;
         if (types.includes(typename)) {
           filtered.push(obj);
         }

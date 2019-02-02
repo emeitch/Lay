@@ -1,5 +1,6 @@
 import UUID from './uuid';
 import { sym } from './sym';
+import { ref } from './ref';
 import { path } from './path';
 import v from './v';
 
@@ -21,24 +22,26 @@ export function parseVal(raw) {
 
   if (type === "object") {
     if (!raw._type) {
-      return sym(raw.origin);
+      return ref(raw.origin);
     }
 
     const klass = parseVal(raw._type);
-    if (klass.origin === "Comp") {
+    if (klass.equals(ref("Comp"))) {
       return v(head, parseVal(raw.origin));
-    } else if (klass.origin === "Array") {
+    } else if (klass.equals(ref("Array"))) {
       return v(head, raw.origin.map(i => parseVal(i)));
-    } else if (klass.origin === "Date") {
+    } else if (klass.equals(ref("Date"))) {
       return v(head, new Date(raw.origin));
-    } else if (klass.origin === "UUID") {
+    } else if (klass.equals(ref("UUID"))) {
       return new UUID(raw.origin);
-    } else if (klass.origin === "Path") {
+    } else if (klass.equals(ref("Sym"))) {
+      return sym(raw.origin);
+    } else if (klass.equals(ref("Path"))) {
       return path(...parseVal(raw.origin));
     } else {
       const org = {};
       for (const key of Object.keys(raw)) {
-        if (key == "_type" && klass.origin === "Map") {
+        if (key == "_type" && klass.equals(ref("Map"))) {
           continue;
         }
 

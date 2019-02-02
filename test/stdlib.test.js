@@ -10,6 +10,7 @@ import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
 import { pack } from '../src/pack';
 import { sym } from '../src/sym';
+import { ref } from '../src/ref';
 
 describe("stdlib", () => {
   let store;
@@ -70,7 +71,7 @@ describe("stdlib", () => {
       });
       const obj2 = v({
         _id: new UUID(),
-        _type: sym("Bar"),
+        _type: ref("Bar"),
         _rev: rid,
         foo: 1
       });
@@ -150,7 +151,7 @@ describe("stdlib", () => {
           _id: "Foo"
         });
         const act = path("Object", ["new", v({
-          _type: pack(sym("Foo")),
+          _type: pack(ref("Foo")),
           foo: v("foo"),
           bar: path([plus, v(1), v(2)]),
           buz: pack(path([plus, v(1), v(2)]))
@@ -462,7 +463,7 @@ describe("stdlib", () => {
             path("Object", [
               "new",
               v({
-                _type: pack(sym("Foo"))
+                _type: pack(ref("Foo"))
               })
             ])
           )]
