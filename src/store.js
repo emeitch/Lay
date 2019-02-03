@@ -21,7 +21,7 @@ export default class Store {
       _id: this.id,
       _type: ref("Store")
     });
-    this.assign("currentStoreId", this.id);
+    this.assign("currentStoreId", ref(this.id));
   }
 
   strToObj(kstr) {
@@ -57,7 +57,7 @@ export default class Store {
 
     let id = obj.getOwnProp("_id");
 
-    if (id instanceof Path && !id.origin.every(i => i instanceof ID)) {
+    if (id instanceof Path && !id.origin.every(i => i instanceof Ref && i.origin instanceof ID)) {
       const pth = id;
       id = pth.receiver;
       const base = this.fetch(id) || v({_id: id});

@@ -1,6 +1,7 @@
 import Ref, { ref } from './ref';
 import Val from './val';
 import Case from './case';
+import ID from './id';
 import v from './v';
 import { sym } from './sym';
 import { exp } from './exp';
@@ -11,6 +12,8 @@ export default class Path extends Ref {
     ids = ids.map((id, index) => {
       if (typeof(id) === "string") {
         return index === 0 ? ref(id) : v(id);
+      } if (id instanceof ID) {
+        return ref(id);
       } else if (Array.isArray(id)) {
         return id.map((i, idx) => {
           if (typeof(i) === "string") {
@@ -51,7 +54,6 @@ export default class Path extends Ref {
     } else {
       obj = this.receiver.reduce(store);
     }
-    obj = store.resolve(obj);
 
     for (const elm of this.keys) {
       let key;
