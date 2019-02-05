@@ -507,9 +507,9 @@ describe("stdlib", () => {
         assert.deepStrictEqual(path("foo", "_type").reduce(store), storeClass);
       });
 
-      context("currentStoreId", () => {
+      context("currentStore", () => {
         it("should generate new store and give name", () => {
-          const act = path("currentStoreId", ["generateAs", "foo"]).reduce(store);
+          const act = path("currentStore", ["generateAs", "foo"]).reduce(store);
           store.run(act);
 
           const storeClass = path("Store").reduce(store);
@@ -519,7 +519,7 @@ describe("stdlib", () => {
 
       context("rename generateStoreAs", () => {
         it("should generate new store and give name", () => {
-          const act = path("currentStoreId", ["generateStoreAs", "foo"]).reduce(store);
+          const act = path("currentStore", ["generateStoreAs", "foo"]).reduce(store);
           store.run(act);
 
           const storeClass = path("Store").reduce(store);
@@ -536,7 +536,7 @@ describe("stdlib", () => {
         const s2 = new Store();
         store.import(s2);
 
-        assert.deepStrictEqual(path("currentStoreId", "importedStores").reduce(store), v([std.id, s1.id, s2.id]));
+        assert.deepStrictEqual(path("currentStore", "importedStores").reduce(store), v([std.id, s1.id, s2.id]));
       });
 
       context("specified a importedStore", () => {

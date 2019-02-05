@@ -308,10 +308,9 @@ describe("Store", () => {
     });
   });
 
-  describe("#currentStoreId", () => {
-    it("should return the store ID", () => {
-      // todo: currentStoreIdがすでにIDではないのをどうにかする
-      // assert.deepStrictEqual(store.fetch("currentStoreId").reduce(store), store.id);
+  describe("#currentStore", () => {
+    it("should return the store", () => {
+      assert.deepStrictEqual(store.fetch("currentStore").reduce(store).get("_id"), store.id);
     });
   });
 

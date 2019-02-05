@@ -21,7 +21,7 @@ export default class Store {
       _id: this.id,
       _type: ref("Store")
     });
-    this.assign("currentStoreId", ref(this.id));
+    this.assign("currentStore", ref(this.id));
   }
 
   strToObj(kstr) {
