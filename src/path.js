@@ -1,4 +1,4 @@
-import Ref, { ref } from './ref';
+import { ref } from './ref';
 import Val from './val';
 import Case from './case';
 import ID from './id';
@@ -7,7 +7,7 @@ import { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
 
-export default class Path extends Ref {
+export default class Path extends Val {
   constructor(...ids) {
     ids = ids.map((id, index) => {
       if (typeof(id) === "string") {
@@ -106,8 +106,8 @@ export default class Path extends Ref {
   }
 
   object(_store) {
-    return {
-      _type: this._type.object(_store),
+    const base = super.object(_store);
+    return Object.assign({}, base, {
       origin: this.origin.map(o => {
         if (Array.isArray(o)) {
           return o.map(i => i.object(_store));
@@ -115,7 +115,7 @@ export default class Path extends Ref {
           return o.object(_store);
         }
       })
-    };
+    });
   }
 
   diff(leaf) {
@@ -125,10 +125,6 @@ export default class Path extends Ref {
     return keys.reduce((a, c) => {
       return {[c.origin]: a};
     }, lf);
-  }
-
-  keyString() {
-    return this.stringify();
   }
 }
 
