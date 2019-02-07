@@ -82,6 +82,7 @@ export default class Path extends Val {
         };
         prop = func(new LiftedNative(nf));
       }
+      
       if (prop === undefined) {
         return this;
       }
@@ -94,11 +95,6 @@ export default class Path extends Val {
       } else {
         const replaced = prop.replaceSelfBy(obj);
         obj = replaced.reduce(store);
-      }
-
-      if (!key.equals(v("_id"))) {
-        // _idの場合だけ特別にIDそのものを返す特別処理
-        obj = store.resolve(obj);
       }
     }
 
