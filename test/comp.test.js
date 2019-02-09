@@ -160,6 +160,26 @@ describe("Comp", () => {
           assert.deepStrictEqual(val.get("c"), undefined);
         });
       });
+
+      context("stored context object", () => {
+        it("should return context object", () => {
+          const store = new Store();
+          const id1 = new UUID();
+          const id2 = new UUID();
+          const cid = store.path(id1, id2);
+
+          store.put({
+            _id: id1
+          });
+          store.put({
+            _id: cid
+          });
+
+          const base = store.fetch(id1);
+          const context = store.fetch(cid);
+          assert.deepStrictEqual(base.get(id2, store), context);
+        });
+      });
     });
 
     describe("patch", () => {

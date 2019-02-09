@@ -57,7 +57,8 @@ export default class Store {
 
     let id = obj.getOwnProp("_id");
 
-    if (id instanceof Path && !id.origin.every(i => i instanceof Ref && i.origin instanceof ID)) {
+    // todo: 条件の妥当性が低そうなので検証して修正
+    if (id instanceof Path && !id.keys.every(i => i instanceof ID)) {
       const pth = id;
       id = pth.receiver;
       const base = this.fetch(id) || v({_id: id});

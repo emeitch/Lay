@@ -34,13 +34,13 @@ describe("Path", () => {
 
   describe("#receiver", () => {
     it("should return the first id", () => {
-      assert.deepStrictEqual(p.receiver, ref(id1));
+      assert.deepStrictEqual(p.receiver, id1);
     });
   });
 
   describe("#keys", () => {
     it("should return rest ids", () => {
-      assert.deepStrictEqual(p.keys, [ref(id2), ref(id3)]);
+      assert.deepStrictEqual(p.keys, [id2, id3]);
     });
   });
 
@@ -287,12 +287,10 @@ describe("Path", () => {
         },
         origin: [
           {
-            origin: {
-              _type: {
-                origin: "UUID"
-              },
-              origin: "foo"
-            }
+            _type: {
+              origin: "UUID"
+            },
+            origin: "foo"
           },
           "bar",
           ["buz", "fiz"]

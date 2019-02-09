@@ -3,6 +3,7 @@ import _ from 'lodash';
 import Val from './val';
 import Prim from './prim';
 import v from './v';
+import ID from './id';
 import { ref } from './ref';
 
 const NullVal = new Prim(null);
@@ -85,6 +86,15 @@ export default class Comp extends Val {
   }
 
   get(k, store) {
+    if (k instanceof ID && store) {
+      const base = this.getOwnProp("_id");
+      const _id = store.path(base, k);
+      const obj = store.fetch(_id);
+      if (obj) {
+        return obj;
+      }
+    }
+
     const key = this.keyStr(k);
 
     let ownProp = this.getOwnProp(k);
