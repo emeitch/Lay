@@ -93,57 +93,54 @@ describe("Store", () => {
     });
 
     context("stored context object", () => {
+      const id0 = new UUID();
+      const id1 = new UUID();
+      const id2 = new UUID();
+      const key0 = v("foo");
+      const key1 = v("bar");
+
       it("should return context object", () => {
-        const id1 = new UUID();
-        const id2 = new UUID();
-        const cid = store.path(id1, id2);
+        const cpath = store.path(id0, id1);
 
         store.put({
-          _id: id1
+          _id: id0
         });
         store.put({
-          _id: cid
+          _id: cpath
         });
 
-        const base = store.fetch(id1);
-        const context = store.fetch(cid);
-        assert.deepStrictEqual(base.get(id2, store), context);
+        const base = store.fetch(id0);
+        const context = store.fetch(cpath);
+        assert.deepStrictEqual(base.get(id1, store), context);
       });
 
       context("multiple id", () => {
         it("should return context object", () => {
-          const id1 = new UUID();
-          const id2 = new UUID();
-          const cid = store.path(id1, id2);
+          const cpath0 = store.path(id0, id1);
+          const cpath1 = store.path(id0, id1, id2);
 
           store.put({
-            _id: id1
+            _id: id0
           });
           store.put({
-            _id: cid
+            _id: cpath0
           });
-
-          const id3 = new UUID();
-          const cid2 = store.path(id1, id2, id3);
           store.put({
-            _id: cid2
+            _id: cpath1
           });
 
-          const base = store.fetch(id1);
-          const context = store.fetch(cid2);
-          assert.deepStrictEqual(base.get(id2, store).get(id3, store), context);
+          const base = store.fetch(id0);
+          const context = store.fetch(cpath1);
+          assert.deepStrictEqual(base.get(id1, store).get(id2, store), context);
         });
 
         context("not exist intermediate context obj", () => {
           it("should throw a error", () => {
-            const id1 = new UUID();
-            const id2 = new UUID();
-            const id3 = new UUID();
-            const cid2 = store.path(id1, id2, id3);
+            const cpath = store.path(id0, id1, id2);
 
             assert.throws(() => {
               store.put({
-                _id: cid2
+                _id: cpath
               });
             }, /intermediate objs not found/);
           });
@@ -151,64 +148,52 @@ describe("Store", () => {
       });
 
       context("all str keys path", () => {
-        it("should return context object", () => {
-          const id1 = new UUID();
-          const key1 = v("foo");
-          const key2 = v("bar");
-          const cid = store.path(id1, key1, key2);
-
+        it("should return embeded object", () => {
+          const epath = store.path(id0, key0, key1);
           store.put({
-            _id: cid
+            _id: epath
           });
 
-          const base = store.fetch(id1);
-          const child1 = base.get(key1, store);
-          const child2 = child1.get(key2, store);
-          assert(child2);
-
-          const context = store.fetch(cid);
           // not a independent obj, but a embeded obj
+          const context = store.fetch(epath);
           assert.deepStrictEqual(context, undefined);
+
+          const base = store.fetch(id0);
+          const child1 = base.get(key0, store);
+          const child2 = child1.get(key1, store);
+          assert(child2);
         });
       });
 
       context("intermediate str key path", () => {
         it("should return context object", () => {
-          const id1 = new UUID();
-          const key1 = v("foo");
-          const key2 = v("bar");
-          const id2 = new UUID();
-          const cid = store.path(id1, key1, key2, id2);
-
           store.put({
-            _id: id1,
+            _id: id0,
             foo: {
               bar: {
               }
             }
           });
+
+          const cpath = store.path(id0, key0, key1, id1);
           store.put({
-            _id: cid
+            _id: cpath
           });
 
-          const base = store.fetch(id1);
-          const child1 = base.get(key1, store);
-          const child2 = child1.get(key2, store);
-          const context = store.fetch(cid);
-          assert.deepStrictEqual(child2.get(id2, store), context);
+          const base = store.fetch(id0);
+          const child1 = base.get(key0, store);
+          const child2 = child1.get(key1, store);
+          const context = store.fetch(cpath);
+          assert.deepStrictEqual(child2.get(id1, store), context);
         });
 
         context("not exist intermediate embeded obj", () => {
           it("should throw a error", () => {
-            const id1 = new UUID();
-            const key1 = v("foo");
-            const key2 = v("bar");
-            const id2 = new UUID();
-            const cid = store.path(id1, key1, key2, id2);
+            const cpath = store.path(id0, key0, key1, id1);
 
             assert.throws(() => {
               store.put({
-                _id: cid
+                _id: cpath
               });
             }, /intermediate objs not found/);
           });
