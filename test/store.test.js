@@ -176,15 +176,11 @@ describe("Store", () => {
           });
 
           const cpath = store.path(id0, key0, key1, id1);
-          store.put({
-            _id: cpath
-          });
-
-          const base = store.fetch(id0);
-          const child1 = base.get(key0, store);
-          const child2 = child1.get(key1, store);
-          const context = store.fetch(cpath);
-          assert.deepStrictEqual(child2.get(id1, store), context);
+          assert.throws(() => {
+            store.put({
+              _id: cpath
+            });
+          }, /intermediate objs are not context objs/);
         });
 
         context("not exist intermediate embeded obj", () => {
@@ -195,7 +191,7 @@ describe("Store", () => {
               store.put({
                 _id: cpath
               });
-            }, /intermediate objs not found/);
+            }, /intermediate objs are not context objs/);
           });
         });
       });

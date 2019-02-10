@@ -120,6 +120,13 @@ export default class Path extends Val {
       return {[c.keyString()]: a};
     }, lf);
   }
+
+  parent() {
+    // todo: keysが空なら親は存在しなのでエラーにする
+    const keys = this.keys.concat();
+    keys.pop(); // remove child
+    return new Path(this.receiver, ...keys);
+  }
 }
 
 export function path(...args) {

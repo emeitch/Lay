@@ -59,15 +59,18 @@ export default class Store {
     if (id instanceof Path) {
       const pth = id;
       if (pth.keys.every(i => !(i instanceof ID))) {
+        // partial embeded obj
         id = pth.receiver;
         const base = this.fetch(id) || v({_id: id});
         const diff = pth.diff(obj);
         obj = base.patch(diff);
       } else {
-        const nodekeys = pth.keys.concat();
-        nodekeys.pop(); // remove leaf key
-        const nodepath = new Path(pth.receiver, ...nodekeys);
-        if (nodepath.reduce(this).equals(nodepath)) {
+        if (!pth.keys.every(i => i instanceof ID)) {
+          throw "intermediate objs are not context objs";
+        }
+
+        const parent = pth.parent();
+        if (parent.reduce(this).equals(parent)) {
           throw "intermediate objs not found";
         }
       }
