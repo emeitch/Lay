@@ -68,7 +68,7 @@ export default class Store {
         nodekeys.pop(); // remove leaf key
         const nodepath = new Path(pth.receiver, ...nodekeys);
         if (nodepath.reduce(this).equals(nodepath)) {
-          throw "intermediate embeded objs not found";
+          throw "intermediate objs not found";
         }
       }
     }

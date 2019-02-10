@@ -180,6 +180,48 @@ describe("Comp", () => {
           assert.deepStrictEqual(base.get(id2, store), context);
         });
 
+        context("multiple id", () => {
+          it("should return context object", () => {
+            const store = new Store();
+            const id1 = new UUID();
+            const id2 = new UUID();
+            const cid = store.path(id1, id2);
+
+            store.put({
+              _id: id1
+            });
+            store.put({
+              _id: cid
+            });
+
+            const id3 = new UUID();
+            const cid2 = store.path(id1, id2, id3);
+            store.put({
+              _id: cid2
+            });
+
+            const base = store.fetch(id1);
+            const context = store.fetch(cid2);
+            assert.deepStrictEqual(base.get(id2, store).get(id3, store), context);
+          });
+
+          context("not exist intermediate context obj", () => {
+            it("should throw a error", () => {
+              const store = new Store();
+              const id1 = new UUID();
+              const id2 = new UUID();
+              const id3 = new UUID();
+              const cid2 = store.path(id1, id2, id3);
+
+              assert.throws(() => {
+                store.put({
+                  _id: cid2
+                });
+              }, /intermediate objs not found/);
+            });
+          });
+        });
+
         context("all str keys path", () => {
           it("should return context object", () => {
             const store = new Store();
@@ -243,7 +285,7 @@ describe("Comp", () => {
                 store.put({
                   _id: cid
                 });
-              }, /intermediate embeded objs not found/);
+              }, /intermediate objs not found/);
             });
           });
         });
