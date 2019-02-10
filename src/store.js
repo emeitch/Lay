@@ -56,14 +56,21 @@ export default class Store {
     });
 
     let id = obj.getOwnProp("_id");
-
-    // todo: 条件の妥当性が低そうなので検証して修正
-    if (id instanceof Path && id.keys.every(i => !(i instanceof ID))) {
+    if (id instanceof Path) {
       const pth = id;
-      id = pth.receiver;
-      const base = this.fetch(id) || v({_id: id});
-      const diff = pth.diff(obj);
-      obj = base.patch(diff);
+      if (pth.keys.every(i => !(i instanceof ID))) {
+        id = pth.receiver;
+        const base = this.fetch(id) || v({_id: id});
+        const diff = pth.diff(obj);
+        obj = base.patch(diff);
+      } else {
+        const nodekeys = pth.keys.concat();
+        nodekeys.pop(); // remove leaf key
+        const nodepath = new Path(pth.receiver, ...nodekeys);
+        if (nodepath.reduce(this).equals(nodepath)) {
+          throw "intermediate embeded objs not found";
+        }
+      }
     }
 
     const old = this.fetch(id);

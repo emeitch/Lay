@@ -229,6 +229,23 @@ describe("Comp", () => {
             const context = store.fetch(cid);
             assert.deepStrictEqual(child2.get(id2, store), context);
           });
+
+          context("not exist intermediate embeded obj", () => {
+            it("should throw a error", () => {
+              const store = new Store();
+              const id1 = new UUID();
+              const key1 = v("foo");
+              const key2 = v("bar");
+              const id2 = new UUID();
+              const cid = store.path(id1, key1, key2, id2);
+
+              assert.throws(() => {
+                store.put({
+                  _id: cid
+                });
+              }, /intermediate embeded objs not found/);
+            });
+          });
         });
       });
     });
