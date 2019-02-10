@@ -180,6 +180,29 @@ describe("Comp", () => {
           assert.deepStrictEqual(base.get(id2, store), context);
         });
 
+        context("all str keys path", () => {
+          it("should return context object", () => {
+            const store = new Store();
+            const id1 = new UUID();
+            const key1 = v("foo");
+            const key2 = v("bar");
+            const cid = store.path(id1, key1, key2);
+
+            store.put({
+              _id: cid
+            });
+
+            const base = store.fetch(id1);
+            const child1 = base.get(key1, store);
+            const child2 = child1.get(key2, store);
+            assert(child2);
+
+            const context = store.fetch(cid);
+            // not a independent obj, but a embeded obj
+            assert.deepStrictEqual(context, undefined);
+          });
+        });
+
         context("intermediate str key path", () => {
           it("should return context object", () => {
             const store = new Store();

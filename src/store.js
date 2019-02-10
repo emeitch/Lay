@@ -58,7 +58,7 @@ export default class Store {
     let id = obj.getOwnProp("_id");
 
     // todo: 条件の妥当性が低そうなので検証して修正
-    if (id instanceof Path && !id.keys.every(i => i instanceof ID)) {
+    if (id instanceof Path && id.keys.every(i => !(i instanceof ID))) {
       const pth = id;
       id = pth.receiver;
       const base = this.fetch(id) || v({_id: id});
@@ -342,11 +342,11 @@ export default class Store {
     );
   }
 
-  path(base, key) {
+  path(base, ...keys) {
     if (base instanceof Path) {
-      return new Path(...base.origin.concat([key]));
+      return new Path(...base.origin.concat(keys));
     } else {
-      return new Path(base, key);
+      return new Path(base, ...keys);
     }
   }
 }
