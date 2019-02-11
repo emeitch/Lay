@@ -221,6 +221,17 @@ describe("Store", () => {
           });
         });
       });
+
+      context("method applying path", () => {
+        it("should throw a error", () => {
+          const cpath = store.path(id0, [key0, v(1)]);
+          assert.throws(() => {
+            store.put({
+              _id: cpath
+            });
+          }, /cannot set method applying path to _id/);
+        });
+      });
     });
 
     context("with path whose last key is string", () => {

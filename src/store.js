@@ -58,6 +58,11 @@ export default class Store {
     let id = obj.getOwnProp("_id");
     if (id instanceof Path) {
       const pth = id;
+
+      if (pth.keys.some(i => Array.isArray(i))) {
+        throw `cannot set method applying path to _id: ${pth}`;
+      }
+
       if (pth.keys.every(i => !(i instanceof ID))) {
         // partial embeded obj
         id = pth.receiver;
