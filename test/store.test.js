@@ -193,7 +193,7 @@ describe("Store", () => {
       });
 
       context("intermediate str key path", () => {
-        it("should return context object", () => {
+        it("should throw a error", () => {
           store.put({
             _id: id0,
             foo: {
