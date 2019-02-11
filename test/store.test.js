@@ -134,6 +134,32 @@ describe("Store", () => {
           assert.deepStrictEqual(base.get(id1, store).get(id2, store), context);
         });
 
+        context("reduced path obj is a intermediate context obj", () => {
+          it("should return context object", () => {
+            const cpath0 = store.path(id0, id1);
+
+            store.put({
+              _id: id0
+            });
+            store.put({
+              _id: cpath0
+            });
+
+            const cpath1 = store.path(id0, id1, id2);
+            store.put({
+              _id: cpath1
+            });
+
+            store.put({
+              _id: "foo",
+              bar: cpath0
+            });
+
+            const context = store.fetch(cpath1);
+            assert.deepStrictEqual(path("foo", "bar", id2).reduce(store), context);
+          });
+        });
+
         context("not exist intermediate context obj", () => {
           it("should throw a error", () => {
             const cpath = store.path(id0, id1, id2);
