@@ -100,11 +100,11 @@ describe("Store", () => {
       const key1 = v("bar");
 
       it("should return context object", () => {
-        const cpath = store.path(id0, id1);
-
         store.put({
           _id: id0
         });
+
+        const cpath = store.path(id0, id1);
         store.put({
           _id: cpath
         });
@@ -116,15 +116,16 @@ describe("Store", () => {
 
       context("multiple id", () => {
         it("should return context object", () => {
-          const cpath0 = store.path(id0, id1);
-          const cpath1 = store.path(id0, id1, id2);
-
           store.put({
             _id: id0
           });
+
+          const cpath0 = store.path(id0, id1);
           store.put({
             _id: cpath0
           });
+
+          const cpath1 = store.path(id0, id1, id2);
           store.put({
             _id: cpath1
           });
@@ -136,11 +137,11 @@ describe("Store", () => {
 
         context("reduced path obj is a intermediate context obj", () => {
           it("should return context object", () => {
-            const cpath0 = store.path(id0, id1);
-
             store.put({
               _id: id0
             });
+
+            const cpath0 = store.path(id0, id1);
             store.put({
               _id: cpath0
             });
@@ -212,7 +213,6 @@ describe("Store", () => {
         context("not exist intermediate embeded obj", () => {
           it("should throw a error", () => {
             const cpath = store.path(id0, key0, key1, id1);
-
             assert.throws(() => {
               store.put({
                 _id: cpath
