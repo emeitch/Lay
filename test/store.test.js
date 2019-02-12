@@ -78,20 +78,6 @@ describe("Store", () => {
       });
     });
 
-    context("path as id", () => {
-      it("should store the object", () => {
-        const p = path(new UUID(), new UUID());
-        const obj = v({
-          _id: p,
-          foo: 1,
-          bar: "abc"
-        });
-        store.put(obj);
-
-        assert.deepStrictEqual(store.fetch(p).get("foo"), v(1));
-      });
-    });
-
     context("stored context object", () => {
       const id0 = new UUID();
       const id1 = new UUID();
@@ -190,6 +176,36 @@ describe("Store", () => {
           const child2 = child1.get(key1, store);
           assert(child2);
         });
+
+        context("exist partial obj", () => {
+          it("should update the partial object", () => {
+            const epath = path(id0, key0, key1);
+            store.put({
+              _id: id0,
+              [key0.origin]: {
+                [key1.origin]: {
+                  foo: 1,
+                  bar: "abc"
+                }
+              }
+            });
+            assert.deepStrictEqual(epath.reduce(store), v({
+              _id: epath,
+              foo: 1,
+              bar: "abc"
+            }));
+
+            store.put({
+              _id: epath,
+              foo: 2,
+            });
+            assert.deepStrictEqual(epath.reduce(store), v({
+              _id: epath,
+              foo: 2,
+              bar: "abc"
+            }));
+          });
+        });
       });
 
       context("intermediate str key path", () => {
@@ -235,69 +251,6 @@ describe("Store", () => {
     });
 
     context("with path whose last key is string", () => {
-      it("should store the partial object for new object", () => {
-        const id = new UUID();
-        const p = path(id, "k1", "k2");
-        const obj = v({
-          _id: p,
-          foo: 1,
-          bar: "abc",
-        });
-        store.put(obj);
-
-        assert.deepStrictEqual(path(id, "k1", "k2", "foo").reduce(store), v(1));
-      });
-
-      context("exist obj", () => {
-        it("should update the partial object", () => {
-          const id = new UUID();
-          store.put({
-            _id: id,
-          });
-
-          const p = path(id, "k1", "k2");
-          const obj = v({
-            _id: p,
-            foo: 1,
-            bar: "abc",
-          });
-          store.put(obj);
-
-          assert.deepStrictEqual(path(id, "k1", "k2", "foo").reduce(store), v(1));
-        });
-      });
-
-      context("exist partial obj", () => {
-        it("should update the partial object", () => {
-          const id = new UUID();
-          store.put({
-            _id: id,
-            k1: {
-              k2: {
-                foo: 1,
-                bar: "abc"
-              }
-            }
-          });
-          assert.deepStrictEqual(path(id, "k1", "k2").reduce(store), v({
-            _id: path(id, "k1", "k2"), // with _id
-            foo: 1,
-            bar: "abc"
-          }));
-
-          const p = path(id, "k1", "k2");
-          const obj = v({
-            _id: p,
-            foo: 2,
-          });
-          store.put(obj);
-          assert.deepStrictEqual(path(id, "k1", "k2").reduce(store), v({
-            _id: path(id, "k1", "k2"), // with _id
-            foo: 2,
-            bar: "abc"
-          }));
-        });
-      });
     });
   });
 
