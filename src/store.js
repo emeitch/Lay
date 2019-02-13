@@ -4,6 +4,7 @@ import Ref, { ref } from './ref';
 import Sym from './sym';
 import Act from './act';
 import ID from './id';
+import Prim from './prim';
 import Path from './path';
 import Comp, { CompMap } from './comp';
 
@@ -58,26 +59,19 @@ export default class Store {
     let id = obj.getOwnProp("_id");
     if (id instanceof Path) {
       const pth = id;
-
-      if (pth.keys.some(i => Array.isArray(i))) {
-        throw `cannot set method applying path to _id: ${pth}`;
-      }
-
-      if (pth.keys.every(i => !(i instanceof ID))) {
+      const parent = pth.parent();
+      if (pth.keys.every(i => i instanceof Prim)) {
         // partial embeded obj
         id = pth.receiver;
         const base = this.fetch(id) || v({_id: id});
         const diff = pth.diff(obj);
         obj = base.patch(diff);
-      } else {
-        if (!pth.keys.every(i => i instanceof ID)) {
-          throw "intermediate objs are not context objs";
-        }
-
-        const parent = pth.parent();
-        if (parent.reduce(this).equals(parent)) {
-          throw "intermediate objs not found";
-        }
+      } else if (pth.keys.some(i => Array.isArray(i))) {
+        throw `cannot set method applying path to _id: ${pth}`;
+      } else if (pth.keys.some(i => !(i instanceof ID))) {
+        throw "intermediate objs are not context objs";
+      } else if (parent.reduce(this).equals(parent)) {
+        throw "intermediate objs not found";
       }
     }
 
