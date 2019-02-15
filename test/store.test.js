@@ -4,6 +4,7 @@ import UUID from '../src/uuid';
 import v from '../src/v';
 import { path } from '../src/path';
 import { ref } from '../src/ref';
+import { pack } from '../src/pack';
 import Act from '../src/act';
 import Store from '../src/store';
 
@@ -34,6 +35,21 @@ describe("Store", () => {
 
       assert.deepStrictEqual(path(id, "_rev", "_type").reduce(store), ref("Revision").reduce(store));
       assert.deepStrictEqual(path(id, "_rev", "at", "_type").reduce(store), ref("Date").reduce(store));
+    });
+
+    context("with pack id", () => {
+      it("should store the object", () => {
+        const id = new UUID();
+        const obj = v({
+          _id: pack(id),
+          foo: 1,
+          bar: "abc"
+        });
+        store.put(obj);
+
+        assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
+        assert.deepStrictEqual(path(id, "_id").reduce(store), pack(id));
+      });
     });
 
     context("not sym type", () => {
