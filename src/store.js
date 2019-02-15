@@ -48,14 +48,6 @@ export default class Store {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 
-    const rid = new UUID();
-    const rev = v({
-      _id: rid,
-      _rev: rid,
-      _type: ref("Revision"),
-      at: v(new Date())
-    });
-
     let id = obj.getOwnProp("_id");
     if (id instanceof Path) {
       const pth = id;
@@ -85,14 +77,24 @@ export default class Store {
       throw "optimistic locked: specified _rev is not latest";
     }
 
-    const withRev = {
+    const rid = new UUID();
+    const rev = v({
+      _id: rid.keyVal(),
+      _rev: rid,
+      _type: ref("Revision"),
+      at: v(new Date())
+    });
+    const withMeta = {
       _rev: rid
     };
     if (prid) {
-      withRev._prev = prid;
+      withMeta._prev = prid;
+    }
+    if (id instanceof ID || id instanceof Ref) {
+      withMeta._id = id.keyVal();
     }
 
-    const o = obj.patch(withRev);
+    const o = obj.patch(withMeta);
     this.doPut(rev);
     this.doPut(o);
 

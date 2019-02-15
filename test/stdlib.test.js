@@ -58,7 +58,7 @@ describe("stdlib", () => {
     it("should filter act arg log by pattern", () => {
       const rid = new UUID();
       const rev = v({
-        _id: rid,
+        _id: rid.keyVal(),
         _type: ref("Revision"),
         _rev: rid,
         at: v(new Date())

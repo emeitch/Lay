@@ -70,7 +70,7 @@ export const std = new Store();
         }
       }
 
-      const txs = transactions.filter(tx => filtered.some(f => tx.getOwnProp("_id").equals(f.getOwnProp("_rev"))));
+      const txs = transactions.filter(tx => filtered.some(f => tx.getOwnProp("_id").equals(f.getOwnProp("_rev").keyVal())));
       return txs.concat(filtered);
     });
   })));
@@ -332,7 +332,7 @@ export const std = new Store();
 
   const findAndDecorateStore = (baseStore, targetStore, decorate) => {
     for (const i of baseStore.imports) {
-      if (i.id.equals(targetStore.getOwnProp("_id"))) {
+      if (i.id.keyVal().equals(targetStore.getOwnProp("_id"))) {
         return decorate(i);
       }
     }

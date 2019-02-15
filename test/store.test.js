@@ -232,7 +232,6 @@ describe("Store", () => {
 
         context("exist partial obj", () => {
           it("should update the partial object", () => {
-            const epath = path(id0, key0, key1);
             store.put({
               _id: id0,
               [key0.origin]: {
@@ -242,6 +241,8 @@ describe("Store", () => {
                 }
               }
             });
+
+            const epath = path(id0, key0, key1);
             assert.deepStrictEqual(epath.reduce(store), v({
               _id: epath,
               foo: 1,
@@ -458,7 +459,7 @@ describe("Store", () => {
 
   describe("#currentStore", () => {
     it("should return the store", () => {
-      assert.deepStrictEqual(store.fetch("currentStore").reduce(store).get("_id"), store.id);
+      assert.deepStrictEqual(store.fetch("currentStore").reduce(store).get("_id"), store.id.keyVal());
     });
   });
 

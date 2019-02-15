@@ -53,7 +53,7 @@ export default class Val {
 
     const id = key.getOwnProp("_id");
     if (id) {
-      return id.stringify();
+      return id.origin;
     }
 
     return key.stringify();
@@ -173,6 +173,10 @@ export default class Val {
 
   keyString() {
     return this.stringify();
+  }
+
+  keyVal() {
+    return new Prim(this.keyString());
   }
 }
 
