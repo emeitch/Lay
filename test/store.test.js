@@ -65,6 +65,28 @@ describe("Store", () => {
           assert.deepStrictEqual(path(id, "_id").reduce(store), pack(id));
         });
       });
+
+      context("path id", () => {
+        it("should store the object", () => {
+          const id0 = new UUID();
+          store.put({
+            _id: id0
+          });
+
+          const id1 = new UUID();
+          const id2 = path(id0, id1);
+          const obj = v({
+            _id: pack(id2),
+            foo: 1,
+            bar: "abc"
+          });
+          store.put(obj);
+
+          assert.deepStrictEqual(store.fetch(id2).get("foo"), v(1));
+          assert.deepStrictEqual(path(id0, id1, "_id").reduce(store), pack(id2));
+          assert.deepStrictEqual(path(id2, "_id").reduce(store), pack(id2));
+        });
+      });
     });
 
     context("not sym type", () => {
