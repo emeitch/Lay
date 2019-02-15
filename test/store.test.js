@@ -50,6 +50,21 @@ describe("Store", () => {
         assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
         assert.deepStrictEqual(path(id, "_id").reduce(store), pack(id));
       });
+
+      context("ref id", () => {
+        it("should store the object", () => {
+          const id = ref("Foo");
+          const obj = v({
+            _id: pack(id),
+            foo: 1,
+            bar: "abc"
+          });
+          store.put(obj);
+
+          assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
+          assert.deepStrictEqual(path(id, "_id").reduce(store), pack(id));
+        });
+      });
     });
 
     context("not sym type", () => {
