@@ -316,5 +316,10 @@ describe("Path", () => {
       const p = new Path(sym("foo"), "bar", "buz");
       assert.throws(() => p.keyString(), /cannot contains a Sym value/);
     });
+
+    context("with method call", () => {
+      const p = new Path("foo", ["bar", v(1)], "buz");
+      assert.throws(() => p.keyString(), /cannot contains a method calling/);
+    });
   });
 });

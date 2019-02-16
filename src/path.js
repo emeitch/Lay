@@ -46,6 +46,10 @@ export default class Path extends Val {
       throw "cannot contains a Sym value";
     }
 
+    if (this.origin.some(i => Array.isArray(i))) {
+      throw "cannot contains a method calling";
+    }
+
     return this.origin.map(i => i.keyString()).join(".");
   }
 
