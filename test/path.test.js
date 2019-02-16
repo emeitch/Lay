@@ -317,6 +317,11 @@ describe("Path", () => {
       assert.throws(() => p.keyString(), /cannot contains a Sym value/);
     });
 
+    context("with float", () => {
+      const p = new Path("foo", "bar", v(1.2));
+      assert.throws(() => p.keyString(), /cannot contains a float number value/);
+    });
+
     context("with method call", () => {
       const p = new Path("foo", ["bar", v(1)], "buz");
       assert.throws(() => p.keyString(), /cannot contains a method calling/);
