@@ -305,4 +305,11 @@ describe("Path", () => {
       assert(p.stringify() === "Path [\n  self, \n  \"foo\"\n]");
     });
   });
+
+  describe("keyString", () => {
+    it("should return string for key", () => {
+      const p = new Path("foo", "bar", "buz");
+      assert(p.keyString() === "foo.bar.buz");
+    });
+  });
 });
