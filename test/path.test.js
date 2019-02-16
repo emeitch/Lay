@@ -311,5 +311,10 @@ describe("Path", () => {
       const p = new Path("foo", "bar", "buz");
       assert(p.keyString() === "foo.bar.buz");
     });
+
+    context("with sym", () => {
+      const p = new Path(sym("foo"), "bar", "buz");
+      assert.throws(() => p.keyString(), /cannot contains a Sym value/);
+    });
   });
 });

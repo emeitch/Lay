@@ -3,7 +3,7 @@ import Val from './val';
 import Case from './case';
 //import ID from './id';
 import v from './v';
-import { sym } from './sym';
+import Sym, { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
 
@@ -42,6 +42,10 @@ export default class Path extends Val {
   }
 
   keyString() {
+    if (this.origin.some(i => i instanceof Sym)) {
+      throw "cannot contains a Sym value";
+    }
+
     return this.origin.map(i => i.keyString()).join(".");
   }
 
