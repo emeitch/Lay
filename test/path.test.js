@@ -30,6 +30,17 @@ describe("Path", () => {
         assert.deepStrictEqual(p.origin[0][0].constructor, Sym);
       });
     });
+
+    context("obj", () => {
+      it("should take _id as id", () => {
+        const id = new UUID();
+        const obj0 = v({_id: id.keyVal()});
+        const obj1 = v({_id: v("bar")});
+        const p = new Path("foo", obj0, obj1);
+        assert.deepStrictEqual(p.origin[1], id);
+        assert.deepStrictEqual(p.origin[2], ref("bar"));
+      });
+    });
   });
 
   describe("#receiver", () => {
