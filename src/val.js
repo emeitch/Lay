@@ -51,11 +51,6 @@ export default class Val {
       return key.origin;
     }
 
-    const id = key.getOwnProp("_id");
-    if (id) {
-      return id.origin;
-    }
-
     return key.stringify();
   }
 
