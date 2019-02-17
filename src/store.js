@@ -334,6 +334,10 @@ export default class Store {
     do {
       if (acts instanceof Comp && Array.isArray(acts.origin)) {
         for (act of acts.origin) {
+          if (act === null) {
+            continue;
+          }
+          
           if (!(act instanceof Act)) {
             throw `not Act instance: ${act}`;
           }
@@ -349,7 +353,7 @@ export default class Store {
       acts instanceof Comp &&
       Array.isArray(acts.origin) &&
       acts.origin.length > 0 &&
-      acts.origin.every(o => o instanceof Act)
+      acts.origin.every(o => o instanceof Act || o === null)
     );
   }
 
