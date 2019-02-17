@@ -107,21 +107,9 @@ const d = new Store(std);
                             [
                               "new",
                               n({
+                                "_id": path("viewmodel", sym("id")),
                                 "_type": pack(ref("TaskView")),
                               })
-                            ],
-                            [
-                              "then",
-                              path(
-                                "Act",
-                                [
-                                  "new",
-                                  func(
-                                    "vid",
-                                    path("viewmodel", ["set", sym("id"), sym("vid")])
-                                  )
-                                ]
-                              )
                             ]
                             )
                           )
@@ -632,27 +620,28 @@ const d = new Store(std);
                 sym("objs"),
                 [
                   "map",
-                  func("obj",
-                    path("Object",
-                    [
-                      "new",
-                      n({
-                        "_type": pack(ref("TaskView")),
-                      })
-                    ],
-                    [
-                      "then",
+                  func(
+                    "obj",
+                    exp(
+                      "if",
                       path(
-                        "Act",
+                        sym("obj"),
+                        "_type",
                         [
-                          "new",
-                          func(
-                            "vid",
-                            path("viewmodel", ["set", sym("obj"), sym("vid")])
-                          )
+                          "equals",
+                          ref("Task")
                         ]
-                      )
-                    ])
+                      ),
+                      path("Object",
+                      [
+                        "new",
+                        n({
+                          "_id": path("viewmodel", sym("obj")),
+                          "_type": pack(ref("TaskView")),
+                        })
+                      ]),
+                      v(null)
+                    )
                   )
                 ]
               ))
