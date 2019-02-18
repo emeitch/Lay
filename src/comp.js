@@ -88,7 +88,7 @@ export default class Comp extends Val {
   get(k, store) {
     if (k instanceof ID && store) {
       const base = this.getOwnProp("_id");
-      const ref = base instanceof Prim ? store.strToObj(base.origin) : base;
+      const ref = base instanceof Prim ? store.parseRef(base.origin) : base;
       const _id = store.path(ref, k);
       const obj = store.fetch(_id);
       if (obj) {
@@ -102,7 +102,7 @@ export default class Comp extends Val {
     if (ownProp) {
       const base = this.getOwnProp("_id");
       if (store && base && ownProp instanceof CompMap) {
-        const ref = base instanceof Prim ? store.strToObj(base.origin) : base;
+        const ref = base instanceof Prim ? store.parseRef(base.origin) : base;
         const _id = store.path(ref, k);
         return ownProp.patch({_id});
       }

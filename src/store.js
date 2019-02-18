@@ -7,6 +7,7 @@ import ID from './id';
 import Prim from './prim';
 import Path from './path';
 import Comp, { CompMap } from './comp';
+import { parseRef } from './parser';
 
 export default class Store {
   constructor(...imports) {
@@ -25,13 +26,8 @@ export default class Store {
     this.assign("currentStore", ref(this.id));
   }
 
-  strToObj(kstr) {
-    const m = kstr.match(/^urn:uuid:(.*)/);
-    if (m && m[1]) {
-      return new UUID(m[1]);
-    }
-
-    return ref(kstr);
+  parseRef(...args) {
+    return parseRef(...args);
   }
 
   doPut(obj) {
@@ -305,7 +301,7 @@ export default class Store {
         continue;
       }
 
-      const key = this.strToObj(kstr);
+      const key = this.parseRef(kstr);
       const tref = val.get("_type", this);
       const tname = tref.keyString();
       if (tname === cid.origin) {
@@ -337,7 +333,7 @@ export default class Store {
           if (act === null) {
             continue;
           }
-          
+
           if (!(act instanceof Act)) {
             throw `not Act instance: ${act}`;
           }

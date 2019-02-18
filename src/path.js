@@ -1,11 +1,11 @@
 import { ref } from './ref';
 import Val from './val';
 import Case from './case';
-import UUID from './uuid';
 import v from './v';
 import Sym, { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
+import { parseRef } from './parser';
 
 export default class Path extends Val {
   constructor(...ids) {
@@ -24,13 +24,7 @@ export default class Path extends Val {
         if (index > 0) {
           const oid = id.getOwnProp("_id");
           if (oid) {
-            // todo: Store#strToObjと被っているので共通化させる
-            const m = oid.origin.match(/^urn:uuid:(.*)/);
-            if (m && m[1]) {
-              return new UUID(m[1]);
-            } else {
-              return ref(oid);
-            }
+            return parseRef(oid);
           }
         }
         return id;
