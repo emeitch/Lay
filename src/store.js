@@ -86,7 +86,7 @@ export default class Store {
     if (prid) {
       withMeta._prev = prid;
     }
-    if (id instanceof ID || id instanceof Ref) {
+    if (id instanceof Ref || id instanceof ID || id instanceof Path) {
       withMeta._id = id.keyVal();
     }
 

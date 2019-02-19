@@ -88,7 +88,7 @@ export default class Comp extends Val {
   get(k, store) {
     if (k instanceof ID && store) {
       const base = this.getOwnProp("_id");
-      const ref = base instanceof Prim ? store.parseRef(base.origin) : base;
+      const ref = store.parseRef(base.origin);
       const _id = store.path(ref, k);
       const obj = store.fetch(_id);
       if (obj) {
