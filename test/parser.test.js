@@ -190,7 +190,7 @@ describe("parseObjs", () => {
 describe("parseRef", () => {
   context("str", () => {
     it("should return a Ref", () => {
-      assert.deepStrictEqual(parseRef("foo"), ref("foo", "bar", "buz"));
+      assert.deepStrictEqual(parseRef("foo"), ref("foo"));
     });
   });
 
