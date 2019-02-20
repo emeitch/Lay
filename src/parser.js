@@ -67,16 +67,18 @@ export function parseObjs(raws) {
   return objs;
 }
 
-export function parseRef(...args) {
-  if (args.length > 1) {
-    return path(...args);
+export function parseRef(str) {
+  const s = v(str);
+
+  const keys = s.origin.split(".");
+  if (keys.length > 1) {
+    return path(...keys);
   }
 
-  const arg = v(args[0]);
-  const m = arg.origin.match(/^urn:uuid:(.*)/);
+  const m = s.origin.match(/^urn:uuid:(.*)/);
   if (m && m[1]) {
     return new UUID(m[1]);
   }
 
-  return ref(arg);
+  return ref(s);
 }

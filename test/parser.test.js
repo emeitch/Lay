@@ -202,7 +202,7 @@ describe("parseRef", () => {
 
   context("multiple val", () => {
     it("should return a Path", () => {
-      assert.deepStrictEqual(parseRef("foo", "bar", "buz"), path("foo", "bar", "buz"));
+      assert.deepStrictEqual(parseRef("foo.bar.buz"), path("foo", "bar", "buz"));
     });
   });
 });
