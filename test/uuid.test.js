@@ -12,7 +12,7 @@ describe("UUID", () => {
   describe("#reducible", () => {
     it("should return true by default behavior", () => {
       const u = uuid();
-      assert.deepStrictEqual(u.reducible, false);
+      assert(u.match(/^urn:uuid:.*$/));
     });
   });
 });
