@@ -12,7 +12,7 @@ describe("UUID", () => {
   describe("#reducible", () => {
     it("should return true by default behavior", () => {
       const u = uuid();
-      assert(u.match(/^urn:uuid:.*$/));
+      assert(u.origin.match(/^urn:uuid:.*$/));
     });
   });
 });

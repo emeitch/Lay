@@ -1,4 +1,5 @@
 import ID from './id';
+import v from './v';
 
 function generateString() {
   // UUID ver 4 / RFC 4122
@@ -26,5 +27,6 @@ export default class UUID extends ID {
 }
 
 export function uuid() {
-  return "urn:uuid:" + generateString();
+  const str = "urn:uuid:" + generateString();
+  return v(str);
 }
