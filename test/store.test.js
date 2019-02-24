@@ -151,6 +151,9 @@ describe("Store", () => {
         const base = store.fetch(id0);
         const context = store.fetch(cpath);
         assert.deepStrictEqual(base.get(id1, store), context);
+
+        const pstr = v(`urn:uuid:${id0.origin}.urn:uuid:${id1.origin}`);
+        assert.deepStrictEqual(context.getOwnProp("_id"), pstr);
       });
 
       context("multiple id", () => {
