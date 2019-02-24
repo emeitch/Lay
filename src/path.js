@@ -1,4 +1,5 @@
-import { ref } from './ref';
+import Ref from './ref';
+import ID from './id';
 import Val from './val';
 import Case from './case';
 import v from './v';
@@ -9,17 +10,18 @@ import { parseRef } from './parser';
 
 export default class Path extends Val {
   constructor(...ids) {
-    ids = ids.map((id, index) => {
+    const origin = ids.map((id, index) => {
       if (typeof(id) === "string") {
-        return index === 0 ? ref(id) : v(id);
+        return v(id);
       } else if (Array.isArray(id)) {
-        return id.map((i, idx) => {
+        const applying = id.map((i, idx) => {
           if (typeof(i) === "string") {
             return index === 0 && idx === 0 ? sym(i) : v(i);
           } else {
             return i;
           }
         });
+        return index == 0 ? exp(...applying) : applying;
       } else {
         if (index > 0) {
           const oid = id.getOwnProp("_id");
@@ -30,7 +32,11 @@ export default class Path extends Val {
         return id;
       }
     });
-    super(ids);
+    super(origin);
+
+    if (typeof(ids[0]) === "string" || ids[0] instanceof Ref || ids[0] instanceof ID) {
+      this.hasRoot = true;
+    }
   }
 
   get receiver() {
@@ -64,18 +70,23 @@ export default class Path extends Val {
   }
 
   replace(matches) {
-    return new this.constructor(...this.origin.map(id => Array.isArray(id) ? id.map(i => i.replace(matches)) : id.replace(matches)));
+    // todo: もっと質の良いcopy方法に変えたい
+    const pth = new this.constructor(...this.origin.map(id => Array.isArray(id) ? id.map(i => i.replace(matches)) : id.replace(matches)));
+    pth.hasRoot = this.hasRoot;
+    return pth;
   }
 
   step(store) {
     let obj;
-    if (Array.isArray(this.receiver)) {
-      obj = exp(...this.receiver).reduce(store);
+    let keys;
+    if (this.hasRoot) {
+      obj = store;
+      keys = this.origin;
     } else {
       obj = this.receiver.reduce(store);
+      keys = this.keys;
     }
-
-    for (const elm of this.keys) {
+    for (const elm of keys) {
       let key;
       let args = [];
       if (Array.isArray(elm)) {

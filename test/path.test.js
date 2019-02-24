@@ -4,7 +4,7 @@ import v from '../src/v';
 import Path, { path } from '../src/path';
 import UUID from '../src/uuid';
 import Exp, { exp } from '../src/exp';
-import Sym, { sym } from '../src/sym';
+import { sym } from '../src/sym';
 import { ref } from '../src/ref';
 import { func, plus, concat } from '../src/func';
 import Store from '../src/store';
@@ -21,13 +21,15 @@ describe("Path", () => {
 
   describe("constructor", () => {
     it("should complete prim string", () => {
-      assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), new Path(ref("foo"), [v("bar"), v("buz")], v("fiz")));
+      const pth = new Path(v("foo"), [v("bar"), v("buz")], v("fiz"));
+      pth.hasRoot = true;
+      assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), pth);
     });
 
     context("call a func", () => {
-      it("should complete func name to sym", () => {
+      it("should complete a exp", () => {
         const p = new Path(["foo", "bar"]);
-        assert.deepStrictEqual(p.origin[0][0].constructor, Sym);
+        assert.deepStrictEqual(p.origin[0].constructor, Exp);
       });
     });
 

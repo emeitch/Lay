@@ -239,15 +239,17 @@ describe("stdlib", () => {
             store.put({
               _id: id,
             });
+            const holder = new UUID();
+            store.put({
+              _id: holder,
+            });
 
             const context = new UUID();
-            const holder = new UUID();
             const a1 = path(holder, ["set", id, context]).reduce(store);
             store.run(a1);
 
             const a2 = path(holder, id, ["set", "buz", v(5)]).reduce(store);
             store.run(a2);
-
             assert.deepStrictEqual(path(holder, id, "buz").reduce(store), v(5));
           });
         });
@@ -612,7 +614,7 @@ describe("stdlib", () => {
 
       const nested2 = n({foo: n({bar: v("baz")}), fiz: v("buz")});
       assert.deepStrictEqual(nested2.constructor, Path);
-      assert.deepStrictEqual(nested2.deepReduce(store).get("foo"), v({bar: v("baz")}));
+      assert.deepStrictEqual(nested2.deepReduce(store).reduce(store).get("foo"), v({bar: v("baz")}));
       assert.deepStrictEqual(nested2.deepReduce(store).get("_type"), ref("Map"));
 
       const headonly = n("foo");

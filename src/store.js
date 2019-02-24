@@ -234,6 +234,14 @@ export default class Store {
     return this.fetchWithoutImports(key) || this.fetchWithImports(store => store.fetchWithoutImports(key));
   }
 
+  get(key) {
+    return this.fetch(key);
+  }
+
+  match() {
+    return false;
+  }
+
   resolve(ref) {
     let obj = ref;
     while(obj instanceof Ref || obj instanceof ID || obj instanceof Sym) {
