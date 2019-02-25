@@ -26,7 +26,7 @@ export default class UUID extends ID {
   }
 }
 
-export function uuid() {
-  const str = "urn:uuid:" + generateString();
-  return v(str);
+export function uuid(str = generateString()) {
+  const urn = "urn:uuid:" + str;
+  return v(urn);
 }
