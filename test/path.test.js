@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import v from '../src/v';
 import Path, { path } from '../src/path';
-import UUID from '../src/uuid';
+import { uuid } from '../src/uuid';
 import Exp, { exp } from '../src/exp';
 import { sym } from '../src/sym';
 import { ref } from '../src/ref';
@@ -10,9 +10,9 @@ import { func, plus, concat } from '../src/func';
 import Store from '../src/store';
 
 describe("Path", () => {
-  const id1 = new UUID();
-  const id2 = new UUID();
-  const id3 = new UUID();
+  const id1 = uuid();
+  const id2 = uuid();
+  const id3 = uuid();
 
   let p;
   beforeEach(() => {
@@ -34,12 +34,12 @@ describe("Path", () => {
 
     context("obj", () => {
       it("should take _id as id", () => {
-        const id = new UUID();
-        const obj0 = v({_id: id.keyVal()});
+        const id = uuid();
+        const obj0 = v({_id: id});
         const obj1 = v({_id: v("bar")});
         const p = new Path("foo", obj0, obj1);
         assert.deepStrictEqual(p.origin[1], id);
-        assert.deepStrictEqual(p.origin[2], ref("bar"));
+        assert.deepStrictEqual(p.origin[2], v("bar"));
       });
     });
   });
@@ -63,18 +63,18 @@ describe("Path", () => {
     });
 
     context("absolute path with end of uuid", () => {
-      const id = new UUID();
-      const id2 = new UUID();
-      const id3 = new UUID();
+      const id = uuid();
+      const id2 = uuid();
+      const id3 = uuid();
 
       beforeEach(() => {
         store.put({
           _id: id,
-          foo: id2
+          foo: path(id2)
         });
         store.put({
           _id: id2,
-          bar: id3
+          bar: path(id3)
         });
         store.put({
           _id: id3,
@@ -89,8 +89,8 @@ describe("Path", () => {
     });
 
     context("complex self referencing", () => {
-      const id1 = new UUID();
-      const id2 = new UUID();
+      const id1 = uuid();
+      const id2 = uuid();
 
       beforeEach(() => {
         store.put({
@@ -114,7 +114,7 @@ describe("Path", () => {
     });
 
     context("assigned sym path chain with self exp", () => {
-      const id = new UUID();
+      const id = uuid();
 
       beforeEach(() => {
         store.put({
@@ -139,7 +139,7 @@ describe("Path", () => {
 
         context("partial reduce", () => {
           it("should return a exp", () => {
-            const id = new UUID();
+            const id = uuid();
             const p = path(v(3), ["equals", path(id, "bar")]);
             assert.deepStrictEqual(p.reduce(store).constructor, Exp);
 
@@ -154,7 +154,7 @@ describe("Path", () => {
     });
 
     context("access a key which type has the key", () => {
-      const id = new UUID();
+      const id = uuid();
 
       beforeEach(() => {
         store.put({
@@ -187,7 +187,7 @@ describe("Path", () => {
     });
 
     context("with type but it dosen't have the key", () => {
-      const id = new UUID();
+      const id = uuid();
 
       beforeEach(() => {
         const typeid = ref("Foo");
@@ -221,7 +221,7 @@ describe("Path", () => {
 
     context("path in func", () => {
       it("should replace path args", () => {
-        const id = new UUID();
+        const id = uuid();
         store.put({
           _id: id,
           foo: func("a", exp(concat, v("f"), "a"))
@@ -234,13 +234,13 @@ describe("Path", () => {
 
     context("context object", () => {
       it("should return val by specified context object", () => {
-        const id = new UUID();
+        const id = uuid();
 
-        const holder1 = new UUID();
-        const context1 = new UUID();
+        const holder1 = uuid();
+        const context1 = uuid();
         store.put({
           _id: holder1,
-          [id.stringify()]: context1
+          [id.keyString()]: path(context1)
         });
         store.put({
           _id: context1,
@@ -249,10 +249,10 @@ describe("Path", () => {
         assert.deepStrictEqual(path(holder1, id, "x").reduce(store), v(1));
 
 
-        const holder2 = new UUID();
+        const holder2 = uuid();
         store.put({
           _id: holder2,
-          [id.stringify()]: {
+          [id.keyString()]: {
             x: 2
           }
         });
@@ -268,16 +268,16 @@ describe("Path", () => {
 
     context("_id referencing", () => {
       it("should return id, that is not resolved obj", () => {
-        const id = new UUID();
+        const id = uuid();
         const p = path(v({_id: id}), "_id");
         assert.deepStrictEqual(p.reduce(store), id);
       });
     });
 
     context("unknown path", () => {
-      const id = new UUID();
-      const unknownKey1 = new UUID();
-      const unknownKey2 = new UUID();
+      const id = uuid();
+      const unknownKey1 = uuid();
+      const unknownKey2 = uuid();
 
       beforeEach(() => {
         p = path(id, unknownKey1, unknownKey2);
@@ -291,19 +291,14 @@ describe("Path", () => {
 
   describe("object", () => {
     it("should return js object dump", () => {
-      const id = new UUID("foo");
+      const id = uuid("foo-bar-buz");
       const p = path(id, "bar", ["buz", "fiz"]);
       assert.deepStrictEqual(p.object(), {
         _type: {
           origin: "Path"
         },
         origin: [
-          {
-            _type: {
-              origin: "UUID"
-            },
-            origin: "foo"
-          },
+          "urn:uuid:foo-bar-buz",
           "bar",
           ["buz", "fiz"]
         ]

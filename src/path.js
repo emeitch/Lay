@@ -4,7 +4,6 @@ import v from './v';
 import Sym, { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
-import { parseRef } from './parser';
 
 export default class Path extends Val {
   constructor(...ids) {
@@ -24,7 +23,7 @@ export default class Path extends Val {
         if (index > 0) {
           const oid = id.getOwnProp("_id");
           if (oid) {
-            return parseRef(oid);
+            return oid;
           }
         }
         return id;
