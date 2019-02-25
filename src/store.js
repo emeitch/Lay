@@ -235,6 +235,7 @@ export default class Store {
   }
 
   get(key) {
+    // regard the key as a result object if it can't fetch by the key
     return this.fetch(key) || key;
   }
 
