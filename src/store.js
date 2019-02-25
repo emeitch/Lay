@@ -235,7 +235,7 @@ export default class Store {
   }
 
   get(key) {
-    return this.fetch(key);
+    return this.fetch(key) || key;
   }
 
   match() {

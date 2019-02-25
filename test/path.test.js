@@ -22,7 +22,6 @@ describe("Path", () => {
   describe("constructor", () => {
     it("should complete prim string", () => {
       const pth = new Path(v("foo"), [v("bar"), v("buz")], v("fiz"));
-      pth.hasRoot = true;
       assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), pth);
     });
 

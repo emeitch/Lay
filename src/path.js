@@ -1,5 +1,3 @@
-import Ref from './ref';
-import ID from './id';
 import Val from './val';
 import Case from './case';
 import v from './v';
@@ -33,10 +31,6 @@ export default class Path extends Val {
       }
     });
     super(origin);
-
-    if (typeof(ids[0]) === "string" || ids[0] instanceof Ref || ids[0] instanceof ID) {
-      this.hasRoot = true;
-    }
   }
 
   get receiver() {
@@ -70,23 +64,12 @@ export default class Path extends Val {
   }
 
   replace(matches) {
-    // todo: もっと質の良いcopy方法に変えたい
-    const pth = new this.constructor(...this.origin.map(id => Array.isArray(id) ? id.map(i => i.replace(matches)) : id.replace(matches)));
-    pth.hasRoot = this.hasRoot;
-    return pth;
+    return new this.constructor(...this.origin.map(id => Array.isArray(id) ? id.map(i => i.replace(matches)) : id.replace(matches)));
   }
 
   step(store) {
-    let obj;
-    let keys;
-    if (this.hasRoot) {
-      obj = store;
-      keys = this.origin;
-    } else {
-      obj = this.receiver.reduce(store);
-      keys = this.keys;
-    }
-    for (const elm of keys) {
+    let obj = store;
+    for (const elm of this.origin) {
       let key;
       let args = [];
       if (Array.isArray(elm)) {
