@@ -235,8 +235,15 @@ export default class Store {
   }
 
   get(key) {
+    if (key instanceof Prim && typeof(key.origin) === "string") {
+      const val = this.fetch(key);
+      if (val) {
+        return val;
+      }
+    }
+
     // regard the key as a result object if it can't fetch by the key
-    return this.fetch(key) || key;
+    return key;
   }
 
   match() {
