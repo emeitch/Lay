@@ -1,10 +1,11 @@
 import assert from 'assert';
 
 import Store from '../src/store';
-import UUID from '../src/uuid';
+import { uuid } from '../src/uuid';
 import { ref } from '../src/ref';
 import { exp } from '../src/exp';
 import { plus } from '../src/func';
+import { path } from '../src/path';
 import v from '../src/v';
 
 describe("Comp", () => {
@@ -104,12 +105,19 @@ describe("Comp", () => {
           }
         });
 
-        const id = new UUID();
-        assert.deepStrictEqual(v({foo: id, bar: ["2", false, null]}).object(), {
+        const id = uuid("foo-bar-buz");
+        assert.deepStrictEqual(v({foo: path(id), bar: ["2", false, null]}).object(), {
           _type: {
             origin: "Map"
           },
-          foo: id.object(),
+          foo: {
+            _type: {
+              origin: "Path"
+            },
+            origin: [
+              "urn:uuid:foo-bar-buz"
+            ]
+          },
           bar: [
             "2",
             false,
@@ -122,7 +130,7 @@ describe("Comp", () => {
           _type: ref("Foo"),
           foo: v(1)
         }).object(), {
-          _id: id.object(),
+          _id: "urn:uuid:foo-bar-buz",
           _type: {
             origin: "Foo"
           },
