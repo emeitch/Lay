@@ -3,7 +3,6 @@ import assert from 'assert';
 import Store from '../src/store';
 import Ref, { ref } from '../src/ref';
 import v from '../src/v';
-import UUID from '../src/uuid';
 
 describe("Ref", () => {
   describe("ref", () => {
@@ -46,21 +45,11 @@ describe("Ref", () => {
     it("should return a persistent object without type", () => {
       assert.deepStrictEqual(ref("foo").object(), {origin: "foo"});
     });
-
-    context("id origin", () => {
-      it("should return a persistent object without type", () => {
-        const id = new UUID();
-        assert.deepStrictEqual(ref(id).object(), {origin: id.object()});
-      });
-    });
   });
 
   describe("#keyString", () => {
     it("should return a string for key", () => {
       assert.deepStrictEqual(ref("foo").keyString(), "foo");
-
-      const id = new UUID();
-      assert.deepStrictEqual(ref(id).keyString(), id.stringify());
     });
   });
 });
