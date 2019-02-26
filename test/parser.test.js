@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import UUID from '../src/uuid';
+import UUID, { uuid } from '../src/uuid';
 import { ref } from '../src/ref';
 import { path } from '../src/path';
 import v from '../src/v';
@@ -12,11 +12,11 @@ describe("parseObjs", () => {
   it("should parse raw number", () => {
     const objs = parseObjs([{
       _type: {origin: "Map"},
-      _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+      _id: "urn:uuid:uuidexample",
       foo: 1
     }]);
 
-    assert.deepStrictEqual(objs[0].get("_id"), new UUID("uuidexample"));
+    assert.deepStrictEqual(objs[0].get("_id"), uuid("uuidexample"));
     assert.deepStrictEqual(objs[0].get("foo"), v(1));
   });
 
@@ -24,7 +24,7 @@ describe("parseObjs", () => {
     it("should parse a string val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: "2"
       }]);
 
@@ -36,7 +36,7 @@ describe("parseObjs", () => {
     it("should parse a comp val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: {_type: {origin: "Comp"}, _head: "foo", origin: 3}
       }]);
 
@@ -48,7 +48,7 @@ describe("parseObjs", () => {
     it("should parse a array val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: {_type: {origin: "Array"}, origin: [1, 2, 3]}
       }]);
 
@@ -60,7 +60,7 @@ describe("parseObjs", () => {
     it("should parse a array map val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: {
           _type: {
             origin: "Array"
@@ -87,7 +87,7 @@ describe("parseObjs", () => {
     it("should parse a map array val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: {
           _type: {origin: "Map"},
           _head: "foo",
@@ -109,7 +109,7 @@ describe("parseObjs", () => {
     it("should parse a comp comp val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: {_type: {origin: "Comp"}, _head: "foo", origin: {_type: {origin: "Comp"}, _head: "bar", origin: 1} },
       }]);
 
@@ -121,7 +121,7 @@ describe("parseObjs", () => {
     it("should parse a comp as enum val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: {_type: {origin: "Comp"}, _head: "foo", origin: null },
       }]);
 
@@ -133,7 +133,7 @@ describe("parseObjs", () => {
     it("should parse a ref val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: {origin: "Foo"},
       }]);
 
@@ -145,7 +145,7 @@ describe("parseObjs", () => {
     it("should parse a path val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: {_type: {origin: "Path"}, origin: ["Foo", ["bar", "buz"]] },
       }]);
 
@@ -157,7 +157,7 @@ describe("parseObjs", () => {
     it("should parse a sym val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: {_type: {origin: "Sym"},  origin: "Foo"},
       }]);
 
@@ -169,7 +169,7 @@ describe("parseObjs", () => {
     it("should parse a date val", () => {
       const objs = parseObjs([{
         _type: {origin: "Map"},
-        _id: {_type: {origin: "UUID"}, origin: "uuidexample"},
+        _id: "urn:uuid:uuidexample",
         foo: {_type: {origin: "Date"}, origin: "2018-04-01T00:00:00z"},
       }]);
 
