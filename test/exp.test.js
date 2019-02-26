@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import v from '../src/v';
 import { plus } from '../src/func';
-import UUID from '../src/uuid';
+import { uuid } from '../src/uuid';
 import Path from '../src/path';
 import { exp } from '../src/exp';
 import Store from '../src/store';
@@ -70,7 +70,7 @@ describe("Exp", () => {
 
     context("with ref arg", () => {
       it("should keep the expression with evaluated exp args", () => {
-        const path = new Path(new UUID(), new UUID());
+        const path = new Path(uuid(), uuid());
         const e = exp(plus, path, exp(plus, v(1), v(2)));
         const native = plus.exp;
         assert.deepStrictEqual(e.reduce(store), exp(native, path, v(3)));
