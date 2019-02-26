@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import { std, n } from '../src/stdlib';
 import v from '../src/v';
-import UUID from '../src/uuid';
+import { uuid } from '../src/uuid';
 import Store from '../src/store';
 import Act from '../src/act';
 import Path, { path } from '../src/path';
@@ -30,7 +30,7 @@ describe("stdlib", () => {
 
   describe("load", () => {
     it("should load prev act json string val to store", () => {
-      const id = new UUID();
+      const id = uuid();
       const val = v({
         _id: id,
         foo: 1
@@ -56,7 +56,7 @@ describe("stdlib", () => {
 
   describe("filterObjs", () => {
     it("should filter act arg log by pattern", () => {
-      const rid = new UUID();
+      const rid = uuid();
       const rev = v({
         _id: rid.keyVal(),
         _type: ref("Revision"),
@@ -64,13 +64,13 @@ describe("stdlib", () => {
         at: v(new Date())
       });
       const obj1 = v({
-        _id: new UUID(),
+        _id: uuid(),
         _type: ref("Foo"),
         _rev: rid,
         foo: 1
       });
       const obj2 = v({
-        _id: new UUID(),
+        _id: uuid(),
         _type: ref("Bar"),
         _rev: rid,
         foo: 1
@@ -119,17 +119,17 @@ describe("stdlib", () => {
         store.put({
           _id: "Foo",
         });
-        const id1 = new UUID();
+        const id1 = uuid();
         store.put({
           _id: id1,
           _type: ref("Foo")
         });
-        const id2 = new UUID();
+        const id2 = uuid();
         store.put({
           _id: id2,
           _type: ref("Foo")
         });
-        const id3 = new UUID();
+        const id3 = uuid();
         store.put({
           _id: id3,
           _type: ref("Foo"),
@@ -137,8 +137,9 @@ describe("stdlib", () => {
         });
 
         const ids = path("Foo", "all").reduce(store);
-        assert.deepStrictEqual(ids.get(0), id1);
-        assert.deepStrictEqual(ids.get(1), id2);
+        // todo: UUID撤廃が完了したらkeyValを外す
+        assert.deepStrictEqual(ids.get(0).keyVal(), id1);
+        assert.deepStrictEqual(ids.get(1).keyVal(), id2);
 
         const emp = store.new();
         assert.deepStrictEqual(path(emp, "all").reduce(store), v([]));
@@ -176,7 +177,7 @@ describe("stdlib", () => {
 
     describe("_status", () => {
       it("should return active status", () => {
-        const id = new UUID();
+        const id = uuid();
         store.put({
           _id: id
         });
@@ -189,7 +190,7 @@ describe("stdlib", () => {
       describe("#set", () => {
         it("should return the Act which run set action", () => {
           const typeid = ref("Foo");
-          const id = new UUID();
+          const id = uuid();
           store.put({
             _id: id,
             _type: typeid
@@ -220,7 +221,7 @@ describe("stdlib", () => {
         });
 
         it("should set partial obj's property", () => {
-          const id = new UUID();
+          const id = uuid();
           store.put(v({
             _id: id,
             foo: {
@@ -235,17 +236,17 @@ describe("stdlib", () => {
 
         context("with context", () => {
           it("should set context properties", () => {
-            const id = new UUID();
+            const id = uuid();
             store.put({
               _id: id,
             });
-            const holder = new UUID();
+            const holder = uuid();
             store.put({
               _id: holder,
             });
 
-            const context = new UUID();
-            const a1 = path(holder, ["set", id, context]).reduce(store);
+            const context = uuid();
+            const a1 = path(holder, ["set", id, pack(path(context))]).reduce(store);
             store.run(a1);
 
             const a2 = path(holder, id, ["set", "buz", v(5)]).reduce(store);
@@ -256,7 +257,7 @@ describe("stdlib", () => {
 
         context("with nested obj properties", () => {
           it("should set nested properties", () => {
-            const id = new UUID();
+            const id = uuid();
             store.put({
               _id: id,
               foo: {
@@ -282,7 +283,7 @@ describe("stdlib", () => {
 
       describe("#get", () => {
         it("should return a val for key", () => {
-          const id = new UUID();
+          const id = uuid();
           store.put({
             _id: id,
           });
@@ -297,7 +298,7 @@ describe("stdlib", () => {
 
         context("exp val", () => {
           it("should retrun a reduced val", () => {
-            const id = new UUID();
+            const id = uuid();
             store.put({
               _id: id,
             });
@@ -327,14 +328,6 @@ describe("stdlib", () => {
       it("should reverse logic", () => {
         assert.deepStrictEqual(path(v(true), "not").reduce(store), v(false));
         assert.deepStrictEqual(path(v(false), "not").reduce(store), v(true));
-      });
-    });
-  });
-
-  context("accessing UUID methods", () => {
-    describe("new", () => {
-      it("should return new UUID", () => {
-        assert(path("UUID", "new").reduce(store) instanceof UUID);
       });
     });
   });
@@ -413,7 +406,7 @@ describe("stdlib", () => {
         const m = exp.deepReduce(store);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
 
-        const id = new UUID();
+        const id = uuid();
         store.put({
           _id: id,
           a: exp
@@ -559,7 +552,7 @@ describe("stdlib", () => {
 
     describe("set", () => {
       it("should set obj's property", () => {
-        const id = new UUID();
+        const id = uuid();
         const pact = path(store.id, ["set", id, "foo", v(1)]).reduce(store);
         store.run(pact);
 
@@ -571,7 +564,7 @@ describe("stdlib", () => {
           const b = new Store(std);
           store.import(b);
 
-          const id = new UUID();
+          const id = uuid();
           const pact = path(b.id, ["set", id, "foo", v(1)]).reduce(store);
           store.run(pact);
 
