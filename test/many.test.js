@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import v from '../src/v';
-import UUID from '../src/uuid';
+import { uuid } from '../src/uuid';
 import Store from '../src/store';
 import { ref } from '../src/ref';
 import { path } from '../src/path';
@@ -14,24 +14,24 @@ describe("Many", () => {
     it("should enumrate each objs", () => {
       const store = new Store(std);
 
-      const bid = new UUID();
+      const bid = uuid();
 
       store.put({
         _id: "Foo"
       });
 
-      const fid1 = new UUID();
+      const fid1 = uuid();
       store.put({
         _id: fid1,
         _type: ref("Foo"),
-        bar: bid
+        bar: path(bid)
       });
 
-      const fid2 = new UUID();
+      const fid2 = uuid();
       store.put({
         _id: fid2,
         _type: ref("Foo"),
-        bar: bid
+        bar: path(bid)
       });
 
       store.put({
@@ -46,24 +46,24 @@ describe("Many", () => {
       it("should enumrate each objs", () => {
         const store = new Store(std);
 
-        const bid = new UUID();
+        const bid = uuid();
 
         store.put({
           _id: v("Foo")
         });
 
-        const fid1 = new UUID();
+        const fid1 = uuid();
         store.put({
           _id: fid1,
           _type: ref("Foo"),
-          bar: bid
+          bar: path(bid)
         });
 
-        const fid2 = new UUID();
+        const fid2 = uuid();
         store.put({
           _id: fid2,
           _type: ref("Foo"),
-          bar: bid
+          bar: path(bid)
         });
 
         store.put({
