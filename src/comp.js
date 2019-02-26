@@ -86,7 +86,7 @@ export default class Comp extends Val {
   }
 
   get(k, store) {
-    if (k instanceof ID && store) {
+    if ((k instanceof ID || (typeof(k.origin) == "string" && k.origin.match(/^urn:uuid/))) && store) {
       const base = this.getOwnProp("_id");
       const ref = store.parseRef(base.origin);
       const _id = store.path(ref, k);
@@ -102,8 +102,7 @@ export default class Comp extends Val {
     if (ownProp) {
       const base = this.getOwnProp("_id");
       if (store && base && ownProp instanceof CompMap) {
-        const ref = base instanceof Prim ? store.parseRef(base.origin) : base;
-        const _id = store.path(ref, k);
+        const _id = store.path(base, k);
         return ownProp.patch({_id});
       }
       return ownProp;

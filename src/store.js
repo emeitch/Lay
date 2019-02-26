@@ -48,7 +48,8 @@ export default class Store {
     if (id instanceof Path) {
       const pth = id;
       const parent = pth.parent();
-      if (pth.keys.every(i => i instanceof Prim)) {
+      const isUUID = s => (s instanceof UUID || s instanceof Prim && s.origin.match(/^urn:uuid:/) != null);
+      if (pth.keys.every(i => i instanceof Prim && !isUUID(i))) {
         // partial embeded obj
         id = pth.receiver;
         const base = this.fetch(id) || v({_id: id});
@@ -56,9 +57,9 @@ export default class Store {
         obj = base.patch(diff);
       } else if (pth.keys.some(i => Array.isArray(i))) {
         throw `cannot set method applying path to _id: ${pth}`;
-      } else if (pth.keys.some(i => !(i instanceof ID))) {
+      } else if (pth.keys.some(i => !isUUID(i))) {
         throw "intermediate objs are not context objs";
-      } else if (parent.reduce(this).equals(parent)) {
+      } else if (!this.fetch(parent.keyVal())) {
         throw "intermediate objs not found";
       }
     }

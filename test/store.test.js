@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import UUID from '../src/uuid';
+import { uuid } from '../src/uuid';
 import v from '../src/v';
 import { path } from '../src/path';
 import { ref } from '../src/ref';
@@ -23,7 +23,7 @@ describe("Store", () => {
 
   describe("#put (#get)", () => {
     it("should store the object", () => {
-      const id = new UUID();
+      const id = uuid();
       const obj = v({
         _id: id,
         foo: 1,
@@ -39,7 +39,7 @@ describe("Store", () => {
 
     context("with pack id", () => {
       it("should store the object", () => {
-        const id = new UUID();
+        const id = uuid();
         const obj = v({
           _id: pack(id),
           foo: 1,
@@ -68,12 +68,12 @@ describe("Store", () => {
 
       context("path id", () => {
         it("should store the object", () => {
-          const id0 = new UUID();
+          const id0 = uuid();
           store.put({
             _id: id0
           });
 
-          const id1 = new UUID();
+          const id1 = uuid();
           const id2 = path(id0, id1);
           const obj = v({
             _id: pack(id2),
@@ -93,7 +93,7 @@ describe("Store", () => {
       it("should throw error", () => {
         assert.throws(() => {
           store.put({
-            _id: new UUID(),
+            _id: uuid(),
             _type: path("Foo") // error type
           });
         }, /bad type reference style:/);
@@ -102,7 +102,7 @@ describe("Store", () => {
 
     context("different _rev", () => {
       it("should optimistic lock", () => {
-        const id = new UUID();
+        const id = uuid();
         store.put({
           _id: id,
           foo: 3
@@ -132,9 +132,9 @@ describe("Store", () => {
     });
 
     context("stored context object", () => {
-      const id0 = new UUID();
-      const id1 = new UUID();
-      const id2 = new UUID();
+      const id0 = uuid();
+      const id1 = uuid();
+      const id2 = uuid();
       const key0 = v("foo");
       const key1 = v("bar");
 
@@ -152,7 +152,7 @@ describe("Store", () => {
         const context = store.fetch(cpath);
         assert.deepStrictEqual(base.get(id1, store), context);
 
-        const pstr = v(`urn:uuid:${id0.origin}.urn:uuid:${id1.origin}`);
+        const pstr = v(`${id0.origin}.${id1.origin}`);
         assert.deepStrictEqual(context.getOwnProp("_id"), pstr);
       });
 
@@ -189,13 +189,14 @@ describe("Store", () => {
             });
 
             const cpath1 = store.path(id0, id1, id2);
+
             store.put({
               _id: cpath1
             });
 
             store.put({
               _id: "foo",
-              bar: cpath0
+              bar: path(cpath0)
             });
 
             const context = store.fetch(cpath1);
@@ -313,7 +314,7 @@ describe("Store", () => {
 
   describe("#patch", () => {
     it("should patch the diff", () => {
-      const id = new UUID();
+      const id = uuid();
       store.patch(id, {
         foo: 3
       });
@@ -323,7 +324,7 @@ describe("Store", () => {
 
     context("patch child properties", () => {
       it("should patch the partial diff", () => {
-        const id = new UUID();
+        const id = uuid();
         store.patch(id, {
           foo: {
             bar: 2
@@ -343,7 +344,7 @@ describe("Store", () => {
 
     context("patch child properties to null", () => {
       it("should patch the partial diff", () => {
-        const id = new UUID();
+        const id = uuid();
         store.patch(id, {
           foo: {
             bar: 2,
@@ -385,9 +386,9 @@ describe("Store", () => {
 
     context("uuid", () => {
       it("should merge the patch", () => {
-        const id = new UUID();
+        const id = uuid();
         const patch = {
-          [id.stringify()]: {
+          [id.keyString()]: {
             a: 1
           }
         };
@@ -436,7 +437,7 @@ describe("Store", () => {
       assert.deepStrictEqual(a, 0);
 
       store.put({
-        _id: new UUID(),
+        _id: uuid(),
         foo: "bar"
       });
 
