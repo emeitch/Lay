@@ -72,8 +72,7 @@ export function parseRef(str) {
     return path(...keys);
   }
 
-  const m = s.origin.match(/^urn:uuid:(.*)/);
-  if (m && m[1]) {
+  if (s.origin.match(/^urn:uuid:(.*)/)) {
     return s;
   }
 
