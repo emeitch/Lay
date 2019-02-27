@@ -1,4 +1,3 @@
-import ID from './id';
 import v from './v';
 
 function generateString() {
@@ -13,17 +12,6 @@ function generateString() {
     uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random)).toString(16);
   }
   return uuid;
-}
-
-export default class UUID extends ID {
-
-  constructor(uuid = generateString()) {
-    super(uuid);
-  }
-
-  prefix() {
-    return "urn:uuid:";
-  }
 }
 
 export function uuid(str = generateString()) {
