@@ -3,7 +3,6 @@ import v from './v';
 import Ref, { ref } from './ref';
 import Sym from './sym';
 import Act from './act';
-import ID from './id';
 import Prim from './prim';
 import Path, { path } from './path';
 import Comp, { CompMap } from './comp';
@@ -87,7 +86,7 @@ export default class Store {
     if (prid) {
       withMeta._prev = prid;
     }
-    if (id instanceof Ref || id instanceof ID || id instanceof Path) {
+    if (id instanceof Ref || id instanceof Path) {
       withMeta._id = id.keyVal();
     }
 
@@ -247,7 +246,7 @@ export default class Store {
 
   resolve(ref) {
     let obj = ref;
-    while(obj instanceof Ref || obj instanceof ID || obj instanceof Sym) {
+    while(obj instanceof Ref || obj instanceof Sym) {
       obj = this.fetch(obj);
       obj = obj && obj.reduce(this); // for _target reducing
     }

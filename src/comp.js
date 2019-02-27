@@ -3,7 +3,6 @@ import _ from 'lodash';
 import Val from './val';
 import Prim from './prim';
 import v from './v';
-import ID from './id';
 import { ref } from './ref';
 
 const NullVal = new Prim(null);
@@ -86,7 +85,7 @@ export default class Comp extends Val {
   }
 
   get(k, store) {
-    if ((k instanceof ID || (typeof(k.origin) == "string" && k.origin.match(/^urn:uuid/))) && store) {
+    if (typeof(k.origin) == "string" && k.origin.match(/^urn:uuid/) && store) {
       const base = this.getOwnProp("_id");
       const ref = store.parseRef(base.origin);
       const _id = store.path(ref, k);
