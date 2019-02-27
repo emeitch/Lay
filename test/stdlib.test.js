@@ -137,9 +137,8 @@ describe("stdlib", () => {
         });
 
         const ids = path("Foo", "all").reduce(store);
-        // todo: UUID撤廃が完了したらkeyValを外す
-        assert.deepStrictEqual(ids.get(0).keyVal(), id1);
-        assert.deepStrictEqual(ids.get(1).keyVal(), id2);
+        assert.deepStrictEqual(ids.get(0), id1);
+        assert.deepStrictEqual(ids.get(1), id2);
 
         const emp = store.new();
         assert.deepStrictEqual(path(emp, "all").reduce(store), v([]));
