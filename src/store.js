@@ -1,11 +1,11 @@
-import UUID from './uuid';
+import { uuid } from './uuid';
 import v from './v';
 import Ref, { ref } from './ref';
 import Sym from './sym';
 import Act from './act';
 import ID from './id';
 import Prim from './prim';
-import Path from './path';
+import Path, { path } from './path';
 import Comp, { CompMap } from './comp';
 import { parseRef } from './parser';
 
@@ -18,12 +18,12 @@ export default class Store {
       this.import(i);
     }
 
-    this.id = new UUID();
+    this.id = uuid();
     this.put({
       _id: this.id,
       _type: ref("Store")
     });
-    this.assign("currentStore", ref(this.id));
+    this.assign("currentStore", path(this.id));
   }
 
   parseRef(...args) {
@@ -48,7 +48,7 @@ export default class Store {
     if (id instanceof Path) {
       const pth = id;
       const parent = pth.parent();
-      const isUUID = s => (s instanceof UUID || s instanceof Prim && s.origin.match(/^urn:uuid:/) != null);
+      const isUUID = s => s instanceof Prim && s.origin.match(/^urn:uuid:/) != null;
       if (pth.keys.every(i => i instanceof Prim && !isUUID(i))) {
         // partial embeded obj
         id = pth.receiver;
@@ -74,15 +74,15 @@ export default class Store {
       throw "optimistic locked: specified _rev is not latest";
     }
 
-    const rid = new UUID();
+    const rid = uuid();
     const rev = v({
-      _id: rid.keyVal(),
-      _rev: rid,
+      _id: rid,
+      _rev: path(rid),
       _type: ref("Revision"),
       at: v(new Date())
     });
     const withMeta = {
-      _rev: rid
+      _rev: path(rid)
     };
     if (prid) {
       withMeta._prev = prid;
@@ -136,13 +136,7 @@ export default class Store {
   merge(diff) {
     for (const key of Object.keys(diff)) {
       const val = diff[key];
-
-      let k = key;
-      const m = key.match(/^urn:uuid:(.*)/);
-      if (m && m[1]) {
-        k = new UUID(m[1]);
-      }
-      this.patch(k, val);
+      this.patch(key, val);
     }
   }
 
@@ -203,7 +197,7 @@ export default class Store {
     this.handleOnInport(other);
 
     if (typeof(name) === "string") {
-      this.assign(name, other.id);
+      this.assign(name, path(other.id));
     }
   }
 
@@ -298,7 +292,7 @@ export default class Store {
   }
 
   new(obj={}) {
-    const reduced = {_id: new UUID()};
+    const reduced = {_id: uuid()};
     for (const key of Object.keys(obj)) {
       reduced[key] = obj[key].reduce(this).unpack();
     }

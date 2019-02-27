@@ -1,4 +1,3 @@
-import UUID from './uuid';
 import { sym } from './sym';
 import { ref } from './ref';
 import { path } from './path';
@@ -32,8 +31,6 @@ export function parseVal(raw) {
       return v(head, raw.origin.map(i => parseVal(i)));
     } else if (klass.equals(ref("Date"))) {
       return v(head, new Date(raw.origin));
-    } else if (klass.equals(ref("UUID"))) {
-      return new UUID(raw.origin);
     } else if (klass.equals(ref("Sym"))) {
       return sym(raw.origin);
     } else if (klass.equals(ref("Path"))) {
@@ -77,7 +74,7 @@ export function parseRef(str) {
 
   const m = s.origin.match(/^urn:uuid:(.*)/);
   if (m && m[1]) {
-    return new UUID(m[1]);
+    return s;
   }
 
   return ref(s);

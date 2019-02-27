@@ -265,11 +265,6 @@ export const std = new Store();
   );
 }
 
-// {
-//   const date = new UUID();
-//   set("Date", date);
-// }
-
 {
   const act = "Act";
 
@@ -294,11 +289,6 @@ export const std = new Store();
     }), "self", "next"))
   );
 }
-
-// {
-//   const app = new UUID();
-//   set("App", app);
-// }
 
 {
   const cnsl = "Console";

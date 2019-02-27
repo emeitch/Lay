@@ -39,7 +39,7 @@ describe("Many", () => {
         foo: new Many("Foo", "bar"),
       });
 
-      assert.deepStrictEqual(path(bid, "foo", v(0)).reduce(store), store.fetch(fid1));
+      assert.deepStrictEqual(path(bid, "foo", v(0)).reduce(store), fid1);
     });
 
     context("the prop name is same the type name", () => {
@@ -72,7 +72,7 @@ describe("Many", () => {
           foo: new Many("Foo"),
         });
 
-        assert.deepStrictEqual(path(bid, "foo", v(0)).reduce(store), store.fetch(fid1));
+        assert.deepStrictEqual(path(bid, "foo", v(0)).reduce(store), fid1);
       });
     });
   });

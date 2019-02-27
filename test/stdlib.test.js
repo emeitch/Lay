@@ -168,7 +168,7 @@ describe("stdlib", () => {
         store.run(act2);
 
         const obj = path("Foo", "all", v(0)).reduce(store);
-        assert.deepStrictEqual(store.resolve(ov), obj);
+        assert.deepStrictEqual(ov, obj);
         assert.deepStrictEqual(path(obj, "foo").reduce(store), v("foo"));
         assert.deepStrictEqual(path(obj, "bar").reduce(store), v(3));
         assert.deepStrictEqual(path(obj, "buz").reduce(store), v(3));

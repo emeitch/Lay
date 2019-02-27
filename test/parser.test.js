@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import UUID, { uuid } from '../src/uuid';
+import { uuid } from '../src/uuid';
 import { ref } from '../src/ref';
 import { path } from '../src/path';
 import v from '../src/v';
@@ -196,7 +196,7 @@ describe("parseRef", () => {
 
   context("urn:uuid:*", () => {
     it("should return a UUID", () => {
-      assert.deepStrictEqual(parseRef("urn:uuid:foo-bar-buz"), new UUID("foo-bar-buz"));
+      assert.deepStrictEqual(parseRef("urn:uuid:foo-bar-buz"), v("urn:uuid:foo-bar-buz"));
     });
   });
 
