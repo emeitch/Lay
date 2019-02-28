@@ -3,7 +3,6 @@ import Store from './store';
 import Act from './act';
 import { std, n } from './stdlib';
 import { exp } from './exp';
-import { ref } from './ref';
 import { pack } from './pack';
 import { path } from './path';
 import { func } from './func';
@@ -26,7 +25,7 @@ const d = new Store(std);
 }
 
 {
-  d.set("todos", "_type", ref("App"));
+  d.set("todos", "_type", path("App"));
   d.set("todos", "var", v("0.2.0"));
   d.set("todos", "state", n("all"));
   d.set("todos", "newTaskTitle", v(""));
@@ -90,7 +89,7 @@ const d = new Store(std);
                     [
                       "new",
                       n({
-                        "_type": pack(ref("Task")),
+                        "_type": pack(path("Task")),
                         "title": path(sym("ev"), "value", "trim"),
                         "state": n("active"),
                       })
@@ -108,7 +107,7 @@ const d = new Store(std);
                               "new",
                               n({
                                 "_id": path("viewmodel", sym("id")),
-                                "_type": pack(ref("TaskView")),
+                                "_type": pack(path("TaskView")),
                               })
                             ]
                             )
@@ -629,7 +628,7 @@ const d = new Store(std);
                         "_type",
                         [
                           "equals",
-                          ref("Task")
+                          path("Task")
                         ]
                       ),
                       path("Object",
@@ -637,7 +636,7 @@ const d = new Store(std);
                         "new",
                         n({
                           "_id": path("viewmodel", sym("obj")),
-                          "_type": pack(ref("TaskView")),
+                          "_type": pack(path("TaskView")),
                         })
                       ]),
                       v(null)

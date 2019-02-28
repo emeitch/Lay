@@ -39,7 +39,7 @@ export default class Store {
     // todo: ロックが実現の為に下記の一連の処理がアトミックな操作となるよううまく保証する
 
     const tprop = obj.getOwnProp("_type");
-    if (!(tprop instanceof Sym) && tprop.constructor !== Ref) {
+    if (tprop.constructor !== Ref) {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 

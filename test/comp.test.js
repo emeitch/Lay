@@ -111,12 +111,7 @@ describe("Comp", () => {
             origin: "Map"
           },
           foo: {
-            _type: {
-              origin: "Path"
-            },
-            origin: [
-              "urn:uuid:foo-bar-buz"
-            ]
+            origin: "urn:uuid:foo-bar-buz"
           },
           bar: [
             "2",

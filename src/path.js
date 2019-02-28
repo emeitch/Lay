@@ -1,8 +1,10 @@
 import Val from './val';
+import Prim from './prim';
 import Case from './case';
 import v from './v';
 import Sym, { sym } from './sym';
 import { exp } from './exp';
+import { ref } from './ref';
 import { func, LiftedNative } from './func';
 
 export default class Path extends Val {
@@ -145,5 +147,12 @@ export default class Path extends Val {
 }
 
 export function path(...args) {
+  const first = v(args[0]);
+  if (args.length === 1 &&
+      first instanceof Prim &&
+      typeof(first.origin) === "string") {
+    return ref(first);
+  }
+
   return new Path(...args);
 }

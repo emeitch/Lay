@@ -89,12 +89,12 @@ describe("Store", () => {
       });
     });
 
-    context("not sym type", () => {
+    context("not a ref type", () => {
       it("should throw error", () => {
         assert.throws(() => {
           store.put({
             _id: uuid(),
-            _type: path("Foo") // error type
+            _type: v(123) // error type
           });
         }, /bad type reference style:/);
       });
