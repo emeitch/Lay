@@ -39,7 +39,7 @@ export default class Store {
     // todo: ロックが実現の為に下記の一連の処理がアトミックな操作となるよううまく保証する
 
     const tprop = obj.get("_type", this);
-    if (tprop.constructor !== Ref) {
+    if (tprop.constructor !== Path && tprop.constructor !== Ref) {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 
@@ -257,7 +257,7 @@ export default class Store {
   traversePropFromType(obj, key) {
     const tref = obj.get("_type", this);
     const tobj = tref.reduce(this);
-    if (tref.equals(tobj)) {
+    if (tref.equals(tobj) || !(tobj instanceof CompMap)) {
       return undefined;
     }
 

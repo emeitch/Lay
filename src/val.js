@@ -17,8 +17,8 @@ export default class Val {
     return this.constructor.name;
   }
 
-  type(_store) {
-    return new Ref(this.typeName);
+  type(store) {
+    return store.path(this.typeName);
   }
 
   get _toStr() {

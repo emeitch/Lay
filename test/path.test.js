@@ -294,9 +294,6 @@ describe("Path", () => {
       const id = uuid("foo-bar-buz");
       const p = path(id, "bar", ["buz", "fiz"]);
       assert.deepStrictEqual(p.object(), {
-        _type: {
-          origin: "Path"
-        },
         origin: [
           "urn:uuid:foo-bar-buz",
           "bar",

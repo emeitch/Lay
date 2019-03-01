@@ -131,11 +131,12 @@ describe("Val", () => {
       });
     });
 
-    describe("#object", () => {
-      it("should return origin value", () => {
-        assert.deepStrictEqual(val.object({foo: "dummy"}), {"origin": 0, "_type": {origin: "ExtendedVal"}});
-      });
-    });
+    // todo: _typeの仕様が変わったら復活
+    // describe("#object", () => {
+    //   it("should return origin value", () => {
+    //     assert.deepStrictEqual(val.object({foo: "dummy"}), {"origin": 0, "_type": {origin: "ExtendedVal"}});
+    //   });
+    // });
   });
 
   context("direct construction", () => {

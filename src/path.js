@@ -117,8 +117,7 @@ export default class Path extends Val {
   }
 
   object(_store) {
-    const base = super.object(_store);
-    return Object.assign({}, base, {
+    return {
       origin: this.origin.map(o => {
         if (Array.isArray(o)) {
           return o.map(i => i.object(_store));
@@ -126,7 +125,7 @@ export default class Path extends Val {
           return o.object(_store);
         }
       })
-    });
+    };
   }
 
   diff(leaf) {

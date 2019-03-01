@@ -2,7 +2,6 @@ import assert from 'assert';
 
 import Store from '../src/store';
 import { uuid } from '../src/uuid';
-import { ref } from '../src/ref';
 import { exp } from '../src/exp';
 import { plus } from '../src/func';
 import { path } from '../src/path';
@@ -37,7 +36,7 @@ describe("Comp", () => {
 
         assert.deepStrictEqual(v("foo", 1).object(store), {
           _type: {
-            origin: "Comp"
+            origin: ["Comp"]
           },
           _head: "foo",
           origin: 1
@@ -45,7 +44,7 @@ describe("Comp", () => {
 
         assert.deepStrictEqual(v("foo", null).object(store), {
           _type: {
-            origin: "Comp"
+            origin: ["Comp"]
           },
           _head: "foo",
           origin: null
@@ -53,7 +52,7 @@ describe("Comp", () => {
 
         assert.deepStrictEqual(v({a: 1, b: 2}).object(store), {
           _type: {
-            origin: "Map"
+            origin: ["Map"]
           },
           a: 1,
           b: 2
@@ -61,7 +60,7 @@ describe("Comp", () => {
 
         assert.deepStrictEqual(v([1, 2, 3]).object(store), {
           _type: {
-            origin: "Array"
+            origin: ["Array"]
           },
           origin: [1, 2, 3]
         });
@@ -69,7 +68,7 @@ describe("Comp", () => {
         assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(store), {
           _head: "foo",
           _type: {
-            origin: "Map"
+            origin: ["Map"]
           },
           a: 1,
           b: 2
@@ -77,15 +76,15 @@ describe("Comp", () => {
 
         assert.deepStrictEqual(v("bar", [1, 2, 3]).object(store), {
           _type: {
-            origin: "Array"
+            origin: ["Array"]
           },
           _head: "bar",
           origin: [1, 2, 3]
         });
 
-        assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(), {
+        assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(store), {
           _type: {
-            origin: "Array"
+            origin: ["Array"]
           },
           origin: [
             1,
@@ -95,9 +94,9 @@ describe("Comp", () => {
           ]
         });
 
-        assert.deepStrictEqual(v({foo: 1, bar: {buz: "2"}}).object(), {
+        assert.deepStrictEqual(v({foo: 1, bar: {buz: "2"}}).object(store), {
           _type: {
-            origin: "Map"
+            origin: ["Map"]
           },
           foo: 1,
           bar: {
@@ -106,9 +105,9 @@ describe("Comp", () => {
         });
 
         const id = uuid("foo-bar-buz");
-        assert.deepStrictEqual(v({foo: path(id), bar: ["2", false, null]}).object(), {
+        assert.deepStrictEqual(v({foo: path(id), bar: ["2", false, null]}).object(store), {
           _type: {
-            origin: "Map"
+            origin: ["Map"]
           },
           foo: {
             origin: "urn:uuid:foo-bar-buz"
@@ -122,25 +121,25 @@ describe("Comp", () => {
 
         assert.deepStrictEqual(v({
           _id: id,
-          _type: ref("Foo"),
+          _type: store.path("Foo"),
           foo: v(1)
-        }).object(), {
+        }).object(store), {
           _id: "urn:uuid:foo-bar-buz",
           _type: {
-            origin: "Foo"
+            origin: ["Foo"]
           },
           foo: 1,
         });
 
-        assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(), {
+        assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(store), {
           _type: {
-            origin: "Array"
+            origin: ["Array"]
           },
           origin: [
             "foo",
             {
               _type: {
-                origin: "Map"
+                origin: ["Map"]
               },
               bar: 1,
               buz: false
@@ -281,7 +280,7 @@ describe("CompDate", () => {
       assert.deepStrictEqual(cd.object(store), {
         origin: "2018-01-01T00:00:00.000Z",
         _type: {
-          origin: "Date",
+          origin: ["Date"],
         },
       });
     });
