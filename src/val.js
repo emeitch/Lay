@@ -39,15 +39,7 @@ export default class Val {
   }
 
   keyStr(key) {
-    if (typeof(key) !== "object") {
-      return key;
-    }
-
-    if (key instanceof Sym || key instanceof Prim) {
-      return key.origin;
-    }
-
-    return key.stringify();
+    return key instanceof Val ? key.keyString() : key;
   }
 
   getOwnProp(k) {
