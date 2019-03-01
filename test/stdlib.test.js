@@ -243,13 +243,15 @@ describe("stdlib", () => {
               _id: holder,
             });
 
-            const context = uuid();
-            const a1 = path(holder, ["set", id, pack(path(context))]).reduce(store);
+            // todo: この空Mapのsetがなくてもコンテキストへの属性追加ができるようにしたい
+            const a1 = path(holder, ["set", id, v({})]).reduce(store);
             store.run(a1);
 
             const a2 = path(holder, id, ["set", "buz", v(5)]).reduce(store);
             store.run(a2);
-            assert.deepStrictEqual(path(holder, id, "buz").reduce(store), v(5));
+
+            const context = store.fetch(path(holder, id));
+            assert.deepStrictEqual(context.get("buz", store), v(5));
           });
         });
 
