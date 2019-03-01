@@ -119,6 +119,7 @@ describe("Store", () => {
       const id0 = uuid();
       const id1 = uuid();
       const id2 = uuid();
+      const id3 = uuid();
       const key0 = v("foo");
       const key1 = v("bar");
 
@@ -173,9 +174,13 @@ describe("Store", () => {
             });
 
             const cpath1 = store.path(id0, id1, id2);
-
             store.put({
               _id: cpath1
+            });
+
+            const cpath2 = store.path(id0, id1, id2, id3);
+            store.put({
+              _id: cpath2
             });
 
             store.put({
@@ -183,8 +188,8 @@ describe("Store", () => {
               bar: path(cpath0)
             });
 
-            const context = store.fetch(cpath1);
-            assert.deepStrictEqual(path("foo", "bar", id2).reduce(store), context);
+            const context = store.fetch(cpath2);
+            assert.deepStrictEqual(path("foo", "bar", id2, id3).reduce(store), context);
           });
         });
 
