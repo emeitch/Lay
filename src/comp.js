@@ -65,10 +65,10 @@ export default class Comp extends Val {
     return Comp.valFrom(this.origin);
   }
 
-  getCompProp(k) {
-    const key = this.keyStr(k);
-    if (this.origin !== null && this.origin.hasOwnProperty(key)) {
-      return this.constructor.valFrom(this.origin[key]);
+  getCompProp(key) {
+    const kstr = this.convertKeyString(key);
+    if (this.origin !== null && this.origin.hasOwnProperty(kstr)) {
+      return this.constructor.valFrom(this.origin[kstr]);
     }
 
     return undefined;
@@ -83,38 +83,38 @@ export default class Comp extends Val {
     return super.getOwnProp(k);
   }
 
-  get(k, store) {
-    if (typeof(k.origin) == "string" && k.origin.match(/^urn:uuid/) && store) {
+  get(key, store) {
+    if (typeof(key.origin) == "string" && key.origin.match(/^urn:uuid/) && store) {
       const base = this.getOwnProp("_id");
       const ref = store.parseRef(base.origin);
-      const _id = store.path(ref, k);
+      const _id = store.path(ref, key);
       const obj = store.fetch(_id);
       if (obj) {
         return obj;
       }
     }
 
-    const key = this.keyStr(k);
+    const kstr = this.convertKeyString(key);
 
-    let ownProp = this.getOwnProp(k);
+    let ownProp = this.getOwnProp(key);
     if (ownProp) {
       const base = this.getOwnProp("_id");
       if (store && base && ownProp instanceof CompMap) {
-        const _id = store.path(base, k);
+        const _id = store.path(base, key);
         return ownProp.patch({_id});
       }
       return ownProp;
     }
 
     if (this.head instanceof Comp) {
-      return this.head.get(key);
+      return this.head.get(kstr);
     }
 
-    if (key === "head") {
+    if (kstr === "head") {
       return this.head;
     }
 
-    return super.get(k, store);
+    return super.get(key, store);
   }
 
   patch(diff) {

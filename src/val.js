@@ -38,26 +38,26 @@ export default class Val {
     return undefined;
   }
 
-  keyStr(key) {
+  convertKeyString(key) {
     return key instanceof Val ? key.keyString() : key;
   }
 
-  getOwnProp(k) {
-    const key = this.keyStr(k);
-    return this.getJSProp(key);
+  getOwnProp(key) {
+    const kstr = this.convertKeyString(key);
+    return this.getJSProp(kstr);
   }
 
-  get(k, store) {
-    const key = this.keyStr(k);
+  get(key, store) {
+    const kstr = this.convertKeyString(key);
 
     if (store) {
-      const prop = store.findPropFromType(this, key);
+      const prop = store.findPropFromType(this, kstr);
       if (prop) {
         return prop;
       }
     }
 
-    return this.getJSProp(key);
+    return this.getJSProp(kstr);
   }
 
   equals(other) {
