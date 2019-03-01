@@ -1,6 +1,6 @@
 import { uuid } from './uuid';
 import v from './v';
-import Ref, { ref } from './ref';
+import Ref from './ref';
 import Sym from './sym';
 import Act from './act';
 import Prim from './prim';
@@ -20,7 +20,7 @@ export default class Store {
     this.id = uuid();
     this.put({
       _id: this.id,
-      _type: ref("Store")
+      _type: "Store"
     });
     this.assign("currentStore", path(this.id));
   }
@@ -39,8 +39,8 @@ export default class Store {
     // todo: ロックが実現の為に下記の一連の処理がアトミックな操作となるよううまく保証する
 
     const tprop = obj.get("_type", this);
-    if (tprop.constructor !== Path && tprop.constructor !== Ref) {
-      throw `bad type reference style: ${tprop.stringify()}`;
+    if (tprop.constructor !== Prim || typeof(tprop.origin) !== "string") {
+        throw `bad type reference style: ${tprop.stringify()}`;
     }
 
     let id = obj.getOwnProp("_id");
@@ -77,7 +77,7 @@ export default class Store {
     const rev = v({
       _id: rid,
       _rev: path(rid),
-      _type: ref("Revision"),
+      _type: "Revision",
       at: v(new Date())
     });
     const withMeta = {
@@ -255,9 +255,9 @@ export default class Store {
   }
 
   traversePropFromType(obj, key) {
-    const tref = obj.get("_type", this);
-    const tobj = tref.reduce(this);
-    if (tref.equals(tobj) || !(tobj instanceof CompMap)) {
+    const tname = obj.getOwnProp("_type");
+    const tobj = this.fetch(tname);
+    if (!tobj || !(tobj instanceof CompMap)) {
       return undefined;
     }
 
@@ -312,9 +312,8 @@ export default class Store {
       }
 
       const key = this.parseRef(kstr);
-      const tref = val.get("_type", this);
-      const tname = tref.keyString();
-      if (tname === cid.origin) {
+      const tname = val.getOwnProp("_type");
+      if (tname.origin === cid.origin) {
         results.push(key);
       }
     }

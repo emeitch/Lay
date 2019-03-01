@@ -3,7 +3,6 @@ import assert from 'assert';
 import { uuid } from '../src/uuid';
 import v from '../src/v';
 import { path } from '../src/path';
-import { ref } from '../src/ref';
 import { pack } from '../src/pack';
 import Act from '../src/act';
 import Store from '../src/store';
@@ -33,9 +32,8 @@ describe("Store", () => {
 
       assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
 
-      assert.deepStrictEqual(path(id, "_rev", "_type").reduce(store), ref("Revision").reduce(store));
-      // todo: _typeの仕様が変わったら復活
-      // assert.deepStrictEqual(path(id, "_rev", "at", "_type").reduce(store), ref("Date").reduce(store));
+      assert.deepStrictEqual(path(id, "_rev", "_type").reduce(store), v("Revision"));
+      assert.deepStrictEqual(path(id, "_rev", "at", "_type").reduce(store), v("Date"));
     });
 
     context("with pack id", () => {
@@ -50,21 +48,6 @@ describe("Store", () => {
 
         assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
         assert.deepStrictEqual(path(id, "_id").reduce(store), pack(id));
-      });
-
-      context("ref id", () => {
-        it("should store the object", () => {
-          const id = ref("Foo");
-          const obj = v({
-            _id: pack(id),
-            foo: 1,
-            bar: "abc"
-          });
-          store.put(obj);
-
-          assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
-          assert.deepStrictEqual(path(id, "_id").reduce(store), pack(id));
-        });
       });
 
       context("path id", () => {

@@ -17,8 +17,8 @@ export default class Val {
     return this.constructor.name;
   }
 
-  type(store) {
-    return store.path(this.typeName);
+  get __type() {
+    return new Prim(this.typeName);
   }
 
   get _toStr() {
@@ -59,10 +59,6 @@ export default class Val {
     const key = this.keyStr(k);
 
     if (store) {
-      if (key === "_type") {
-        return this.type(store);
-      }
-
       const prop = store.findPropFromType(this, key);
       if (prop) {
         return prop;
@@ -161,7 +157,7 @@ export default class Val {
 
   object(store) {
     return {
-      _type: this.type(store).object(store),
+      _type: this.__type.object(store),
       origin: this.origin
     };
   }

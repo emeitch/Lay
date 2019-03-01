@@ -9,7 +9,6 @@ import Path, { path } from '../src/path';
 import { func, plus } from '../src/func';
 import { exp } from '../src/exp';
 import { pack } from '../src/pack';
-import { ref } from '../src/ref';
 import { sym } from '../src/sym';
 
 describe("stdlib", () => {
@@ -59,19 +58,19 @@ describe("stdlib", () => {
       const rid = uuid();
       const rev = v({
         _id: rid.keyVal(),
-        _type: ref("Revision"),
+        _type: "Revision",
         _rev: rid,
         at: v(new Date())
       });
       const obj1 = v({
         _id: uuid(),
-        _type: ref("Foo"),
+        _type: "Foo",
         _rev: rid,
         foo: 1
       });
       const obj2 = v({
         _id: uuid(),
-        _type: ref("Bar"),
+        _type: "Bar",
         _rev: rid,
         foo: 1
       });
@@ -122,17 +121,17 @@ describe("stdlib", () => {
         const id1 = uuid();
         store.put({
           _id: id1,
-          _type: ref("Foo")
+          _type: "Foo"
         });
         const id2 = uuid();
         store.put({
           _id: id2,
-          _type: ref("Foo")
+          _type: "Foo"
         });
         const id3 = uuid();
         store.put({
           _id: id3,
-          _type: ref("Foo"),
+          _type: "Foo",
           _status: v("deleted", null), // not exists
         });
 
@@ -151,7 +150,7 @@ describe("stdlib", () => {
           _id: "Foo"
         });
         const act = path("Object", ["new", v({
-          _type: pack(ref("Foo")),
+          _type: "Foo",
           foo: v("foo"),
           bar: path([plus, v(1), v(2)]),
           buz: pack(path([plus, v(1), v(2)]))
@@ -188,7 +187,7 @@ describe("stdlib", () => {
     context("accessing Object's key", () => {
       describe("#set", () => {
         it("should return the Act which run set action", () => {
-          const typeid = ref("Foo");
+          const typeid = "Foo";
           const id = uuid();
           store.put({
             _id: id,
@@ -457,7 +456,7 @@ describe("stdlib", () => {
             path("Object", [
               "new",
               v({
-                _type: pack(ref("Foo"))
+                _type: "Foo"
               })
             ])
           )]
@@ -486,9 +485,7 @@ describe("stdlib", () => {
   context("accessing Store methods", () => {
     describe("Store", () => {
       it("should return a Store type object", () => {
-        const storeClass = path("Store").reduce(store);
-
-        assert.deepStrictEqual(path(store.id, "_type").reduce(store), storeClass);
+        assert.deepStrictEqual(path(store.id, "_type").reduce(store), v("Store"));
       });
     });
 
@@ -497,8 +494,7 @@ describe("stdlib", () => {
         const act = path("Store", ["generateAs", "foo"]).reduce(store);
         store.run(act);
 
-        const storeClass = path("Store").reduce(store);
-        assert.deepStrictEqual(path("foo", "_type").reduce(store), storeClass);
+        assert.deepStrictEqual(path("foo", "_type").reduce(store), v("Store"));
       });
 
       context("currentStore", () => {
@@ -506,8 +502,7 @@ describe("stdlib", () => {
           const act = path("currentStore", ["generateAs", "foo"]).reduce(store);
           store.run(act);
 
-          const storeClass = path("Store").reduce(store);
-          assert.deepStrictEqual(path("foo", "_type").reduce(store), storeClass);
+          assert.deepStrictEqual(path("foo", "_type").reduce(store), v("Store"));
         });
       });
 
@@ -516,8 +511,7 @@ describe("stdlib", () => {
           const act = path("currentStore", ["generateStoreAs", "foo"]).reduce(store);
           store.run(act);
 
-          const storeClass = path("Store").reduce(store);
-          assert.deepStrictEqual(path("foo", "_type").reduce(store), storeClass);
+          assert.deepStrictEqual(path("foo", "_type").reduce(store), v("Store"));
         });
       });
     });

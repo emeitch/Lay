@@ -5,7 +5,6 @@ import Path, { path } from '../src/path';
 import { uuid } from '../src/uuid';
 import Exp, { exp } from '../src/exp';
 import { sym } from '../src/sym';
-import { ref } from '../src/ref';
 import { func, plus, concat } from '../src/func';
 import Store from '../src/store';
 
@@ -159,12 +158,12 @@ describe("Path", () => {
       beforeEach(() => {
         store.put({
           _id: id,
-          _type: ref("parent")
+          _type: "parent"
         });
 
         store.put({
           _id: "parent",
-          _type: ref("grandparent"),
+          _type: "grandparent",
           foo: v(2),
           bar: v(3)
         });
@@ -190,7 +189,7 @@ describe("Path", () => {
       const id = uuid();
 
       beforeEach(() => {
-        const typeid = ref("Foo");
+        const typeid = "Foo";
         store.put({
           _id: id,
           _type: typeid
@@ -294,6 +293,7 @@ describe("Path", () => {
       const id = uuid("foo-bar-buz");
       const p = path(id, "bar", ["buz", "fiz"]);
       assert.deepStrictEqual(p.object(), {
+        _type: "Path",
         origin: [
           "urn:uuid:foo-bar-buz",
           "bar",

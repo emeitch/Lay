@@ -3,7 +3,6 @@ import assert from 'assert';
 import v from '../src/v';
 import { uuid } from '../src/uuid';
 import Store from '../src/store';
-import { ref } from '../src/ref';
 import { path } from '../src/path';
 import { std } from '../src/stdlib';
 
@@ -23,14 +22,14 @@ describe("Many", () => {
       const fid1 = uuid();
       store.put({
         _id: fid1,
-        _type: ref("Foo"),
+        _type: "Foo",
         bar: path(bid)
       });
 
       const fid2 = uuid();
       store.put({
         _id: fid2,
-        _type: ref("Foo"),
+        _type: "Foo",
         bar: path(bid)
       });
 
@@ -55,20 +54,20 @@ describe("Many", () => {
         const fid1 = uuid();
         store.put({
           _id: fid1,
-          _type: ref("Foo"),
+          _type: "Foo",
           bar: path(bid)
         });
 
         const fid2 = uuid();
         store.put({
           _id: fid2,
-          _type: ref("Foo"),
+          _type: "Foo",
           bar: path(bid)
         });
 
         store.put({
           _id: bid,
-          _type: ref("Bar"),
+          _type: "Bar",
           foo: new Many("Foo"),
         });
 
