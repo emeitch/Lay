@@ -1,5 +1,4 @@
 import assert from 'assert';
-import { ref } from '../src/ref';
 import { prim } from '../src/prim';
 import v from '../src/v';
 
@@ -26,10 +25,10 @@ describe("Prim", () => {
 
     describe("#type", () => {
       it("should return type sym", () => {
-        assert.deepStrictEqual(v(1)._type, ref("Number"));
-        assert.deepStrictEqual(v("foo")._type, ref("String"));
-        assert.deepStrictEqual(v(true)._type, ref("Boolean"));
-        assert.deepStrictEqual(v(null)._type, ref("Null"));
+        assert.deepStrictEqual(v(1).typeName, "Number");
+        assert.deepStrictEqual(v("foo").typeName, "String");
+        assert.deepStrictEqual(v(true).typeName, "Boolean");
+        assert.deepStrictEqual(v(null).typeName, "Null");
       });
     });
 

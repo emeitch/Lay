@@ -3,7 +3,6 @@ import _ from 'lodash';
 import Val from './val';
 import Prim from './prim';
 import v from './v';
-import { ref } from './ref';
 
 const NullVal = new Prim(null);
 
@@ -165,8 +164,8 @@ export default class Comp extends Val {
 }
 
 export class CompArray extends Comp {
-  get type() {
-     return ref("Array");
+  get typeName() {
+     return "Array";
   }
 
   get jsObj() {
@@ -203,8 +202,8 @@ export class CompArray extends Comp {
 }
 
 export class CompMap extends Comp {
-  get type() {
-     return ref("Map");
+  get typeName() {
+     return "Map";
   }
 
   get jsObj() {
@@ -272,8 +271,8 @@ export class CompMap extends Comp {
 }
 
 export class CompDate extends Comp {
-  get type() {
-     return ref("Date");
+  get typeName() {
+     return "Date";
   }
 
   object(store) {

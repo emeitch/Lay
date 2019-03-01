@@ -24,10 +24,10 @@ describe("Comp", () => {
       });
     });
 
-    describe("#type", () => {
+    describe("#typeName", () => {
       it("should return type sym", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2})._type, ref("Map"));
-        assert.deepStrictEqual(v([1, 2, 3])._type, ref("Array"));
+        assert.deepStrictEqual(v({a: 1, b: 2}).typeName, "Map");
+        assert.deepStrictEqual(v([1, 2, 3]).typeName, "Array");
       });
     });
 
@@ -265,10 +265,10 @@ describe("Comp", () => {
 });
 
 describe("CompDate", () => {
-  describe("#type", () => {
+  describe("#typeName", () => {
     it("should return a sym to Date", () => {
       const cd = v(new Date());
-      assert.deepStrictEqual(cd._type, ref("Date"));
+      assert.deepStrictEqual(cd.typeName, "Date");
     });
   });
 

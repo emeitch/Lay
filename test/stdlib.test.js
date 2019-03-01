@@ -580,34 +580,34 @@ describe("stdlib", () => {
       assert.deepStrictEqual(arr.constructor, Path);
       assert.deepStrictEqual(arr.reduce(store).get(v(0)), v(10));
       assert.deepStrictEqual(arr.reduce(store).get("head"), v("Arr"));
-      assert.deepStrictEqual(arr.reduce(store).get("_type"), ref("Array"));
+      assert.deepStrictEqual(arr.reduce(store).typeName, "Array");
 
       const narr = n([v(10), v(11), v(12)]);
       assert.deepStrictEqual(narr.constructor, Path);
       assert.deepStrictEqual(narr.reduce(store).get(v(0)), v(10));
       assert.deepStrictEqual(narr.reduce(store).get("head"), v(null));
-      assert.deepStrictEqual(narr.reduce(store).get("_type"), ref("Array"));
+      assert.deepStrictEqual(narr.reduce(store).typeName, "Array");
 
       const map = n("Mp", {foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(map.constructor, Path);
       assert.deepStrictEqual(map.reduce(store).get("foo"), v("bar"));
       assert.deepStrictEqual(map.reduce(store).get("head"), v("Mp"));
-      assert.deepStrictEqual(map.reduce(store).get("_type"), ref("Map"));
+      assert.deepStrictEqual(map.reduce(store).typeName, "Map");
 
       const nmap = n({foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(nmap.constructor, Path);
       assert.deepStrictEqual(nmap.reduce(store).get("foo"), v("bar"));
-      assert.deepStrictEqual(nmap.reduce(store).get("_type"), ref("Map"));
+      assert.deepStrictEqual(nmap.reduce(store).typeName, "Map");
 
       const nested = n({foo: {bar: v("baz")}, fiz: v("buz")});
       assert.deepStrictEqual(nested.constructor, Path);
       assert.deepStrictEqual(nested.reduce(store).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested.reduce(store).get("_type"), ref("Map"));
+      assert.deepStrictEqual(nested.reduce(store).typeName, "Map");
 
       const nested2 = n({foo: n({bar: v("baz")}), fiz: v("buz")});
       assert.deepStrictEqual(nested2.constructor, Path);
       assert.deepStrictEqual(nested2.deepReduce(store).reduce(store).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested2.deepReduce(store).get("_type"), ref("Map"));
+      assert.deepStrictEqual(nested2.deepReduce(store).typeName, "Map");
 
       const headonly = n("foo");
       assert.deepStrictEqual(headonly.constructor, Path);

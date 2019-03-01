@@ -13,16 +13,12 @@ export default class Val {
     return this;
   }
 
-  get type() {
-    return new Ref(this.constructor.name);
+  get typeName() {
+    return this.constructor.name;
   }
 
-  get _type() {
-    return this.type;
-  }
-
-  get __type() {
-    return this._type;
+  type(_store) {
+    return new Ref(this.typeName);
   }
 
   get _toStr() {
@@ -63,6 +59,10 @@ export default class Val {
     const key = this.keyStr(k);
 
     if (store) {
+      if (key === "_type") {
+        return this.type(store);
+      }
+
       const prop = store.findPropFromType(this, key);
       if (prop) {
         return prop;
@@ -159,9 +159,9 @@ export default class Val {
     return Val.stringify(this.origin, _indent);
   }
 
-  object(_store) {
+  object(store) {
     return {
-      _type: this._type.object(_store),
+      _type: this.type(store).object(store),
       origin: this.origin
     };
   }
@@ -224,13 +224,13 @@ export class Prim extends Val {
     return JSON.stringify(this.origin);
   }
 
-  get type() {
+  get typeName() {
     if (this.origin === null) {
-      return new Ref("Null");
+      return "Null";
     }
 
     const type = typeof(this.origin);
-    return new Ref(type[0].toUpperCase() + type.substring(1));
+    return type[0].toUpperCase() + type.substring(1);
   }
 
   object(_store) {

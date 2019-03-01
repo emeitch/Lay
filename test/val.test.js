@@ -1,12 +1,11 @@
 import assert from 'assert';
 
 import Val from '../src/val';
-import { ref } from '../src/ref';
 import v from '../src/v';
 
 describe("Val", () => {
   context("number origin", () => {
-    const Inherited = class ExtendedVal extends Val {};
+    const Inherited = class ExtendedVal extends Val { get _prop() { return v(3); } };
     const val = new Inherited(0);
 
     describe("#origin", () => {
@@ -15,9 +14,9 @@ describe("Val", () => {
       });
     });
 
-    describe("#type", () => {
+    describe("#typeName", () => {
       it("should return type sym", () => {
-        assert.deepStrictEqual(val._type, ref("ExtendedVal"));
+        assert.deepStrictEqual(val.typeName, "ExtendedVal");
       });
     });
 
@@ -41,8 +40,8 @@ describe("Val", () => {
 
     describe("#get", () => {
       it("should return underscore prefix _key's val", () => {
-        assert.deepStrictEqual(val.get("_type"), ref("ExtendedVal"));
-        assert.deepStrictEqual(val.get(v("_type")), ref("ExtendedVal"));
+        assert.deepStrictEqual(val.get("prop"), v(3));
+        assert.deepStrictEqual(val.get(v("prop")), v(3));
       });
 
       context("not exists key", () => {
