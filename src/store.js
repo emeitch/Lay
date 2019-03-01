@@ -1,6 +1,5 @@
 import { uuid } from './uuid';
 import v from './v';
-import Ref from './ref';
 import Sym from './sym';
 import Act from './act';
 import Prim from './prim';
@@ -86,7 +85,7 @@ export default class Store {
     if (prid) {
       withMeta._prev = prid;
     }
-    if (id instanceof Ref || id instanceof Path) {
+    if (id instanceof Path) {
       withMeta._id = id.keyVal();
     }
 
@@ -246,12 +245,11 @@ export default class Store {
 
   resolve(ref) {
     let obj = ref;
-    while(obj instanceof Ref || obj instanceof Sym) {
+    while(obj instanceof Sym) {
       obj = this.fetch(obj);
       obj = obj && obj.reduce(this); // for _target reducing
     }
-
-    return obj ? obj : ref;
+    return obj;
   }
 
   traversePropFromType(obj, key) {
