@@ -53,7 +53,8 @@ const d = new Store(std);
 {
   const viewmodel = "viewmodel";
   d.put({
-    _id: viewmodel
+    _id: viewmodel,
+    _stereotype: "TaskView"
   });
 }
 
@@ -92,27 +93,6 @@ const d = new Store(std);
                         "title": path(sym("ev"), "value", "trim"),
                         "state": n("active"),
                       })
-                    ],
-                    // todo: 本来ならviewmodel構築のロジックは入れるべきでないので下記を取り除きたい
-                    [
-                      "then",
-                      path(
-                        "Act",
-                        [
-                          "new",
-                          func("id",
-                            path("Object",
-                            [
-                              "new",
-                              n({
-                                "_id": path("viewmodel", sym("id")),
-                                "_type": "TaskView",
-                              })
-                            ]
-                            )
-                          )
-                        ]
-                      )
                     ],
                     [
                       "then",
@@ -607,44 +587,7 @@ const d = new Store(std);
         path(
           "todos", ["changeStateByHash", path(sym("win"), "location", "hash")],
           ["then", path("localStorage", ["read", v("todos-lay-objs")])],
-          ["then", exp("load")],
-          // todo: 本来ならviewmodel構築のロジックは入れるべきでないので下記を取り除きたい
-          ["then", path(
-            "Act",
-            [
-              "new",
-              func("objs",
-                path(
-                sym("objs"),
-                [
-                  "map",
-                  func(
-                    "obj",
-                    exp(
-                      "if",
-                      path(
-                        sym("obj"),
-                        "_type",
-                        [
-                          "equals",
-                          "Task"
-                        ]
-                      ),
-                      path("Object",
-                      [
-                        "new",
-                        n({
-                          "_id": path("viewmodel", sym("obj")),
-                          "_type": "TaskView",
-                        })
-                      ]),
-                      v(null)
-                    )
-                  )
-                ]
-              ))
-            ]
-          )]
+          ["then", exp("load")]
         )
       )
     }
