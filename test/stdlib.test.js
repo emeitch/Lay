@@ -243,10 +243,6 @@ describe("stdlib", () => {
               _id: holder,
             });
 
-            // todo: この空Mapのsetがなくてもコンテキストへの属性追加ができるようにしたい
-            const a1 = path(holder, ["set", id, v({})]).reduce(store);
-            store.run(a1);
-
             const a2 = path(holder, id, ["set", "buz", v(5)]).reduce(store);
             store.run(a2);
 

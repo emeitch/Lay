@@ -91,6 +91,8 @@ export default class Comp extends Val {
       const obj = store.fetch(_id);
       if (obj) {
         return obj;
+      } else {
+        return _id;
       }
     }
 

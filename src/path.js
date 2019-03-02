@@ -71,7 +71,9 @@ export default class Path extends Val {
 
   step(store) {
     let obj = store;
+    const keys = [];
     for (const elm of this.origin) {
+      keys.push(elm);
       let key;
       let args = [];
       if (Array.isArray(elm)) {
@@ -108,6 +110,13 @@ export default class Path extends Val {
         const as = args.map(a => a.replaceSelfBy(obj));
         const e = exp(c, ...as);
         obj = e.reduce(store).replaceSelfBy(obj);
+      } else if (
+        // context path detection
+        prop instanceof Path
+        && prop.origin[prop.origin.length-1] instanceof Val
+        && prop.origin[prop.origin.length-1].equals(key)
+      ) {
+        obj = prop;
       } else {
         const replaced = prop.replaceSelfBy(obj);
         obj = replaced.reduce(store);

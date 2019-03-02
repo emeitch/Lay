@@ -246,13 +246,11 @@ describe("Path", () => {
         const id = uuid();
 
         const holder1 = uuid();
-        const context1 = uuid();
         store.put({
           _id: holder1,
-          [id.keyString()]: path(context1)
         });
         store.put({
-          _id: context1,
+          _id: path(holder1, id),
           x: 1
         });
         assert.deepStrictEqual(path(holder1, id, "x").reduce(store), v(1));
@@ -261,9 +259,10 @@ describe("Path", () => {
         const holder2 = uuid();
         store.put({
           _id: holder2,
-          [id.keyString()]: {
-            x: 2
-          }
+        });
+        store.put({
+          _id: path(holder2, id),
+          x: 2
         });
         assert.deepStrictEqual(path(holder2, id, "x").reduce(store), v(2));
 
