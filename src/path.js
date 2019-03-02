@@ -7,9 +7,11 @@ import { func, LiftedNative } from './func';
 
 export default class Path extends Val {
   constructor(...ids) {
-    const origin = ids.map((id, index) => {
+    const origin = ids.reduce((acc, id, index) => {
       if (typeof(id) === "string") {
-        return v(id);
+        return acc.concat([v(id)]);
+      } else if (index === 0 && id instanceof Path) {
+        return acc.concat(id.origin);
       } else if (Array.isArray(id)) {
         const applying = id.map((i, idx) => {
           if (typeof(i) === "string") {
@@ -18,17 +20,18 @@ export default class Path extends Val {
             return i;
           }
         });
-        return index == 0 ? exp(...applying) : applying;
+        const val = index == 0 ? exp(...applying) : applying;
+        return acc.concat([val]);
       } else {
         if (index > 0) {
           const oid = id.getOwnProp("_id");
           if (oid) {
-            return oid;
+            return acc.concat([oid]);
           }
         }
-        return id;
+        return acc.concat([id]);
       }
-    });
+    }, []);
     super(origin);
   }
 

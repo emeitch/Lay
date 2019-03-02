@@ -360,11 +360,7 @@ export default class Store {
     );
   }
 
-  path(base, ...keys) {
-    if (base instanceof Path) {
-      return new Path(...base.origin.concat(keys));
-    } else {
-      return new Path(base, ...keys);
-    }
+  path(...args) {
+    return path(...args);
   }
 }

@@ -41,6 +41,16 @@ describe("Path", () => {
         assert.deepStrictEqual(p.origin[2], v("bar"));
       });
     });
+
+    context("nested uuid path on first arg", () => {
+      it("should return flatten a path", () => {
+        const id4 = uuid();
+        const id5 = uuid();
+        const id6 = uuid();
+        const p = new Path(new Path(new Path(id1, id2, id3), id4, id5), id6);
+        assert.deepStrictEqual(p, new Path(id1, id2, id3, id4, id5, id6));
+      });
+    });
   });
 
   describe("#receiver", () => {
