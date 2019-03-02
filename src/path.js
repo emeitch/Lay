@@ -65,6 +65,10 @@ export default class Path extends Val {
     return this.origin.map(i => i.keyString()).join(".");
   }
 
+  get(key, store) {
+    return super.get(key, store) || store.findPropFromSterotype(this, key);
+  }
+
   replace(matches) {
     return new this.constructor(...this.origin.map(id => Array.isArray(id) ? id.map(i => i.replace(matches)) : id.replace(matches)));
   }

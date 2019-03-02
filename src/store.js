@@ -273,6 +273,13 @@ export default class Store {
     }
   }
 
+  findPropFromSterotype(pth, key) {
+    const parent = this.fetch(pth.origin[0]);
+    const stname = parent.get("_stereotype", this);
+    const stype = stname && this.fetch(stname);
+    return (stype && stype.get(key, this)) || undefined;
+  }
+
   findPropFromType(obj, key) {
     const p = this.traversePropFromType(obj, key);
     if (p) {
@@ -280,12 +287,10 @@ export default class Store {
     }
 
     const _id = obj.getOwnProp("_id");
+    // todo: 本来はkeyStringは不要なはずだが、テストなどで_idでpathを直接指定した場合にPathが_idとなってしまうケースがありその対策としてkeyStringを利用しているので、それを解決したい
     const id = _id && parseRef(_id.keyString());
     if (id instanceof Path) {
-      const parent = this.fetch(id.origin[0]);
-      const stname = parent.get("_stereotype", this);
-      const stype = stname && this.fetch(stname);
-      const p = stype && stype.get(key, this);
+      const p = this.findPropFromSterotype(id, key);
       if (p) {
         return p;
       }

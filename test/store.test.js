@@ -208,13 +208,17 @@ describe("Store", () => {
               _id: id0
             });
 
+            // not exist the context object (implicit context object)
             const cpath0 = store.path(id0, id1);
+            assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), v(3));
+
+            // exist the context object (explicit context object)
             store.put({
               _id: cpath0
             });
             assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), v(3));
 
-
+            // has own prop context object
             store.patch(cpath0, {
               bar: v(4)
             });
