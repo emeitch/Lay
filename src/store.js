@@ -279,6 +279,18 @@ export default class Store {
       return p;
     }
 
+    const _id = obj.getOwnProp("_id");
+    const id = _id && parseRef(_id.keyString());
+    if (id instanceof Path) {
+      const parent = this.fetch(id.origin[0]);
+      const stname = parent.get("_stereotype", this);
+      const stype = stname && this.fetch(stname);
+      const p = stype && stype.get(key, this);
+      if (p) {
+        return p;
+      }
+    }
+
     const ot = this.fetch("Object");
     const op = ot && ot.getCompProp(key);
     if (op) {
