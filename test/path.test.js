@@ -42,7 +42,7 @@ describe("Path", () => {
       });
     });
 
-    context("nested uuid path on first arg", () => {
+    context("nested first arg path", () => {
       it("should return flatten a path", () => {
         const id4 = uuid();
         const id5 = uuid();
