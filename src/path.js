@@ -1,7 +1,7 @@
 import Val from './val';
 import Case from './case';
 import v from './v';
-import Sym, { sym } from './sym';
+import Sym from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
 import { parseRef } from './parser';
@@ -14,14 +14,9 @@ export default class Path extends Val {
       } else if (index === 0 && id instanceof Path) {
         return acc.concat(id.origin);
       } else if (Array.isArray(id)) {
-        const applying = id.map((i, idx) => {
-          if (typeof(i) === "string") {
-            return index === 0 && idx === 0 ? sym(i) : v(i);
-          } else {
-            return i;
-          }
-        });
-        const val = index == 0 ? exp(...applying) : applying;
+        const arr = id;
+        const applying = arr.map(i => typeof(i) === "string" ? v(i) : i);
+        const val = index == 0 ? exp(...arr) : applying;
         return acc.concat([val]);
       } else {
         // todo: 本来getOwnProp確認は不要なはずだがStoreがやってくる可能性があるので確認
