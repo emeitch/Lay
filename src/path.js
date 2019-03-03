@@ -23,8 +23,7 @@ export default class Path extends Val {
         if (id.getOwnProp) {
           const oid = id.getOwnProp("_id");
           if (oid) {
-            // todo: 本来はkeyStringは不要なはずだが
-            const oids = parseRef(oid.keyString());
+            const oids = parseRef(oid);
             return acc.concat([oids]);
           }
         }

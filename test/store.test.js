@@ -3,7 +3,6 @@ import assert from 'assert';
 import { uuid } from '../src/uuid';
 import v from '../src/v';
 import { path } from '../src/path';
-import { pack } from '../src/pack';
 import Act from '../src/act';
 import Store from '../src/store';
 
@@ -41,14 +40,14 @@ describe("Store", () => {
       it("should store the object", () => {
         const id = uuid();
         const obj = v({
-          _id: pack(id),
+          _id: id,
           foo: 1,
           bar: "abc"
         });
         store.put(obj);
 
         assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
-        assert.deepStrictEqual(path(id, "_id").reduce(store), pack(id));
+        assert.deepStrictEqual(path(id, "_id").reduce(store), id);
       });
 
       context("path id", () => {
@@ -61,15 +60,15 @@ describe("Store", () => {
           const id1 = uuid();
           const id2 = path(id0, id1);
           const obj = v({
-            _id: pack(id2),
+            _id: id2,
             foo: 1,
             bar: "abc"
           });
           store.put(obj);
 
           assert.deepStrictEqual(store.fetch(id2).get("foo"), v(1));
-          assert.deepStrictEqual(path(id0, id1, "_id").reduce(store), pack(id2));
-          assert.deepStrictEqual(path(id2, "_id").reduce(store), pack(id2));
+          assert.deepStrictEqual(path(id0, id1, "_id").reduce(store), id2.keyVal());
+          assert.deepStrictEqual(path(id2, "_id").reduce(store), id2.keyVal());
         });
       });
     });
@@ -326,7 +325,7 @@ describe("Store", () => {
             store.put({
               _id: cpath
             });
-          }, /cannot set method applying path to _id/);
+          }, /cannot contains a method calling/);
         });
       });
     });

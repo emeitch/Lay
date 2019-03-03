@@ -41,7 +41,8 @@ export default class Store {
         throw `bad type reference style: ${tprop.stringify()}`;
     }
 
-    let id = obj.getOwnProp("_id");
+    const _id = obj.getOwnProp("_id");
+    let id = _id && parseRef(_id);
     if (id instanceof Path) {
       const pth = id;
       const parent = pth.parent();
@@ -51,8 +52,6 @@ export default class Store {
         const base = this.fetch(id) || v({_id: id});
         const diff = pth.diff(obj);
         obj = base.patch(diff);
-      } else if (pth.keys.some(i => Array.isArray(i))) {
-        throw `cannot set method applying path to _id: ${pth}`;
       } else if (pth.keys.some(i => !i.isUUID())) {
         throw "intermediate objs are not context objs";
       } else if (!this.fetch(parent.keyVal())) {
@@ -78,13 +77,11 @@ export default class Store {
       at: v(new Date())
     });
     const withMeta = {
+      _id: id,
       _rev: rid
     };
     if (prid) {
       withMeta._prev = prid;
-    }
-    if (id instanceof Path) {
-      withMeta._id = id.keyVal();
     }
 
     const o = obj.patch(withMeta);
@@ -276,8 +273,7 @@ export default class Store {
     }
 
     const _id = obj.getOwnProp("_id");
-    // todo: 本来はkeyStringは不要なはずだが、テストなどで_idでpathを直接指定した場合にPathが_idとなってしまうケースがありその対策としてkeyStringを利用しているので、それを解決したい
-    const id = _id && parseRef(_id.keyString());
+    const id = _id && parseRef(_id);
     if (id instanceof Path) {
       const p = this.findPropFromSterotype(id, key);
       if (p) {

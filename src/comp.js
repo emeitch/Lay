@@ -211,8 +211,8 @@ export class CompMap extends Comp {
   }
 
   constructor(origin, head) {
-    if (origin._id && typeof(origin._id) === "string") {
-      origin._id = v(origin._id);
+    if (origin._id && origin._id instanceof Val) {
+      origin._id = origin._id.keyString();
     }
 
     super(origin, head);
