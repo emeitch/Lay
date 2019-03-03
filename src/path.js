@@ -4,6 +4,7 @@ import v from './v';
 import Sym, { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
+import { parseRef } from './parser';
 
 export default class Path extends Val {
   constructor(...ids) {
@@ -75,9 +76,7 @@ export default class Path extends Val {
 
   step(store) {
     let obj = store;
-    const keys = [];
     for (const elm of this.origin) {
-      keys.push(elm);
       let key;
       let args = [];
       if (Array.isArray(elm)) {
@@ -109,18 +108,24 @@ export default class Path extends Val {
         return this;
       }
 
-      if (prop instanceof Case) {
+      let contextPath = undefined;
+      if (obj.getOwnProp) {
+        const _id = obj.getOwnProp("_id");
+        if (_id) {
+          // todo: 本来はkeyStringは不要なはずだが
+          const id = parseRef(_id.keyString());
+          contextPath = path(id, key);
+        }
+      }
+
+      if (prop.equals(contextPath)) {
+        // detected context path
+        obj = prop;
+      } else if (prop instanceof Case) {
         const c = prop.replaceSelfBy(obj);
         const as = args.map(a => a.replaceSelfBy(obj));
         const e = exp(c, ...as);
         obj = e.reduce(store).replaceSelfBy(obj);
-      } else if (
-        // context path detection
-        prop instanceof Path
-        && prop.origin[prop.origin.length-1] instanceof Val
-        && prop.origin[prop.origin.length-1].equals(key)
-      ) {
-        obj = prop;
       } else {
         const replaced = prop.replaceSelfBy(obj);
         obj = replaced.reduce(store);
