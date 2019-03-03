@@ -24,10 +24,13 @@ export default class Path extends Val {
         const val = index == 0 ? exp(...applying) : applying;
         return acc.concat([val]);
       } else {
-        if (index > 0) {
+        // todo: 本来getOwnProp確認は不要なはずだがStoreがやってくる可能性があるので確認
+        if (id.getOwnProp) {
           const oid = id.getOwnProp("_id");
           if (oid) {
-            return acc.concat([oid]);
+            // todo: 本来はkeyStringは不要なはずだが
+            const oids = parseRef(oid.keyString());
+            return acc.concat([oids]);
           }
         }
         return acc.concat([id]);
@@ -108,18 +111,8 @@ export default class Path extends Val {
         return this;
       }
 
-      let contextPath = undefined;
-      if (obj.getOwnProp) {
-        const _id = obj.getOwnProp("_id");
-        if (_id) {
-          // todo: 本来はkeyStringは不要なはずだが
-          const id = parseRef(_id.keyString());
-          contextPath = path(id, key);
-        }
-      }
-
+      const contextPath = path(obj, key);
       if (prop.equals(contextPath)) {
-        // detected context path
         obj = prop;
       } else if (prop instanceof Case) {
         const c = prop.replaceSelfBy(obj);

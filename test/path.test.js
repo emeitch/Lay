@@ -277,6 +277,9 @@ describe("Path", () => {
     context("_id referencing", () => {
       it("should return id, that is not resolved obj", () => {
         const id = uuid();
+        store.put({
+          _id: id
+        });
         const p = path(v({_id: id}), "_id");
         assert.deepStrictEqual(p.reduce(store), id);
       });
