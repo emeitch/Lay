@@ -6,7 +6,8 @@ import { uuid } from '../src/uuid';
 import Path from '../src/path';
 import { exp } from '../src/exp';
 import Store from '../src/store';
-import { sym } from '../src/sym';
+import { path } from '../src/path';
+
 
 describe("Exp", () => {
   let store;
@@ -50,7 +51,7 @@ describe("Exp", () => {
     context("multiple hopped operator", () => {
       it("should evalutate one step the expression", () => {
         store.assign("plus0", plus);
-        store.assign("plus1", sym("plus0"));
+        store.assign("plus1", path("plus0"));
 
         const e = exp("plus1", v(1), v(2));
 

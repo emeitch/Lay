@@ -1,6 +1,5 @@
 import { uuid } from './uuid';
 import v from './v';
-import Sym from './sym';
 import Act from './act';
 import Prim from './prim';
 import Path, { path } from './path';
@@ -240,15 +239,6 @@ export default class Store {
 
   match() {
     return false;
-  }
-
-  resolve(ref) {
-    let obj = ref;
-    while(obj instanceof Sym) {
-      obj = this.fetch(obj);
-      obj = obj && obj.reduce(this); // for _target reducing
-    }
-    return obj;
   }
 
   traversePropFromType(obj, key) {

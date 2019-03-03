@@ -1,9 +1,10 @@
 import Val from './val';
 import { sym } from './sym';
+import { path } from './path';
 
 export default class Exp extends Val {
   constructor(...terms) {
-    super(terms.filter(t => t).map(t => typeof(t) === "string" ? sym(t) : t));
+    super(terms.filter(t => t).map((t, i) => typeof(t) === "string" ? (i == 0 ? path(t) : sym(t)) : t));
     this.head = sym(this.constructor.name);
   }
 
@@ -18,9 +19,8 @@ export default class Exp extends Val {
 
   step(store) {
     const [op, ...args] = this.terms;
-    const o = store.resolve(op);
-    const f = o.step(store);
-    if (f != o || !f.apply) {
+    const f = op.step(store);
+    if (f != op || !f.apply) {
       return new this.constructor(f, ...args);
     }
 
