@@ -83,13 +83,12 @@ export default class Comp extends Val {
     return super.getOwnProp(k);
   }
 
-  get(key, store) {
-    if (typeof(key.origin) == "string" && key.origin.match(/^urn:uuid/) && store) {
+  get(k, store) {
+    const key = v(k);
+    if (store && key.isUUID()) {
       const pth = store.path(this, key);
       return store.fetch(pth) || pth;
     }
-
-    const kstr = this.convertKeyString(key);
 
     let ownProp = this.getOwnProp(key);
     if (ownProp) {
@@ -101,6 +100,7 @@ export default class Comp extends Val {
       return ownProp;
     }
 
+    const kstr = this.convertKeyString(key);
     if (this.head instanceof Comp) {
       return this.head.get(kstr);
     }
