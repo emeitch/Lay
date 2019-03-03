@@ -85,15 +85,8 @@ export default class Comp extends Val {
 
   get(key, store) {
     if (typeof(key.origin) == "string" && key.origin.match(/^urn:uuid/) && store) {
-      const base = this.getOwnProp("_id");
-      const ref = store.parseRef(base.origin);
-      const _id = store.path(ref, key);
-      const obj = store.fetch(_id);
-      if (obj) {
-        return obj;
-      } else {
-        return _id;
-      }
+      const pth = store.path(this, key);
+      return store.fetch(pth) || pth;
     }
 
     const kstr = this.convertKeyString(key);
