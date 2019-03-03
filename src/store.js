@@ -73,12 +73,12 @@ export default class Store {
     const rid = uuid();
     const rev = v({
       _id: rid,
-      _rev: path(rid),
+      _rev: rid,
       _type: "Revision",
       at: v(new Date())
     });
     const withMeta = {
-      _rev: path(rid)
+      _rev: rid
     };
     if (prid) {
       withMeta._prev = prid;

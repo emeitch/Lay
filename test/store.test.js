@@ -32,8 +32,9 @@ describe("Store", () => {
 
       assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
 
-      assert.deepStrictEqual(path(id, "_rev", "_type").reduce(store), v("Revision"));
-      assert.deepStrictEqual(path(id, "_rev", "at", "_type").reduce(store), v("Date"));
+      const rev = path(id, "_rev").reduce(store);
+      assert.deepStrictEqual(path(rev, "_type").reduce(store), v("Revision"));
+      assert.deepStrictEqual(path(rev, "at", "_type").reduce(store), v("Date"));
     });
 
     context("with pack id", () => {
