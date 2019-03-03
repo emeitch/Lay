@@ -40,7 +40,7 @@ describe("Prim", () => {
     });
 
     describe("#isUUID", () => {
-      it("shoudl return false", () => {
+      it("should return false", () => {
         assert(!v(1).isUUID());
         assert(!v("foo").isUUID());
         assert(!v(true).isUUID());
