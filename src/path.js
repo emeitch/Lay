@@ -19,13 +19,10 @@ export default class Path extends Val {
         const val = index == 0 ? exp(...arr) : applying;
         return acc.concat([val]);
       } else {
-        // todo: 本来getOwnProp確認は不要なはずだがStoreがやってくる可能性があるので確認
-        if (id.getOwnProp) {
-          const oid = id.getOwnProp("_id");
-          if (oid) {
-            const oids = parseRef(oid);
-            return acc.concat([oids]);
-          }
+        const oid = id.getOwnProp("_id");
+        if (oid) {
+          const oids = parseRef(oid);
+          return acc.concat([oids]);
         }
         return acc.concat([id]);
       }

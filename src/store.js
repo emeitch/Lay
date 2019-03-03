@@ -222,6 +222,10 @@ export default class Store {
     return this.fetchWithoutImports(key) || this.fetchWithImports(store => store.fetchWithoutImports(key));
   }
 
+  getOwnProp(key) {
+    return this.fetch(this.id).getOwnProp(key);
+  }
+
   get(key) {
     if (key instanceof Prim && typeof(key.origin) === "string") {
       const val = this.fetch(key);
