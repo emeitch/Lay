@@ -42,7 +42,7 @@ export default class Store {
     }
 
     const _id = obj.getOwnProp("_id");
-    let id = _id && parseRef(_id);
+    let id = _id && parseRef(_id.keyString());
     if (id instanceof Path) {
       const pth = id;
       const parent = pth.parent();
@@ -77,7 +77,7 @@ export default class Store {
       at: v(new Date())
     });
     const withMeta = {
-      _id: id,
+      _id: id.keyString(),
       _rev: rid
     };
     if (prid) {

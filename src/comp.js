@@ -94,7 +94,7 @@ export default class Comp extends Val {
     if (ownProp) {
       const base = this.getOwnProp("_id");
       if (store && base && ownProp instanceof CompMap) {
-        const _id = store.path(base, key);
+        const _id = store.path(base, key).keyString();
         return ownProp.patch({_id});
       }
       return ownProp;
@@ -208,14 +208,6 @@ export class CompMap extends Comp {
       ret[key] = val instanceof Val ? val.jsObj : val;
     }
     return ret;
-  }
-
-  constructor(origin, head) {
-    if (origin._id && origin._id instanceof Val) {
-      origin._id = origin._id.keyString();
-    }
-
-    super(origin, head);
   }
 
   collate(target) {

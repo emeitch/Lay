@@ -270,7 +270,7 @@ describe("Store", () => {
 
             const epath = path(id0, key0, key1);
             assert.deepStrictEqual(epath.reduce(store), v({
-              _id: epath,
+              _id: epath.keyString(),
               foo: 1,
               bar: "abc"
             }));
@@ -280,7 +280,7 @@ describe("Store", () => {
               foo: 2,
             });
             assert.deepStrictEqual(epath.reduce(store), v({
-              _id: epath,
+              _id: epath.keyString(),
               foo: 2,
               bar: "abc"
             }));
