@@ -53,9 +53,9 @@ export default class Store {
         const diff = pth.diff(obj);
         obj = base.patch(diff);
       } else if (pth.keys.some(i => !i.isUUID())) {
-        throw "intermediate objs are not context objs";
+        throw "intermediate object are not inner object";
       } else if (!this.fetch(parent.keyVal())) {
-        throw "intermediate objs not found";
+        throw "intermediate object not found";
       }
     }
 

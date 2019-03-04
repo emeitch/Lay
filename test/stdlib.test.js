@@ -232,8 +232,8 @@ describe("stdlib", () => {
           assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(2));
         });
 
-        context("with context", () => {
-          it("should set context properties", () => {
+        context("with inner object", () => {
+          it("should set properties to inner object", () => {
             const id = uuid();
             store.put({
               _id: id,
@@ -246,8 +246,8 @@ describe("stdlib", () => {
             const a2 = path(holder, id, ["set", "buz", v(5)]).reduce(store);
             store.run(a2);
 
-            const context = store.fetch(path(holder, id));
-            assert.deepStrictEqual(context.get("buz", store), v(5));
+            const inner = store.fetch(path(holder, id));
+            assert.deepStrictEqual(inner.get("buz", store), v(5));
           });
         });
 

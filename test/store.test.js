@@ -115,7 +115,7 @@ describe("Store", () => {
       });
     });
 
-    context("stored context object", () => {
+    context("stored a inner object", () => {
       const id0 = uuid();
       const id1 = uuid();
       const id2 = uuid();
@@ -123,7 +123,7 @@ describe("Store", () => {
       const key0 = v("foo");
       const key1 = v("bar");
 
-      it("should return context object", () => {
+      it("should return the inner object", () => {
         store.put({
           _id: id0
         });
@@ -133,16 +133,16 @@ describe("Store", () => {
           _id: cpath
         });
 
-        const base = store.fetch(id0);
-        const context = store.fetch(cpath);
-        assert.deepStrictEqual(base.get(id1, store), context);
+        const outer = store.fetch(id0);
+        const inner = store.fetch(cpath);
+        assert.deepStrictEqual(outer.get(id1, store), inner);
 
         const pstr = v(`${id0.origin}.${id1.origin}`);
-        assert.deepStrictEqual(context.getOwnProp("_id"), pstr);
+        assert.deepStrictEqual(inner.getOwnProp("_id"), pstr);
       });
 
       context("multiple id", () => {
-        it("should return context object", () => {
+        it("should return a inner object", () => {
           store.put({
             _id: id0
           });
@@ -157,13 +157,13 @@ describe("Store", () => {
             _id: cpath1
           });
 
-          const base = store.fetch(id0);
-          const context = store.fetch(cpath1);
-          assert.deepStrictEqual(base.get(id1, store).get(id2, store), context);
+          const outer = store.fetch(id0);
+          const inner = store.fetch(cpath1);
+          assert.deepStrictEqual(outer.get(id1, store).get(id2, store), inner);
         });
 
-        context("reduced path obj is a intermediate context obj", () => {
-          it("should return context object", () => {
+        context("reduced path obj is a intermediate inner obj", () => {
+          it("should return the inner object", () => {
             store.put({
               _id: id0
             });
@@ -188,13 +188,13 @@ describe("Store", () => {
               bar: path(cpath0)
             });
 
-            const context = store.fetch(cpath2);
-            assert.deepStrictEqual(path("foo", "bar", id2, id3).reduce(store), context);
+            const inner = store.fetch(cpath2);
+            assert.deepStrictEqual(path("foo", "bar", id2, id3).reduce(store), inner);
           });
         });
 
         context("with _stereotype", () => {
-          it("should behave a context default type", () => {
+          it("should behave a default type of the inner object", () => {
             store.put({
               _id: "Bar",
               bar: v(3)
@@ -208,17 +208,17 @@ describe("Store", () => {
               _id: id0
             });
 
-            // not exist the context object (implicit context object)
+            // not exist the inner object (implicit inner object)
             const cpath0 = store.path(id0, id1);
             assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), v(3));
 
-            // exist the context object (explicit context object)
+            // exist the inner object (explicit inner object)
             store.put({
               _id: cpath0
             });
             assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), v(3));
 
-            // has own prop context object
+            // the inner object with own props
             store.patch(cpath0, {
               bar: v(4)
             });
@@ -226,7 +226,7 @@ describe("Store", () => {
           });
         });
 
-        context("not exist intermediate context obj", () => {
+        context("not exist intermediate inner objs", () => {
           it("should throw a error", () => {
             const cpath = store.path(id0, id1, id2);
 
@@ -234,7 +234,7 @@ describe("Store", () => {
               store.put({
                 _id: cpath
               });
-            }, /intermediate objs not found/);
+            }, /intermediate object not found/);
           });
         });
       });
@@ -247,8 +247,8 @@ describe("Store", () => {
           });
 
           // not a independent obj, but a embeded obj
-          const context = store.fetch(epath);
-          assert.deepStrictEqual(context, undefined);
+          const inner = store.fetch(epath);
+          assert.deepStrictEqual(inner, undefined);
 
           const base = store.fetch(id0);
           const child1 = base.get(key0, store);
@@ -303,17 +303,17 @@ describe("Store", () => {
             store.put({
               _id: cpath
             });
-          }, /intermediate objs are not context objs/);
+          }, /intermediate object are not inner object/);
         });
 
-        context("not exist intermediate embeded obj", () => {
+        context("not exist intermediate embeded object", () => {
           it("should throw a error", () => {
             const cpath = store.path(id0, key0, key1, id1);
             assert.throws(() => {
               store.put({
                 _id: cpath
               });
-            }, /intermediate objs are not context objs/);
+            }, /intermediate object are not inner object/);
           });
         });
       });

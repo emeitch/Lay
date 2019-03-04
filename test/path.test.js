@@ -241,8 +241,8 @@ describe("Path", () => {
       });
     });
 
-    context("context object", () => {
-      it("should return val by specified context object", () => {
+    context("inner object", () => {
+      it("should return val by the specified inner object", () => {
         const id = uuid();
 
         const holder1 = uuid();

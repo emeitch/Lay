@@ -105,8 +105,8 @@ export default class Path extends Val {
         return this;
       }
 
-      const contextPath = path(obj, key);
-      if (prop.equals(contextPath)) {
+      const innerPath = path(obj, key);
+      if (prop.equals(innerPath)) {
         obj = prop;
       } else if (prop instanceof Case) {
         const c = prop.replaceSelfBy(obj);
