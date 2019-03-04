@@ -10,20 +10,23 @@ export default class Path extends Val {
   constructor(...ids) {
     const origin = ids.reduce((acc, id, index) => {
       if (typeof(id) === "string") {
-        return acc.concat([v(id)]);
-      } else if (index === 0 && id instanceof Path) {
-        return acc.concat(id.origin);
-      } else if (Array.isArray(id)) {
+        id = v(id);
+      }
+
+      const idProp = id.getOwnProp && id.getOwnProp("_id");
+      id = (idProp && parseRef(idProp)) || id;
+      if (index > 0 && idProp && id instanceof Path) {
+        throw 'cannot contains a object with a path id for keys';
+      }
+
+      if (Array.isArray(id)) {
         const arr = id;
         const applying = arr.map(i => typeof(i) === "string" ? v(i) : i);
         const val = index == 0 ? exp(...arr) : applying;
         return acc.concat([val]);
+      } else if (index === 0 && id instanceof Path) {
+        return acc.concat(id.origin);
       } else {
-        const oid = id.getOwnProp("_id");
-        if (oid) {
-          const oids = parseRef(oid);
-          return acc.concat([oids]);
-        }
         return acc.concat([id]);
       }
     }, []);
@@ -81,7 +84,7 @@ export default class Path extends Val {
         key = elm;
       }
 
-      let prop = obj.get(key, store);
+      let prop = obj.get(key.reduce(store), store);
       if (prop instanceof Function) {
         // LiftedNativeの基本仕様はthisでstoreを渡すだが
         // 組み込みのメソッドの場合、thisで自身を参照したいケースが大半で

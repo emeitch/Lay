@@ -285,6 +285,63 @@ describe("Path", () => {
       });
     });
 
+    context("args contains a path", () => {
+      it("should reduce the path to key", () => {
+        const id0 = uuid();
+        store.put({
+          _id: id0,
+          foo: 3
+        });
+
+        const id1 = uuid();
+        store.put({
+          _id: id1,
+          bar: {
+            buz: "foo"
+          }
+        });
+
+        const p = path(id1, "bar", "buz");
+        assert.deepStrictEqual(path(id0, p).reduce(store), v(3));
+      });
+    });
+
+    context("args contains a partial object as first item", () => {
+      it("should flat a path id", () => {
+        const id1 = uuid();
+        store.put({
+          _id: id1,
+          bar: {
+            buz: "foo"
+          }
+        });
+
+        const po = path(id1, "bar").reduce(store);
+        assert.deepStrictEqual(path(po, "buz"), path(id1, "bar", "buz"));
+      });
+    });
+
+    context("args contains a partial object as first item", () => {
+      it("should throw a error", () => {
+        const id0 = uuid();
+        store.put({
+          _id: id0,
+          foo: 3
+        });
+
+        const id1 = uuid();
+        store.put({
+          _id: id1,
+          bar: {
+            buz: "foo"
+          }
+        });
+
+        const po = path(id1, "bar").reduce(store);
+        assert.throws(() => path(id0, po), /cannot contains a object with a path id for keys/);
+      });
+    });
+
     context("unknown path", () => {
       const id = uuid();
       const unknownKey1 = uuid();
