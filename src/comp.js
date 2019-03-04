@@ -85,9 +85,12 @@ export default class Comp extends Val {
 
   get(k, store) {
     const key = v(k);
-    if (store && key.isUUID()) {
+    
+    if (store) {
       const pth = store.path(this, key);
-      return store.fetch(pth) || pth;
+      if (pth.isInner()) {
+        return store.fetch(pth) || pth;
+      }
     }
 
     let ownProp = this.getOwnProp(key);

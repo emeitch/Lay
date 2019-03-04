@@ -136,12 +136,6 @@ describe("Val", () => {
         assert.deepStrictEqual(val.object({foo: "dummy"}), {"origin": 0, "_type": "ExtendedVal"});
       });
     });
-
-    describe("#isUUID", () => {
-      it("shoudl return false", () => {
-        assert(!val.isUUID());
-      });
-    });
   });
 
   context("direct construction", () => {

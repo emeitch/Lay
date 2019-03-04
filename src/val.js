@@ -161,10 +161,6 @@ export default class Val {
   keyVal() {
     return new Prim(this.keyString());
   }
-
-  isUUID() {
-    return false;
-  }
 }
 
 /*********************************************************************/
@@ -231,9 +227,5 @@ export class Prim extends Val {
 
   keyString() {
     return this.origin.toString();
-  }
-
-  isUUID() {
-    return typeof(this.origin) == "string" && this.origin.match(/^urn:uuid:/);
   }
 }

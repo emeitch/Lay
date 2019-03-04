@@ -1,4 +1,5 @@
 import Val from './val';
+import Prim from './prim';
 import Case from './case';
 import v from './v';
 import Sym from './sym';
@@ -41,6 +42,18 @@ export default class Path extends Val {
   get keys() {
     const [, ...keys] = this.origin;
     return keys;
+  }
+
+  isUUID(val) {
+    return val instanceof Prim && typeof(val.origin) == "string" && val.origin.match(/^urn:uuid:/);
+  }
+
+  isPartial() {
+    return this.keys.every(i => i instanceof Prim && !this.isUUID(i));
+  }
+
+  isInner() {
+    return this.keys.every(i => this.isUUID(i));
   }
 
   stringify(indent=0) {

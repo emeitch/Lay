@@ -36,7 +36,7 @@ export default class Store {
   putWithHandler(obj, block) {
     // todo: ロックが実現の為に下記の一連の処理がアトミックな操作となるよううまく保証する
 
-    const tprop = obj.get("_type", this);
+    const tprop = obj.getOwnProp("_type");
     if (tprop.constructor !== Prim || typeof(tprop.origin) !== "string") {
         throw `bad type reference style: ${tprop.stringify()}`;
     }
@@ -46,13 +46,12 @@ export default class Store {
     if (id instanceof Path) {
       const pth = id;
       const parent = pth.parent();
-      if (pth.keys.every(i => i instanceof Prim && !i.isUUID())) {
-        // partial embeded obj
+      if (pth.isPartial()) {
         id = pth.receiver;
         const base = this.fetch(id) || v({_id: id});
         const diff = pth.diff(obj);
         obj = base.patch(diff);
-      } else if (pth.keys.some(i => !i.isUUID())) {
+      } else if (!pth.isInner()) {
         throw "intermediate object are not inner object";
       } else if (!this.fetch(parent.keyVal())) {
         throw "intermediate object not found";

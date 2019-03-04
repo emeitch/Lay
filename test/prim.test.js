@@ -40,16 +40,5 @@ describe("Prim", () => {
         assert.deepStrictEqual(v(null).object(), null);
       });
     });
-
-    describe("#isUUID", () => {
-      it("should return false", () => {
-        assert(!v(1).isUUID());
-        assert(!v("foo").isUUID());
-        assert(!v(true).isUUID());
-        assert(!v(null).isUUID());
-
-        assert(v("urn:uuid:foo-bar-buz").isUUID());
-      });
-    });
   });
 });
