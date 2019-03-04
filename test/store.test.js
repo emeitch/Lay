@@ -226,6 +226,31 @@ describe("Store", () => {
           });
         });
 
+        context("without _stereotype", () => {
+          it("should behave a default type of the inner object", () => {
+            store.put({
+              _type: "Foo",
+              _id: id0
+            });
+
+            // not exist the inner object (implicit inner object)
+            const cpath0 = store.path(id0, id1);
+            assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), path(id0, id1, "bar"));
+
+            // exist the inner object (explicit inner object)
+            store.put({
+              _id: cpath0
+            });
+            assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), path(id0, id1, "bar"));
+
+            // the inner object with own props
+            store.patch(cpath0, {
+              bar: v(4)
+            });
+            assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), v(4));
+          });
+        });
+
         context("not exist intermediate inner objs", () => {
           it("should throw a error", () => {
             const cpath = store.path(id0, id1, id2);

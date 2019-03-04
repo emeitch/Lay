@@ -5,7 +5,6 @@ import v from './v';
 import Sym from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
-import { parseRef } from './parser';
 
 export default class Path extends Val {
   constructor(...ids) {
@@ -15,9 +14,16 @@ export default class Path extends Val {
       }
 
       const idProp = id.getOwnProp && id.getOwnProp("_id");
-      id = (idProp && parseRef(idProp)) || id;
-      if (index > 0 && idProp && id instanceof Path) {
-        throw 'cannot contains a object with a path id for keys';
+      if (idProp) {
+        const pth = Path.parse(idProp);
+        if (index === 0) {
+          id = pth;
+        } else {
+          if (pth.isMultiple()) {
+            throw 'cannot contains a object with a path id for keys';
+          }
+          id = idProp;
+        }
       }
 
       if (Array.isArray(id)) {
@@ -34,6 +40,12 @@ export default class Path extends Val {
     super(origin);
   }
 
+  static parse(str) {
+    const s = v(str);
+    const keys = s.keyString().split(".");
+    return keys.length > 1 ? path(...keys) : path(s);
+  }
+
   get receiver() {
     const [receiver,] = this.origin;
     return receiver;
@@ -48,12 +60,16 @@ export default class Path extends Val {
     return val instanceof Prim && typeof(val.origin) == "string" && val.origin.match(/^urn:uuid:/);
   }
 
+  isMultiple() {
+    return this.keys.length > 0;
+  }
+
   isPartial() {
-    return this.keys.every(i => i instanceof Prim && !this.isUUID(i));
+    return this.isMultiple() && this.keys.every(i => i instanceof Prim && !this.isUUID(i));
   }
 
   isInner() {
-    return this.keys.every(i => this.isUUID(i));
+    return this.isMultiple() && this.keys.every(i => this.isUUID(i));
   }
 
   stringify(indent=0) {

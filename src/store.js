@@ -4,7 +4,6 @@ import Act from './act';
 import Prim from './prim';
 import Path, { path } from './path';
 import Comp, { CompMap } from './comp';
-import { parseRef } from './parser';
 
 export default class Store {
   constructor(...imports) {
@@ -23,10 +22,6 @@ export default class Store {
     this.assign("currentStore", path(this.id));
   }
 
-  parseRef(...args) {
-    return parseRef(...args);
-  }
-
   doPut(obj) {
     const id = obj.getOwnProp("_id");
 
@@ -41,10 +36,9 @@ export default class Store {
         throw `bad type reference style: ${tprop.stringify()}`;
     }
 
-    const _id = obj.getOwnProp("_id");
-    let id = _id && parseRef(_id.keyString());
-    if (id instanceof Path) {
-      const pth = id;
+    let id = obj.getOwnProp("_id");
+    const pth = Path.parse(id);
+    if (pth.isMultiple()) {
       const parent = pth.parent();
       if (pth.isPartial()) {
         id = pth.receiver;
@@ -275,12 +269,14 @@ export default class Store {
       return p;
     }
 
-    const _id = obj.getOwnProp("_id");
-    const id = _id && parseRef(_id);
-    if (id instanceof Path) {
-      const p = this.findPropFromSterotype(id, key);
-      if (p) {
-        return p;
+    const id = obj.getOwnProp("_id");
+    if (id) {
+      const pth = Path.parse(id);
+      if (pth.isInner()) {
+        const p = this.findPropFromSterotype(pth, key);
+        if (p) {
+          return p;
+        }
       }
     }
 
@@ -308,16 +304,16 @@ export default class Store {
 
     const cid = cls.get("_id", this);
     const results = [];
-    for (const [kstr, val] of this.objs) {
+    for (const [, val] of this.objs) {
       const status = val.get("_status", this);
       if (status.reduce(this).equals(v("deleted", null))) {
         continue;
       }
 
-      const key = this.parseRef(kstr);
+      const id = val.getOwnProp("_id");
       const tname = val.getOwnProp("_type");
       if (tname.origin === cid.origin) {
-        results.push(key);
+        results.push(id);
       }
     }
 

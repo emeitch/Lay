@@ -58,14 +58,3 @@ export function parseObjs(raws) {
   }
   return objs;
 }
-
-export function parseRef(str) {
-  const s = v(str);
-
-  const keys = s.origin.split(".");
-  if (keys.length > 1) {
-    return path(...keys);
-  }
-
-  return s;
-}

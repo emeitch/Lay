@@ -4,7 +4,7 @@ import { uuid } from '../src/uuid';
 import { path } from '../src/path';
 import v from '../src/v';
 import { sym } from '../src/sym';
-import { parseObjs, parseRef } from '../src/parser';
+import { parseObjs } from '../src/parser';
 
 
 describe("parseObjs", () => {
@@ -164,20 +164,6 @@ describe("parseObjs", () => {
         undefined
       ]),
       /can not identify a val:/);
-    });
-  });
-});
-
-describe("parseRef", () => {
-  context("urn:uuid:*", () => {
-    it("should return a UUID", () => {
-      assert.deepStrictEqual(parseRef("urn:uuid:foo-bar-buz"), v("urn:uuid:foo-bar-buz"));
-    });
-  });
-
-  context("multiple val", () => {
-    it("should return a Path", () => {
-      assert.deepStrictEqual(parseRef("foo.bar.buz"), path("foo", "bar", "buz"));
     });
   });
 });
