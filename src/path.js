@@ -7,36 +7,37 @@ import { exp } from './exp';
 import { func, LiftedNative } from './func';
 
 export default class Path extends Val {
-  constructor(...ids) {
-    const origin = ids.reduce((acc, id, index) => {
-      if (typeof(id) === "string") {
-        id = v(id);
+  constructor(...nodes) {
+    const origin = nodes.reduce((acc, node, index) => {
+      if (typeof(node) === "string") {
+        return acc.concat([v(node)]);
       }
 
-      const idProp = id.getOwnProp && id.getOwnProp("_id");
-      if (idProp) {
-        const pth = Path.parse(idProp);
+      const _id = node.getOwnProp && node.getOwnProp("_id");
+      if (_id) {
+        const pth = Path.parse(_id);
         if (index === 0) {
-          id = pth;
-        } else {
-          if (pth.isMultiple()) {
-            throw 'cannot contains a object with a path id for keys';
-          }
-          id = idProp;
+          return acc.concat(pth.origin);
         }
+        if (pth.isMultiple()) {
+          throw 'cannot contains a object with a path id for keys';
+        }
+        return acc.concat([_id]);
       }
 
-      if (Array.isArray(id)) {
-        const arr = id;
-        const applying = arr.map(i => typeof(i) === "string" ? v(i) : i);
-        const val = index == 0 ? exp(...arr) : applying;
+      if (Array.isArray(node)) {
+        const applying = node.map(i => v(i));
+        const val = index == 0 ? exp(...node) : applying;
         return acc.concat([val]);
-      } else if (index === 0 && id instanceof Path) {
-        return acc.concat(id.origin);
-      } else {
-        return acc.concat([id]);
       }
+
+      if (index === 0 && node instanceof Path) {
+        return acc.concat(node.origin);
+      }
+
+      return acc.concat([node]);
     }, []);
+    
     super(origin);
   }
 
