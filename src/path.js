@@ -37,7 +37,7 @@ export default class Path extends Val {
 
       return acc.concat([node]);
     }, []);
-    
+
     super(origin);
   }
 
@@ -113,8 +113,13 @@ export default class Path extends Val {
       } else {
         key = elm;
       }
+      key = key.reduce(store);
 
-      let prop = obj.get(key.reduce(store), store);
+      let prop = obj.get(key, store);
+      if (prop === undefined) {
+        return this;
+      }
+
       if (prop instanceof Function) {
         // LiftedNativeの基本仕様はthisでstoreを渡すだが
         // 組み込みのメソッドの場合、thisで自身を参照したいケースが大半で
@@ -129,10 +134,6 @@ export default class Path extends Val {
           return f(...as);
         };
         prop = func(new LiftedNative(nf));
-      }
-
-      if (prop === undefined) {
-        return this;
       }
 
       const innerPath = path(obj, key);
