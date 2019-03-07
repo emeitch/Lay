@@ -33,23 +33,20 @@ export default class Store {
 
     const tprop = obj.getOwnProp("_type");
     if (tprop.constructor !== Prim || typeof(tprop.origin) !== "string") {
-        throw `bad type reference style: ${tprop.stringify()}`;
+      throw `bad type reference style: ${tprop.stringify()}`;
     }
 
     let id = obj.getOwnProp("_id");
     const pth = Path.parse(id);
-    if (pth.isMultiple()) {
-      const parent = pth.parent();
-      if (pth.isPartial()) {
-        id = pth.receiver;
-        const base = this.fetch(id) || v({_id: id});
-        const diff = pth.diff(obj);
-        obj = base.patch(diff);
-      } else if (!pth.isInner()) {
-        throw "intermediate object are not inner object";
-      } else if (!this.fetch(parent.keyVal())) {
-        throw "intermediate object not found";
-      }
+    if (pth.isPartial()) {
+      id = pth.receiver;
+      const base = this.fetch(id) || v({_id: id});
+      const diff = pth.diff(obj);
+      obj = base.patch(diff);
+    } else if (pth.isMultiple() && !pth.isInner()) {
+      throw "intermediate object are not inner object";
+    } else if (pth.isMultiple() && !this.fetch(pth.parent().keyVal())) {
+      throw "intermediate object not found";
     }
 
     const old = this.fetch(id);
@@ -69,15 +66,16 @@ export default class Store {
       _type: "Revision",
       at: v(new Date())
     });
-    const withMeta = {
+
+    const meta = {
       _id: id.keyString(),
       _rev: rid
     };
     if (prid) {
-      withMeta._prev = prid;
+      meta._prev = prid;
     }
-
-    const o = obj.patch(withMeta);
+    const o = obj.patch(meta);
+    
     this.doPut(rev);
     this.doPut(o);
 
