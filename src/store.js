@@ -75,7 +75,7 @@ export default class Store {
       meta._prev = prid;
     }
     const o = obj.patch(meta);
-    
+
     this.doPut(rev);
     this.doPut(o);
 
@@ -254,7 +254,7 @@ export default class Store {
     }
   }
 
-  findPropFromSterotype(pth, key) {
+  findPropFromStereotype(pth, key) {
     const parent = this.fetch(pth.origin[0]);
     const stname = parent.get("_stereotype", this);
     const stype = stname && this.fetch(stname);
@@ -271,7 +271,7 @@ export default class Store {
     if (id) {
       const pth = Path.parse(id);
       if (pth.isInner()) {
-        const p = this.findPropFromSterotype(pth, key);
+        const p = this.findPropFromStereotype(pth, key);
         if (p) {
           return p;
         }

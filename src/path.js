@@ -94,7 +94,7 @@ export default class Path extends Val {
   }
 
   get(key, store) {
-    return super.get(key, store) || store.findPropFromSterotype(this, key);
+    return super.get(key, store) || store.findPropFromStereotype(this, key);
   }
 
   replace(matches) {
