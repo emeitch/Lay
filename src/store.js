@@ -3,7 +3,7 @@ import v from './v';
 import Act from './act';
 import Prim from './prim';
 import Path, { path } from './path';
-import Comp, { CompMap } from './comp';
+import { CompArray, CompMap } from './comp';
 
 export default class Store {
   constructor(...imports) {
@@ -332,16 +332,20 @@ export default class Store {
     }
 
     while(acts) {
-      if (acts instanceof Comp && Array.isArray(acts.origin) && acts.origin.length > 0) {
-        if (acts.origin.some(o => o instanceof Act)) {
-          if (!acts.origin.every(o => o instanceof Act || o === null)) {
-            throw `not all Act instances Array: ${acts.stringify()}`;
-          }
-        } else {
-          break;
-        }
-      } else {
+      if (!(acts instanceof CompArray)) {
         break;
+      }
+
+      if (acts.origin.length === 0) {
+        break;
+      }
+
+      if (acts.origin.every(o => !(o instanceof Act))) {
+        break;
+      }
+
+      if (acts.origin.some(o => !(o instanceof Act || o === null))) {
+        throw `not all Act instances Array: ${acts.stringify()}`;
       }
 
       let lastAct;
