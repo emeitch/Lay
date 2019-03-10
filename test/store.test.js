@@ -539,8 +539,8 @@ describe("Store", () => {
     context("invalid act", () => {
       it("should throw error", () => {
         assert.throws(() => {
-          store.run(v([1]));
-        }, /not Act instance:/);
+          store.run(v([1, new Act(() => {})]));
+        }, /not all Act instances Array:/);
       });
     });
   });

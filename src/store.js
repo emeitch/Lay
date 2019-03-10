@@ -331,32 +331,35 @@ export default class Store {
       acts = v([acts]);
     }
 
-    let act = null;
-
-    do {
-      if (acts instanceof Comp && Array.isArray(acts.origin)) {
-        for (act of acts.origin) {
-          if (act === null) {
-            continue;
+    while(acts) {
+      if (acts instanceof Comp && Array.isArray(acts.origin) && acts.origin.length > 0) {
+        if (acts.origin.some(o => o instanceof Act)) {
+          if (!acts.origin.every(o => o instanceof Act || o === null)) {
+            throw `not all Act instances Array: ${acts.stringify()}`;
           }
-
-          if (!(act instanceof Act)) {
-            throw `not Act instance: ${act}`;
-          }
-
-          do {
-            act = act.proceed(arg);
-          } while(act.canProceed());
+        } else {
+          break;
         }
+      } else {
+        break;
       }
 
-      acts = act && act.val;
-    } while(
-      acts instanceof Comp &&
-      Array.isArray(acts.origin) &&
-      acts.origin.length > 0 &&
-      acts.origin.every(o => o instanceof Act || o === null)
-    );
+      let lastAct;
+      for (const act of acts.origin) {
+        if (act === null) {
+          continue;
+        }
+
+        let a = act;
+        do {
+          a = a.proceed(arg);
+        } while(a.canProceed());
+
+        lastAct = a;
+      }
+
+      acts = lastAct && lastAct.val;
+    }
   }
 
   path(...args) {
