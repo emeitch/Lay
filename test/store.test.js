@@ -249,6 +249,24 @@ describe("Store", () => {
             });
             assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), v(4));
           });
+
+          context("with Object", () => {
+            it("should return a Object property", () => {
+              store.put({
+                _id: "Object",
+                bar: v(4)
+              });
+              store.put({
+                _id: "Foo",
+              });
+              store.put({
+                _type: "Foo",
+                _id: id0
+              });
+
+              assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), v(4));
+            });
+          });
         });
 
         context("not exist intermediate inner objs", () => {
