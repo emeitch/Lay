@@ -137,7 +137,7 @@ describe("Store", () => {
         const inner = store.fetch(cpath);
         assert.deepStrictEqual(outer.get(id1, store), inner);
 
-        const pstr = v(`${id0.origin}.${id1.origin}`);
+        const pstr = v(`${id0.keyString()}.${id1.keyString()}`);
         assert.deepStrictEqual(inner.getOwnProp("_id"), pstr);
       });
 
@@ -303,8 +303,8 @@ describe("Store", () => {
           it("should update the partial object", () => {
             store.put({
               _id: id0,
-              [key0.origin]: {
-                [key1.origin]: {
+              [key0.keyString()]: {
+                [key1.keyString()]: {
                   foo: 1,
                   bar: "abc"
                 }
