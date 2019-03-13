@@ -554,6 +554,21 @@ describe("Store", () => {
       assert.deepStrictEqual(c, 3);
     });
 
+    context("return single act", () => {
+      it("should run act", () => {
+        let b = 0;
+        let c = 0;
+        const act = new Act(() => {
+          b = 2;
+          return new Act(() => { c = 3; });
+        });
+
+        store.run(act);
+        assert.deepStrictEqual(b, 2);
+        assert.deepStrictEqual(c, 3);
+      });
+    });
+
     context("invalid act", () => {
       it("should throw error", () => {
         assert.throws(() => {
