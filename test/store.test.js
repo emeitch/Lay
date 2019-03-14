@@ -534,36 +534,36 @@ describe("Store", () => {
 
   describe("#run", () => {
     it("should run act", () => {
-      store.run(v(1)); // pass
-
       let a = 0;
-      const act1 = new Act(() => {
-        a = 1;
-      });
-
       let b = 0;
-      let c = 0;
-      const act2 = new Act(() => {
-        b = 2;
-        return v([new Act(() => { c = 3; }), v(null)]);  // within null as nop
+      const act = new Act(() => {
+        a = 2;
+        return new Act(() => { b = 3; });
       });
 
-      store.run(v([act1, act2]));
-      assert.deepStrictEqual(a, 1);
-      assert.deepStrictEqual(b, 2);
-      assert.deepStrictEqual(c, 3);
+      store.run(act);
+      assert.deepStrictEqual(a, 2);
+      assert.deepStrictEqual(b, 3);
     });
 
-    context("return single act", () => {
+    context("return multiple act", () => {
       it("should run act", () => {
-        let b = 0;
-        let c = 0;
-        const act = new Act(() => {
-          b = 2;
-          return new Act(() => { c = 3; });
+        store.run(v(1)); // pass with nothing
+
+        let a = 0;
+        const act1 = new Act(() => {
+          a = 1;
         });
 
-        store.run(act);
+        let b = 0;
+        let c = 0;
+        const act2 = new Act(() => {
+          b = 2;
+          return v([new Act(() => { c = 3; }), v(null)]);  // within null as nop
+        });
+
+        store.run(v([act1, act2]));
+        assert.deepStrictEqual(a, 1);
         assert.deepStrictEqual(b, 2);
         assert.deepStrictEqual(c, 3);
       });
