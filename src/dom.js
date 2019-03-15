@@ -37,9 +37,10 @@ dom.assign(
           }
         }
 
+        const tag = elm.getOwnProp("_type");
         const attr = {};
         for (const key of Object.keys(elm.origin)) {
-          if (key === "children") {
+          if (key === "children" || key === "_type") {
             continue;
           }
 
@@ -58,7 +59,7 @@ dom.assign(
               return store.run(act);
             };
 
-            if (elm.head.equals(v("body"))) {
+            if (tag.equals(v("body"))) {
               window[key] = (...args) => {
                 const res = callback(...args);
                 dirty = true;
@@ -79,7 +80,7 @@ dom.assign(
             attr[key] = val.origin;
           }
         }
-        return h(elm.head.origin, attr, children);
+        return h(tag.origin, attr, children);
       }
 
       function renderMaquette() {
@@ -174,14 +175,16 @@ dom.set(
 export function elm(head, ...children) {
   let attr = {};
   if (children[0].constructor === Object) {
-    attr = children.shift();
+    attr = Object.assign({}, children.shift());
   }
 
   if (children && children.length > 0) {
     Object.assign(attr, {children: n("children", children)});
   }
 
-  return n(head, attr);
+  attr._type = head;
+
+  return n(attr);
 }
 
 export const e = {};
