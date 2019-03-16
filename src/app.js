@@ -251,7 +251,7 @@ const d = new Store(std);
                           [
                             "set",
                             "_status",
-                            v("deleted", null)
+                            path("deleted")
                           ]
                         )
                       )
@@ -310,7 +310,7 @@ const d = new Store(std);
                                   [
                                     "set",
                                     "_status",
-                                    v("deleted", null)
+                                    path("deleted")
                                   ]
                                 )
                               ),
@@ -364,7 +364,7 @@ const d = new Store(std);
                                 [
                                   "set",
                                   "_status",
-                                  v("deleted", null)
+                                  path("deleted")
                                 ]
                               )
                             ),
@@ -546,7 +546,7 @@ const d = new Store(std);
                           [
                             "set",
                             "_status",
-                            v("deleted", null)
+                            path("deleted")
                           ]
                         )
                       )

@@ -302,9 +302,10 @@ export default class Store {
 
     const cid = cls.get("_id", this);
     const results = [];
+    const deleted = path("deleted").reduce(this);
     for (const [, val] of this.objs) {
-      const status = val.get("_status", this);
-      if (status.reduce(this).equals(v("deleted", null))) {
+      const status = val.get("_status", this).reduce(this);
+      if (status.equals(deleted)) {
         continue;
       }
 
