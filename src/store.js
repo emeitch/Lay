@@ -297,6 +297,12 @@ export default class Store {
     return id;
   }
 
+  delete(id) {
+    this.patch(id, {
+      _status: path("deleted")
+    });
+  }
+
   instanceIDs(cls) {
     // todo: 線形探索なのを高速化
 
@@ -304,8 +310,8 @@ export default class Store {
     const results = [];
     const deleted = path("deleted").reduce(this);
     for (const [, val] of this.objs) {
-      const status = val.get("_status", this).reduce(this);
-      if (status.equals(deleted)) {
+      const status = val.get("_status", this);
+      if (status && status.reduce(this).equals(deleted)) {
         continue;
       }
 
