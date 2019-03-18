@@ -180,7 +180,7 @@ describe("stdlib", () => {
           _id: id
         });
 
-        assert.deepStrictEqual(path(id, "_status").reduce(store), v("active", null));
+        assert.deepStrictEqual(path(id, "_status").reduce(store), v("active"));
       });
     });
 

@@ -97,7 +97,7 @@ export const std = new Store();
   std.set(
     obj,
     "_status",
-    v("active", null)
+    v("active")
   );
 
   std.set(
