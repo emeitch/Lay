@@ -299,7 +299,7 @@ export default class Store {
 
   delete(id) {
     this.patch(id, {
-      _status: path("deleted")
+      _status: v("deleted")
     });
   }
 
@@ -308,7 +308,7 @@ export default class Store {
 
     const cid = cls.get("_id", this);
     const results = [];
-    const deleted = path("deleted").reduce(this);
+    const deleted = v("deleted");
     for (const [, val] of this.objs) {
       const status = val.get("_status", this);
       if (status && status.reduce(this).equals(deleted)) {
