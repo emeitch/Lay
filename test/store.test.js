@@ -551,6 +551,29 @@ describe("Store", () => {
       const all2 = store.instanceIDs(cls);
       assert.deepStrictEqual(all2.length, 0);
     });
+
+    context("apply obj", () => {
+      it("should delete the obj", () => {
+        store.put({
+          _id: v("Foo")
+        });
+        const cls = store.fetch("Foo");
+
+        const id = store.new({
+          _type: v("Foo")
+        });
+
+        const all = store.instanceIDs(cls);
+        assert.deepStrictEqual(all.length, 1);
+        assert.deepStrictEqual(all[0], id);
+
+        const obj = store.fetch(id);
+        store.delete(obj);
+        const all2 = store.instanceIDs(cls);
+        assert.deepStrictEqual(all2.length, 0);
+
+      });
+    });
   });
 
   describe("#run", () => {

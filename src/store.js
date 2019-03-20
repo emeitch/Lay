@@ -298,7 +298,9 @@ export default class Store {
   }
 
   delete(id) {
-    this.patch(id, {
+    const obj = this.fetch(id);
+    const key = obj.getOwnProp("_id");
+    this.patch(key, {
       _status: v("deleted")
     });
   }
