@@ -144,6 +144,28 @@ describe("stdlib", () => {
       });
     });
 
+    describe("delete", () => {
+      it("should delete the obj from all", () => {
+        store.put({
+          _id: "Foo",
+        });
+        const id1 = uuid();
+        store.put({
+          _id: id1,
+          _type: "Foo"
+        });
+
+        const ids = path("Foo", "all").reduce(store);
+        assert.deepStrictEqual(ids.get(0), id1);
+
+        const act = path(id1, "delete").reduce(store);
+        store.run(act);
+
+        const ids2 = path("Foo", "all").reduce(store);
+        assert.deepStrictEqual(ids2.get(0), undefined);
+      });
+    });
+
     describe("new", () => {
       it("should return a instance creation act", () => {
         store.put({

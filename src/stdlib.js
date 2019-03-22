@@ -124,6 +124,14 @@ export const std = new Store();
       return v(this.instanceIDs(self));
     }), "self")
   );
+
+  std.set(
+    obj,
+    "delete",
+    exp(new LiftedNative(function(self) {
+      return this.deleteAct(self);
+    }), "self")
+  );
 }
 
 {

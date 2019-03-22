@@ -305,6 +305,12 @@ export default class Store {
     });
   }
 
+  deleteAct(id) {
+    return new Act(() => {
+      this.delete(id);
+    });
+  }
+
   instanceIDs(cls) {
     // todo: 線形探索なのを高速化
 
