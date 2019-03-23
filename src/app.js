@@ -247,12 +247,9 @@ const d = new Store(std);
                     e.button({
                       class: "destroy",
                       onclick: func("ev",
-                        path(sym("tid"),
-                          [
-                            "set",
-                            "_status",
-                            path("deleted")
-                          ]
+                        path(
+                          sym("tid"),
+                          "delete"
                         )
                       )
                     })
@@ -306,12 +303,9 @@ const d = new Store(std);
                               "if",
                               path(sym("t"), ["equals", v("")]),
                               path(
-                                path(sym("tid"),
-                                  [
-                                    "set",
-                                    "_status",
-                                    path("deleted")
-                                  ]
+                                path(
+                                  sym("tid"),
+                                  "delete"
                                 )
                               ),
                               path(
@@ -361,11 +355,7 @@ const d = new Store(std);
                             path(
                               path(
                                 sym("tid"),
-                                [
-                                  "set",
-                                  "_status",
-                                  path("deleted")
-                                ]
+                                "delete"
                               )
                             ),
                             path(
@@ -543,11 +533,7 @@ const d = new Store(std);
                         "tid",
                         path(
                           sym("tid"),
-                          [
-                            "set",
-                            "_status",
-                            path("deleted")
-                          ]
+                          "delete"
                         )
                       )
                     ]
