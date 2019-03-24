@@ -298,6 +298,10 @@ export default class Store {
   }
 
   update(id, diff) {
+    if (!this.fetch(id)) {
+      throw `the object is not exist. id: ${id}`;
+    }
+
     this.patch(id, diff);
   }
 

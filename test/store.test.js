@@ -591,6 +591,17 @@ describe("Store", () => {
       const obj2 = store.get(id);
       assert.deepStrictEqual(obj2.get("foo", store), v(3));
     });
+
+    context("the object is not exist", () => {
+      it("should throw a error", () => {
+        const id = uuid();
+        assert.throws(() => {
+          store.update(id, {
+            foo: v(3)
+          });
+        }, /the object is not exist. id:/);
+      });
+    });
   });
 
   describe("#run", () => {
