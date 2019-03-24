@@ -297,6 +297,10 @@ export default class Store {
     return id;
   }
 
+  update(id, diff) {
+    this.patch(id, diff);
+  }
+
   delete(id) {
     const obj = this.fetch(id);
     const key = obj.getOwnProp("_id");

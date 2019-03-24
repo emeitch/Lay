@@ -576,6 +576,23 @@ describe("Store", () => {
     });
   });
 
+  describe("#update", () => {
+    it("should update the obj", () => {
+      const id = store.new({
+        foo: v(2)
+      });
+
+      const obj = store.get(id);
+      assert.deepStrictEqual(obj.get("foo", store), v(2));
+
+      store.update(id, {
+        foo: v(3)
+      });
+      const obj2 = store.get(id);
+      assert.deepStrictEqual(obj2.get("foo", store), v(3));
+    });
+  });
+
   describe("#run", () => {
     it("should run act", () => {
       let a = 0;
