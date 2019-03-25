@@ -592,6 +592,22 @@ describe("Store", () => {
       assert.deepStrictEqual(obj2.get("foo", store), v(3));
     });
 
+    context("apply obj", () => {
+      it("should update the obj", () => {
+        const id = store.new({
+          foo: v(2)
+        });
+
+        const obj = store.fetch(id);
+        store.update(obj, {
+          foo: v(3)
+        });
+        
+        const obj2 = store.fetch(id);
+        assert.deepStrictEqual(obj2.get("foo", store), v(3));
+      });
+    });
+
     context("the object is not exist", () => {
       it("should throw a error", () => {
         const id = uuid();
