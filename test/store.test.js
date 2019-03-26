@@ -532,6 +532,50 @@ describe("Store", () => {
     });
   });
 
+  describe("#update", () => {
+    it("should update the obj", () => {
+      const id = store.new({
+        foo: v(2)
+      });
+
+      const obj = store.get(id);
+      assert.deepStrictEqual(obj.get("foo", store), v(2));
+
+      store.update(id, {
+        foo: v(3)
+      });
+      const obj2 = store.get(id);
+      assert.deepStrictEqual(obj2.get("foo", store), v(3));
+    });
+
+    context("apply obj", () => {
+      it("should update the obj", () => {
+        const id = store.new({
+          foo: v(2)
+        });
+
+        const obj = store.fetch(id);
+        store.update(obj, {
+          foo: v(3)
+        });
+
+        const obj2 = store.fetch(id);
+        assert.deepStrictEqual(obj2.get("foo", store), v(3));
+      });
+    });
+
+    context("the object is not exist", () => {
+      it("should throw a error", () => {
+        const id = uuid();
+        assert.throws(() => {
+          store.update(id, {
+            foo: v(3)
+          });
+        }, /the object is not exist. id:/);
+      });
+    });
+  });
+
   describe("#delete", () => {
     it("should delete the obj", () => {
       store.put({
@@ -571,40 +615,6 @@ describe("Store", () => {
         store.delete(obj);
         const all2 = store.instanceIDs(cls);
         assert.deepStrictEqual(all2.length, 0);
-
-      });
-    });
-  });
-
-  describe("#update", () => {
-    it("should update the obj", () => {
-      const id = store.new({
-        foo: v(2)
-      });
-
-      const obj = store.get(id);
-      assert.deepStrictEqual(obj.get("foo", store), v(2));
-
-      store.update(id, {
-        foo: v(3)
-      });
-      const obj2 = store.get(id);
-      assert.deepStrictEqual(obj2.get("foo", store), v(3));
-    });
-
-    context("apply obj", () => {
-      it("should update the obj", () => {
-        const id = store.new({
-          foo: v(2)
-        });
-
-        const obj = store.fetch(id);
-        store.update(obj, {
-          foo: v(3)
-        });
-        
-        const obj2 = store.fetch(id);
-        assert.deepStrictEqual(obj2.get("foo", store), v(3));
       });
     });
 
@@ -612,9 +622,7 @@ describe("Store", () => {
       it("should throw a error", () => {
         const id = uuid();
         assert.throws(() => {
-          store.update(id, {
-            foo: v(3)
-          });
+          store.delete(id);
         }, /the object is not exist. id:/);
       });
     });
