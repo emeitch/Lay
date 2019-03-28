@@ -89,7 +89,7 @@ export const std = new Store();
         for (const key in props.origin) {
           p[key] = props.get(key);
         }
-        return this.new(p);
+        return this.create(p);
       });
     }))
   );

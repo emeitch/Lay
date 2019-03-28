@@ -139,7 +139,7 @@ describe("stdlib", () => {
         assert.deepStrictEqual(ids.get(0), id1);
         assert.deepStrictEqual(ids.get(1), id2);
 
-        const emp = store.new();
+        const emp = store.create();
         assert.deepStrictEqual(path(emp, "all").reduce(store), v([]));
       });
     });

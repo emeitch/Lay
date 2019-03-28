@@ -287,7 +287,7 @@ export default class Store {
     return undefined;
   }
 
-  new(obj={}) {
+  create(obj={}) {
     const reduced = {_id: uuid()};
     for (const key of Object.keys(obj)) {
       reduced[key] = obj[key].reduce(this).unpack();

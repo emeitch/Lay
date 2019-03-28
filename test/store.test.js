@@ -534,7 +534,7 @@ describe("Store", () => {
 
   describe("#update", () => {
     it("should update the obj", () => {
-      const id = store.new({
+      const id = store.create({
         foo: v(2)
       });
 
@@ -550,7 +550,7 @@ describe("Store", () => {
 
     context("apply obj", () => {
       it("should update the obj", () => {
-        const id = store.new({
+        const id = store.create({
           foo: v(2)
         });
 
@@ -583,7 +583,7 @@ describe("Store", () => {
       });
       const cls = store.fetch("Foo");
 
-      const id = store.new({
+      const id = store.create({
         _type: v("Foo")
       });
 
@@ -603,7 +603,7 @@ describe("Store", () => {
         });
         const cls = store.fetch("Foo");
 
-        const id = store.new({
+        const id = store.create({
           _type: v("Foo")
         });
 
