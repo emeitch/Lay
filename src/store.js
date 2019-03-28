@@ -308,13 +308,7 @@ export default class Store {
   }
 
   delete(id) {
-    const obj = this.fetch(id);
-    if (!obj) {
-      throw `the object is not exist. id: ${id}`;
-    }
-
-    const key = obj.getOwnProp("_id");
-    this.patch(key, {
+    this.update(id, {
       _status: v("deleted")
     });
   }
