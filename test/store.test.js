@@ -532,6 +532,17 @@ describe("Store", () => {
     });
   });
 
+  describe("#create", () => {
+    it("should update the obj", () => {
+      const id = store.create({
+        foo: v(2)
+      });
+
+      const obj = store.fetch(id);
+      assert.deepStrictEqual(obj.get("foo", store), v(2));
+    });
+  });
+
   describe("#update", () => {
     it("should update the obj", () => {
       const id = store.create({
