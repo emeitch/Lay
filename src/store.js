@@ -292,7 +292,12 @@ export default class Store {
     for (const key of Object.keys(obj)) {
       reduced[key] = obj[key].reduce(this).unpack();
     }
+
     const id = reduced._id;
+    if (id && this.fetch(id)) {
+      throw `the object is already exist. id: ${id}`;
+    }
+
     this.assign(id, v(reduced));
     return id;
   }

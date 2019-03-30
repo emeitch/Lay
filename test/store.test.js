@@ -541,6 +541,22 @@ describe("Store", () => {
       const obj = store.fetch(id);
       assert.deepStrictEqual(obj.get("foo", store), v(2));
     });
+
+    context("the object already exist", () => {
+      it("should throw a error", () => {
+        const id = store.create({
+          foo: v(2)
+        });
+
+        assert.throws(() => {
+          store.create({
+            _id: id,
+            foo: v(3)
+          });
+        }, /the object is already exist. id:/);
+      });
+    });
+
   });
 
   describe("#update", () => {
