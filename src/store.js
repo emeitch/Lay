@@ -305,7 +305,7 @@ export default class Store {
   update(id, diff) {
     const obj = this.fetch(id);
     if (!obj) {
-      throw `the object is not exist. id: ${id}`;
+      throw `the object dose not exist. id: ${id}`;
     }
 
     const key = obj.getOwnProp("_id");

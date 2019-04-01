@@ -591,14 +591,14 @@ describe("Store", () => {
       });
     });
 
-    context("the object is not exist", () => {
+    context("the object dose not exist", () => {
       it("should throw a error", () => {
         const id = uuid();
         assert.throws(() => {
           store.update(id, {
             foo: v(3)
           });
-        }, /the object is not exist. id:/);
+        }, /the object dose not exist. id:/);
       });
     });
   });
@@ -645,12 +645,12 @@ describe("Store", () => {
       });
     });
 
-    context("the object is not exist", () => {
+    context("the object dose not exist", () => {
       it("should throw a error", () => {
         const id = uuid();
         assert.throws(() => {
           store.delete(id);
-        }, /the object is not exist. id:/);
+        }, /the object dose not exist. id:/);
       });
     });
   });
