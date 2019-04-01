@@ -295,7 +295,7 @@ export default class Store {
 
     const id = reduced._id;
     if (id && this.fetch(id)) {
-      throw `the object is already exist. id: ${id}`;
+      throw `the object already exists. id: ${id}`;
     }
 
     this.assign(id, v(reduced));

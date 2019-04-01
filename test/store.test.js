@@ -553,7 +553,7 @@ describe("Store", () => {
             _id: id,
             foo: v(3)
           });
-        }, /the object is already exist. id:/);
+        }, /the object already exists. id:/);
       });
     });
 
