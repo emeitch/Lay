@@ -655,6 +655,21 @@ describe("Store", () => {
     });
   });
 
+  describe("#copy", () => {
+    it("should delete the obj", () => {
+      const id = store.create({
+        foo: v("bar")
+      });
+
+      const obj = store.fetch(id);
+      const cobj = store.copy(obj);
+
+      assert.deepStrictEqual(cobj.get("foo", store), v("bar"));
+      assert.notDeepStrictEqual(cobj.get("_id", store), obj.get("_id", store));
+      assert.notDeepStrictEqual(cobj.get("_rev", store), obj.get("_rev", store));
+    });
+  });
+
   describe("#run", () => {
     it("should run act", () => {
       let a = 0;

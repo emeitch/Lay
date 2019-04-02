@@ -1,5 +1,6 @@
 import { uuid } from './uuid';
 import v from './v';
+import Val from './val';
 import Act from './act';
 import Prim from './prim';
 import Path, { path } from './path';
@@ -290,7 +291,11 @@ export default class Store {
   create(obj={}) {
     const reduced = {_id: uuid()};
     for (const key of Object.keys(obj)) {
-      reduced[key] = obj[key].reduce(this).unpack();
+      let prop = obj[key];
+      if (prop instanceof Val) {
+        prop = prop.reduce(this).unpack();
+      }
+      reduced[key] = prop;
     }
 
     const id = reduced._id;
@@ -322,6 +327,16 @@ export default class Store {
     return new Act(() => {
       this.delete(id);
     });
+  }
+
+  copy(obj) {
+    const copied = Object.assign({}, obj.object(this));
+    delete copied._id;
+    delete copied._rev;
+    delete copied._prev;
+
+    const id = this.create(copied);
+    return this.fetch(id);
   }
 
   instanceIDs(cls) {
