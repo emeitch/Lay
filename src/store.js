@@ -329,11 +329,15 @@ export default class Store {
     });
   }
 
+  get metaKeys() {
+    return ["_id", "_rev", "_prev"];
+  }
+
   copy(obj) {
     const copied = Object.assign({}, obj.object(this));
-    delete copied._id;
-    delete copied._rev;
-    delete copied._prev;
+    this.metaKeys.forEach(mkey => {
+      delete copied[mkey];
+    });
 
     const id = this.create(copied);
     return this.fetch(id);
