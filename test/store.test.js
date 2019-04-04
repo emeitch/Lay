@@ -656,7 +656,7 @@ describe("Store", () => {
   });
 
   describe("#copy", () => {
-    it("should delete the obj", () => {
+    it("should copy the obj", () => {
       const id = store.create({
         foo: v("bar")
       });
@@ -667,6 +667,21 @@ describe("Store", () => {
       assert.deepStrictEqual(cobj.get("foo", store), v("bar"));
       assert.notDeepStrictEqual(cobj.get("_id", store), obj.get("_id", store));
       assert.notDeepStrictEqual(cobj.get("_rev", store), obj.get("_rev", store));
+    });
+
+    context("specify id", () => {
+      it("should copy the obj", () => {
+        const id = store.create({
+          foo: v("bar")
+        });
+
+        const cobj = store.copy(id);
+
+        const obj = store.fetch(id);
+        assert.deepStrictEqual(cobj.get("foo", store), v("bar"));
+        assert.notDeepStrictEqual(cobj.get("_id", store), obj.get("_id", store));
+        assert.notDeepStrictEqual(cobj.get("_rev", store), obj.get("_rev", store));
+      });
     });
   });
 

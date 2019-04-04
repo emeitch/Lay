@@ -334,6 +334,11 @@ export default class Store {
   }
 
   copy(obj) {
+    if (obj instanceof Prim) {
+      const id = obj;
+      obj = this.fetch(id);
+    }
+
     const copied = Object.assign({}, obj.object(this));
     this.metaKeys.forEach(mkey => {
       delete copied[mkey];
