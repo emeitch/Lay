@@ -665,6 +665,7 @@ describe("Store", () => {
       const cobj = store.copy(obj);
 
       assert.deepStrictEqual(cobj.get("foo", store), v("bar"));
+      assert.deepStrictEqual(cobj.get("_src", store), id);
       assert.notDeepStrictEqual(cobj.get("_id", store), obj.get("_id", store));
       assert.notDeepStrictEqual(cobj.get("_rev", store), obj.get("_rev", store));
     });

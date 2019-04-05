@@ -343,6 +343,7 @@ export default class Store {
     this.metaKeys.forEach(mkey => {
       delete copied[mkey];
     });
+    copied._src = obj.getOwnProp("_id");
 
     const id = this.create(copied);
     return this.fetch(id);
