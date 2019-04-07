@@ -74,6 +74,11 @@ export default class Val {
     return true;
   }
 
+  isClass() {
+    const id = this.getOwnProp("_id");
+    return typeof(id.origin) === "string" && id.origin.match(/^[A-Z]/);
+  }
+
   step(_store) {
     return this;
   }

@@ -603,6 +603,41 @@ describe("Store", () => {
     });
   });
 
+  describe("#instanceIDs", () => {
+    // it("should return all instance ids", () => {
+    // });
+
+    context("with inherited class", () => {
+      it("should return all instances without inherited classes", () => {
+        store.put({
+          _id: v("Foo")
+        });
+
+        store.put({
+          _type: v("Foo"),
+          _id: v("Bar") // start with uppercase id recognized for class
+        });
+        store.put({
+          _type: v("Foo"),
+          _id: v("Buz") // start with uppercase id recognized for class
+        });
+
+        const id0 = store.create({
+          _type: v("Foo")
+        });
+        const id1 = store.create({
+          _type: v("Foo")
+        });
+
+        const cls = store.fetch("Foo");
+        const all = store.instanceIDs(cls);
+        assert.deepStrictEqual(all.length, 2);
+        assert.deepStrictEqual(all[0], id0);
+        assert.deepStrictEqual(all[1], id1);
+      });
+    });
+  });
+
   describe("#delete", () => {
     it("should delete the obj", () => {
       store.put({

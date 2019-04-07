@@ -363,7 +363,7 @@ export default class Store {
 
       const id = val.getOwnProp("_id");
       const tname = val.getOwnProp("_type");
-      if (tname.origin === cid.origin) {
+      if (tname.origin === cid.origin && !val.isClass()) {
         results.push(id);
       }
     }
