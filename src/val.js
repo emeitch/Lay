@@ -154,6 +154,10 @@ export default class Val {
     };
   }
 
+  isUUID() {
+    return false;
+  }
+
   keyString() {
     return this.stringify();
   }
@@ -219,6 +223,10 @@ export class Prim extends Val {
 
     const type = typeof(this.origin);
     return type[0].toUpperCase() + type.substring(1);
+  }
+
+  isUUID() {
+    return typeof(this.origin) == "string" && this.origin.match(/^urn:uuid:/);
   }
 
   object(_store) {

@@ -125,6 +125,12 @@ describe("Val", () => {
       });
     });
 
+    describe("#isUUID", () => {
+      it("should return original value string", () => {
+        assert.deepStrictEqual(val.isUUID(), false);
+      });
+    });
+
     describe("#stringify", () => {
       it("should return original value string", () => {
         assert.deepStrictEqual(val.stringify(), "0");

@@ -57,20 +57,16 @@ export default class Path extends Val {
     return keys;
   }
 
-  isUUID(val) {
-    return val instanceof Prim && typeof(val.origin) == "string" && val.origin.match(/^urn:uuid:/);
-  }
-
   isMultiple() {
     return this.keys.length > 0;
   }
 
   isPartial() {
-    return this.isMultiple() && this.keys.every(i => i instanceof Prim && !this.isUUID(i));
+    return this.isMultiple() && this.keys.every(i => i instanceof Prim && !i.isUUID());
   }
 
   isInner() {
-    return this.isMultiple() && this.keys.every(i => this.isUUID(i));
+    return this.isMultiple() && this.keys.every(i => i.isUUID());
   }
 
   stringify(indent=0) {
