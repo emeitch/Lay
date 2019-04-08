@@ -636,6 +636,28 @@ describe("Store", () => {
         assert.deepStrictEqual(all[1], id1);
       });
     });
+
+    context("inner object", () => {
+      it("should return all with inner object", () => {
+        const id0 = store.create({});
+        const id1 = store.create({});
+        const cpath = store.path(id0, id1);
+
+        store.put({
+          _id: v("Foo")
+        });
+
+        store.put({
+          _type: v("Foo"),
+          _id: cpath
+        });
+
+        const cls = store.fetch("Foo");
+        const all = store.instanceIDs(cls);
+        assert.deepStrictEqual(all.length, 1);
+        assert.deepStrictEqual(all[0], cpath.keyVal());
+      });
+    });
   });
 
   describe("#delete", () => {
