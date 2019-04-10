@@ -353,6 +353,23 @@ export default class Store {
     // todo: 線形探索なのを高速化
 
     const cid = cls.get("_id", this);
+    const isKindOfClass = v => {
+      const tname = v.getOwnProp("_type");
+
+      if (tname.origin === cid.origin) {
+        return true;
+      } else if (tname.origin === "Map") {
+        return false;
+      } else {
+        const c = this.fetch(tname);
+        if (c) {
+          return isKindOfClass(c);
+        } else {
+          return false;
+        }
+      }
+    };
+
     const results = [];
     const deleted = v("deleted");
     for (const [, val] of this.objs) {
@@ -361,9 +378,8 @@ export default class Store {
         continue;
       }
 
-      const id = val.getOwnProp("_id");
-      const tname = val.getOwnProp("_type");
-      if (tname.origin === cid.origin && !val.isClass()) {
+      if (isKindOfClass(val) && !val.isClass()) {
+        const id = val.getOwnProp("_id");
         results.push(id);
       }
     }
