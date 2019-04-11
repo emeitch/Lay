@@ -604,8 +604,24 @@ describe("Store", () => {
   });
 
   describe("#instanceIDs", () => {
-    // it("should return all instance ids", () => {
-    // });
+    it("should return all instance ids", () => {
+      store.put({
+        _id: v("Foo")
+      });
+
+      const id0 = store.create({
+        _type: v("Foo")
+      });
+      const id1 = store.create({
+        _type: v("Foo")
+      });
+
+      const cls = store.fetch("Foo");
+      const all = store.instanceIDs(cls);
+      assert.deepStrictEqual(all.length, 2);
+      assert.deepStrictEqual(all[0], id0);
+      assert.deepStrictEqual(all[1], id1);
+    });
 
     context("with inherited class", () => {
       it("should return all instances without inherited classes", () => {
