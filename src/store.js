@@ -166,7 +166,14 @@ export default class Store {
   }
 
   fetchWithoutImports(key) {
-    return this.objs.get(key.keyString());
+    const k = key.keyString();
+    const o = this.objs.get(k);
+    if (o) {
+      return o;
+    }
+
+    const storeObj = this.objs.get(this.id.keyString());
+    return storeObj && storeObj.getOwnProp(k);
   }
 
   handleOnInport(other) {

@@ -433,6 +433,19 @@ describe("Store", () => {
     });
   });
 
+  describe("#set", () => {
+    // todo: 通常のsetのテストを付加する
+
+    context("set a prop to the store obj", () => {
+      it("should be able to fetch the prop", () => {
+        store.set(store.id, "foo", v(1));
+
+        assert.deepStrictEqual(store.fetch(store.id).getOwnProp("foo"), v(1));
+        assert.deepStrictEqual(store.fetch("foo"), v(1));
+      });
+    });
+  });
+
   describe("#merge", () => {
     it("should merge the patch", () => {
       store.merge({
