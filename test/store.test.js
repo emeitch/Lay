@@ -444,6 +444,22 @@ describe("Store", () => {
         assert.deepStrictEqual(store.fetch("foo"), v(1));
       });
     });
+
+    context("with direct stored obj and store obj prop", () => {
+      it("should be able to fetch prior the direct stored obj", () => {
+        store.set(store.id, "foo", v({bar: v(2)}));
+        store.put({
+          _id: "foo",
+          bar: 3
+        });
+
+        // fetched a store obj and get prop
+        assert.deepStrictEqual(store.fetch(store.id).getOwnProp("foo").getOwnProp("bar"), v(2));
+
+        // fetched prior a direct stored obj
+        assert.deepStrictEqual(store.fetch("foo").getOwnProp("bar"), v(3));
+      });
+    });
   });
 
   describe("#merge", () => {
