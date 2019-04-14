@@ -165,15 +165,15 @@ export default class Store {
     });
   }
 
-  fetchWithoutImports(key) {
+  fetchFromStoreObj(key) {
     const k = key.keyString();
-    const o = this.objs.get(k);
-    if (o) {
-      return o;
-    }
-
     const storeObj = this.objs.get(this.id.keyString());
     return storeObj && storeObj.getOwnProp(k);
+  }
+
+  fetchWithoutImports(key) {
+    const k = key.keyString();
+    return this.objs.get(k) || this.fetchFromStoreObj(key);
   }
 
   handleOnInport(other) {
