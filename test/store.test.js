@@ -434,7 +434,12 @@ describe("Store", () => {
   });
 
   describe("#set", () => {
-    // todo: 通常のsetのテストを付加する
+    it("should store the prop", () => {
+      const id = uuid();
+      store.set(id, "foo", v(3));
+
+      assert.deepStrictEqual(store.fetch(id).getOwnProp("foo"), v(3));
+    });
 
     context("set a prop to the store obj", () => {
       it("should be able to fetch the prop", () => {
