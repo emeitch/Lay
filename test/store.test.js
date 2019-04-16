@@ -443,10 +443,9 @@ describe("Store", () => {
 
     context("set a prop to the store obj", () => {
       it("should be able to fetch the prop", () => {
-        store.set(store.id, "foo", v(1));
+        store.set(store.id, "foo", v(3));
 
-        assert.deepStrictEqual(store.fetch(store.id).getOwnProp("foo"), v(1));
-        assert.deepStrictEqual(store.fetch("foo"), v(1));
+        assert.deepStrictEqual(store.fetch("foo"), v(3));
       });
     });
 
