@@ -25,8 +25,14 @@ export default class Store {
 
   doPut(obj) {
     const id = obj.getOwnProp("_id");
+    const origin = obj.getOwnProp("_origin");
 
-    this.objs.set(id.keyString(), obj);
+    let o = obj;
+    if (origin) {
+      o = v(origin);
+    }
+
+    this.objs.set(id.keyString(), o);
   }
 
   putWithHandler(obj, block) {

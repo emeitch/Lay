@@ -373,8 +373,19 @@ describe("Store", () => {
       });
     });
 
-    context("with path whose last key is string", () => {
+    context("_origin val", () => {
+      it("should handle as value", () => {
+        const id = uuid();
+        store.put({
+          _id: id,
+          _origin: 3
+        });
+
+        const val = store.fetch(id);
+        assert(val.equals(v(3)));
+      });
     });
+
   });
 
   describe("#patch", () => {
