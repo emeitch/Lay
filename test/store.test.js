@@ -382,7 +382,8 @@ describe("Store", () => {
         });
 
         const val = store.fetch(id);
-        assert(val.equals(v(3)));
+        assert.deepStrictEqual(val.getOwnProp("_id"), id);
+        assert.deepStrictEqual(val.getOwnProp("_origin"), v(3));
       });
     });
 
