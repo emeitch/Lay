@@ -374,19 +374,21 @@ describe("Store", () => {
     });
 
     context("_origin val", () => {
-      it("should handle as value", () => {
+      it("should handle as value by calling #get", () => {
         const id = uuid();
         store.put({
           _id: id,
           _origin: 3
         });
 
-        const val = store.fetch(id);
-        assert.deepStrictEqual(val.getOwnProp("_id"), id);
-        assert.deepStrictEqual(val.getOwnProp("_origin"), v(3));
+        const obj = store.fetch(id);
+        assert.deepStrictEqual(obj.getOwnProp("_id"), id);
+        assert.deepStrictEqual(obj.getOwnProp("_origin"), v(3));
+
+        const val = store.get(id);
+        assert.deepStrictEqual(val, v(3));
       });
     });
-
   });
 
   describe("#patch", () => {

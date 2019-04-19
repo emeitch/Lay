@@ -226,9 +226,14 @@ export default class Store {
 
   get(key) {
     if (key instanceof Prim && typeof(key.origin) === "string") {
-      const val = this.fetch(key);
-      if (val) {
-        return val;
+      const obj = this.fetch(key);
+      if (obj) {
+        const origin = obj.getOwnProp("_origin");
+        if (origin) {
+          return origin;
+        } else {
+          return obj;
+        }
       }
     }
 
