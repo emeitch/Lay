@@ -373,17 +373,17 @@ describe("Store", () => {
       });
     });
 
-    context("_origin val", () => {
+    context("_val val", () => {
       it("should handle as value by calling #get", () => {
         const id = uuid();
         store.put({
           _id: id,
-          _origin: 3
+          _val: 3
         });
 
         const obj = store.fetch(id);
         assert.deepStrictEqual(obj.getOwnProp("_id"), id);
-        assert.deepStrictEqual(obj.getOwnProp("_origin"), v(3));
+        assert.deepStrictEqual(obj.getOwnProp("_val"), v(3));
 
         const val = store.get(id);
         assert.deepStrictEqual(val, v(3));
