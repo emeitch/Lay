@@ -1,7 +1,8 @@
 export default class Form {
-  constructor(key, val) {
+  constructor(key, val, rev) {
     this.key = key;
     this.val = val;
+    this.rev = rev;
   }
 }
 
