@@ -1,4 +1,4 @@
-export default class Form {
+export default class Log {
   constructor(key, val, rev) {
     this.key = key;
     this.val = val;
@@ -6,6 +6,6 @@ export default class Form {
   }
 }
 
-export function form(...args) {
-  return new Form(...args);
+export function log(...args) {
+  return new Log(...args);
 }
