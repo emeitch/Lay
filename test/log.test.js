@@ -9,7 +9,8 @@ describe("Log", () => {
   const key = uuid();
   const val = v(3);
   const rev = uuid();
-  const l = log(key, val, rev);
+  const prev = uuid();
+  const l = log(key, val, rev, prev);
 
   context("#key", () => {
     it("should return the key prop", () => {
@@ -26,6 +27,12 @@ describe("Log", () => {
   context("#rev", () => {
     it("should return the rev prop", () => {
       assert.deepStrictEqual(l.rev, rev);
+    });
+  });
+
+  context("#prev", () => {
+    it("should return the rev prop", () => {
+      assert.deepStrictEqual(l.prev, prev);
     });
   });
 });

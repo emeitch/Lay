@@ -1,8 +1,9 @@
 export default class Log {
-  constructor(key, val, rev) {
+  constructor(key, val, rev, prev) {
     this.key = key;
     this.val = val;
     this.rev = rev;
+    this.prev = prev;
   }
 }
 
