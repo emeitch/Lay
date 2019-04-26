@@ -6,28 +6,28 @@ import v from '../src/v';
 import { log } from '../src/log';
 
 describe("Log", () => {
-  const key = uuid();
-  const val = v(3);
   const rev = uuid();
+  const id = uuid();
+  const val = v(3);
   const prev = uuid();
   const src = uuid();
-  const l = log(key, val, rev, prev, src);
+  const l = log(rev, id, val, prev, src);
 
-  context("#key", () => {
-    it("should return the key prop", () => {
-      assert.deepStrictEqual(l.key, key);
+  context("#rev", () => {
+    it("should return the rev prop", () => {
+      assert.deepStrictEqual(l.rev, rev);
+    });
+  });
+
+  context("#id", () => {
+    it("should return the id prop", () => {
+      assert.deepStrictEqual(l.id, id);
     });
   });
 
   context("#val", () => {
     it("should return the val prop", () => {
       assert.deepStrictEqual(l.val, val);
-    });
-  });
-
-  context("#rev", () => {
-    it("should return the rev prop", () => {
-      assert.deepStrictEqual(l.rev, rev);
     });
   });
 

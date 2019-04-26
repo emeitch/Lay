@@ -1,8 +1,11 @@
 export default class Log {
-  constructor(key, val, rev, prev, src) {
-    this.key = key;
-    this.val = val;
+  constructor(rev, id, val, prev, src) {
+    // required
     this.rev = rev;
+    this.id = id;
+    this.val = val;
+
+    // option
     this.prev = prev;
     this.src = src;
   }
