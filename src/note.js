@@ -1,13 +1,27 @@
-export default class Note {
-  constructor(rev, id, val, prev, src) {
-    // required
-    this.rev = rev;
-    this.id = id;
-    this.val = val;
+const noteSchemaMap = new Map([
+  ["rev", null],
+  ["id", null],
+  ["val", null],
+  ["prev", null],
+  ["src", null]
+]);
 
-    // optional
-    this.prev = prev;
-    this.src = src;
+const notePropKeys = Array.from(noteSchemaMap.keys());
+
+export default class Note {
+  // static get schemaMap() {
+  //   return noteSchemaMap;
+  // }
+
+  static get keys() {
+    return notePropKeys;
+  }
+
+  constructor(...args) {
+    const keys = this.constructor.keys;
+    args.forEach((v, i) => {
+      this[keys[i]] = v;
+    });
   }
 }
 
