@@ -3,15 +3,15 @@ import assert from 'assert';
 import { uuid } from '../src/uuid';
 import v from '../src/v';
 
-import { log } from '../src/log';
+import { note } from '../src/note';
 
-describe("Log", () => {
+describe("Note", () => {
   const rev = uuid();
   const id = uuid();
   const val = v(3);
   const prev = uuid();
   const src = uuid();
-  const l = log(rev, id, val, prev, src);
+  const l = note(rev, id, val, prev, src);
 
   context("#rev", () => {
     it("should return the rev prop", () => {

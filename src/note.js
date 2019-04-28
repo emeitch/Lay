@@ -1,16 +1,16 @@
-export default class Log {
+export default class Note {
   constructor(rev, id, val, prev, src) {
     // required
     this.rev = rev;
     this.id = id;
     this.val = val;
 
-    // option
+    // optional
     this.prev = prev;
     this.src = src;
   }
 }
 
-export function log(...args) {
-  return new Log(...args);
+export function note(...args) {
+  return new Note(...args);
 }
