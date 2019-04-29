@@ -1,3 +1,5 @@
+import v from './v';
+
 const noteSchemaMap = new Map([
   ["rev", null],
   ["id", null],
@@ -22,6 +24,18 @@ export default class Note {
     args.forEach((v, i) => {
       this[keys[i]] = v;
     });
+  }
+
+  get(key) {
+    const k = v(key).keyVal();
+
+    const matched = k.origin.match(/^_(.*)/);
+    const metakey = matched && matched[1];
+    if (metakey && this.constructor.keys.includes(metakey)) {
+      return this[metakey];
+    }
+
+    return undefined;
   }
 }
 

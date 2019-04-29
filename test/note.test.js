@@ -42,4 +42,22 @@ describe("Note", () => {
       assert.deepStrictEqual(l.src, src);
     });
   });
+
+  describe("#get", () => {
+    context("specify the key not exists", () => {
+      it("should return undefined", () => {
+        assert.deepStrictEqual(l.get("notExists"), undefined);
+      });
+    });
+
+    context("specify note's prop keys", () => {
+      it("should return note's props", () => {
+        assert.deepStrictEqual(l.get("_rev"), rev);
+        assert.deepStrictEqual(l.get("_id"), id);
+        assert.deepStrictEqual(l.get("_val"), val);
+        assert.deepStrictEqual(l.get("_prev"), prev);
+        assert.deepStrictEqual(l.get("_src"), src);
+      });
+    });
+  });
 });
