@@ -35,7 +35,7 @@ export default class Note {
       return this[metakey];
     }
 
-    return undefined;
+    return this.val.get(key);
   }
 }
 

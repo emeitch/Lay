@@ -8,7 +8,7 @@ import { note } from '../src/note';
 describe("Note", () => {
   const rev = uuid();
   const id = uuid();
-  const val = v(3);
+  const val = v({foo: 3});
   const prev = uuid();
   const src = uuid();
   const l = note(rev, id, val, prev, src);
@@ -44,6 +44,10 @@ describe("Note", () => {
   });
 
   describe("#get", () => {
+    it("should return val's value", () => {
+      assert.deepStrictEqual(l.get("foo"), v(3));
+    });
+
     context("specify the key not exists", () => {
       it("should return undefined", () => {
         assert.deepStrictEqual(l.get("notExists"), undefined);
