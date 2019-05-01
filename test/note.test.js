@@ -24,11 +24,11 @@ describe("Note", () => {
   });
 
   describe("#get", () => {
-    it("should return val's value", () => {
+    it("should return the val's prop", () => {
       assert.deepStrictEqual(l.get("foo"), v(3));
     });
 
-    context("specify the key not exists", () => {
+    context("specify the key which not exists", () => {
       it("should return undefined", () => {
         assert.deepStrictEqual(l.get("notExists"), undefined);
       });
