@@ -13,32 +13,12 @@ describe("Note", () => {
   const src = uuid();
   const l = note(rev, id, val, prev, src);
 
-  describe("#rev", () => {
-    it("should return the rev prop", () => {
+  describe("any props", () => {
+    it("should return props", () => {
       assert.deepStrictEqual(l.rev, rev);
-    });
-  });
-
-  describe("#id", () => {
-    it("should return the id prop", () => {
       assert.deepStrictEqual(l.id, id);
-    });
-  });
-
-  describe("#val", () => {
-    it("should return the val prop", () => {
       assert.deepStrictEqual(l.val, val);
-    });
-  });
-
-  describe("#prev", () => {
-    it("should return the prev prop", () => {
       assert.deepStrictEqual(l.prev, prev);
-    });
-  });
-
-  describe("#src", () => {
-    it("should return the src prop", () => {
       assert.deepStrictEqual(l.src, src);
     });
   });
