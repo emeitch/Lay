@@ -1,25 +1,23 @@
 import v from './v';
 
-const noteSchemaMap = new Map([
-  ["rev", null],
-  ["id", null],
-  ["val", null],
-  ["prev", null],
-  ["src", null]
-]);
-
-const notePropKeys = Array.from(noteSchemaMap.keys());
+const requiredPropKeys = ["rev", "id", "val"];
+const optionalPropKeys = ["prev", "src"];
+const propKeys = requiredPropKeys.concat(optionalPropKeys);
 
 export default class Note {
-  // static get schemaMap() {
-  //   return noteSchemaMap;
-  // }
-
   static get keys() {
-    return notePropKeys;
+    return propKeys;
+  }
+
+  static get requiredPropKeys() {
+    return requiredPropKeys;
   }
 
   constructor(...args) {
+    if (args.length < this.constructor.requiredPropKeys.length) {
+      throw `required props (${requiredPropKeys.join(", ")}) not found. args: ${args}`;
+    }
+
     const keys = this.constructor.keys;
     args.forEach((v, i) => {
       this[keys[i]] = v;

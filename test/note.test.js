@@ -21,6 +21,15 @@ describe("Note", () => {
       assert.deepStrictEqual(l.prev, prev);
       assert.deepStrictEqual(l.src, src);
     });
+
+    context("without required props", () => {
+      it("throw errors", () => {
+        const errorPattern = /required props \(rev, id, val\) not found. args: /;
+        assert.throws(() => { note(); }, errorPattern);
+        assert.throws(() => { note(rev); }, errorPattern);
+        assert.throws(() => { note(rev, id); }, errorPattern);
+      });
+    });
   });
 
   describe("#get", () => {
