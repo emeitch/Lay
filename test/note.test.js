@@ -30,6 +30,14 @@ describe("Note", () => {
         assert.throws(() => { note(rev, id); }, errorPattern);
       });
     });
+
+    context("without optional props", () => {
+      it("should return undefined", () => {
+        const nt = note(rev, id, val);
+        assert.deepStrictEqual(nt.prev, undefined);
+        assert.deepStrictEqual(nt.src, undefined);
+      });
+    });
   });
 
   describe("#get", () => {

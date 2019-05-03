@@ -18,9 +18,8 @@ export default class Note {
       throw `required props (${requiredPropKeys.join(", ")}) not found. args: ${args}`;
     }
 
-    const keys = this.constructor.keys;
-    args.forEach((v, i) => {
-      this[keys[i]] = v;
+    this.constructor.keys.forEach((k, i) => {
+      this[k] = args[i];
     });
   }
 
