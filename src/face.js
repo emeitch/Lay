@@ -4,7 +4,7 @@ const requiredPropKeys = ["rev", "id", "val"];
 const optionalPropKeys = ["prev", "src"];
 const propKeys = requiredPropKeys.concat(optionalPropKeys);
 
-export default class Note {
+export default class Face {
   static get keys() {
     return propKeys;
   }
@@ -36,6 +36,6 @@ export default class Note {
   }
 }
 
-export function note(...args) {
-  return new Note(...args);
+export function face(...args) {
+  return new Face(...args);
 }
