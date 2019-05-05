@@ -40,6 +40,28 @@ describe("Face", () => {
     });
   });
 
+  describe("#getOwnProp", () => {
+    it("should return the val's prop", () => {
+      assert.deepStrictEqual(l.getOwnProp("foo"), v(3));
+    });
+
+    context("specify the key which not exists", () => {
+      it("should return undefined", () => {
+        assert.deepStrictEqual(l.getOwnProp("notExists"), undefined);
+      });
+    });
+
+    context("specify face's prop keys", () => {
+      it("should return face's props", () => {
+        assert.deepStrictEqual(l.getOwnProp("_rev"), rev);
+        assert.deepStrictEqual(l.getOwnProp("_id"), id);
+        assert.deepStrictEqual(l.getOwnProp("_val"), val);
+        assert.deepStrictEqual(l.getOwnProp("_prev"), prev);
+        assert.deepStrictEqual(l.getOwnProp("_src"), src);
+      });
+    });
+  });
+
   describe("#get", () => {
     it("should return the val's prop", () => {
       assert.deepStrictEqual(l.get("foo"), v(3));

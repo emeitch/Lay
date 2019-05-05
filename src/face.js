@@ -23,7 +23,7 @@ export default class Face {
     });
   }
 
-  get(key) {
+  getOwnProp(key) {
     const k = v(key).keyVal();
 
     const matched = k.origin.match(/^_(.*)/);
@@ -33,6 +33,10 @@ export default class Face {
     }
 
     return this.val.get(key);
+  }
+
+  get(key) {
+    return this.getOwnProp(key);
   }
 }
 
