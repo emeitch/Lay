@@ -4,18 +4,9 @@ import v from '../src/v';
 
 describe("Prim", () => {
   context("primitive value", () => {
-    describe("#id", () => {
-      it("should return oneself", () => {
-        assert.deepStrictEqual(prim(1).id, new prim(1));
-        assert.deepStrictEqual(v(1).id, v(1));
-        assert.deepStrictEqual(v("foo").id, v("foo"));
-        assert.deepStrictEqual(v(true).id, v(true));
-        assert.deepStrictEqual(v(null).id, v(null));
-      });
-    });
-
     describe("#reducible", () => {
       it("should return false", () => {
+        assert.deepStrictEqual(prim(1).reducible, false);
         assert.deepStrictEqual(v(1).reducible, false);
         assert.deepStrictEqual(v("foo").reducible, false);
         assert.deepStrictEqual(v(true).reducible, false);
@@ -25,6 +16,8 @@ describe("Prim", () => {
 
     describe("#type", () => {
       it("should return type sym", () => {
+        assert.deepStrictEqual(prim(1).typeName, "Number");
+
         assert.deepStrictEqual(v(1).typeName, "Number");
         assert.deepStrictEqual(v("foo").typeName, "String");
         assert.deepStrictEqual(v(true).typeName, "Boolean");

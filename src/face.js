@@ -1,10 +1,11 @@
+import Val from './val';
 import v from './v';
 
 const requiredPropKeys = ["rev", "id", "val"];
 const optionalPropKeys = ["prev", "src"];
 const propKeys = requiredPropKeys.concat(optionalPropKeys);
 
-export default class Face {
+export default class Face extends Val {
   static get keys() {
     return propKeys;
   }
@@ -14,12 +15,15 @@ export default class Face {
   }
 
   constructor(...args) {
+    super();
+
     if (args.length < this.constructor.requiredPropKeys.length) {
       throw `required props (${requiredPropKeys.join(", ")}) not found. args: ${args}`;
     }
 
+    const self = this;
     this.constructor.keys.forEach((k, i) => {
-      this[k] = args[i];
+      self[k] = args[i];
     });
   }
 

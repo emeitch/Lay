@@ -32,12 +32,6 @@ describe("Val", () => {
       });
     });
 
-    describe("#id", () => {
-      it("should return oneslf by default behavior", () => {
-        assert.deepStrictEqual(val.id, val);
-      });
-    });
-
     describe("#get", () => {
       it("should return underscore prefix _key's val", () => {
         assert.deepStrictEqual(val.get("prop"), v(3));

@@ -9,10 +9,6 @@ export default class Val {
     this.origin = origin;
   }
 
-  get id() {
-    return this;
-  }
-
   get typeName() {
     return this.constructor.name;
   }

@@ -455,7 +455,7 @@ describe("stdlib", () => {
         console.log = arg => {
           assert.deepStrictEqual(arg, "foo");
         };
-        o.id.proceed();
+        o.proceed();
         console.log = orig;
       });
     });
