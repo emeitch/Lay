@@ -39,16 +39,14 @@ describe("stdlib", () => {
           val.object(store)
         ]);
       });
-      store.run(path(act, ["then", exp("load")]).deepReduce(store));
-      store.run(path(new Act(() => undefined), ["then", exp("load")]).deepReduce(store)); // invalid act
+      store.run(path(act, ["then", path("load")]).deepReduce(store));
+      store.run(path(new Act(() => undefined), ["then", path("load")]).deepReduce(store)); // invalid act
 
       assert.deepStrictEqual(store.fetch(id).getOwnProp("foo"), v(1));
     });
 
     it("should nothing to do without prev act json string", () => {
-      const size = store.objs.size;
-      store.run(exp("load").deepReduce(store));
-      assert(size === store.objs.size);
+      store.run(path("load").deepReduce(store));
     });
   });
 

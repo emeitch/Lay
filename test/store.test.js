@@ -493,7 +493,7 @@ describe("Store", () => {
       assert.deepStrictEqual(store.fetch("foo").getOwnProp("a"), v(1));
       assert.deepStrictEqual(store.fetch("foo").getOwnProp("b"), v("c"));
 
-      assert.deepStrictEqual(store.fetch("bar").getOwnProp("_target"), v(1));
+      assert.deepStrictEqual(store.fetch("bar"), v(1));
     });
 
     context("uuid", () => {

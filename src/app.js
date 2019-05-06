@@ -573,7 +573,7 @@ const d = new Store(std);
         path(
           "todos", ["changeStateByHash", path(sym("win"), "location", "hash")],
           ["then", path("localStorage", ["read", v("todos-lay-objs")])],
-          ["then", exp("load")]
+          ["then", path("load")]
         )
       )
     }

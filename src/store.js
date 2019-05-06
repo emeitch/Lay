@@ -4,11 +4,13 @@ import Val from './val';
 import Act from './act';
 import Prim from './prim';
 import Path, { path } from './path';
+import { face } from './face';
 import { CompArray, CompMap } from './comp';
 
 export default class Store {
   constructor(...imports) {
-    this.objs = new Map();
+    // this.objs = new Map();
+    this.faces = new Map();
 
     this.imports = [];
     for (const i of imports) {
@@ -25,7 +27,16 @@ export default class Store {
 
   doPut(obj) {
     const id = obj.getOwnProp("_id");
-    this.objs.set(id.keyString(), obj);
+    // this.objs.set(id.keyString(), obj);
+
+    const f = face(
+      obj.getOwnProp("_rev"),
+      obj.getOwnProp("_id"),
+      obj.getOwnProp("_target") || obj,
+      obj.getOwnProp("_prev"),
+      obj.getOwnProp("_src")
+    );
+    this.faces.set(id.keyString(), f);
   }
 
   putWithHandler(obj, block) {
@@ -166,13 +177,14 @@ export default class Store {
 
   fetchFromStoreObj(key) {
     const k = key.keyString();
-    const storeObj = this.objs.get(this.id.keyString());
+    const storeObj = this.faces.get(this.id.keyString());
     return storeObj && storeObj.getOwnProp(k);
   }
 
   fetchWithoutImports(key) {
     const k = key.keyString();
-    return this.objs.get(k) || this.fetchFromStoreObj(key);
+    const f = this.faces.get(k);
+    return (f && f.val) || this.fetchFromStoreObj(key);
   }
 
   handleOnInport(other) {
@@ -383,7 +395,8 @@ export default class Store {
 
     const results = [];
     const deleted = v("deleted");
-    for (const [, val] of this.objs) {
+    for (const [, face] of this.faces) {
+      const val = face.val;
       const status = val.get("_status", this);
       if (status && status.reduce(this).equals(deleted)) {
         continue;
