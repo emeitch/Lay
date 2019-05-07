@@ -5,7 +5,7 @@ const requiredPropKeys = ["rev", "id", "val"];
 const optionalPropKeys = ["prev", "src"];
 const propKeys = requiredPropKeys.concat(optionalPropKeys);
 
-export default class Face extends Val {
+export default class Note extends Val {
   static get keys() {
     return propKeys;
   }
@@ -44,6 +44,6 @@ export default class Face extends Val {
   }
 }
 
-export function face(...args) {
-  return new Face(...args);
+export function note(...args) {
+  return new Note(...args);
 }
