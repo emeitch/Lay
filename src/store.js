@@ -177,7 +177,8 @@ export default class Store {
 
   fetchFromStoreObj(key) {
     const k = key.keyString();
-    const storeObj = this.notes.get(this.id.keyString());
+    const storeKey = this.id.keyString();
+    const storeObj = this.notes.get(storeKey);
     return storeObj && storeObj.getOwnProp(k);
   }
 
