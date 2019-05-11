@@ -9,7 +9,6 @@ import { CompArray, CompMap } from './comp';
 
 export default class Store {
   constructor(...imports) {
-    // this.objs = new Map();
     this.notes = new Map();
 
     this.imports = [];
@@ -27,8 +26,6 @@ export default class Store {
 
   doPut(obj) {
     const id = obj.getOwnProp("_id");
-    // this.objs.set(id.keyString(), obj);
-
     const f = note(
       obj.getOwnProp("_rev"),
       obj.getOwnProp("_id"),
