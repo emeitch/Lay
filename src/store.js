@@ -4,12 +4,11 @@ import Val from './val';
 import Act from './act';
 import Prim from './prim';
 import Path, { path } from './path';
-import { note } from './note';
 import { CompArray, CompMap } from './comp';
 
 export default class Store {
   constructor(...imports) {
-    this.notes = new Map();
+    this.objs = new Map();
 
     this.imports = [];
     for (const i of imports) {
@@ -26,14 +25,7 @@ export default class Store {
 
   doPut(obj) {
     const id = obj.getOwnProp("_id");
-    const f = note(
-      obj.getOwnProp("_rev"),
-      obj.getOwnProp("_id"),
-      obj.getOwnProp("_target") || obj,
-      obj.getOwnProp("_prev"),
-      obj.getOwnProp("_src")
-    );
-    this.notes.set(id.keyString(), f);
+    this.objs.set(id.keyString(), obj);
   }
 
   putWithHandler(obj, block) {
@@ -175,14 +167,15 @@ export default class Store {
   fetchFromStoreObj(key) {
     const k = key.keyString();
     const storeKey = this.id.keyString();
-    const storeObj = this.notes.get(storeKey);
+    const storeObj = this.objs.get(storeKey);
     return storeObj && storeObj.getOwnProp(k);
   }
 
   fetchWithoutImports(key) {
     const k = key.keyString();
-    const f = this.notes.get(k);
-    return (f && f.val) || this.fetchFromStoreObj(key);
+    const obj = this.objs.get(k);
+    const val = (obj && obj.getOwnProp("_target")) || obj;
+    return val || this.fetchFromStoreObj(key);
   }
 
   handleOnInport(other) {
@@ -393,15 +386,14 @@ export default class Store {
 
     const results = [];
     const deleted = v("deleted");
-    for (const [, note] of this.notes) {
-      const val = note.val;
-      const status = val.get("_status", this);
+    for (const [, obj] of this.objs) {
+      const status = obj.get("_status", this);
       if (status && status.reduce(this).equals(deleted)) {
         continue;
       }
 
-      if (isKindOfClass(val) && !val.isClass()) {
-        const id = val.getOwnProp("_id");
+      if (isKindOfClass(obj) && !obj.isClass()) {
+        const id = obj.getOwnProp("_id");
         results.push(id);
       }
     }
