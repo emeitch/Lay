@@ -164,20 +164,6 @@ export default class Store {
     });
   }
 
-  fetchFromStoreObj(key) {
-    const k = key.keyString();
-    const storeKey = this.id.keyString();
-    const storeObj = this.objs.get(storeKey);
-    return storeObj && storeObj.getOwnProp(k);
-  }
-
-  fetchWithoutImports(key) {
-    const k = key.keyString();
-    const obj = this.objs.get(k);
-    const val = (obj && obj.getOwnProp("_target")) || obj;
-    return val || this.fetchFromStoreObj(key);
-  }
-
   handleOnInport(other) {
     const actexp = other.fetch("onImport");
     if (actexp) {
@@ -206,7 +192,7 @@ export default class Store {
     return stop;
   }
 
-  fetchWithImports(fetcher) {
+  fetchObjWithImports(fetcher) {
     let result = undefined;
     this.iterateImports(store => {
       result = fetcher(store);
@@ -215,12 +201,30 @@ export default class Store {
     return result;
   }
 
-  fetch(key) {
+  fetchObjFromStoreObj(key) {
+    const k = key.keyString();
+    const storeKeyStr = this.id.keyString();
+    const storeObj = this.objs.get(storeKeyStr);
+    return storeObj && storeObj.getOwnProp(k);
+  }
+
+  fetchObjWithoutImports(key) {
+    const k = key.keyString();
+    const obj = this.objs.get(k);
+    return obj || this.fetchObjFromStoreObj(key);
+  }
+
+  fetchObj(key) {
     if (typeof(key) === "string") {
       key = v(key);
     }
 
-    return this.fetchWithoutImports(key) || this.fetchWithImports(store => store.fetchWithoutImports(key));
+    return this.fetchObjWithoutImports(key) || this.fetchObjWithImports(store => store.fetchObjWithoutImports(key));
+  }
+
+  fetch(key) {
+    const obj = this.fetchObj(key);
+    return (obj && obj.getOwnProp("_target")) || obj;
   }
 
   getOwnProp(key) {
