@@ -14,7 +14,7 @@ import { parseObjs } from './parser';
 export const std = new Store();
 
 {
-  std.set("if", "_target", func(
+  std.set("if", "_body", func(
     "cond",
     "then",
     "else",
@@ -38,7 +38,7 @@ export const std = new Store();
     )
   ));
 
-  std.set("load", "_target", func(new LiftedNative(function() {
+  std.set("load", "_body", func(new LiftedNative(function() {
     const store = this;
     return new Act(objsStr => {
       const jsobj = objsStr ? JSON.parse(objsStr) : [];
@@ -51,7 +51,7 @@ export const std = new Store();
   })));
 
 
-  std.set("filterObjs", "_target", func("pattern", new LiftedNative(function(pattern) {
+  std.set("filterObjs", "_body", func("pattern", new LiftedNative(function(pattern) {
     const store = this;
     const types = pattern.deepReduce(store).origin;
     return new Act(objs => {

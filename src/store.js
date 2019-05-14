@@ -107,7 +107,7 @@ export default class Store {
         {},
         {
           _id: key,
-          _target: obj
+          _body: obj
         },
         rev
       );
@@ -224,7 +224,7 @@ export default class Store {
 
   fetch(key) {
     const obj = this.fetchObj(key);
-    return (obj && obj.getOwnProp("_target")) || obj;
+    return (obj && obj.getOwnProp("_body")) || obj;
   }
 
   getOwnProp(key) {

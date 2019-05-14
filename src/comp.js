@@ -85,7 +85,7 @@ export default class Comp extends Val {
 
   get(k, store) {
     const key = v(k);
-    
+
     if (store) {
       const pth = store.path(this, key);
       if (pth.isInner()) {
@@ -228,8 +228,8 @@ export class CompMap extends Comp {
   }
 
   step(store) {
-    const target = this.getOwnProp("_target");
-    return target ? target.step(store) : super.step(store);
+    const body = this.getOwnProp("_body");
+    return body ? body.step(store) : super.step(store);
   }
 
   deepReduce(store) {

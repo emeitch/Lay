@@ -200,11 +200,11 @@ describe("Comp", () => {
         assert.deepStrictEqual(val.reduce(store), v({a: 1, b: 2}));
       });
 
-      context("with _target property", () => {
+      context("with _body property", () => {
         it("should reduce _val property", () => {
           const store = new Store();
 
-          const val = v({a: 1, b: 2, _target: exp(plus, v(1), v(2))});
+          const val = v({a: 1, b: 2, _body: exp(plus, v(1), v(2))});
           assert.deepStrictEqual(val.reduce(store), v(3));
         });
       });
