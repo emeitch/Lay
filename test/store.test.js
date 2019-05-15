@@ -455,14 +455,6 @@ describe("Store", () => {
       assert.deepStrictEqual(store.fetch(id).getOwnProp("foo"), v(3));
     });
 
-    context("set a prop to the store obj", () => {
-      it("should be able to fetch the prop", () => {
-        store.set(store.id, "foo", v(3));
-
-        assert.deepStrictEqual(store.fetch("foo"), v(3));
-      });
-    });
-
     context("with direct stored obj and store obj prop", () => {
       it("should be able to fetch prior the direct stored obj", () => {
         store.set(store.id, "foo", v({bar: v(2)}));

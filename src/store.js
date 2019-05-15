@@ -201,17 +201,9 @@ export default class Store {
     return result;
   }
 
-  fetchObjFromStoreObj(key) {
-    const k = key.keyString();
-    const storeKeyStr = this.id.keyString();
-    const storeObj = this.objs.get(storeKeyStr);
-    return storeObj && storeObj.getOwnProp(k);
-  }
-
   fetchObjWithoutImports(key) {
     const k = key.keyString();
-    const obj = this.objs.get(k);
-    return obj || this.fetchObjFromStoreObj(key);
+    return this.objs.get(k);
   }
 
   fetchObj(key) {
