@@ -216,7 +216,8 @@ export default class Store {
 
   fetch(key) {
     const obj = this.fetchObj(key);
-    return (obj && obj.getOwnProp("_body")) || obj;
+    const body = obj && obj.getOwnProp("_body");
+    return body || obj;
   }
 
   getOwnProp(key) {
