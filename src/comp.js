@@ -104,10 +104,6 @@ export default class Comp extends Val {
     }
 
     const kstr = this.convertKeyString(key);
-    if (this.head instanceof Comp) {
-      return this.head.get(kstr);
-    }
-
     if (kstr === "head") {
       return this.head;
     }

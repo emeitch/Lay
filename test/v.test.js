@@ -82,9 +82,9 @@ describe("v function", () => {
     it("should return a Comp", () => {
       const val = v(v(v({a: 1}), {b: 2}), {c: 3});
       assert.deepStrictEqual(val.head, v(v({a: 1}), {b: 2}));
-      assert.deepStrictEqual(val.get("a"), v(1));
-      assert.deepStrictEqual(val.get("b"), v(2));
-      assert.deepStrictEqual(val.get("c"), v(3));
+      assert.deepStrictEqual(val.get("a"), undefined);
+      assert.deepStrictEqual(val.get("b"), undefined);
+      assert.deepStrictEqual(val.get("c"), v(3)); // it can get only origin val
     });
   });
 
