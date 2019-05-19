@@ -41,7 +41,7 @@ const d = new Store(std);
   d.set("todos", "var", v("0.2.0"));
   d.set("todos", "state", pack(path("all")));
   d.set("todos", "newTaskTitle", v(""));
-  d.set("todos", "changeState", func("s", path(sym("self"), ["set", "state", path(sym("s"))])));
+  d.set("todos", "changeState", func("s", path(sym("self"), ["set", "state", sym("s")])));
   d.set("todos", "changeStateByHash", func(
     "hash",
     exp(
