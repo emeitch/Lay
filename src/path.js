@@ -57,6 +57,14 @@ export default class Path extends Val {
     return keys;
   }
 
+  get tail() {
+    return this.origin[this.origin.length - 1];
+  }
+
+  get _tail() {
+    return this.tail;
+  }
+
   isMultiple() {
     return this.keys.length > 0;
   }
@@ -110,6 +118,10 @@ export default class Path extends Val {
         key = elm;
       }
       key = key.reduce(store);
+
+      if (obj.unpack) {
+        obj = obj.unpack();
+      }
 
       let prop = obj.get(key, store);
       if (prop === undefined) {

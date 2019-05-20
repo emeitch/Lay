@@ -6,6 +6,7 @@ import { uuid } from '../src/uuid';
 import Exp, { exp } from '../src/exp';
 import { sym } from '../src/sym';
 import { func, plus, concat } from '../src/func';
+import { pack } from '../src/pack';
 import Store from '../src/store';
 
 describe("Path", () => {
@@ -62,6 +63,15 @@ describe("Path", () => {
   describe("#keys", () => {
     it("should return rest ids", () => {
       assert.deepStrictEqual(p.keys, [id2, id3]);
+    });
+  });
+
+  describe("#tail", () => {
+    it("should return the last id", () => {
+      assert.deepStrictEqual(p.tail, id3);
+
+      const store = new Store();
+      assert.deepStrictEqual(path(pack(p), "tail").reduce(store), id3);
     });
   });
 
