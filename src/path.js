@@ -16,23 +16,13 @@ export default class Path extends Val {
       const _id = node.getOwnProp && node.getOwnProp("_id");
       if (_id) {
         const pth = Path.parse(_id);
-        if (index === 0) {
-          return acc.concat(pth.origin);
-        }
-        if (pth.isMultiple()) {
-          throw 'cannot contains a object with a path id for keys';
-        }
-        return acc.concat([_id]);
+        return acc.concat(pth.origin);
       }
 
       if (Array.isArray(node)) {
         const applying = node.map(i => v(i));
         const val = index == 0 ? exp(...node) : applying;
         return acc.concat([val]);
-      }
-
-      if (index === 0 && node instanceof Path) {
-        return acc.concat(node.origin);
       }
 
       return acc.concat([node]);

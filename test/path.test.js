@@ -42,16 +42,6 @@ describe("Path", () => {
         assert.deepStrictEqual(p.origin[2], v("bar"));
       });
     });
-
-    context("nested first arg path", () => {
-      it("should return flatten a path", () => {
-        const id4 = uuid();
-        const id5 = uuid();
-        const id6 = uuid();
-        const p = new Path(new Path(new Path(id1, id2, id3), id4, id5), id6);
-        assert.deepStrictEqual(p, new Path(id1, id2, id3, id4, id5, id6));
-      });
-    });
   });
 
   describe("#receiver", () => {
@@ -328,27 +318,6 @@ describe("Path", () => {
 
         const po = path(id1, "bar").reduce(store);
         assert.deepStrictEqual(path(po, "buz"), path(id1, "bar", "buz"));
-      });
-    });
-
-    context("args contains a partial object as first item", () => {
-      it("should throw a error", () => {
-        const id0 = uuid();
-        store.put({
-          _id: id0,
-          foo: 3
-        });
-
-        const id1 = uuid();
-        store.put({
-          _id: id1,
-          bar: {
-            buz: "foo"
-          }
-        });
-
-        const po = path(id1, "bar").reduce(store);
-        assert.throws(() => path(id0, po), /cannot contains a object with a path id for keys/);
       });
     });
 
