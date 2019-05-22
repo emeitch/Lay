@@ -208,7 +208,7 @@ const d = new Store(std);
                     key: path(sym("tid"), "_id", "toStr"),
                     class: path(
                       n([
-                        path(sym("tid"), "state", "_id"),
+                        path(path(sym("tid"), "state"), "_id"),
                         exp(
                           "if",
                           path("viewmodel", sym("tid"), "editing"),
