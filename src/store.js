@@ -306,6 +306,10 @@ export default class Store {
       if (prop instanceof Val) {
         prop = prop.reduce(this).unpack();
       }
+
+      const pid = prop instanceof CompMap && prop.getOwnProp("_id");
+      prop = pid ? path(pid) : prop;
+
       reduced[key] = prop;
     }
 
@@ -400,6 +404,8 @@ export default class Store {
 
   setAct(obj, key, val) {
     const id = obj instanceof CompMap ? obj.getOwnProp("_id") : obj;
+    const vid = val.getOwnProp("_id");
+    val = vid ? path(vid) : val;
     return new Act(() => {
       this.set(id, key, val.unpack());
     });

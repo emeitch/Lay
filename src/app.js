@@ -7,7 +7,6 @@ import { path } from './path';
 import { func } from './func';
 import v from './v';
 import { sym } from './sym';
-import { pack } from './pack';
 import { dom, e } from './dom';
 
 const d = new Store(std);
@@ -29,8 +28,8 @@ const d = new Store(std);
     "toggle",
     exp("if",
       path(sym("self"), "state", ["equals", path("active")]),
-      path(sym("self"), ["set", "state", pack(path("completed"))]),
-      path(sym("self"), ["set", "state", pack(path("active"))])
+      path(sym("self"), ["set", "state", path("completed")]),
+      path(sym("self"), ["set", "state", path("active")])
     )
   );
   d.set("Task", "editing", v(false));
@@ -39,7 +38,7 @@ const d = new Store(std);
 {
   d.set("todos", "_type", "App");
   d.set("todos", "var", v("0.2.0"));
-  d.set("todos", "state", pack(path("all")));
+  d.set("todos", "state", path("all"));
   d.set("todos", "newTaskTitle", v(""));
   d.set("todos", "changeState", func("s", path(sym("self"), ["set", "state", sym("s")])));
   d.set("todos", "changeStateByHash", func(
@@ -47,12 +46,12 @@ const d = new Store(std);
     exp(
       "if",
       path(sym("hash"), ["equals", v("#/active")]),
-      path("todos", ["changeState", pack(path("active"))]),
+      path("todos", ["changeState", path("active")]),
       exp(
         "if",
         path(sym("hash"), ["equals", v("#/completed")]),
-        path("todos", ["changeState", pack(path("completed"))]),
-        path("todos", ["changeState", pack(path("all"))])
+        path("todos", ["changeState", path("completed")]),
+        path("todos", ["changeState", path("all")])
       )
     )
   ));
@@ -104,7 +103,7 @@ const d = new Store(std);
                       n({
                         "_type": "Task",
                         "title": path(sym("ev"), "value", "trim"),
-                        "state": pack(path("active")),
+                        "state": path("active"),
                       })
                     ],
                     [
