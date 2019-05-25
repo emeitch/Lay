@@ -596,6 +596,22 @@ describe("Store", () => {
       });
     });
 
+    context("set a obj to initial property", () => {
+      it("should specify the obj id by path", () => {
+        const id = store.create({
+          foo: v(2)
+        });
+
+        const obj = store.fetch(id);
+
+        const id2 = store.create({
+          bar: obj
+        });
+
+        const obj2 = store.fetch(id2);
+        assert.deepStrictEqual(obj2.getOwnProp("bar"), path(id));
+      });
+    });
   });
 
   describe("#update", () => {
