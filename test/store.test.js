@@ -470,6 +470,21 @@ describe("Store", () => {
         assert.deepStrictEqual(store.fetch("foo").getOwnProp("bar"), v(3));
       });
     });
+
+    context("set obj as val", () => {
+      it("should set id as val", () => {
+        const id = store.create({
+          foo: 2
+        });
+        const obj = store.fetch(id);
+
+        const id2 = store.create({});
+        store.set(id2, "bar", obj);
+        const obj2 = store.fetch(id2);
+
+        assert.deepStrictEqual(obj2.getOwnProp("bar"), path(id));
+      });
+    });
   });
 
   describe("#merge", () => {

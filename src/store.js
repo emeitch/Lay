@@ -159,6 +159,8 @@ export default class Store {
 
   set(id, key, val) {
     const k = v(key);
+    const vid = val.getOwnProp && val.getOwnProp("_id");
+    val = vid ? path(vid) : val;
     this.patch(id, {
       [k.keyString()]: val
     });
@@ -404,8 +406,6 @@ export default class Store {
 
   setAct(obj, key, val) {
     const id = obj instanceof CompMap ? obj.getOwnProp("_id") : obj;
-    const vid = val.getOwnProp("_id");
-    val = vid ? path(vid) : val;
     return new Act(() => {
       this.set(id, key, val.unpack());
     });
