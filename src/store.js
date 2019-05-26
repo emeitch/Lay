@@ -330,8 +330,18 @@ export default class Store {
       throw `the object dose not exist. id: ${id}`;
     }
 
+    const d = {};
+    const o = v(diff).origin;
+    for (const key of Object.keys(o)) {
+      let prop = o[key];
+      const pid = prop instanceof CompMap && prop.getOwnProp("_id");
+      prop = pid ? path(pid) : prop;
+
+      d[key] = prop;
+    }
+
     const key = obj.getOwnProp("_id");
-    this.patch(key, diff);
+    this.patch(key, d);
   }
 
   delete(id) {

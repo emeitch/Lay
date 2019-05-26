@@ -671,6 +671,29 @@ describe("Store", () => {
         }, /the object dose not exist. id:/);
       });
     });
+
+    context("with obj property", () => {
+      it("should set object id as property", () => {
+        const id = uuid();
+        store.put({
+          _id: id
+        });
+
+        const id2 = uuid();
+        store.put({
+          _id: id2
+        });
+
+        const obj = store.fetch(id);
+        const obj2 = store.fetch(id2);
+        store.update(obj2, {
+          foo: obj
+        });
+
+        const obj3 = store.fetch(id2);
+        assert.deepStrictEqual(obj3.getOwnProp("foo"), path(id));
+      });
+    });
   });
 
   describe("#instanceIDs", () => {
