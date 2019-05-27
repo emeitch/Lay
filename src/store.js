@@ -159,10 +159,8 @@ export default class Store {
 
   set(id, key, val) {
     const k = v(key);
-    const vid = val.getOwnProp && val.getOwnProp("_id");
-    val = vid ? path(vid) : val;
     this.patch(id, {
-      [k.keyString()]: val
+      [k.keyString()]: this.convertObjToIdPath(val)
     });
   }
 
@@ -301,26 +299,36 @@ export default class Store {
     return undefined;
   }
 
-  create(obj={}) {
-    const reduced = {_id: uuid()};
-    for (const key of Object.keys(obj)) {
-      let prop = obj[key];
+  convertObjToIdPath(val) {
+    const id = val instanceof CompMap && val.getOwnProp("_id");
+    return id ? path(id) : val;
+  }
+
+  convertPropObjToIdPath(jsobj) {
+    const result = {};
+
+    for (const key of Object.keys(jsobj)) {
+      let prop = jsobj[key];
+
       if (prop instanceof Val) {
         prop = prop.reduce(this).unpack();
       }
 
-      const pid = prop instanceof CompMap && prop.getOwnProp("_id");
-      prop = pid ? path(pid) : prop;
-
-      reduced[key] = prop;
+      result[key] = this.convertObjToIdPath(prop);
     }
 
-    const id = reduced._id;
+    return result;
+  }
+
+  create(obj={}) {
+    const jsobj = v(obj).origin;
+    const o = Object.assign({_id: uuid()}, this.convertPropObjToIdPath(jsobj));
+    const id = o._id;
     if (id && this.fetch(id)) {
       throw `the object already exists. id: ${id}`;
     }
 
-    this.assign(id, v(reduced));
+    this.assign(id, v(o));
     return id;
   }
 
@@ -330,18 +338,9 @@ export default class Store {
       throw `the object dose not exist. id: ${id}`;
     }
 
-    const d = {};
-    const o = v(diff).origin;
-    for (const key of Object.keys(o)) {
-      let prop = o[key];
-      const pid = prop instanceof CompMap && prop.getOwnProp("_id");
-      prop = pid ? path(pid) : prop;
-
-      d[key] = prop;
-    }
-
-    const key = obj.getOwnProp("_id");
-    this.patch(key, d);
+    const jsobj = v(diff).origin;
+    const d = this.convertPropObjToIdPath(jsobj);
+    this.patch(id, d);
   }
 
   delete(id) {
