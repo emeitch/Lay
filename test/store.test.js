@@ -620,11 +620,15 @@ describe("Store", () => {
         const obj = store.fetch(id);
 
         const id2 = store.create({
-          bar: obj
+          bar: obj,
+          buz: {
+            fiz: obj // recursive
+          }
         });
 
         const obj2 = store.fetch(id2);
         assert.deepStrictEqual(obj2.getOwnProp("bar"), path(id));
+        assert.deepStrictEqual(obj2.getOwnProp("buz").getOwnProp("fiz"), path(id));
       });
     });
   });
