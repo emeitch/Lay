@@ -310,12 +310,7 @@ export default class Store {
       return path(id);
     }
 
-    const result = {};
-    for (const key of Object.keys(o.origin)) {
-      const prop = o.getOwnProp(key);
-      result[key] = this.convertObjToIdPath(prop);
-    }
-    return v(result);
+    return this.convertPropObjToIdPath(o.origin);
   }
 
   convertPropObjToIdPath(jsobj) {
