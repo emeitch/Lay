@@ -82,6 +82,28 @@ export default class Store {
     block([rev, o]);
   }
 
+  convertPropObjToIdPath(jsobj) {
+    const result = {};
+
+    for (const key of Object.keys(jsobj)) {
+      let prop = jsobj[key];
+
+      const o = v(prop);
+      if (!(o instanceof CompMap)) {
+        result[key] = o;
+      } else {
+        const id = o.getOwnProp("_id");
+        if (id) {
+          result[key] = path(id);
+        } else {
+          result[key] = this.convertPropObjToIdPath(o.origin);
+        }
+      }
+    }
+
+    return result;
+  }
+
   assign(key, val) {
     let obj = v(val);
 
@@ -98,7 +120,7 @@ export default class Store {
         {
           _id: key
         },
-        obj.origin,
+        this.convertPropObjToIdPath(obj.origin),
         rev
       );
       obj = v(origin);
@@ -160,7 +182,7 @@ export default class Store {
   set(id, key, val) {
     const k = v(key);
     this.patch(id, {
-      [k.keyString()]: this.convertObjToIdPath(val)
+      [k.keyString()]: val
     });
   }
 
@@ -299,21 +321,7 @@ export default class Store {
     return undefined;
   }
 
-  convertObjToIdPath(val) {
-    const o = v(val);
-    if (!(o instanceof CompMap)) {
-      return o;
-    }
-
-    const id = o.getOwnProp("_id");
-    if (id) {
-      return path(id);
-    }
-
-    return this.convertPropObjToIdPath(o.origin);
-  }
-
-  convertPropObjToIdPath(jsobj) {
+  unpackProps(jsobj) {
     const result = {};
 
     for (const key of Object.keys(jsobj)) {
@@ -323,7 +331,7 @@ export default class Store {
         prop = prop.reduce(this).unpack();
       }
 
-      result[key] = this.convertObjToIdPath(prop);
+      result[key] = prop;
     }
 
     return result;
@@ -331,7 +339,10 @@ export default class Store {
 
   create(obj={}) {
     const jsobj = v(obj).origin;
-    const o = Object.assign({_id: uuid()}, this.convertPropObjToIdPath(jsobj));
+    const o = Object.assign(
+      {_id: uuid()},
+      this.unpackProps(jsobj)
+    );
     const id = o._id;
     if (id && this.fetch(id)) {
       throw `the object already exists. id: ${id}`;
@@ -347,9 +358,7 @@ export default class Store {
       throw `the object dose not exist. id: ${id}`;
     }
 
-    const jsobj = v(diff).origin;
-    const d = this.convertPropObjToIdPath(jsobj);
-    this.patch(id, d);
+    this.patch(id, diff);
   }
 
   delete(id) {
