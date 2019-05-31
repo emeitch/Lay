@@ -83,24 +83,25 @@ export default class Store {
   }
 
   convertPropObjToIdPath(jsobj) {
-    const result = {};
-
-    for (const key of Object.keys(jsobj)) {
-      let prop = jsobj[key];
-
-      const o = v(prop);
-      if (!(o instanceof CompMap)) {
-        result[key] = o;
-      } else {
-        const id = o.getOwnProp("_id");
-        if (id) {
-          result[key] = path(id);
-        } else {
-          result[key] = this.convertPropObjToIdPath(o.origin);
-        }
+    const convert = obj => {
+      if (!(obj instanceof CompMap)) {
+        return obj;
       }
-    }
 
+      let id = obj.getOwnProp("_id");
+      if (id) {
+        return path(id);
+      }
+
+      return this.convertPropObjToIdPath(obj.origin);
+    };
+
+    const result = {};
+    for (const key of Object.keys(jsobj)) {
+      const prop = jsobj[key];
+      const obj = v(prop);
+      result[key] = convert(obj);
+    }
     return result;
   }
 
