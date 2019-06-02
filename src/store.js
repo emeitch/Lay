@@ -115,29 +115,19 @@ export default class Store {
       rev._rev = orev;
     }
 
-    if (obj instanceof CompMap) {
-      const origin = Object.assign(
-        {},
-        {
-          _id: key
-        },
-        this.convertPropObjToIdPath(obj.origin),
-        rev
-      );
-      obj = v(origin);
-    } else {
-      const origin = Object.assign(
-        {},
-        {
-          _id: key,
-          _body: obj
-        },
-        rev
-      );
-      obj = v(origin);
-    }
-
-    this.put(obj);
+    const jsobj = obj instanceof CompMap ?
+      this.convertPropObjToIdPath(obj.origin) :
+      { _body: obj };
+    const base = Object.assign(
+      {},
+      {
+        _id: key
+      },
+      jsobj,
+      rev
+    );
+    const o = v(base);
+    this.put(o);
   }
 
   merge(diff) {
