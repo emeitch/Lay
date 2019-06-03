@@ -6,7 +6,9 @@
     "lint": "eslint src/*.js test/*.js"
   },
   "jest": {
-    "setupTestFrameworkScriptFile": "./test/setup.js",
+    "setupFilesAfterEnv": [
+      "./test/setup.js"
+    ],
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/*.js",
@@ -16,6 +18,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
+    "core-js": "3",
     "jssha": "^2.3.1",
     "lodash": "^4.17.4",
     "maquette": "^3.2.1"
@@ -26,14 +29,15 @@
     "@babel/preset-env": "^7.2.3",
     "axios": "^0.19.0",
     "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "^23.6.0",
+    "babel-jest": "^24.8.0",
     "babel-loader": "^8.0.5",
     "babel-preset-power-assert": "^3.0.0",
     "browser-sync": "^2.26.5",
     "eslint": "^5.12.0",
-    "jest": "^23.6.0",
+    "jest": "^24.8.0",
     "power-assert": "^1.6.1",
     "webpack": "^4.28.4",
     "webpack-cli": "^3.2.1"
-  }
+  },
+  "version": "0.0.0"
 }
