@@ -109,14 +109,12 @@ export default class Store {
     const idprop = { _id: key };
 
     const obj = v(val);
-    const props = obj instanceof CompMap ? this.convertPropObjToIdPath(obj.origin) : { _body: obj };
+    const convert = this.convertPropObjToIdPath.bind(this);
+    const props = obj instanceof CompMap ? convert(obj.origin) : { _body: obj };
 
     const old = this.fetch(key);
     const orev = old && old.getOwnProp("_rev");
-    const revprop = {};
-    if (orev) {
-      revprop._rev = orev;
-    }
+    const revprop = orev ? { _rev: orev } : {};
 
     const jsobj = Object.assign({}, idprop, props, revprop);
     const o = v(jsobj);
