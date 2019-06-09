@@ -22,7 +22,7 @@ describe("Path", () => {
   describe("constructor", () => {
     it("should complete prim string", () => {
       const pth = new Path(v("foo"), [v("bar"), v("buz")], v("fiz"));
-      assert.deepStrictEqual(new Path("foo", ["bar", "buz"], "fiz"), pth);
+      assert.deepStrictEqual(new Path(v("foo"), ["bar", "buz"], "fiz"), pth);
     });
 
     context("call a func", () => {
@@ -40,6 +40,22 @@ describe("Path", () => {
         const p = new Path("foo", obj0, obj1);
         assert.deepStrictEqual(p.origin[1], id);
         assert.deepStrictEqual(p.origin[2], v("bar"));
+      });
+    });
+  });
+
+  describe("#toStartReducingFromStore", () => {
+    context("constructor's first arg is a prim string", () => {
+      it("should return true (means getting from Store in the first)", () => {
+        const p = new Path(v("foo"), v("bar"));
+        assert(!p.toStartReducingFromStore);
+      });
+    });
+
+    context("constructor's first arg is a string", () => {
+      it("should return true (means getting from Store in the first)", () => {
+        const p = new Path("foo", "bar");
+        assert(p.toStartReducingFromStore);
       });
     });
   });

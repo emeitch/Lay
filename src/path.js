@@ -27,8 +27,9 @@ export default class Path extends Val {
 
       return acc.concat([node]);
     }, []);
-
     super(origin);
+
+    this.toStartReducingFromStore = typeof(nodes[0]) === "string";
   }
 
   static parse(str) {
