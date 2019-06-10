@@ -29,7 +29,8 @@ export default class Path extends Val {
     }, []);
     super(origin);
 
-    this.toStartReducingFromStore = typeof(nodes[0]) === "string";
+    const receiver = nodes[0];
+    this.toStartReducingFromStore = typeof(receiver) === "string" || (receiver instanceof Val && receiver.isUUID());
   }
 
   static parse(str) {
@@ -97,7 +98,7 @@ export default class Path extends Val {
   }
 
   step(store) {
-    let obj = store;
+    let obj = this.toStartReducingFromStore ? store : undefined;
     for (const elm of this.origin) {
       let key;
       let args = [];
@@ -110,11 +111,11 @@ export default class Path extends Val {
       }
       key = key.reduce(store);
 
-      if (obj.unpack) {
+      if (obj && obj.unpack) {
         obj = obj.unpack();
       }
 
-      let prop = obj.get(key, store);
+      let prop = obj ? obj.get(key, store) : key;
       if (prop === undefined) {
         return this;
       }
@@ -135,8 +136,8 @@ export default class Path extends Val {
         prop = func(new LiftedNative(nf));
       }
 
-      const innerPath = path(obj, key);
-      if (prop.equals(innerPath)) {
+      const innerPath = obj ? path(obj, key) : path(key);
+      if (!obj || prop.equals(innerPath)) {
         obj = prop;
       } else if (prop instanceof Case) {
         const c = prop.replaceSelfBy(obj);
