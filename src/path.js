@@ -98,8 +98,13 @@ export default class Path extends Val {
   }
 
   step(store) {
-    let obj = this.toStartReducingFromStore ? store : undefined;
-    for (const elm of this.origin) {
+    // let obj = this.toStartReducingFromStore ? store : this.receiver.reduce(store);
+    let obj = store;
+
+    // const keys = this.toStartReducingFromStore ? this.origin : this.keys;
+    const keys = this.origin;
+
+    for (const elm of keys) {
       let key;
       let args = [];
       if (Array.isArray(elm)) {
