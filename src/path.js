@@ -8,14 +8,21 @@ import { func, LiftedNative } from './func';
 
 export default class Path extends Val {
   constructor(...nodes) {
+    let toStartReducingFromStore = false;
     const origin = nodes.reduce((acc, node, index) => {
       if (typeof(node) === "string") {
+        if (index === 0) {
+          toStartReducingFromStore = true;
+        }
         return acc.concat([v(node)]);
       }
 
       const _id = node.getOwnProp && node.getOwnProp("_id");
       if (_id) {
         const pth = Path.parse(_id);
+        if (index === 0) {
+          toStartReducingFromStore = pth.toStartReducingFromStore;
+        }
         return acc.concat(pth.origin);
       }
 
@@ -25,12 +32,16 @@ export default class Path extends Val {
         return acc.concat([val]);
       }
 
+      if (node instanceof Val && node.isUUID()) {
+        if (index === 0) {
+          toStartReducingFromStore = true;
+        }
+      }
+
       return acc.concat([node]);
     }, []);
     super(origin);
-
-    const receiver = nodes[0];
-    this.toStartReducingFromStore = typeof(receiver) === "string" || (receiver instanceof Val && receiver.isUUID());
+    this.toStartReducingFromStore = toStartReducingFromStore;
   }
 
   static parse(str) {
