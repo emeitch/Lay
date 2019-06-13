@@ -8,28 +8,32 @@ import { func, LiftedNative } from './func';
 
 export default class Path extends Val {
   constructor(...nodes) {
+    let origin = [];
     let toStartReducingFromStore = false;
-    const origin = nodes.reduce((acc, node, index) => {
+    nodes.forEach((node, index) => {
       if (typeof(node) === "string") {
+        origin.push(v(node));
         if (index === 0) {
           toStartReducingFromStore = true;
         }
-        return acc.concat([v(node)]);
+        return;
       }
 
       const _id = node.getOwnProp && node.getOwnProp("_id");
       if (_id) {
         const pth = Path.parse(_id);
+        origin.push(...pth.origin);
         if (index === 0) {
           toStartReducingFromStore = pth.toStartReducingFromStore;
         }
-        return acc.concat(pth.origin);
+        return;
       }
 
       if (Array.isArray(node)) {
         const applying = node.map(i => v(i));
         const val = index == 0 ? exp(...node) : applying;
-        return acc.concat([val]);
+        origin.push(val);
+        return;
       }
 
       if (node instanceof Val && node.isUUID()) {
@@ -38,9 +42,10 @@ export default class Path extends Val {
         }
       }
 
-      return acc.concat([node]);
-    }, []);
+      origin.push(node);
+    });
     super(origin);
+
     this.toStartReducingFromStore = toStartReducingFromStore;
   }
 
