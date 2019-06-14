@@ -11,38 +11,30 @@ export default class Path extends Val {
     let origin = [];
     let toStartReducingFromStore = false;
     nodes.forEach((node, index) => {
-      if (typeof(node) === "string") {
-        origin.push(v(node));
-        if (index === 0) {
-          toStartReducingFromStore = true;
-        }
-        return;
-      }
-
-      const _id = node.getOwnProp && node.getOwnProp("_id");
-      if (_id) {
-        const pth = Path.parse(_id);
+      const id = node.getOwnProp && node.getOwnProp("_id");
+      if (id) {
+        const pth = Path.parse(id);
         origin.push(...pth.origin);
         if (index === 0) {
           toStartReducingFromStore = pth.toStartReducingFromStore;
         }
-        return;
-      }
-
-      if (Array.isArray(node)) {
-        const applying = node.map(i => v(i));
-        const val = index == 0 ? exp(...node) : applying;
-        origin.push(val);
-        return;
-      }
-
-      if (node instanceof Val && node.isUUID()) {
+      } else if (typeof(node) === "string") {
+        origin.push(v(node));
         if (index === 0) {
           toStartReducingFromStore = true;
         }
+      } else if (Array.isArray(node)) {
+        const applying = node.map(i => v(i));
+        const val = index === 0 ? exp(...node) : applying;
+        origin.push(val);
+      } else if (node instanceof Val && node.isUUID()) {
+        origin.push(node);
+        if (index === 0) {
+          toStartReducingFromStore = true;
+        }
+      } else {
+        origin.push(node);
       }
-
-      origin.push(node);
     });
     super(origin);
 
