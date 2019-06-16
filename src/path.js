@@ -15,23 +15,17 @@ export default class Path extends Val {
       if (id) {
         const pth = Path.parse(id);
         origin.push(...pth.origin);
-        if (index === 0) {
-          toStartReducingFromStore = pth.toStartReducingFromStore;
-        }
+        toStartReducingFromStore = (index === 0) && pth.toStartReducingFromStore || toStartReducingFromStore;
       } else if (typeof(node) === "string") {
         origin.push(v(node));
-        if (index === 0) {
-          toStartReducingFromStore = true;
-        }
+        toStartReducingFromStore = (index === 0) || toStartReducingFromStore;
       } else if (Array.isArray(node)) {
         const applying = node.map(i => v(i));
         const val = index === 0 ? exp(...node) : applying;
         origin.push(val);
       } else if (node instanceof Val && node.isUUID()) {
         origin.push(node);
-        if (index === 0) {
-          toStartReducingFromStore = true;
-        }
+        toStartReducingFromStore = (index === 0) || toStartReducingFromStore;
       } else {
         origin.push(node);
       }
