@@ -122,7 +122,7 @@ export default class Path extends Val {
         obj = obj.unpack();
       }
 
-      let prop = obj ? obj.get(key, store) : key;
+      let prop = obj.get(key, store);
       if (prop === undefined) {
         return this;
       }
@@ -143,7 +143,7 @@ export default class Path extends Val {
         prop = func(new LiftedNative(nf));
       }
 
-      const innerPath = obj ? path(obj, key) : path(key);
+      const innerPath = path(obj, key);
       if (!obj || prop.equals(innerPath)) {
         obj = prop;
       } else if (prop instanceof Case) {
