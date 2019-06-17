@@ -118,7 +118,7 @@ export default class Path extends Val {
       }
       key = key.reduce(store);
 
-      if (obj && obj.unpack) {
+      if (obj.unpack) {
         obj = obj.unpack();
       }
 
