@@ -44,22 +44,6 @@ describe("Path", () => {
     });
   });
 
-  describe("#toStartReducingFromStore", () => {
-    context("constructor's first arg is a prim string", () => {
-      it("should return true (means getting from Store in the first)", () => {
-        const p = new Path(v("foo"), v("bar"));
-        assert(!p.toStartReducingFromStore);
-      });
-    });
-
-    context("constructor's first arg is a string", () => {
-      it("should return true (means getting from Store in the first)", () => {
-        const p = new Path("foo", "bar");
-        assert(p.toStartReducingFromStore);
-      });
-    });
-  });
-
   describe("#receiver", () => {
     it("should return the first id", () => {
       assert.deepStrictEqual(p.receiver, id1);

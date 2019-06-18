@@ -9,30 +9,24 @@ import { func, LiftedNative } from './func';
 export default class Path extends Val {
   constructor(...nodes) {
     let origin = [];
-    let toStartReducingFromStore = false;
     nodes.forEach((node, index) => {
       const id = node.getOwnProp && node.getOwnProp("_id");
       if (id) {
         const pth = Path.parse(id);
         origin.push(...pth.origin);
-        toStartReducingFromStore = (index === 0) && pth.toStartReducingFromStore || toStartReducingFromStore;
       } else if (typeof(node) === "string") {
         origin.push(v(node));
-        toStartReducingFromStore = (index === 0) || toStartReducingFromStore;
       } else if (Array.isArray(node)) {
         const applying = node.map(i => v(i));
         const val = index === 0 ? exp(...node) : applying;
         origin.push(val);
       } else if (node instanceof Val && node.isUUID()) {
         origin.push(node);
-        toStartReducingFromStore = (index === 0) || toStartReducingFromStore;
       } else {
         origin.push(node);
       }
     });
     super(origin);
-
-    this.toStartReducingFromStore = toStartReducingFromStore;
   }
 
   static parse(str) {
