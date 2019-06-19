@@ -94,13 +94,8 @@ export default class Path extends Val {
   }
 
   step(store) {
-    // let obj = this.toStartReducingFromStore ? store : this.receiver.reduce(store);
     let obj = store;
-
-    // const keys = this.toStartReducingFromStore ? this.origin : this.keys;
-    const keys = this.origin;
-
-    for (const elm of keys) {
+    for (const elm of this.origin) {
       let key;
       let args = [];
       if (Array.isArray(elm)) {
@@ -138,7 +133,7 @@ export default class Path extends Val {
       }
 
       const innerPath = path(obj, key);
-      if (!obj || prop.equals(innerPath)) {
+      if (prop.equals(innerPath)) {
         obj = prop;
       } else if (prop instanceof Case) {
         const c = prop.replaceSelfBy(obj);
