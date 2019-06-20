@@ -8,7 +8,7 @@ import { func, LiftedNative } from './func';
 
 export default class Path extends Val {
   constructor(...nodes) {
-    let origin = [];
+    const origin = [];
     nodes.forEach((node, index) => {
       const id = node.getOwnProp && node.getOwnProp("_id");
       if (id) {
