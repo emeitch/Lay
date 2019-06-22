@@ -96,16 +96,8 @@ export default class Path extends Val {
   step(store) {
     let obj = store;
     for (const elm of this.origin) {
-      let key;
-      let args = [];
-      if (Array.isArray(elm)) {
-        const [top, ...rest] = elm;
-        key = top;
-        args = rest;
-      } else {
-        key = elm;
-      }
-      key = key.reduce(store);
+      const [kexp, ...args] = Array.isArray(elm) ? elm : [elm];
+      const key = kexp.reduce(store);
 
       if (obj.unpack) {
         obj = obj.unpack();
