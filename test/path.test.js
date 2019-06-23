@@ -21,7 +21,7 @@ describe("Path", () => {
 
   describe("constructor", () => {
     it("should complete prim string", () => {
-      const pth = new Path(v("foo"), [v("bar"), v("buz")], v("fiz"));
+      const pth = new Path(v("foo"), [v("bar"), v("buz")], [v("fiz")]);
       assert.deepStrictEqual(new Path(v("foo"), ["bar", "buz"], "fiz"), pth);
     });
 
@@ -38,7 +38,7 @@ describe("Path", () => {
         const obj0 = v({_id: id});
         const obj1 = v({_id: v("bar")});
         const p = new Path("foo", obj0, obj1);
-        assert.deepStrictEqual(p.origin[1], id);
+        assert.deepStrictEqual(p.origin[1], [id]);
         assert.deepStrictEqual(p.origin[2], v("bar"));
       });
     });
@@ -52,7 +52,7 @@ describe("Path", () => {
 
   describe("#keys", () => {
     it("should return rest ids", () => {
-      assert.deepStrictEqual(p.keys, [id2, id3]);
+      assert.deepStrictEqual(p.keys, [[id2], [id3]]);
     });
   });
 
@@ -343,8 +343,8 @@ describe("Path", () => {
       assert.deepStrictEqual(p.object(), {
         _type: "Path",
         origin: [
-          "urn:uuid:foo-bar-buz",
-          "bar",
+          ["urn:uuid:foo-bar-buz"],
+          ["bar"],
           ["buz", "fiz"]
         ]
       });

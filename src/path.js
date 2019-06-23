@@ -15,13 +15,13 @@ export default class Path extends Val {
         const pth = Path.parse(id);
         origin.push(...pth.origin);
       } else if (typeof(node) === "string") {
-        origin.push(v(node));
+        origin.push([v(node)]);
       } else if (Array.isArray(node)) {
         const applying = node.map(i => v(i));
-        const val = index === 0 ? exp(...node) : applying;
+        const val = index === 0 && node.length > 1 ? exp(...node) : applying;
         origin.push(val);
       } else if (node instanceof Val && node.isUUID()) {
-        origin.push(node);
+        origin.push([node]);
       } else {
         origin.push(node);
       }
@@ -37,7 +37,8 @@ export default class Path extends Val {
 
   get receiver() {
     const [receiver,] = this.origin;
-    return receiver;
+    const r = Array.isArray(receiver) && receiver.length == 1 ? receiver[0] : receiver;
+    return r;
   }
 
   get keys() {
@@ -46,7 +47,9 @@ export default class Path extends Val {
   }
 
   get tail() {
-    return this.origin[this.origin.length - 1];
+    const tail = this.origin[this.origin.length - 1];
+    const t = Array.isArray(tail) && tail.length == 1 ? tail[0] : tail;
+    return t;
   }
 
   get _tail() {
@@ -58,11 +61,11 @@ export default class Path extends Val {
   }
 
   isPartial() {
-    return this.isMultiple() && this.keys.every(i => i instanceof Prim && !i.isUUID());
+    return this.isMultiple() && this.keys.every(i => Array.isArray(i) ? i[0] instanceof Prim && !i[0].isUUID() : i instanceof Prim && !i.isUUID());
   }
 
   isInner() {
-    return this.isMultiple() && this.keys.every(i => i.isUUID());
+    return this.isMultiple() && this.keys.every(i => Array.isArray(i) ? i[0].isUUID(): i.isUUID());
   }
 
   stringify(indent=0) {
@@ -78,11 +81,11 @@ export default class Path extends Val {
       throw "cannot contains a float number value";
     }
 
-    if (this.origin.some(i => Array.isArray(i))) {
+    if (this.origin.some(i => Array.isArray(i) && i.length > 1)) {
       throw "cannot contains a method calling";
     }
 
-    return this.origin.map(i => i.keyString()).join(".");
+    return this.origin.map(i => Array.isArray(i) ? i[0].keyString() : i.keyString()).join(".");
   }
 
   get(key, store) {
@@ -158,8 +161,9 @@ export default class Path extends Val {
     const keys = this.keys.concat();
     keys.reverse();
     const lf = Object.assign({}, leaf.origin);
-    return keys.reduce((a, c) => {
-      return {[c.keyString()]: a};
+    return keys.reduce((a, key) => {
+      const k = Array.isArray(key) ? key[0] : key;
+      return {[k.keyString()]: a};
     }, lf);
   }
 

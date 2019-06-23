@@ -93,7 +93,9 @@ describe("Comp", () => {
           _type: "Map",
           foo: {
             _type: "Path",
-            origin: ["urn:uuid:foo-bar-buz"]
+            origin: [
+              ["urn:uuid:foo-bar-buz"]
+            ]
           },
           bar: [
             "2",
