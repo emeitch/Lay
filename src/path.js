@@ -20,7 +20,10 @@ export default class Path extends Val {
         const applying = node.map(i => v(i));
         const val = index === 0 && node.length > 1 ? exp(...node) : applying;
         origin.push(val);
+      } else if (index > 1) {
+        origin.push([node]);
       } else if (node instanceof Val && node.isUUID()) {
+        // todo: このままだとuuidの文字列を加工できなくなってしまうので修正が必要
         origin.push([node]);
       } else {
         origin.push(node);
@@ -77,7 +80,11 @@ export default class Path extends Val {
       throw "cannot contains a Sym value";
     }
 
-    if (this.origin.some(i => typeof(i.origin) === "number" && i.origin % 1 !== 0)) {
+    const containsFloatNumber = this.origin.some(i => {
+      const k = Array.isArray(i) ? i[0] : i;
+      return typeof(k.origin) === "number" && k.origin % 1 !== 0;
+    });
+    if (containsFloatNumber) {
       throw "cannot contains a float number value";
     }
 
