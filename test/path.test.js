@@ -339,12 +339,12 @@ describe("Path", () => {
   describe("object", () => {
     it("should return js object dump", () => {
       const id = uuid("foo-bar-buz");
-      const p = path(id, "bar", ["buz", "fiz"]);
+      const p = path(v("bar"), id, ["buz", "fiz"]);
       assert.deepStrictEqual(p.object(), {
         _type: "Path",
         origin: [
+          "bar",
           ["urn:uuid:foo-bar-buz"],
-          ["bar"],
           ["buz", "fiz"]
         ]
       });
