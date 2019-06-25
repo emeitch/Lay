@@ -48,6 +48,13 @@ describe("Path", () => {
     it("should return the first id", () => {
       assert.deepStrictEqual(p.receiver, id1);
     });
+
+    context("not array receiver", () => {
+      it("should return the first id", () => {
+        const p = path(v("foo"), "bar");
+        assert.deepStrictEqual(p.receiver, v("foo"));
+      });
+    });
   });
 
   describe("#keys", () => {
