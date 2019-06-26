@@ -70,6 +70,11 @@ describe("Path", () => {
       const store = new Store();
       assert.deepStrictEqual(path(pack(p), "tail").reduce(store), id3);
     });
+
+    context("method calling tail", () => {
+      const p = path("foo", ["bar", "buz"]);
+      assert.deepStrictEqual(p.tail, [v("bar"), v("buz")]);
+    });
   });
 
   describe("#reduce", () => {
