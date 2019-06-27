@@ -77,6 +77,15 @@ describe("Path", () => {
     });
   });
 
+  describe("#isPartial", () => {
+    it("should return partial status", () => {
+      assert.deepStrictEqual(path(id1, "foo", "bar").isPartial(), true);
+      assert.deepStrictEqual(path(v("foo"), v("bar")).isPartial(), true);
+      assert.deepStrictEqual(path(v("foo")).isPartial(), false);
+      assert.deepStrictEqual(path(id1, id2).isPartial(), false);
+    });
+  });
+
   describe("#reduce", () => {
     let store;
     beforeEach(() => {
