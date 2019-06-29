@@ -86,6 +86,13 @@ describe("Path", () => {
     });
   });
 
+  describe("#diff", () => {
+    it("should return partial status", () => {
+      const p = path("foo", v("bar"), v("buz"));
+      assert.deepStrictEqual(p.diff(v({fiz: 3})), {bar: {buz: {fiz: 3}}});
+    });
+  });
+
   describe("#reduce", () => {
     let store;
     beforeEach(() => {
