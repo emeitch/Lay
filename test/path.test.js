@@ -57,9 +57,9 @@ describe("Path", () => {
     });
   });
 
-  describe("#keys", () => {
+  describe("#messages", () => {
     it("should return rest ids", () => {
-      assert.deepStrictEqual(p.keys, [[id2], [id3]]);
+      assert.deepStrictEqual(p.messages, [[id2], [id3]]);
     });
   });
 

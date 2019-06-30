@@ -34,8 +34,8 @@ export default class Path extends Val {
 
   static parse(str) {
     const s = v(str);
-    const keys = s.keyString().split(".");
-    return keys.length > 1 ? path(...keys) : path(s);
+    const messages = s.keyString().split(".");
+    return messages.length > 1 ? path(...messages) : path(s);
   }
 
   get receiver() {
@@ -44,9 +44,9 @@ export default class Path extends Val {
     return r;
   }
 
-  get keys() {
-    const [, ...keys] = this.origin;
-    return keys;
+  get messages() {
+    const [, ...messages] = this.origin;
+    return messages;
   }
 
   get tail() {
@@ -60,15 +60,15 @@ export default class Path extends Val {
   }
 
   isMultiple() {
-    return this.keys.length > 0;
+    return this.messages.length > 0;
   }
 
   isPartial() {
-    return this.isMultiple() && this.keys.every(i => Array.isArray(i) ? i[0] instanceof Prim && !i[0].isUUID() : i instanceof Prim && !i.isUUID());
+    return this.isMultiple() && this.messages.every(i => Array.isArray(i) ? i[0] instanceof Prim && !i[0].isUUID() : i instanceof Prim && !i.isUUID());
   }
 
   isInner() {
-    return this.isMultiple() && this.keys.every(i => Array.isArray(i) ? i[0].isUUID(): i.isUUID());
+    return this.isMultiple() && this.messages.every(i => Array.isArray(i) ? i[0].isUUID(): i.isUUID());
   }
 
   stringify(indent=0) {
@@ -165,20 +165,20 @@ export default class Path extends Val {
   }
 
   diff(leaf) {
-    const keys = this.keys.concat();
-    keys.reverse();
+    const messages = this.messages.concat();
+    messages.reverse();
     const lf = Object.assign({}, leaf.origin);
-    return keys.reduce((a, key) => {
+    return messages.reduce((a, key) => {
       const k = Array.isArray(key) ? key[0] : key;
       return {[k.keyString()]: a};
     }, lf);
   }
 
   parent() {
-    // todo: keysが空なら親は存在しなのでエラーにする
-    const keys = this.keys.concat();
-    keys.pop(); // remove child
-    return new Path(this.receiver, ...keys);
+    // todo: messagesが空なら親は存在しなのでエラーにする
+    const messages = this.messages.concat();
+    messages.pop(); // remove child
+    return new Path(this.receiver, ...messages);
   }
 }
 
