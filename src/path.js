@@ -38,10 +38,12 @@ export default class Path extends Val {
     return messages.length > 1 ? path(...messages) : path(s);
   }
 
+  get keys() {
+    return this.origin.map(i => Array.isArray(i) && i.length == 1 ? i[0] : i);
+  }
+
   get receiver() {
-    const [receiver,] = this.origin;
-    const r = Array.isArray(receiver) && receiver.length == 1 ? receiver[0] : receiver;
-    return r;
+    return this.keys[0];
   }
 
   get messages() {
