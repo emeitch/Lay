@@ -52,9 +52,8 @@ export default class Path extends Val {
   }
 
   get tail() {
-    const tail = this.origin[this.origin.length - 1];
-    const t = Array.isArray(tail) && tail.length == 1 ? tail[0] : tail;
-    return t;
+    const keys = this.keys;
+    return keys[keys.length - 1];
   }
 
   get _tail() {
