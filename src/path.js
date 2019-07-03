@@ -39,7 +39,7 @@ export default class Path extends Val {
   }
 
   get keys() {
-    return this.origin.map(i => Array.isArray(i) && i.length == 1 ? i[0] : i);
+    return this.origin.map(i => Array.isArray(i) ? i[0] : i);
   }
 
   get receiver() {
@@ -65,6 +65,7 @@ export default class Path extends Val {
   }
 
   isPartial() {
+    // return this.isMultiple() && this.keys.every((k, i) => i == 0 || (k instanceof Prim && !k.isUUID()));
     return this.isMultiple() && this.messages.every(i => Array.isArray(i) ? i[0] instanceof Prim && !i[0].isUUID() : i instanceof Prim && !i.isUUID());
   }
 
