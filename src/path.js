@@ -69,7 +69,7 @@ export default class Path extends Val {
   }
 
   isInner() {
-    return this.isMultiple() && this.messages.every(i => Array.isArray(i) ? i[0].isUUID(): i.isUUID());
+    return this.isMultiple() && this.keys.every((k, i) => i == 0 || k.isUUID());
   }
 
   stringify(indent=0) {
