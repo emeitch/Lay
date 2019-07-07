@@ -81,11 +81,8 @@ export default class Path extends Val {
       throw "cannot contains a Sym value";
     }
 
-    const containsFloatNumber = this.origin.some(i => {
-      const k = Array.isArray(i) ? i[0] : i;
-      return typeof(k.origin) === "number" && k.origin % 1 !== 0;
-    });
-    if (containsFloatNumber) {
+    const isFloatNumber = k => typeof(k.origin) === "number" && k.origin % 1 !== 0;
+    if (this.keys.some(isFloatNumber)) {
       throw "cannot contains a float number value";
     }
 
@@ -93,7 +90,7 @@ export default class Path extends Val {
       throw "cannot contains a method calling";
     }
 
-    return this.origin.map(i => Array.isArray(i) ? i[0].keyString() : i.keyString()).join(".");
+    return this.keys.map(k => k.keyString()).join(".");
   }
 
   get(key, store) {
