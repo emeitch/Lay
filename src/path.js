@@ -38,8 +38,12 @@ export default class Path extends Val {
     return messages.length > 1 ? path(...messages) : path(s);
   }
 
+  keysWithTranslationCallingArray(translation) {
+    return this.origin.map(i => Array.isArray(i) ? translation(i) : i);
+  }
+
   get keys() {
-    return this.origin.map(i => Array.isArray(i) ? i[0] : i);
+    return this.keysWithTranslationCallingArray(a => a[0]);
   }
 
   get receiver() {
