@@ -38,12 +38,12 @@ export default class Path extends Val {
     return messages.length > 1 ? path(...messages) : path(s);
   }
 
-  keysWithTranslationCallingArray(translation) {
-    return this.origin.map(i => Array.isArray(i) ? translation(i) : i);
+  keysWithTranslation(translateArray, translateItem = i => i) {
+    return this.origin.map(i => Array.isArray(i) ? translateArray(i) : translateItem(i));
   }
 
   get keys() {
-    return this.keysWithTranslationCallingArray(a => a[0]);
+    return this.keysWithTranslation(a => a[0]);
   }
 
   get receiver() {
@@ -102,7 +102,9 @@ export default class Path extends Val {
   }
 
   replace(matches) {
-    return new this.constructor(...this.origin.map(id => Array.isArray(id) ? id.map(i => i.replace(matches)) : id.replace(matches)));
+    const mapper = i => i.replace(matches);
+    const args = this.keysWithTranslation(a => a.map(mapper), mapper);
+    return new this.constructor(...args);
   }
 
   step(store) {
