@@ -109,8 +109,9 @@ export default class Path extends Val {
 
   step(store) {
     let obj = store;
-    for (const elm of this.origin) {
-      const [kexp, ...args] = Array.isArray(elm) ? elm : [elm];
+    const messages = this.keysWithTranslation(a => a, i => [i]);
+    for (const message of messages) {
+      const [kexp, ...args] = message;
       const key = kexp.reduce(store);
 
       if (obj.unpack) {
