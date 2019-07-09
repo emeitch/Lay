@@ -35,7 +35,7 @@ export default class Path extends Val {
   static parse(str) {
     const s = v(str);
     const messages = s.keyString().split(".");
-    return messages.length > 1 ? path(...messages) : path(s);
+    return path(...messages);
   }
 
   keysWithTranslation(translateArray, translateItem = i => i) {
@@ -109,16 +109,17 @@ export default class Path extends Val {
 
   step(store) {
     let obj = store;
-    const messages = this.keysWithTranslation(a => a, i => [i]);
-    for (const message of messages) {
-      const [kexp, ...args] = message;
+    for (const elm of this.origin) {
+      const isMessage = Array.isArray(elm);
+      const [kexp, ...args] = isMessage ? elm : [elm];
       const key = kexp.reduce(store);
 
       if (obj.unpack) {
         obj = obj.unpack();
       }
 
-      let prop = obj.get(key, store);
+      const isPrimReceiver = !isMessage && obj === store;
+      let prop = isPrimReceiver ? key : obj.get(key, store);
       if (prop === undefined) {
         return this;
       }
@@ -152,7 +153,7 @@ export default class Path extends Val {
         obj = replaced.reduce(store);
       }
     }
-
+    
     return obj;
   }
 

@@ -39,7 +39,7 @@ describe("Path", () => {
         const obj1 = v({_id: v("bar")});
         const p = new Path("foo", obj0, obj1);
         assert.deepStrictEqual(p.origin[1], [id]);
-        assert.deepStrictEqual(p.origin[2], v("bar"));
+        assert.deepStrictEqual(p.origin[2], [v("bar")]);
       });
     });
   });

@@ -90,7 +90,7 @@ export default class Store {
 
       let id = obj.getOwnProp("_id");
       if (id) {
-        return path(id);
+        return Path.parse(id);
       }
 
       return this.convertPropObjToIdPath(obj.origin);
