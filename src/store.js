@@ -229,20 +229,17 @@ export default class Store {
   }
 
   get(key) {
-    if (key instanceof Prim && typeof(key.origin) === "string") {
-      const obj = this.fetch(key);
-      if (obj) {
-        const val = obj.getOwnProp("_val");
-        if (val) {
-          return val;
-        } else {
-          return obj;
-        }
+    const obj = this.fetch(key);
+    if (obj) {
+      const val = obj.getOwnProp("_val");
+      if (val) {
+        return val;
+      } else {
+        return obj;
       }
     }
 
-    // regard the key as a result object if it can't fetch by the key
-    return key;
+    return undefined;
   }
 
   match() {
