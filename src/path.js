@@ -153,20 +153,18 @@ export default class Path extends Val {
         obj = replaced.reduce(store);
       }
     }
-    
+
     return obj;
   }
 
   object(store) {
     const base = super.object(store);
+    const mapper = i => i.object(store);
     return Object.assign({}, base, {
-      origin: this.origin.map(o => {
-        if (Array.isArray(o)) {
-          return o.map(i => i.object(store));
-        } else {
-          return o.object(store);
-        }
-      })
+      origin: this.keysWithTranslation(
+        a => a.map(mapper),
+        mapper
+      )
     });
   }
 
