@@ -42,6 +42,16 @@ export default class Path extends Val {
     return this.origin.map(i => Array.isArray(i) ? translateArray(i) : translateItem(i));
   }
 
+  messagesFromChain(chain) {
+    const [, ...messages] = chain;
+    return messages;
+  }
+
+  messagesWithTranslation(translateArray, translateItem) {
+    const keys = this.keysWithTranslation(translateArray, translateItem);
+    return this.messagesFromChain(keys);
+  }
+
   get keys() {
     return this.keysWithTranslation(a => a[0]);
   }
@@ -51,8 +61,7 @@ export default class Path extends Val {
   }
 
   get messages() {
-    const [, ...messages] = this.origin;
-    return messages;
+    return this.messagesFromChain(this.origin);
   }
 
   get tail() {
@@ -169,11 +178,10 @@ export default class Path extends Val {
   }
 
   diff(leaf) {
-    const messages = this.messages.concat();
+    const messages = this.messagesWithTranslation(a => a[0]).concat();
     messages.reverse();
     const lf = Object.assign({}, leaf.origin);
-    return messages.reduce((a, key) => {
-      const k = Array.isArray(key) ? key[0] : key;
+    return messages.reduce((a, k) => {
       return {[k.keyString()]: a};
     }, lf);
   }
