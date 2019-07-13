@@ -47,7 +47,7 @@ export default class Path extends Val {
     return messages;
   }
 
-  messagesWithTranslation(translateArray, translateItem) {
+  messageKeysWithTranslation(translateArray, translateItem) {
     const keys = this.keysWithTranslation(translateArray, translateItem);
     return this.messagesFromChain(keys);
   }
@@ -178,7 +178,7 @@ export default class Path extends Val {
   }
 
   diff(leaf) {
-    const messages = this.messagesWithTranslation(a => a[0]).concat();
+    const messages = this.messageKeysWithTranslation(a => a[0]).concat();
     messages.reverse();
     const lf = Object.assign({}, leaf.origin);
     return messages.reduce((a, k) => {
