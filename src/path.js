@@ -182,7 +182,7 @@ export default class Path extends Val {
   }
 
   diff(leaf) {
-    const messages = this.messageKeysWithTranslation(a => a[0]).concat();
+    const messages = this.messageKeysWithTranslation(a => a[0]);
     messages.reverse();
     const lf = Object.assign({}, leaf.origin);
     return messages.reduce((a, k) => {
@@ -192,7 +192,7 @@ export default class Path extends Val {
 
   parent() {
     // todo: messagesが空なら親は存在しなのでエラーにする
-    const messages = this.messages.concat();
+    const messages = this.messages;
     messages.pop(); // remove child
     return new Path(this.receiver, ...messages);
   }
