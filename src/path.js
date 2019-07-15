@@ -7,6 +7,10 @@ import { exp } from './exp';
 import { func, LiftedNative } from './func';
 
 export default class Path extends Val {
+  static isMethodCallingNode(node) {
+    return Array.isArray(node);
+  }
+
   constructor(...nodes) {
     const origin = [];
     nodes.forEach((node, index) => {
@@ -16,7 +20,7 @@ export default class Path extends Val {
         origin.push(...pth.origin);
       } else if (typeof(node) === "string") {
         origin.push([v(node)]);
-      } else if (Array.isArray(node)) {
+      } else if (Path.isMethodCallingNode(node)) {
         const applying = node.map(i => v(i));
         const val = index === 0 && node.length > 1 ? exp(...node) : applying;
         origin.push(val);
@@ -39,7 +43,7 @@ export default class Path extends Val {
   }
 
   keysWithTranslation(translateArray, translateItem = i => i) {
-    return this.origin.map(i => Array.isArray(i) ? translateArray(i) : translateItem(i));
+    return this.origin.map(i => Path.isMethodCallingNode(i) ? translateArray(i) : translateItem(i));
   }
 
   messagesFromChain(chain) {
@@ -99,7 +103,7 @@ export default class Path extends Val {
       throw "cannot contains a float number value";
     }
 
-    if (this.origin.some(i => Array.isArray(i) && i.length > 1)) {
+    if (this.origin.some(i => Path.isMethodCallingNode(i) && i.length > 1)) {
       throw "cannot contains a method calling";
     }
 
@@ -119,7 +123,7 @@ export default class Path extends Val {
   step(store) {
     let obj = store;
     for (const elm of this.origin) {
-      const isMessage = Array.isArray(elm);
+      const isMessage = Path.isMethodCallingNode(elm);
       const [kexp, ...args] = isMessage ? elm : [elm];
       const key = kexp.reduce(store);
 
