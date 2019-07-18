@@ -11,6 +11,10 @@ export default class Path extends Val {
     return Array.isArray(node);
   }
 
+  static isMethodCallingWithArgsNode(node) {
+    return this.isMethodCallingNode(node) && node.length > 1;
+  }
+
   constructor(...nodes) {
     const origin = [];
     nodes.forEach((node, index) => {
@@ -103,7 +107,7 @@ export default class Path extends Val {
       throw "cannot contains a float number value";
     }
 
-    if (this.origin.some(i => Path.isMethodCallingNode(i) && i.length > 1)) {
+    if (this.origin.some(i => Path.isMethodCallingWithArgsNode(i))) {
       throw "cannot contains a method calling";
     }
 
