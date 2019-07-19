@@ -31,7 +31,7 @@ export default class Path extends Val {
       } else if (index > 1) {
         origin.push([node]);
       } else if (node instanceof Val && node.isUUID()) {
-        // todo: このままだとuuidの文字列を加工できなくなってしまうので修正が必要
+        // UUID相当の文字列が来た場合には強制的にプロパティ呼び出し化
         origin.push([node]);
       } else {
         origin.push(node);
