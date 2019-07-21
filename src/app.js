@@ -15,9 +15,9 @@ const d = new Store(std);
   d.set("Task",
     "toggle",
     exp("if",
-      path(sym("self"), "state", ["equals", v("active")]),
-      path(sym("self"), ["set", "state", v("completed")]),
-      path(sym("self"), ["set", "state", v("active")])
+      path(sym("self"), "state", ["equals", path("active")]),
+      path(sym("self"), ["set", "state", path("completed")]),
+      path(sym("self"), ["set", "state", path("active")])
     )
   );
   d.set("Task", "editing", v(false));
@@ -26,7 +26,7 @@ const d = new Store(std);
 {
   d.set("todos", "_type", "App");
   d.set("todos", "var", v("0.2.0"));
-  d.set("todos", "state", v("all"));
+  d.set("todos", "state", path("all"));
   d.set("todos", "newTaskTitle", v(""));
   d.set("todos", "changeState", func("s", path(sym("self"), ["set", "state", sym("s")])));
   d.set("todos", "changeStateByHash", func(
@@ -34,12 +34,12 @@ const d = new Store(std);
     exp(
       "if",
       path(sym("hash"), ["equals", v("#/active")]),
-      path("todos", ["changeState", v("active")]),
+      path("todos", ["changeState", path("active")]),
       exp(
         "if",
         path(sym("hash"), ["equals", v("#/completed")]),
-        path("todos", ["changeState", v("completed")]),
-        path("todos", ["changeState", v("all")])
+        path("todos", ["changeState", path("completed")]),
+        path("todos", ["changeState", path("all")])
       )
     )
   ));
@@ -91,7 +91,7 @@ const d = new Store(std);
                       n({
                         "_type": "Task",
                         "title": path(sym("ev"), "value", "trim"),
-                        "state": v("active"),
+                        "state": path("active"),
                       })
                     ],
                     [
@@ -136,7 +136,7 @@ const d = new Store(std);
               [
                 "every",
                 func("tid",
-                  path(sym("tid"), "state", ["equals", v("completed")]))
+                  path(sym("tid"), "state", ["equals", path("completed")]))
               ]
             ),
             onchange:
@@ -149,7 +149,7 @@ const d = new Store(std);
                     [
                       "every",
                       func("tid",
-                        path(sym("tid"), "state", ["equals", v("completed")]))
+                        path(sym("tid"), "state", ["equals", path("completed")]))
                     ]
                   ),
                   path(
@@ -158,7 +158,7 @@ const d = new Store(std);
                     [
                       "map",
                       func("tid",
-                        path(sym("tid"), ["set", "state", v("active")]))
+                        path(sym("tid"), ["set", "state", path("active")]))
                     ]
                   ),
                   path(
@@ -167,7 +167,7 @@ const d = new Store(std);
                     [
                       "map",
                       func("tid",
-                        path(sym("tid"), ["set", "state", v("completed")]))
+                        path(sym("tid"), ["set", "state", path("completed")]))
                     ]
                   )
                 )
@@ -180,13 +180,13 @@ const d = new Store(std);
                   "filter", func("tid",
                   exp(
                     "if",
-                    path("todos", "state", ["equals", v("all")]),
+                    path("todos", "state", ["equals", path("all")]),
                     v(true),
                     exp(
                       "if",
-                      path("todos", "state", ["equals", v("active")]),
-                      path(sym("tid"), "state", ["equals", v("active")]),
-                      path(sym("tid"), "state", ["equals", v("completed")])
+                      path("todos", "state", ["equals", path("active")]),
+                      path(sym("tid"), "state", ["equals", path("active")]),
+                      path(sym("tid"), "state", ["equals", path("completed")])
                     )
                   )
                 )],
@@ -212,7 +212,7 @@ const d = new Store(std);
                     e.input({
                       class: "toggle",
                       type: "checkbox",
-                      checked: path(sym("tid"), "state", ["equals", v("completed")]),
+                      checked: path(sym("tid"), "state", ["equals", path("completed")]),
                       onchange:
                         func("ev",
                           path(sym("tid"), "toggle")
@@ -425,7 +425,7 @@ const d = new Store(std);
                     path(
                       sym("tid"),
                       "state",
-                      ["equals", v("active")]))],
+                      ["equals", path("active")]))],
                 "count",
                 "toStr")),
             e.span(v(" ")),
@@ -440,7 +440,7 @@ const d = new Store(std);
                       path(
                         sym("tid"),
                         "state",
-                        ["equals", v("active")]))],
+                        ["equals", path("active")]))],
                   "count",
                   ["equals", v(1)]
                 ),
@@ -457,7 +457,7 @@ const d = new Store(std);
                   href: "#/",
                   class: exp(
                     "if",
-                    path("todos", "state", ["equals", v("all")]),
+                    path("todos", "state", ["equals", path("all")]),
                     "selected",
                     "none"
                   )
@@ -471,7 +471,7 @@ const d = new Store(std);
                   href: "#/active",
                   class: exp(
                     "if",
-                    path("todos", "state", ["equals", v("active")]),
+                    path("todos", "state", ["equals", path("active")]),
                     "selected",
                     "none"
                   )
@@ -485,7 +485,7 @@ const d = new Store(std);
                   href: "#/completed",
                   class: exp(
                     "if",
-                    path("todos", "state", ["equals", v("completed")]),
+                    path("todos", "state", ["equals", path("completed")]),
                     "selected",
                     "none"
                   )
@@ -502,7 +502,7 @@ const d = new Store(std);
               [
                 "filter",
                 func("tid",
-                  path(sym("tid"), "state", ["equals", v("completed")]))
+                  path(sym("tid"), "state", ["equals", path("completed")]))
               ],
               "count",
               ["equals", v(0)],
@@ -523,7 +523,7 @@ const d = new Store(std);
                           "state",
                           [
                             "equals",
-                            v("completed")
+                            path("completed")
                           ]
                         )
                       )
