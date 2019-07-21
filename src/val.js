@@ -17,10 +17,6 @@ export default class Val {
     return new Prim(this.typeName);
   }
 
-  get _toStr() {
-    return new Prim(this.stringify());
-  }
-
   get jsObj() {
     return this.origin;
   }
@@ -165,6 +161,10 @@ export default class Val {
 
   keyVal() {
     return new Prim(this.keyString());
+  }
+
+  get _toStr() {
+    return this.keyVal();
   }
 }
 
