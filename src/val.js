@@ -17,6 +17,10 @@ export default class Val {
     return new Prim(this.typeName);
   }
 
+  get _toStr() {
+    return new Prim(this.stringify());
+  }
+
   get jsObj() {
     return this.origin;
   }
@@ -122,17 +126,6 @@ export default class Val {
     return str.toString().replace(/\n/g, "\n"+" ".repeat(indent));
   }
 
-  object(store) {
-    return {
-      _type: this.__type.object(store),
-      origin: this.origin
-    };
-  }
-
-  isUUID() {
-    return false;
-  }
-
   static stringify(v, indent=0) {
     if (v instanceof Val) {
       return v.stringify(indent);
@@ -155,6 +148,17 @@ export default class Val {
     return Val.stringify(this.origin, _indent);
   }
 
+  object(store) {
+    return {
+      _type: this.__type.object(store),
+      origin: this.origin
+    };
+  }
+
+  isUUID() {
+    return false;
+  }
+
   keyString() {
     return this.stringify();
   }
@@ -163,7 +167,7 @@ export default class Val {
     return new Prim(this.keyString());
   }
 
-  get _toStr() {
+  _keyVal() {
     return this.keyVal();
   }
 }

@@ -209,7 +209,7 @@ console.log(path(path("active"), ["equals", path("active")]).reduce(d));
                     key: path(sym("tid"), "_id", "toStr"),
                     class: path(
                       n([
-                        path(path(sym("tid"), "state"), "toStr"),
+                        path(path(sym("tid"), "state"), "keyVal"),
                         exp(
                           "if",
                           path("viewmodel", sym("tid"), "editing"),
