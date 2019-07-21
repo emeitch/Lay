@@ -11,17 +11,19 @@ import { dom, e } from './dom';
 
 const d = new Store(std);
 
-{
-  d.put({
-    _id: "active"
-  });
-  d.put({
-    _id: "completed"
-  });
-  d.put({
-    _id: "all"
-  });
-}
+// {
+//   d.put({
+//     _id: "active"
+//   });
+//   d.put({
+//     _id: "completed"
+//   });
+//   d.put({
+//     _id: "all"
+//   });
+// }
+
+console.log(path(path("active"), ["equals", path("active")]).reduce(d));
 
 {
   d.set("Task",
@@ -207,7 +209,7 @@ const d = new Store(std);
                     key: path(sym("tid"), "_id", "toStr"),
                     class: path(
                       n([
-                        path(path(sym("tid"), "state"), "_id"),
+                        path(path(sym("tid"), "state"), "keyVal"),
                         exp(
                           "if",
                           path("viewmodel", sym("tid"), "editing"),

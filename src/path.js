@@ -124,6 +124,10 @@ export default class Path extends Val {
     return new this.constructor(...args);
   }
 
+  reduced() {
+    return new ReducedPath(...this.origin);
+  }
+
   step(store) {
     let obj = store;
     for (const elm of this.origin) {
@@ -138,7 +142,11 @@ export default class Path extends Val {
       const isPrimReceiver = !isMessage && obj === store;
       let prop = isPrimReceiver ? key : obj.get(key, store);
       if (prop === undefined) {
-        return this;
+        // todo: ここで返すreducedなPath値(ReducedPath)をなんらかのオブジェクトにセットする場合、それはPath式として評価可能にしたいはずなので逆にreducible化する必要がある
+        // これによりPathを値として利用可能となりequalsなどによる同値判定にも使えるようになるが
+        // この評価可能な式としてのPathの利用が不可能になるため、この値をsetする場合には、逆に
+        // ReducedPathをreducibleに戻す必要がある
+        return this.reduced();
       }
 
       if (prop instanceof Function) {
@@ -148,10 +156,12 @@ export default class Path extends Val {
         const f = prop.bind(obj);
         const nf = (...args) => {
           const as = args.map(a => a.reduce(store));
-          if (as.some(a => a.reducible)) {
-            return exp(new LiftedNative(nf), ...as);
-          }
+          // todo: 評価時にreducibleな値が発生する余地がなくなったのでコメントアウト
+          // 今後不要なら削除するし、必要なら再開する
 
+          // if (as.some(a => a.reducible)) {
+          //   return exp(new LiftedNative(nf), ...as);
+          // }
           return f(...as);
         };
         prop = func(new LiftedNative(nf));
@@ -199,6 +209,12 @@ export default class Path extends Val {
     const messages = this.messages;
     messages.pop(); // remove child
     return new Path(this.receiver, ...messages);
+  }
+}
+
+class ReducedPath extends Path {
+  get reducible() {
+     return false;
   }
 }
 
