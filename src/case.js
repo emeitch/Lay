@@ -16,10 +16,6 @@ export class Native extends Val {
       }
     }
 
-    if (args.some(arg => arg.reducible)) {
-      return exp(this, ...args);
-    }
-
     const oargs = args.map(a => a.origin);
     const orig = this.origin.apply(store, oargs);
     return v(orig);

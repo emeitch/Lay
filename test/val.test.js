@@ -59,12 +59,6 @@ describe("Val", () => {
       });
     });
 
-    describe("#reducible", () => {
-      it("should return true by default behavior", () => {
-        assert.deepStrictEqual(val.reducible, true);
-      });
-    });
-
     describe("#step", () => {
       it("should return oneself by default behavior", () => {
         assert.deepStrictEqual(val.step(), val);

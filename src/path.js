@@ -148,10 +148,6 @@ export default class Path extends Val {
         const f = prop.bind(obj);
         const nf = (...args) => {
           const as = args.map(a => a.reduce(store));
-          if (as.some(a => a.reducible)) {
-            return exp(new LiftedNative(nf), ...as);
-          }
-
           return f(...as);
         };
         prop = func(new LiftedNative(nf));

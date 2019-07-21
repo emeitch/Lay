@@ -26,12 +26,6 @@ describe("Sym", () => {
     });
   });
 
-  describe("#reducible", () => {
-    it("should return false", () => {
-      assert.deepStrictEqual(sym("foo").reducible, false);
-    });
-  });
-
   describe("#object", () => {
     it("should return a persistent object without type", () => {
       assert.deepStrictEqual(sym("foo").object(), {origin: "foo"});

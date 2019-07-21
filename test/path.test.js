@@ -169,16 +169,9 @@ describe("Path", () => {
           assert.deepStrictEqual(p.reduce(store), v(true));
         });
 
-        context("partial reduce", () => {
-          it("should return a exp", () => {
-            const id = uuid();
-            const p = path(v(3), ["equals", path(id, "bar")]);
-            assert.deepStrictEqual(p.reduce(store).constructor, Exp);
-
-            store.put({
-              _id: id,
-              bar: v(3)
-            });
+        context("unreduced path", () => {
+          it("should eval equals", () => {
+            const p = path(path("foo", "bar"), ["equals", path("foo", "bar")]);
             assert.deepStrictEqual(p.reduce(store), v(true));
           });
         });

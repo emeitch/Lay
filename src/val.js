@@ -62,10 +62,6 @@ export default class Val {
     };
   }
 
-  get reducible() {
-    return true;
-  }
-
   isClass() {
     const id = this.getOwnProp("_id");
     return typeof(id.origin) === "string" && id.origin.match(/^[A-Z]/) && !id.origin.match(/\./);
@@ -170,10 +166,6 @@ export default class Val {
 
 /*********************************************************************/
 export class Sym extends Val {
-  get reducible() {
-    return false;
-  }
-
   collate(target) {
     return {
       pattern: this,
@@ -209,10 +201,6 @@ export class Sym extends Val {
 
 /*********************************************************************/
 export class Prim extends Val {
-  get reducible() {
-    return false;
-  }
-
   stringify(_indent) {
     return JSON.stringify(this.origin);
   }
