@@ -16,12 +16,9 @@ export class Native extends Val {
       }
     }
 
-    // todo: 評価時にreducibleな値が発生する余地がなくなったのでコメントアウト
-    // 今後不要なら削除するし、必要なら再開する
-
-    // if (args.some(arg => arg.reducible)) {
-    //   return exp(this, ...args);
-    // }
+    if (args.some(arg => arg.reducible)) {
+      return exp(this, ...args);
+    }
 
     const oargs = args.map(a => a.origin);
     const orig = this.origin.apply(store, oargs);

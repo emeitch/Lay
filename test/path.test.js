@@ -170,10 +170,10 @@ describe("Path", () => {
         });
 
         context("partial reduce", () => {
-          it("should return false", () => {
+          it("should return a exp", () => {
             const id = uuid();
             const p = path(v(3), ["equals", path(id, "bar")]);
-            assert.deepStrictEqual(p.reduce(store), v(false));
+            assert.deepStrictEqual(p.reduce(store).constructor, Exp);
 
             store.put({
               _id: id,
@@ -231,7 +231,7 @@ describe("Path", () => {
 
       it("should return the path", () => {
         const p = new Path(id, "foo");
-        assert.deepStrictEqual(p.reduce(store), p.reduced());
+        assert.deepStrictEqual(p.reduce(store), p);
       });
     });
 
@@ -354,7 +354,7 @@ describe("Path", () => {
       });
 
       it("should return the path", () => {
-        assert.deepStrictEqual(p.reduce(store), p.reduced());
+        assert.deepStrictEqual(p.reduce(store), p);
       });
     });
   });
@@ -400,16 +400,6 @@ describe("Path", () => {
     context("with method call", () => {
       const p = new Path("foo", ["bar", v(1)], "buz");
       assert.throws(() => p.keyString(), /cannot contains a method calling/);
-    });
-  });
-
-  describe("ReducedPath", () => {
-    it("should not reducible", () => {
-      const p = new Path("foo", "bar");
-      assert(p.reducible);
-
-      const store = new Store();
-      assert(!p.reduce(store).reducible);
     });
   });
 });

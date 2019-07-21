@@ -166,10 +166,6 @@ export default class Val {
   keyVal() {
     return new Prim(this.keyString());
   }
-
-  _keyVal() {
-    return this.keyVal();
-  }
 }
 
 /*********************************************************************/

@@ -235,13 +235,13 @@ describe("Store", () => {
 
             // not exist the inner object (implicit inner object)
             const cpath0 = store.path(id0, id1);
-            assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), path(id0, id1, "bar").reduced());
+            assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), path(id0, id1, "bar"));
 
             // exist the inner object (explicit inner object)
             store.put({
               _id: cpath0
             });
-            assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), path(id0, id1, "bar").reduced());
+            assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), path(id0, id1, "bar"));
 
             // the inner object with own props
             store.patch(cpath0, {
@@ -441,7 +441,7 @@ describe("Store", () => {
         });
         assert.deepStrictEqual(path(id, "foo", "bar").reduce(store), v(2)); // keep
         const p = path(id, "foo", "buz");
-        assert.deepStrictEqual(p.reduce(store), p.reduced());
+        assert.deepStrictEqual(p.reduce(store), p);
         assert.deepStrictEqual(path(id, "_prev").reduce(store), rev);
       });
     });
