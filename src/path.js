@@ -145,12 +145,13 @@ export default class Path extends Val {
         // LiftedNativeの基本仕様はthisでstoreを渡すだが
         // 組み込みのメソッドの場合、thisで自身を参照したいケースが大半で
         // storeを渡すわけにいかないので、自身の値をbindする
-        const f = prop.bind(obj);
-        const nf = (...args) => {
-          const as = args.map(a => a.reduce(store));
-          return f(...as);
+        const f = prop;
+        const boundf = f.bind(obj);
+        const nativef = (...args) => {
+          const reducedargs = args.map(a => a.reduce(store));
+          return boundf(...reducedargs);
         };
-        prop = func(new LiftedNative(nf));
+        prop = func(new LiftedNative(nativef));
       }
 
       const innerPath = path(obj, key);
