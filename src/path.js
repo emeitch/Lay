@@ -30,8 +30,9 @@ export default class Path extends Val {
         origin.push(val);
       } else if (index > 1) {
         origin.push([node]);
-      } else if (node instanceof Val && node.isUUID()) {
-        // UUID相当の文字列が来た場合には強制的にプロパティ呼び出し化
+      } else if (node.isPacked) {
+        origin.push(node.unpack());
+      } else if (node instanceof Prim && node.isUUID()) {
         origin.push([node]);
       } else {
         origin.push(node);

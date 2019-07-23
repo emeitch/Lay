@@ -25,6 +25,14 @@ describe("Path", () => {
       assert.deepStrictEqual(new Path(v("foo"), ["bar", "buz"], "fiz"), pth);
     });
 
+    context("packed uuid receiver", () => {
+      assert.deepStrictEqual(new Path(pack(id1), ["bar", "buz"], "fiz").origin[0], id1);
+    });
+
+    context("unpacked uuid receiver", () => {
+      assert.deepStrictEqual(new Path(id1, ["bar", "buz"], "fiz").origin[0], [id1]);
+    });
+
     context("call a func", () => {
       it("should complete a exp", () => {
         const p = new Path(["foo", "bar"]);

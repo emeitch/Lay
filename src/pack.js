@@ -1,6 +1,10 @@
 import Val from './val';
 
 export default class Pack extends Val {
+  get isPacked() {
+    return true;
+  }
+
   unpack() {
     return this.origin;
   }

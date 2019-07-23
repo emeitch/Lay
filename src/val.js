@@ -110,6 +110,10 @@ export default class Val {
     return pattern.collate(this);
   }
 
+  get isPacked() {
+    return false;
+  }
+
   unpack() {
     return this;
   }
