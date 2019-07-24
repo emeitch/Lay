@@ -375,6 +375,12 @@ describe("Path", () => {
     });
   });
 
+  describe("parent", () => {
+    it("should return parent path", () => {
+      assert(path("foo", "bar", "buz").parent(), path("foo", "bar"));
+    });
+  });
+
   describe("stringify", () => {
     it("should return string dump", () => {
       const p = new Path(sym("self"), v("foo"));
