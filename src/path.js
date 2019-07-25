@@ -2,7 +2,7 @@ import Val from './val';
 import Prim from './prim';
 import Case from './case';
 import v from './v';
-import Sym from './sym';
+import Sym, { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
 
@@ -23,7 +23,8 @@ export default class Path extends Val {
         const pth = Path.parse(id);
         origin.push(...pth.origin);
       } else if (typeof(node) === "string") {
-        origin.push([v(node)]);
+        const val = node == "self" ? sym(node) : v(node);
+        origin.push([val]);
       } else if (Path.isMethodCallingNode(node)) {
         const applying = node.map(i => v(i));
         const val = index === 0 && node.length > 1 ? exp(...node) : applying;

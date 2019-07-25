@@ -144,7 +144,7 @@ describe("Path", () => {
           foo: v(2),
           bar: path(sym("self"), "foo"),
           buz: func("x", exp(plus, path(id1, "bar"), "x")),
-          biz: path(sym("self"), ["buz", v(3)])
+          biz: path("self", ["buz", v(3)]) // without sym
         });
       });
 
