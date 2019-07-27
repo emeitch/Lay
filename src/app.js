@@ -15,9 +15,9 @@ const d = new Store(std);
   d.set("Task",
     "toggle",
     exp("if",
-      path(sym("self"), "state", ["equals", path("active")]),
-      path(sym("self"), ["set", "state", path("completed")]),
-      path(sym("self"), ["set", "state", path("active")])
+      path("self", "state", ["equals", path("active")]),
+      path("self", ["set", "state", path("completed")]),
+      path("self", ["set", "state", path("active")])
     )
   );
   d.set("Task", "editing", v(false));
@@ -28,7 +28,7 @@ const d = new Store(std);
   d.set("todos", "var", v("0.2.0"));
   d.set("todos", "state", path("all"));
   d.set("todos", "newTaskTitle", v(""));
-  d.set("todos", "changeState", func("s", path(sym("self"), ["set", "state", sym("s")])));
+  d.set("todos", "changeState", func("s", path("self", ["set", "state", sym("s")])));
   d.set("todos", "changeStateByHash", func(
     "hash",
     exp(
