@@ -53,7 +53,7 @@ export const std = new Store();
 
   std.set("filterObjs", "_body", func("pattern", new LiftedNative(function(pattern) {
     const store = this;
-    const types = pattern.deepReduce(store).origin;
+    const types = pattern.reduce(store).origin;
     return new Act(objs => {
       const filtered = [];
       const transactions = [];
