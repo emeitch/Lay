@@ -306,7 +306,7 @@ export const std = new Store();
     "puts",
     func("val", new LiftedNative(function(val) {
       return new Act(() => {
-        console.log(val.deepReduce(this).origin);
+        console.log(val.reduce(this).origin);
       });
     }))
   );
