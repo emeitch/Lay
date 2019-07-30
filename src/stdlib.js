@@ -291,8 +291,8 @@ export const std = new Store();
     act,
     "then",
     func("next", exp(new LiftedNative(function(self, next) {
-      const act = self.deepReduce(this);
-      const nact = next.deepReduce(this);
+      const act = self.reduce(this);
+      const nact = next.reduce(this);
       return act.then(nact);
     }), "self", "next"))
   );
