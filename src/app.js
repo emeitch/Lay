@@ -195,7 +195,6 @@ const d = new Store(std);
                     key: path(sym("tid"), "_id", "toStr"),
                     class: path(
                       n([
-                        path(path(sym("tid"), "state"), "_id"),
                         path(sym("tid"), "state", "toStr"),
                         exp(
                           "if",
