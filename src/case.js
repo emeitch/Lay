@@ -33,7 +33,8 @@ export class Native extends Val {
 
 export class LiftedNative extends Native {
   apply(store, ...args) {
-    return this.origin.apply(store, args);
+    const reducedArgs = args.map(a => a && a.deepReduce && a.deepReduce(store));
+    return this.origin.apply(store, reducedArgs);
   }
 
   stringify(indent) {

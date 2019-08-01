@@ -243,9 +243,7 @@ export const std = new Store();
     arr,
     "join",
     func("sep", exp(new LiftedNative(function(self, sep) {
-      const arr = self.deepReduce(this);
-      const s = sep.deepReduce(this);
-      return v(arr.jsObj.join(s.jsObj));
+      return v(self.jsObj.join(sep.jsObj));
     }), "self", "sep"))
   );
 }
@@ -282,7 +280,11 @@ export const std = new Store();
     func("func", exp(new LiftedNative(function(self, func) {
       const store = this;
       return new Act(arg => {
-        return exp(func, arg).reduce(store);
+        if (!arg) {
+          return func;
+        }
+
+        return exp([func, arg]).reduce(store);
       });
     }), "self", "func"))
   );

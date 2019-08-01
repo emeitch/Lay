@@ -184,7 +184,7 @@ export class CompArray extends Comp {
   }
 
   deepReduce(store) {
-    const org = this.origin.map(i => i.deepReduce ? i.deepReduce(store) : i);
+    const org = this.origin.map(i => i && i.deepReduce ? i.deepReduce(store) : i);
     return new this.constructor(org, this.head);
   }
 
