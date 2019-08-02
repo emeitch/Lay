@@ -484,6 +484,22 @@ describe("stdlib", () => {
         store.run(act);
         assert.deepStrictEqual(path("Foo", "all", "count").reduce(store), v(1));
       });
+
+      context("with args", () => {
+        it("should return a new Act instance", () => {
+          const act = path("Act", [
+            "new",
+            func(
+              "arg",
+              exp(plus, sym("arg"), v(2))
+            )]
+          ).reduce(store);
+          assert(act instanceof Act);
+
+          const a = act.proceed(v(3));
+          assert.deepStrictEqual(a.val, v(5));
+        });
+      });
     });
 
     describe("then", () => {

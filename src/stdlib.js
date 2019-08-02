@@ -284,7 +284,7 @@ export const std = new Store();
           return func;
         }
 
-        return exp([func, arg]).reduce(store);
+        return exp(func, arg).reduce(store);
       });
     }), "self", "func"))
   );
