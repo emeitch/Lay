@@ -135,9 +135,8 @@ dom.set(
   func(
     "key",
     new LiftedNative(function(key) {
-      const k = key.deepReduce(this);
       return new Act(() => {
-        return window.localStorage.getItem(k.origin);
+        return window.localStorage.getItem(key.origin);
       });
     })
   )
@@ -147,9 +146,8 @@ dom.set(
   "appendObjs",
   func(
     new LiftedNative(function(key) {
-      const k = key.deepReduce(this);
       return new Act(objs => {
-        const storage = JSON.parse(window.localStorage.getItem(k.origin)) || [];
+        const storage = JSON.parse(window.localStorage.getItem(key.origin)) || [];
         storage.push(...objs.map(o => o.object(this)));
         return JSON.stringify(storage);
       });
@@ -162,10 +160,9 @@ dom.set(
   func(
     "key",
     new LiftedNative(function(key) {
-      const k = key.deepReduce(this);
       return new Act(str => {
         if (typeof(str) === "string") {
-          window.localStorage.setItem(k.origin, str);
+          window.localStorage.setItem(key.origin, str);
         }
       });
     })
