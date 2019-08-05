@@ -100,7 +100,7 @@ dom.assign(
             hash: window.location.hash
           }
         });
-        const act = exp(placeholder, win).deepReduce(store);
+        const act = exp(placeholder, win).reduce(store);
         store.run(act);
 
         projector.append(document.body, renderMaquette);
