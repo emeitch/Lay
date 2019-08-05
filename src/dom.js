@@ -55,7 +55,7 @@ dom.assign(
                 }
               };
               const event = v("Event", eo);
-              const act = path(elm, [key, event]).deepReduce(store);
+              const act = path(elm, [key, event]).reduce(store);
               return store.run(act);
             };
 
@@ -72,11 +72,11 @@ dom.assign(
           } else if (key.match(/^after/)) {
             attr[key] = element => {
               const env = {element};
-              const act = path(elm, key).deepReduce(store);
+              const act = path(elm, key).reduce(store);
               return store.run(new Act(() => env).then(act));
             };
           } else {
-            const val = path(elm, key).deepReduce(store);
+            const val = path(elm, key).reduce(store);
             attr[key] = val.origin;
           }
         }
