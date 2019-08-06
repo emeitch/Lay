@@ -86,7 +86,7 @@ dom.assign(
       function renderMaquette() {
         if (dirty || !vdomCache) {
           const placeholder = path("document", "body");
-          const domtree = placeholder.deepReduce(store);
+          const domtree = placeholder.reduce(store);
           dirty = false;
           vdomCache = render(domtree);
         }
