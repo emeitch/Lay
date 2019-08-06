@@ -419,7 +419,7 @@ export default class Store {
   }
 
   run(e, arg) {
-    let acts = e.deepReduce(this);
+    let acts = e.reduce(this);
     if (acts instanceof Act) {
       acts = v([acts]);
     }
