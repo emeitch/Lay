@@ -33,7 +33,7 @@ export class Native extends Val {
 
 export class LiftedNative extends Native {
   apply(store, ...args) {
-    const reducedArgs = args.map(a => a && a.deepReduce && a.deepReduce(store));
+    const reducedArgs = args.map(a => a && a.reduce && a.reduce(store));
     return this.origin.apply(store, reducedArgs);
   }
 
