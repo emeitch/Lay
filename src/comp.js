@@ -183,11 +183,6 @@ export class CompArray extends Comp {
     return { pattern: this, target, result };
   }
 
-  step(store) {
-    const org = this.origin.map(i => i && i.reduce ? i.reduce(store) : i);
-    return new this.constructor(org, this.head);
-  }
-
   object(store) {
     const o = super.object(store);
     o.origin = this.origin.map(o => o instanceof Val ? o.object(store) : o);
@@ -226,16 +221,6 @@ export class CompMap extends Comp {
   step(store) {
     const body = this.getOwnProp("_body");
     return body ? body.step(store) : super.step(store);
-  }
-
-  deepReduce(store) {
-    const org = {};
-    for (const key of Object.keys(this.origin)) {
-      const val = this.origin[key];
-      org[key] = val.deepReduce ? val.deepReduce(store) : val;
-    }
-
-    return new this.constructor(org, this.head);
   }
 
   object(store) {
