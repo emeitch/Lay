@@ -81,14 +81,6 @@ export default class Val {
     return e;
   }
 
-  deepReduce(store) {
-    let r = this.reduce(store);
-    if (!r.equals(this)) {
-      r = r.deepReduce(store);
-    }
-    return r;
-  }
-
   replace(_matches) {
     return this;
   }
