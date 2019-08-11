@@ -283,16 +283,16 @@ describe("Act", () => {
     });
   });
 
-  describe("deepReduce", () => {
+  describe("reduce", () => {
     it("should reduce next and recovery", () => {
       const act = new Act(() => 0).then(path(new Act(() => 1))).catch(path(new Act(() => 2)));
-      const deepReduced = act.deepReduce(new Store());
+      const reduced = act.reduce(new Store());
 
       assert(!(act.next instanceof Act));
-      assert(deepReduced.next instanceof Act);
+      assert(reduced.next instanceof Act);
 
       assert(!(act.recovery instanceof Act));
-      assert(deepReduced.recovery instanceof Act);
+      assert(reduced.recovery instanceof Act);
     });
   });
 });
