@@ -650,8 +650,10 @@ describe("stdlib", () => {
     describe("reduce", () => {
       it("should return a reduced exp", () => {
         const e = exp(plus, v(1), v(2));
-        const map = n({foo: e});
+        const pth = path("self", "foo");
+        const map = n({foo: e, bar: pth});
         assert.deepStrictEqual(map.reduce(store).get("foo"), v(3));
+        assert.deepStrictEqual(map.reduce(store).get("bar"), pth);
       });
     });
   });

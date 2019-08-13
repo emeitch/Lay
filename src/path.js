@@ -161,8 +161,7 @@ export default class Path extends Val {
         obj = prop;
       } else if (prop instanceof Case) {
         const c = prop.replaceSelfBy(obj);
-        const as = args.map(a => a.replaceSelfBy(obj));
-        const e = exp(c, ...as);
+        const e = exp(c, ...args);
         obj = e.reduce(store).replaceSelfBy(obj);
       } else {
         const replaced = prop.replaceSelfBy(obj);
