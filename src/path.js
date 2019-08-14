@@ -2,6 +2,7 @@ import Val from './val';
 import Prim from './prim';
 import Case from './case';
 import v from './v';
+import Comp from './comp';
 import Sym, { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
@@ -137,7 +138,7 @@ export default class Path extends Val {
         obj = obj.unpack();
       }
 
-      const isPrimReceiver = !isMessage && obj === store;
+      const isPrimReceiver = obj === store && (!isMessage || key instanceof Comp);
       let prop = isPrimReceiver ? key : obj.get(key, store);
       if (prop === undefined) {
         return this;
