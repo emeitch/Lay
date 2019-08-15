@@ -653,7 +653,7 @@ describe("stdlib", () => {
         const pth = path("self", "foo");
         const nmap = n({foo: e, bar: pth});
         const map = nmap.reduce(store);
-        
+
         assert.deepStrictEqual(map.get("foo"), v(3));
 
         // not reduced inner path

@@ -2,7 +2,6 @@ import Val from './val';
 import Prim from './prim';
 import Case from './case';
 import v from './v';
-import Comp from './comp';
 import Sym, { sym } from './sym';
 import { exp } from './exp';
 import { func, LiftedNative } from './func';
@@ -130,16 +129,16 @@ export default class Path extends Val {
   step(store) {
     let obj = store;
     for (const elm of this.origin) {
-      const isMessage = Path.isMethodCallingNode(elm);
-      const [kexp, ...args] = isMessage ? elm : [elm];
+      const isMethodCalling = Path.isMethodCallingNode(elm);
+      const [kexp, ...args] = isMethodCalling ? elm : [elm];
       const key = kexp.reduce(store);
 
       if (obj.unpack) {
         obj = obj.unpack();
       }
 
-      const isPrimReceiver = obj === store && (!isMessage || key instanceof Comp);
-      let prop = isPrimReceiver ? key : obj.get(key, store);
+      const gettingProp = obj !== store || (isMethodCalling && key.typeName == "String");
+      let prop = gettingProp ? obj.get(key, store) : key;
       if (prop === undefined) {
         return this;
       }
