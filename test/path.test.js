@@ -250,6 +250,29 @@ describe("Path", () => {
           assert.deepStrictEqual(p.reduce(store), v("d"));
         }
       });
+
+      context("with self referencing path in comp", () => {
+        it("should return nested val", () => {
+          const c = v({
+            a: {
+              b: {
+                c: "d"
+              }
+            },
+            foo: path("self", "a", "b")
+          });
+
+          {
+            const p = new Path(c, "foo");
+            assert.deepStrictEqual(p.reduce(store), v({c: "d"}));
+          }
+
+          {
+            const p = new Path(c, "foo", "c");
+            assert.deepStrictEqual(p.reduce(store), v("d"));
+          }
+        });
+      });
     });
 
     context("path in func", () => {
