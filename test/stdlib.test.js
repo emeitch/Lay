@@ -665,14 +665,18 @@ describe("stdlib", () => {
 
       context("with type", () => {
         it("should return a reduced exp", () => {
-          const e = exp(plus, v(1), v(2));
-
           const pth = path("self", "foo");
           store.put({
             _id: "Buz",
+            foo: "buz",
             bar: pth
           });
+          assert.deepStrictEqual(
+            path("Buz", "bar").reduce(store),
+            v("buz")
+          );
 
+          const e = exp(plus, v(1), v(2));
           const nmap = n({_type: "Buz", foo: e});
           const map = nmap.reduce(store);
 
