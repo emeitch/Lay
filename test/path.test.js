@@ -272,6 +272,34 @@ describe("Path", () => {
             assert.deepStrictEqual(p.reduce(store), v("d"));
           }
         });
+
+        context("with type", () => {
+          it("should return nested val", () => {
+            store.put({
+              _id: "Foo",
+              foo: path("self", "a", "b"),
+            });
+
+            const c = v({
+              _type: "Foo",
+              a: {
+                b: {
+                  c: "d"
+                }
+              },
+            });
+
+            {
+              const p = new Path(c, "foo");
+              assert.deepStrictEqual(p.reduce(store), v({c: "d"}));
+            }
+
+            {
+              const p = new Path(c, "foo", "c");
+              assert.deepStrictEqual(p.reduce(store), v("d"));
+            }
+          });
+        });
       });
     });
 
