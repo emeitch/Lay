@@ -662,31 +662,6 @@ describe("stdlib", () => {
         // reduced inner path
         assert.deepStrictEqual(path(nmap, "bar").reduce(store), v(3));
       });
-
-      context("with type", () => {
-        it("should return a reduced exp", () => {
-          const pth = path("self", "foo");
-          store.put({
-            _id: "Buz",
-            foo: "buz",
-            bar: pth
-          });
-          assert.deepStrictEqual(
-            path("Buz", "bar").reduce(store),
-            v("buz")
-          );
-
-          const e = exp(plus, v(1), v(2));
-          const nmap = n({_type: "Buz", foo: e});
-          const map = nmap.reduce(store);
-
-          assert.deepStrictEqual(map.get("foo"), v(3));
-
-          assert.deepStrictEqual(map.get("bar", store), pth);
-
-          assert.deepStrictEqual(path(nmap, "bar").reduce(store), v(3));
-        });
-      });
     });
   });
 });
