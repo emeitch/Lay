@@ -166,6 +166,9 @@ export default class Path extends Val {
       } else {
         const replaced = prop.replaceSelfBy(obj);
         obj = replaced.reduce(store);
+        if (obj instanceof Path && obj.equals(replaced)) {
+          obj = prop;
+        }
       }
     }
 

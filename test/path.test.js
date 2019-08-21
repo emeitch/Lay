@@ -273,11 +273,25 @@ describe("Path", () => {
           }
         });
 
-        context("with type", () => {
-          it("should return nested val", () => {
+        context("abstruct type", () => {
+          it("should return based path", () => {
+            const pth = path("self", "a");
+            // not exist a prop
             store.put({
               _id: "Foo",
-              foo: path("self", "a", "b"),
+              foo: pth
+            });
+
+            assert.deepStrictEqual(path("Foo", "foo").reduce(store), pth);
+          });
+        });
+
+        context("with type", () => {
+          it("should return nested val", () => {
+            const pth = path("self", "a", "b");
+            store.put({
+              _id: "Foo",
+              foo: pth
             });
 
             const c = v({
@@ -290,12 +304,12 @@ describe("Path", () => {
             });
 
             {
-              const p = new Path(c, "foo");
+              const p = path(c, "foo");
               assert.deepStrictEqual(p.reduce(store), v({c: "d"}));
             }
 
             {
-              const p = new Path(c, "foo", "c");
+              const p = path(c, "foo", "c");
               assert.deepStrictEqual(p.reduce(store), v("d"));
             }
           });
