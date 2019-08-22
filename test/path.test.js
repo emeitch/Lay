@@ -276,13 +276,16 @@ describe("Path", () => {
         context("abstruct type", () => {
           it("should return based path", () => {
             const pth = path("self", "a");
+
             // not exist a prop
             store.put({
               _id: "Foo",
-              foo: pth
+              foo: pth,
+              bar: path("self")
             });
 
             assert.deepStrictEqual(path("Foo", "foo").reduce(store), pth);
+            assert.deepStrictEqual(path("Foo", "bar").reduce(store), path("Foo").reduce(store));
           });
         });
 
