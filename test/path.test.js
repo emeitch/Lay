@@ -277,7 +277,6 @@ describe("Path", () => {
           it("should return based path", () => {
             const pth = path("self", "a");
 
-            // not exist a prop
             store.put({
               _id: "Foo",
               foo: pth,
