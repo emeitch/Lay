@@ -262,15 +262,8 @@ describe("Path", () => {
             foo: path("self", "a", "b")
           });
 
-          {
-            const p = new Path(c, "foo");
-            assert.deepStrictEqual(p.reduce(store), v({c: "d"}));
-          }
-
-          {
-            const p = new Path(c, "foo", "c");
-            assert.deepStrictEqual(p.reduce(store), v("d"));
-          }
+          assert.deepStrictEqual(path(c, "foo").reduce(store), v({c: "d"}));
+          assert.deepStrictEqual(path(c, "foo", "c").reduce(store), v("d"));
         });
 
         context("abstruct type", () => {
@@ -305,15 +298,8 @@ describe("Path", () => {
               },
             });
 
-            {
-              const p = path(c, "foo");
-              assert.deepStrictEqual(p.reduce(store), v({c: "d"}));
-            }
-
-            {
-              const p = path(c, "foo", "c");
-              assert.deepStrictEqual(p.reduce(store), v("d"));
-            }
+            assert.deepStrictEqual(path(c, "foo").reduce(store), v({c: "d"}));
+            assert.deepStrictEqual(path(c, "foo", "c").reduce(store), v("d"));
           });
         });
       });
