@@ -619,7 +619,7 @@ describe("stdlib", () => {
       const map = n("Mp", {foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(map.constructor, Path);
       assert.deepStrictEqual(map.reduce(store).get("foo"), v("bar"));
-      assert.deepStrictEqual(map.reduce(store).get("head"), v("Mp"));
+      assert.deepStrictEqual(map.reduce(store).get("_type"), v("Mp"));
       assert.deepStrictEqual(map.reduce(store).typeName, "Map");
 
       const nmap = n({foo: v("bar"), fiz: v("buz")});

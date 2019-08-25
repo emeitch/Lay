@@ -30,8 +30,8 @@ describe("v function", () => {
     it("should return a Comp", () => {
       const val = v("Foo", {a: 1, b: 2});
       assert(val instanceof Comp);
-      assert.deepStrictEqual(val.head, v("Foo"));
-      assert.deepStrictEqual(val.origin, {a: 1, b: 2});
+      assert.deepStrictEqual(val.get("_type"), v("Foo"));
+      assert.deepStrictEqual(val.origin, {_type: v("Foo"), a: 1, b: 2});
       assert.deepStrictEqual(val.get("a"), v(1));
 
       const val2 = v("Foo", [1, 2]);
@@ -45,8 +45,8 @@ describe("v function", () => {
   context("with empty complex value as enum value", () => {
     it("should return a empty Comp", () => {
       const val = v("Foo", {});
-      assert.deepStrictEqual(val.head, v("Foo"));
-      assert.deepStrictEqual(val.origin, {});
+      assert.deepStrictEqual(val.get("_type"), v("Foo"));
+      assert.deepStrictEqual(val.origin, {_type: v("Foo")});
     });
   });
 
@@ -72,19 +72,9 @@ describe("v function", () => {
     it("should return a Comp", () => {
       const val = v("Foo", {a: v("Bar", {b: 1, c: 2})});
       assert(val instanceof Comp);
-      assert.deepStrictEqual(val.head, v("Foo"));
-      assert.deepStrictEqual(val.origin, {a: v("Bar", {b: 1, c: 2})});
+      assert.deepStrictEqual(val.get("_type"), v("Foo"));
+      assert.deepStrictEqual(val.origin, {_type: v("Foo"), a: v("Bar", {b: 1, c: 2})});
       assert.deepStrictEqual(val.get("a"), v("Bar", {b: 1, c: 2}));
-    });
-  });
-
-  context("with literal prototype complex value", () => {
-    it("should return a Comp", () => {
-      const val = v(v(v({a: 1}), {b: 2}), {c: 3});
-      assert.deepStrictEqual(val.head, v(v({a: 1}), {b: 2}));
-      assert.deepStrictEqual(val.get("a"), undefined);
-      assert.deepStrictEqual(val.get("b"), undefined);
-      assert.deepStrictEqual(val.get("c"), v(3)); // it can get only origin val
     });
   });
 

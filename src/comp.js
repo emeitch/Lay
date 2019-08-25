@@ -53,8 +53,11 @@ export default class Comp extends Val {
   }
 
   stringify(_indent=0) {
-    const head = !this.head.equals(NullVal) ? this.head.stringify() + " " : "";
-    return head + Val.stringify(this.origin, _indent);
+    const type = this.getOwnProp("_type");
+    const typestr = type.equals(v("Map")) ? "" : type.origin + " ";
+    const originstr = Object.assign({}, this.origin);
+    delete originstr._type;
+    return typestr + Val.stringify(originstr, _indent);
   }
 
   get reducible() {
@@ -150,7 +153,7 @@ export default class Comp extends Val {
 
   object(store) {
     const o = super.object(store);
-    if (!this.head.equals(NullVal)) {
+    if (this.head && !this.head.equals(NullVal)) {
       o._head = this.head.object(store);
     }
     return o;
@@ -191,6 +194,11 @@ export class CompArray extends Comp {
 }
 
 export class CompMap extends Comp {
+  constructor(origin, type) {
+    const o = Object.assign({}, origin, type ? {_type: type}: undefined);
+    super(o);
+  }
+
   get typeName() {
      return "Map";
   }
@@ -209,9 +217,16 @@ export class CompMap extends Comp {
       return super.collate(target);
     }
 
+    if (!this.getOwnProp("_type").equals(target.getOwnProp("_type"))) {
+      return { pattern: this, result: null };
+    }
+
     const result = {};
     for (const key of Object.keys(this.origin)) {
-      const pat = this.origin[key];
+      if (key[0] === "_") {
+        continue;
+      }
+      const pat = this.getOwnProp(key);
       const m = pat.collate(Comp.valFrom(target.origin[key]));
       Object.assign(result, m.result);
     }

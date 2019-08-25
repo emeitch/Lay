@@ -58,8 +58,7 @@ describe("Comp", () => {
         });
 
         assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(store), {
-          _head: "foo",
-          _type: "Map",
+          _type: "foo",
           a: 1,
           b: 2
         });
@@ -237,7 +236,7 @@ describe("Comp", () => {
 
       assert(v({a: [v(1), v(2)], b: v("bar")}).stringify() === "{\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
 
-      assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).stringify() === "\"Foo\" {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
+      assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).stringify() === "Foo {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
     });
   });
 });
