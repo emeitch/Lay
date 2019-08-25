@@ -34,18 +34,6 @@ describe("Comp", () => {
       it("should return js object", () => {
         const store = new Store();
 
-        assert.deepStrictEqual(v("foo", 1).object(store), {
-          _type: "Comp",
-          _head: "foo",
-          origin: 1
-        });
-
-        assert.deepStrictEqual(v("foo", null).object(store), {
-          _type: "Comp",
-          _head: "foo",
-          origin: null
-        });
-
         assert.deepStrictEqual(v({a: 1, b: 2}).object(store), {
           _type: "Map",
           a: 1,
@@ -57,16 +45,10 @@ describe("Comp", () => {
           origin: [1, 2, 3]
         });
 
-        assert.deepStrictEqual(v("foo", {a: 1, b: 2}).object(store), {
-          _type: "foo",
+        assert.deepStrictEqual(v("Foo", {a: 1, b: 2}).object(store), {
+          _type: "Foo",
           a: 1,
           b: 2
-        });
-
-        assert.deepStrictEqual(v("bar", [1, 2, 3]).object(store), {
-          _type: "Array",
-          _head: "bar",
-          origin: [1, 2, 3]
         });
 
         assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(store), {
@@ -224,7 +206,6 @@ describe("Comp", () => {
           assert.deepStrictEqual(v({a: 1}).collate(v([1])).result, null);
           assert.deepStrictEqual(v([1]).collate(v({a: 1})).result, null);
           assert.deepStrictEqual(v("Foo", {a: 1}).collate(v({a: 1})).result, null);
-          assert.deepStrictEqual(v("Foo", [1]).collate(v([1])).result, null);
         });
       });
     });

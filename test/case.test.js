@@ -177,16 +177,16 @@ describe("Case", () => {
       });
     });
 
-    context("unmatching comp tuple pattern", () => {
+    context("unmatching CompMap pattern", () => {
       it("should throws a error", () => {
         const e = exp(
           kase(
             alt(
-              v("Foo", [sym("a"), sym("b")]),
+              v("Foo", {a: sym("a"), b: sym("b")}),
               v("unmatched pattern")
             )
           ),
-          v("Bar", [2, 3])
+          v("Bar", {a: 2, b: 3})
         );
         assert.throws(() => e.reduce(store), /matched pattern not found/);
       });

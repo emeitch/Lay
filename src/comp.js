@@ -4,8 +4,6 @@ import Val from './val';
 import Prim from './prim';
 import v from './v';
 
-const NullVal = new Prim(null);
-
 export default class Comp extends Val {
   static valFrom(...args) {
     const origin = args.pop();
@@ -44,12 +42,6 @@ export default class Comp extends Val {
     }
 
     throw `not supported origin: ${origin}`;
-  }
-
-
-  constructor(origin, head) {
-    super(origin);
-    this.head = head || NullVal;
   }
 
   stringify(_indent=0) {
@@ -106,11 +98,6 @@ export default class Comp extends Val {
       return ownProp;
     }
 
-    const kstr = this.convertKeyString(key);
-    if (kstr === "head") {
-      return this.head;
-    }
-
     return super.get(key, store);
   }
 
@@ -137,10 +124,7 @@ export default class Comp extends Val {
   }
 
   sameType(val) {
-    return (
-      val.constructor === this.constructor
-      && val.head.equals(this.head)
-    );
+    return val.constructor === this.constructor;
   }
 
   collate(target) {
@@ -149,14 +133,6 @@ export default class Comp extends Val {
     }
 
     return this.origin.collate(Comp.valFrom(target.origin));
-  }
-
-  object(store) {
-    const o = super.object(store);
-    if (this.head && !this.head.equals(NullVal)) {
-      o._head = this.head.object(store);
-    }
-    return o;
   }
 }
 

@@ -22,7 +22,7 @@ describe("v function", () => {
 
       const date = v(new Date());
       assert(date instanceof Comp);
-      assert(date.head, v("Date"));
+      assert(date.get("_type"), v("Date"));
     });
   });
 
@@ -33,12 +33,6 @@ describe("v function", () => {
       assert.deepStrictEqual(val.get("_type"), v("Foo"));
       assert.deepStrictEqual(val.origin, {_type: v("Foo"), a: 1, b: 2});
       assert.deepStrictEqual(val.get("a"), v(1));
-
-      const val2 = v("Foo", [1, 2]);
-      assert(val2 instanceof Comp);
-      assert.deepStrictEqual(val2.head, v("Foo"));
-      assert.deepStrictEqual(val2.origin, [1, 2]);
-      assert.deepStrictEqual(val2.get(0), v(1));
     });
   });
 
@@ -47,24 +41,6 @@ describe("v function", () => {
       const val = v("Foo", {});
       assert.deepStrictEqual(val.get("_type"), v("Foo"));
       assert.deepStrictEqual(val.origin, {_type: v("Foo")});
-    });
-  });
-
-  context("with premitive complex value", () => {
-    it("should return a Comp with head", () => {
-      const val = v("Foo", 1);
-      assert.deepStrictEqual(val, new Comp(1, v("Foo")));
-      assert.deepStrictEqual(val.head, v("Foo"));
-      assert.deepStrictEqual(val.origin, 1);
-    });
-  });
-
-  context("with null premitive complex value", () => {
-    it("should return a head only Comp", () => {
-      const val = v("Foo", null);
-      assert.deepStrictEqual(val, new Comp(null, v("Foo")));
-      assert.deepStrictEqual(val.head, v("Foo"));
-      assert.deepStrictEqual(val.origin, null);
     });
   });
 

@@ -4,7 +4,7 @@ import Act from './act';
 import Store from './store';
 import Prim from './prim';
 import Path from './path';
-import Comp, { CompArray, CompMap } from  './comp';
+import { CompArray, CompMap } from  './comp';
 import { exp } from './exp';
 import { kase, alt, grd, otherwise } from './case';
 import { func, LiftedNative } from './func';
@@ -159,34 +159,18 @@ export const std = new Store();
 }
 
 {
-  const comp = "Comp";
-
-  std.set(
-    comp,
-    "new",
-    func(new LiftedNative(function(...args) {
-      const head = args.shift();
-      const origin = args.shift() || null;
-      return new Comp(origin, head);
-    }))
-  );
-}
-
-{
   const arr = "Array";
 
   std.set(
     arr,
     "new",
     func(new LiftedNative(function(...args) {
-      const hsrc = args.shift();
-      const head = hsrc.equals(v(null)) ? undefined : v(hsrc.origin);
       const o = [];
       while(args.length > 0) {
         const val = args.shift();
         o.push(val instanceof Prim ? val.origin : val);
       }
-      return new CompArray(o, head);
+      return new CompArray(o);
     }))
   );
 
@@ -367,11 +351,11 @@ export const std = new Store();
 
 export function n(...args) {
   const origin = args.pop();
-  const hsrc = args.pop();
-  const head = hsrc ? v(hsrc) : v(null);
   if (Array.isArray(origin)) {
-    return path("Array", ["new", head].concat(origin));
-  } if (origin instanceof Object && !(origin instanceof Val)) {
+    return path("Array", ["new"].concat(origin));
+  } else if (origin instanceof Object && !(origin instanceof Val)) {
+    const hsrc = args.pop();
+    const head = hsrc ? v(hsrc) : v(null);
     const maparr = Object.keys(origin).reduce((r, k) => {
       const o = origin[k];
       const val = o instanceof Val || typeof(o) === "string" ? o : v(o);
@@ -379,11 +363,6 @@ export function n(...args) {
     }, []);
     return path("Map", ["new", head].concat(maparr));
   } else {
-    if (head instanceof Val && head.equals(v(null))) {
-      const h = v(origin);
-      return path("Comp", ["new", h]);
-    } else {
-      return path("Comp", ["new", head, origin]);
-    }
+    throw "not comp pattern args";
   }
 }
