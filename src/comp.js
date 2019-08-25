@@ -9,38 +9,38 @@ const NullVal = new Prim(null);
 export default class Comp extends Val {
   static valFrom(...args) {
     const origin = args.pop();
-    const hsrc = args.pop() || null;
-    const head = !hsrc || hsrc instanceof Val ? hsrc : new Prim(hsrc);
-    const type = typeof(origin);
+    const typesrc = args.pop() || null;
+    const type = !typesrc || typesrc instanceof Val ? typesrc : new Prim(typesrc);
+    const jstype = typeof(origin);
 
-    if (!head && origin instanceof Val) {
+    if (!type && origin instanceof Val) {
       return origin;
     }
 
-    if (head === null &&
-        (type === "number" ||
-         type === "string" ||
-         type === "boolean" ||
+    if (type === null &&
+        (jstype === "number" ||
+         jstype === "string" ||
+         jstype === "boolean" ||
          origin === null)) {
       return new Prim(origin);
     }
 
-    if (head || origin) {
+    if (type || origin) {
       let orgn;
       if (Array.isArray(origin)) {
         orgn = origin.map(val => val instanceof Prim ? val.origin : val);
-        return new CompArray(orgn, head);
-      } else if (type === "object" && origin && origin.constructor === Object) {
+        return new CompArray(orgn, type);
+      } else if (jstype === "object" && origin && origin.constructor === Object) {
         orgn = {};
         for (const key of Object.keys(origin)) {
           const val = origin[key];
           orgn[key] = val instanceof Prim ? val.origin : val;
         }
-        return new CompMap(orgn, head);
-      } else if (type === "object" && origin && origin.constructor === Date) {
-        return new CompDate(origin, head);
+        return new CompMap(orgn, type);
+      } else if (jstype === "object" && origin && origin.constructor === Date) {
+        return new CompDate(origin, type);
       }
-      return new Comp(origin, head);
+      return new Comp(origin, type);
     }
 
     throw `not supported origin: ${origin}`;
