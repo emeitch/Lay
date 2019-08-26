@@ -1,49 +1,9 @@
 import _ from 'lodash';
 
 import Val from './val';
-import Prim from './prim';
 import v from './v';
 
 export default class Comp extends Val {
-  static valFrom(...args) {
-    const origin = args.pop();
-    const typesrc = args.pop() || null;
-    const type = !typesrc || typesrc instanceof Val ? typesrc : new Prim(typesrc);
-    const jstype = typeof(origin);
-
-    if (!type && origin instanceof Val) {
-      return origin;
-    }
-
-    if (type === null &&
-        (jstype === "number" ||
-         jstype === "string" ||
-         jstype === "boolean" ||
-         origin === null)) {
-      return new Prim(origin);
-    }
-
-    if (type || origin) {
-      let orgn;
-      if (Array.isArray(origin)) {
-        orgn = origin.map(val => val instanceof Prim ? val.origin : val);
-        return new CompArray(orgn, type);
-      } else if (jstype === "object" && origin && origin.constructor === Object) {
-        orgn = {};
-        for (const key of Object.keys(origin)) {
-          const val = origin[key];
-          orgn[key] = val instanceof Prim ? val.origin : val;
-        }
-        return new CompMap(orgn, type);
-      } else if (jstype === "object" && origin && origin.constructor === Date) {
-        return new CompDate(origin, type);
-      }
-      return new Comp(origin, type);
-    }
-
-    throw `not supported origin: ${origin}`;
-  }
-
   stringify(_indent=0) {
     const type = this.getOwnProp("_type");
     const typestr = type.equals(v("Map")) ? "" : type.origin + " ";
@@ -57,13 +17,13 @@ export default class Comp extends Val {
   }
 
   get field() {
-    return Comp.valFrom(this.origin);
+    return v(this.origin);
   }
 
   getCompProp(key) {
     const kstr = this.convertKeyString(key);
     if (this.origin !== null && this.origin.hasOwnProperty(kstr)) {
-      return this.constructor.valFrom(this.origin[kstr]);
+      return v(this.origin[kstr]);
     }
 
     return undefined;
@@ -102,12 +62,12 @@ export default class Comp extends Val {
   }
 
   patch(diff) {
-    let d = Comp.valFrom(diff).origin;
+    let d = v(diff).origin;
 
     const remove = obj => {
       for (const k of Object.keys(obj)) {
         const prop = obj[k];
-        if (prop === null || (prop.equals && prop.equals(Comp.valFrom(null)))) {
+        if (prop === null || (prop.equals && prop.equals(v(null)))) {
           delete obj[k];
         }
 
@@ -132,7 +92,7 @@ export default class Comp extends Val {
       return super.collate(target);
     }
 
-    return this.origin.collate(Comp.valFrom(target.origin));
+    return this.origin.collate(v(target.origin));
   }
 }
 
@@ -155,7 +115,7 @@ export class CompArray extends Comp {
     const result = {};
     let i = 0;
     for (const pat of this.origin) {
-      const m = pat.collate(Comp.valFrom(target.origin[i]));
+      const m = pat.collate(v(target.origin[i]));
       Object.assign(result, m.result);
       i++;
     }
@@ -203,7 +163,7 @@ export class CompMap extends Comp {
         continue;
       }
       const pat = this.getOwnProp(key);
-      const m = pat.collate(Comp.valFrom(target.origin[key]));
+      const m = pat.collate(v(target.origin[key]));
       Object.assign(result, m.result);
     }
     return { pattern: this, target, result };
