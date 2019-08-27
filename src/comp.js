@@ -16,10 +16,6 @@ export default class Comp extends Val {
     return false;
   }
 
-  get field() {
-    return v(this.origin);
-  }
-
   getCompProp(key) {
     const kstr = this.convertKeyString(key);
     if (this.origin !== null && this.origin.hasOwnProperty(kstr)) {
@@ -82,18 +78,6 @@ export default class Comp extends Val {
     const newObj = remove(_.merge(oo, d));
     return new this.constructor(newObj);
   }
-
-  sameType(val) {
-    return val.constructor === this.constructor;
-  }
-
-  collate(target) {
-    if (!this.sameType(target)) {
-      return super.collate(target);
-    }
-
-    return this.origin.collate(v(target.origin));
-  }
 }
 
 export class CompArray extends Comp {
@@ -108,7 +92,7 @@ export class CompArray extends Comp {
   }
 
   collate(target) {
-    if (!this.sameType(target) || this.origin.length !== this.origin.length) {
+    if (this.constructor !== target.constructor || this.origin.length !== target.origin.length) {
       return super.collate(target);
     }
 
@@ -149,7 +133,7 @@ export class CompMap extends Comp {
   }
 
   collate(target) {
-    if (!this.sameType(target)) {
+    if (this.constructor !== target.constructor) {
       return super.collate(target);
     }
 

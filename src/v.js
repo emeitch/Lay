@@ -1,6 +1,6 @@
 import Val from './val';
 import Prim from './prim';
-import Comp, {CompArray, CompMap, CompDate} from './comp';
+import {CompArray, CompMap, CompDate} from './comp';
 
 export default function v(...args) {
   const origin = args.pop();
@@ -35,7 +35,7 @@ export default function v(...args) {
     } else if (jstype === "object" && origin && origin.constructor === Date) {
       return new CompDate(origin, type);
     }
-    return new Comp(origin, type);
+    throw `not supported origin: ${origin && origin.stringify ? origin.stringify() : origin}, type: ${type.stringify()}`;
   }
 
   throw `not supported origin: ${origin}`;

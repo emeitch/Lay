@@ -20,9 +20,7 @@ export function parseVal(raw) {
 
   if (type === "object") {
     const type = raw._type;
-    if (type === "Comp") {
-      return v(head, parseVal(raw.origin));
-    } else if (type === "Array") {
+    if (type === "Array") {
       return v(head, raw.origin.map(i => parseVal(i)));
     } else if (type === "Date") {
       return v(head, new Date(raw.origin));

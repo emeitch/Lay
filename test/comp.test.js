@@ -193,13 +193,6 @@ describe("Comp", () => {
       });
     });
 
-    describe("#field", () => {
-      it("should return the field val", () => {
-        const val = v("foo", 3);
-        assert.deepStrictEqual(val.field, v(3));
-      });
-    });
-
     describe("#collate", () => {
       context("unmatched other val", () => {
         it("should return null", () => {

@@ -130,7 +130,7 @@ describe("stdlib", () => {
         store.put({
           _id: id3,
           _type: "Foo",
-          _status: v("deleted", null), // not exists
+          _status: v("deleted"), // not exists
         });
 
         const ids = path("Foo", "all").reduce(store);

@@ -61,6 +61,13 @@ describe("v function", () => {
     });
   });
 
+  context("with not supported origin and type", () => {
+    it("should throw error", () => {
+      assert.throws(() => v("Foo", 3), /not supported origin:.* type:.*/);
+      assert.throws(() => v("Foo", v(3)), /not supported origin:.* type:.*/);
+    });
+  });
+
   context("with error value", () => {
     it("should throw error", () => {
       assert.throws(() => v(undefined), /not supported origin:/);

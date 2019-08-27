@@ -31,18 +31,6 @@ describe("parseObjs", () => {
     });
   });
 
-  context("comp head", () => {
-    it("should parse a comp val", () => {
-      const objs = parseObjs([{
-        _type: "Map",
-        _id: "urn:uuid:uuidexample",
-        foo: {_type: "Comp", _head: "foo", origin: 3}
-      }]);
-
-      assert.deepStrictEqual(objs[0].get("foo"), v("foo", 3));
-    });
-  });
-
   context("array head", () => {
     it("should parse a array val", () => {
       const objs = parseObjs([{
@@ -95,30 +83,6 @@ describe("parseObjs", () => {
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), v("foo", {a: v("bar", [1, 2, 3])}));
-    });
-  });
-
-  context("comp comp head", () => {
-    it("should parse a comp comp val", () => {
-      const objs = parseObjs([{
-        _type: "Map",
-        _id: "urn:uuid:uuidexample",
-        foo: {_type: "Comp", _head: "foo", origin: {_type: "Comp", _head: "bar", origin: 1} },
-      }]);
-
-      assert.deepStrictEqual(objs[0].get("foo"), v("foo", v("bar", 1)));
-    });
-  });
-
-  context("comp as enum head", () => {
-    it("should parse a comp as enum val", () => {
-      const objs = parseObjs([{
-        _type: "Map",
-        _id: "urn:uuid:uuidexample",
-        foo: {_type: "Comp", _head: "foo", origin: null },
-      }]);
-
-      assert.deepStrictEqual(objs[0].get("foo"), v("foo", null));
     });
   });
 
