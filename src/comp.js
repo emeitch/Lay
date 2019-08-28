@@ -3,7 +3,7 @@ import _ from 'lodash';
 import Val from './val';
 import v from './v';
 
-export default class Comp extends Val {
+class Comp extends Val {
   stringify(_indent=0) {
     const type = this.getOwnProp("_type");
     const typestr = type.equals(v("Map")) ? "" : type.origin + " ";

@@ -7,7 +7,7 @@ import { plus } from '../src/func';
 import { path } from '../src/path';
 import v from '../src/v';
 
-describe("Comp", () => {
+describe("CompMap and CompArray", () => {
   context("complex value", () => {
     describe("#jsObj", () => {
       it("should return a js object", () => {
