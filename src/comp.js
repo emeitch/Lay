@@ -56,28 +56,6 @@ class Comp extends Val {
 
     return super.get(key, store);
   }
-
-  patch(diff) {
-    let d = v(diff).origin;
-
-    const remove = obj => {
-      for (const k of Object.keys(obj)) {
-        const prop = obj[k];
-        if (prop === null || (prop.equals && prop.equals(v(null)))) {
-          delete obj[k];
-        }
-
-        if (typeof(prop) === "object" && prop !== null && !(prop instanceof Val)) {
-          remove(prop);
-        }
-      }
-      return obj;
-    };
-
-    const oo = Object.assign({}, this.origin);
-    const newObj = remove(_.merge(oo, d));
-    return new this.constructor(newObj);
-  }
 }
 
 export class CompArray extends Comp {
@@ -151,6 +129,28 @@ export class CompMap extends Comp {
       Object.assign(result, m.result);
     }
     return { pattern: this, target, result };
+  }
+
+  patch(diff) {
+    let d = v(diff).origin;
+
+    const remove = obj => {
+      for (const k of Object.keys(obj)) {
+        const prop = obj[k];
+        if (prop === null || (prop.equals && prop.equals(v(null)))) {
+          delete obj[k];
+        }
+
+        if (typeof(prop) === "object" && prop !== null && !(prop instanceof Val)) {
+          remove(prop);
+        }
+      }
+      return obj;
+    };
+
+    const oo = Object.assign({}, this.origin);
+    const newObj = remove(_.merge(oo, d));
+    return new this.constructor(newObj);
   }
 
   step(store) {
