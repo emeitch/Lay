@@ -18,7 +18,7 @@ class Comp extends Val {
 
   getCompProp(key) {
     const kstr = this.convertKeyString(key);
-    if (this.origin !== null && this.origin.hasOwnProperty(kstr)) {
+    if (this.origin !== null && Object.prototype.hasOwnProperty.call(this.origin, kstr)) {
       return v(this.origin[kstr]);
     }
 
