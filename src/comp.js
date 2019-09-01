@@ -15,47 +15,6 @@ class Comp extends Val {
   get reducible() {
     return false;
   }
-
-  getCompProp(key) {
-    const kstr = this.convertKeyString(key);
-    if (this.origin !== null && Object.prototype.hasOwnProperty.call(this.origin, kstr)) {
-      return v(this.origin[kstr]);
-    }
-
-    return undefined;
-  }
-
-  getOwnProp(k) {
-    const prop = this.getCompProp(k);
-    if (prop) {
-      return prop;
-    }
-
-    return super.getOwnProp(k);
-  }
-
-  get(k, store) {
-    const key = v(k);
-
-    if (store) {
-      const pth = store.path(this, key);
-      if (pth.isInner()) {
-        return store.fetch(pth) || pth;
-      }
-    }
-
-    let ownProp = this.getOwnProp(key);
-    if (ownProp) {
-      const base = this.getOwnProp("_id");
-      if (store && base && ownProp instanceof CompMap) {
-        const _id = store.path(base, key).keyString();
-        return ownProp.patch({_id});
-      }
-      return ownProp;
-    }
-
-    return super.get(key, store);
-  }
 }
 
 export class CompArray extends Comp {
@@ -67,6 +26,25 @@ export class CompArray extends Comp {
     return this.origin.map(val => {
       return val instanceof Val ? val.jsObj : val;
     });
+  }
+
+  getJSArrayItem(key) {
+    const index = key.origin;
+    if (typeof(index) !== "number") {
+      return undefined;
+    }
+
+    const item = this.origin[index];
+    return item ? v(item) : undefined;
+  }
+
+  getOwnProp(key) {
+    return this.getJSArrayItem(key) || super.getOwnProp(key);
+  }
+
+  get(k, store) {
+    const key = v(k);
+    return this.getOwnProp(key) || super.get(key, store);
   }
 
   collate(target) {
@@ -108,6 +86,39 @@ export class CompMap extends Comp {
       ret[key] = val instanceof Val ? val.jsObj : val;
     }
     return ret;
+  }
+
+  getJSObjectProperty(key) {
+    const kstr = this.convertKeyString(key);
+    const hasProp = Object.prototype.hasOwnProperty.call(this.origin, kstr);
+    return hasProp ? v(this.origin[kstr]) : undefined;
+  }
+
+  getOwnProp(key) {
+    return this.getJSObjectProperty(key) || super.getOwnProp(key);
+  }
+
+  get(k, store) {
+    const key = v(k);
+
+    if (store) {
+      const pth = store.path(this, key);
+      if (pth.isInner()) {
+        return store.fetch(pth) || pth;
+      }
+    }
+
+    const ownProp = this.getOwnProp(key);
+    if (ownProp) {
+      const base = this.getOwnProp("_id");
+      if (store && base && ownProp instanceof CompMap) {
+        const _id = store.path(base, key).keyString();
+        return ownProp.patch({_id});
+      }
+      return ownProp;
+    }
+
+    return super.get(key, store);
   }
 
   collate(target) {

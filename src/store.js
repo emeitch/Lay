@@ -253,7 +253,7 @@ export default class Store {
       return undefined;
     }
 
-    const p = tobj.getCompProp(key);
+    const p = tobj.getOwnProp(key);
     if (p) {
       return p;
     }
@@ -293,7 +293,7 @@ export default class Store {
     }
 
     const ot = this.fetch("Object");
-    const op = ot && ot.getCompProp(key);
+    const op = ot && ot.getJSObjectProperty(key); // todo: getJSObjectPropertyはprivateなメソッドなので別のメソッド呼び出しに変えるべき
     if (op) {
       return op;
     }
