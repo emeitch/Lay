@@ -4,14 +4,6 @@ import Val from './val';
 import v from './v';
 
 class Comp extends Val {
-  stringify(_indent=0) {
-    const type = this.getOwnProp("_type");
-    const typestr = type.equals(v("Map")) ? "" : type.origin + " ";
-    const originstr = Object.assign({}, this.origin);
-    delete originstr._type;
-    return typestr + Val.stringify(originstr, _indent);
-  }
-
   get reducible() {
     return false;
   }
@@ -66,6 +58,10 @@ export class CompArray extends Comp {
     const o = super.object(store);
     o.origin = this.origin.map(o => o instanceof Val ? o.object(store) : o);
     return o;
+  }
+
+  stringify(_indent=0) {
+    return "Array" + " " + Val.stringify(this.origin, _indent);
   }
 }
 
@@ -184,6 +180,14 @@ export class CompMap extends Comp {
   keyString() {
     const id = this.get("_id");
     return id ? id.keyString() : super.keyString();
+  }
+
+  stringify(_indent=0) {
+    const type = this.getOwnProp("_type");
+    const typestr = type.equals(v("Map")) ? "" : type.origin + " ";
+    const originstr = Object.assign({}, this.origin);
+    delete originstr._type;
+    return typestr + Val.stringify(originstr, _indent);
   }
 }
 
