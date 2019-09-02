@@ -202,4 +202,8 @@ export class CompDate extends Comp {
       origin: this.origin.toISOString()
     });
   }
+
+  stringify(indent=0) {
+    return " ".repeat(indent) + "Date" + " { iso: \"" + this.origin.toISOString() + "\" }";
+  }
 }

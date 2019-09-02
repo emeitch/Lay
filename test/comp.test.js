@@ -235,6 +235,14 @@ describe("CompDate", () => {
       });
     });
   });
+
+  describe("stringify", () => {
+    it("should return string dump", () => {
+      const date = new Date("2018-01-01T00:00:00+0900");
+      const cd = v(date);
+      assert.deepStrictEqual(cd.stringify(), "Date { iso: \"2017-12-31T15:00:00.000Z\" }");
+    });
+  });
 });
 
 describe("CompMap", () => {
