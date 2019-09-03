@@ -3,13 +3,7 @@ import _ from 'lodash';
 import Val from './val';
 import v from './v';
 
-class Comp extends Val {
-  get reducible() {
-    return false;
-  }
-}
-
-export class CompArray extends Comp {
+export class CompArray extends Val {
   get typeName() {
      return "Array";
   }
@@ -65,7 +59,7 @@ export class CompArray extends Comp {
   }
 }
 
-export class CompMap extends Comp {
+export class CompMap extends Val {
   constructor(origin, type) {
     const o = Object.assign({}, origin, type ? {_type: type}: undefined);
     super(o);
@@ -191,7 +185,7 @@ export class CompMap extends Comp {
   }
 }
 
-export class CompDate extends Comp {
+export class CompDate extends Val {
   get typeName() {
      return "Date";
   }

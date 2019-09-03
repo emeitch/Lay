@@ -16,13 +16,6 @@ describe("CompMap and CompArray", () => {
       });
     });
 
-    describe("#reducible", () => {
-      it("should return false", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2}).reducible, false);
-        assert.deepStrictEqual(v([1, 2, 3]).reducible, false);
-      });
-    });
-
     describe("#typeName", () => {
       it("should return type sym", () => {
         assert.deepStrictEqual(v({a: 1, b: 2}).typeName, "Map");
@@ -243,6 +236,9 @@ describe("CompDate", () => {
       assert.deepStrictEqual(cd.stringify(), "Date { iso: \"2017-12-31T15:00:00.000Z\" }");
     });
   });
+});
+
+describe("CompArray", () => {
 });
 
 describe("CompMap", () => {
