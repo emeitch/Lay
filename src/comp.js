@@ -55,7 +55,7 @@ export class CompArray extends Val {
   }
 
   stringify(_indent=0) {
-    return "Array" + " " + Val.stringify(this.origin, _indent);
+    return Val.stringify(this.origin, _indent);
   }
 }
 

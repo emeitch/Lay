@@ -7,7 +7,88 @@ import { plus } from '../src/func';
 import { path } from '../src/path';
 import v from '../src/v';
 
-describe("CompMap and CompArray", () => {
+describe("CompArray", () => {
+  context("complex value", () => {
+    describe("#typeName", () => {
+      it("should return type sym", () => {
+        assert.deepStrictEqual(v([1, 2, 3]).typeName, "Array");
+      });
+    });
+
+    describe("#object", () => {
+      it("should return js object", () => {
+        const store = new Store();
+
+        assert.deepStrictEqual(v([1, 2, 3]).object(store), {
+          _type: "Array",
+          origin: [1, 2, 3]
+        });
+
+        assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(store), {
+          _type: "Array",
+          origin: [
+            1,
+            "foo",
+            true,
+            null
+          ]
+        });
+
+        assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(store), {
+          _type: "Array",
+          origin: [
+            "foo",
+            {
+              _type: "Map",
+              bar: 1,
+              buz: false
+            }
+          ]
+        });
+      });
+    });
+
+    describe("#get", () => {
+      it("should return arg index val", () => {
+        const val = v([11, 22]);
+        assert.deepStrictEqual(val.get(0), v(11));
+        assert.deepStrictEqual(val.get(v(1)), v(22));
+      });
+
+      context("not exist prop", () => {
+        it("should return undefined", () => {
+          const val = v([11, 22]);
+          assert.deepStrictEqual(val.get(3), undefined);
+        });
+      });
+    });
+
+    describe("#reduce", () => {
+      it("should return self value", () => {
+        const store = new Store();
+
+        const val = v([11, 22]);
+        assert.deepStrictEqual(val.reduce(store), v([11, 22]));
+      });
+    });
+
+    describe("#collate", () => {
+      context("unmatched other val", () => {
+        it("should return null", () => {
+          assert.deepStrictEqual(v([1]).collate(v({a: 1})).result, null);
+        });
+      });
+    });
+  });
+
+  describe("stringify", () => {
+    it("should return string dump", () => {
+      assert(v([1, 2]).stringify() === "[\n  1, \n  2\n]");
+    });
+  });
+});
+
+describe("CompMap", () => {
   context("complex value", () => {
     describe("#jsObj", () => {
       it("should return a js object", () => {
@@ -19,7 +100,6 @@ describe("CompMap and CompArray", () => {
     describe("#typeName", () => {
       it("should return type sym", () => {
         assert.deepStrictEqual(v({a: 1, b: 2}).typeName, "Map");
-        assert.deepStrictEqual(v([1, 2, 3]).typeName, "Array");
       });
     });
 
@@ -33,25 +113,10 @@ describe("CompMap and CompArray", () => {
           b: 2
         });
 
-        assert.deepStrictEqual(v([1, 2, 3]).object(store), {
-          _type: "Array",
-          origin: [1, 2, 3]
-        });
-
         assert.deepStrictEqual(v("Foo", {a: 1, b: 2}).object(store), {
           _type: "Foo",
           a: 1,
           b: 2
-        });
-
-        assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(store), {
-          _type: "Array",
-          origin: [
-            1,
-            "foo",
-            true,
-            null
-          ]
         });
 
         assert.deepStrictEqual(v({foo: 1, bar: {buz: "2"}}).object(store), {
@@ -86,18 +151,6 @@ describe("CompMap and CompArray", () => {
           _id: "urn:uuid:foo-bar-buz",
           _type: "Foo",
           foo: 1,
-        });
-
-        assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(store), {
-          _type: "Array",
-          origin: [
-            "foo",
-            {
-              _type: "Map",
-              bar: 1,
-              buz: false
-            }
-          ]
         });
       });
     });
@@ -190,7 +243,6 @@ describe("CompMap and CompArray", () => {
       context("unmatched other val", () => {
         it("should return null", () => {
           assert.deepStrictEqual(v({a: 1}).collate(v([1])).result, null);
-          assert.deepStrictEqual(v([1]).collate(v({a: 1})).result, null);
           assert.deepStrictEqual(v("Foo", {a: 1}).collate(v({a: 1})).result, null);
         });
       });
@@ -204,6 +256,21 @@ describe("CompMap and CompArray", () => {
       assert(v({a: [v(1), v(2)], b: v("bar")}).stringify() === "{\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
 
       assert(v("Foo", {a: [v(1), v(2)], b: v("bar")}).stringify() === "Foo {\n  a: [\n    1, \n    2\n  ], \n  b: \"bar\"\n}");
+    });
+  });
+
+  describe("#keyString", () => {
+    it("should return a key string", () => {
+      assert.deepStrictEqual(v({foo: 1}).keyString(), "{\n  foo: 1\n}");
+    });
+
+    context("with _id", () => {
+      it("should return a key string of id", () => {
+        const cm = v({
+          _id: "foo"
+        });
+        assert.deepStrictEqual(cm.keyString(), "foo");
+      });
     });
   });
 });
@@ -234,26 +301,6 @@ describe("CompDate", () => {
       const date = new Date("2018-01-01T00:00:00+0900");
       const cd = v(date);
       assert.deepStrictEqual(cd.stringify(), "Date { iso: \"2017-12-31T15:00:00.000Z\" }");
-    });
-  });
-});
-
-describe("CompArray", () => {
-});
-
-describe("CompMap", () => {
-  describe("#keyString", () => {
-    it("should return a key string", () => {
-      assert.deepStrictEqual(v({foo: 1}).keyString(), "{\n  foo: 1\n}");
-    });
-
-    context("with _id", () => {
-      it("should return a key string of id", () => {
-        const cm = v({
-          _id: "foo"
-        });
-        assert.deepStrictEqual(cm.keyString(), "foo");
-      });
     });
   });
 });
