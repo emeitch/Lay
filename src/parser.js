@@ -20,9 +20,9 @@ export function parseVal(raw) {
 
   if (type === "object") {
     const type = raw._type;
-    if (type === "Array") {
-      return v(head, raw.origin.map(i => parseVal(i)));
-    } else if (type === "Date") {
+    if (type === "Arr") {
+      return v(raw.origin.map(i => parseVal(i)));
+    } else if (type === "Time") {
       return v(head, new Date(raw.origin));
     } else if (type === "Sym") {
       return sym(raw.origin);
@@ -31,7 +31,7 @@ export function parseVal(raw) {
     } else {
       const org = {};
       for (const key of Object.keys(raw)) {
-        if (key == "_type" && type === "Map") {
+        if (key == "_type" && type === "Obj") {
           continue;
         }
 

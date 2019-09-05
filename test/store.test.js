@@ -33,7 +33,7 @@ describe("Store", () => {
 
       const rev = path(id, "_rev").reduce(store);
       assert.deepStrictEqual(path(rev, "_type").reduce(store), v("Revision"));
-      assert.deepStrictEqual(path(rev, "at", "_type").reduce(store), v("Date"));
+      assert.deepStrictEqual(path(rev, "at", "_type").reduce(store), v("Time"));
     });
 
     context("with pack id", () => {
@@ -948,7 +948,7 @@ describe("Store", () => {
       it("should throw error", () => {
         assert.throws(() => {
           store.run(v([1, new Act(() => {})]));
-        }, /not all Act instances Array:/);
+        }, /not all Act instances Arr:/);
       });
     });
   });

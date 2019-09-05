@@ -177,7 +177,7 @@ describe("Case", () => {
       });
     });
 
-    context("unmatching CompMap pattern", () => {
+    context("unmatching Obj pattern", () => {
       it("should throws a error", () => {
         const e = exp(
           kase(

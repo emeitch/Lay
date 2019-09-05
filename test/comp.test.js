@@ -7,11 +7,11 @@ import { plus } from '../src/func';
 import { path } from '../src/path';
 import v from '../src/v';
 
-describe("CompArray", () => {
+describe("Arr", () => {
   context("complex value", () => {
     describe("#typeName", () => {
       it("should return type sym", () => {
-        assert.deepStrictEqual(v([1, 2, 3]).typeName, "Array");
+        assert.deepStrictEqual(v([1, 2, 3]).typeName, "Arr");
       });
     });
 
@@ -20,12 +20,12 @@ describe("CompArray", () => {
         const store = new Store();
 
         assert.deepStrictEqual(v([1, 2, 3]).object(store), {
-          _type: "Array",
+          _type: "Arr",
           origin: [1, 2, 3]
         });
 
         assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(store), {
-          _type: "Array",
+          _type: "Arr",
           origin: [
             1,
             "foo",
@@ -35,11 +35,11 @@ describe("CompArray", () => {
         });
 
         assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(store), {
-          _type: "Array",
+          _type: "Arr",
           origin: [
             "foo",
             {
-              _type: "Map",
+              _type: "Obj",
               bar: 1,
               buz: false
             }
@@ -88,7 +88,7 @@ describe("CompArray", () => {
   });
 });
 
-describe("CompMap", () => {
+describe("Obj", () => {
   context("complex value", () => {
     describe("#jsObj", () => {
       it("should return a js object", () => {
@@ -99,7 +99,7 @@ describe("CompMap", () => {
 
     describe("#typeName", () => {
       it("should return type sym", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2}).typeName, "Map");
+        assert.deepStrictEqual(v({a: 1, b: 2}).typeName, "Obj");
       });
     });
 
@@ -108,7 +108,7 @@ describe("CompMap", () => {
         const store = new Store();
 
         assert.deepStrictEqual(v({a: 1, b: 2}).object(store), {
-          _type: "Map",
+          _type: "Obj",
           a: 1,
           b: 2
         });
@@ -120,7 +120,7 @@ describe("CompMap", () => {
         });
 
         assert.deepStrictEqual(v({foo: 1, bar: {buz: "2"}}).object(store), {
-          _type: "Map",
+          _type: "Obj",
           foo: 1,
           bar: {
             buz: "2"
@@ -129,7 +129,7 @@ describe("CompMap", () => {
 
         const id = uuid("foo-bar-buz");
         assert.deepStrictEqual(v({foo: path(id), bar: ["2", false, null]}).object(store), {
-          _type: "Map",
+          _type: "Obj",
           foo: {
             _type: "Path",
             origin: [
@@ -275,11 +275,11 @@ describe("CompMap", () => {
   });
 });
 
-describe("CompDate", () => {
+describe("Time", () => {
   describe("#typeName", () => {
     it("should return a sym to Date", () => {
       const cd = v(new Date());
-      assert.deepStrictEqual(cd.typeName, "Date");
+      assert.deepStrictEqual(cd.typeName, "Time");
     });
   });
 
@@ -291,7 +291,7 @@ describe("CompDate", () => {
       const store = new Store();
       assert.deepStrictEqual(cd.object(store), {
         origin: "2018-01-01T00:00:00.000Z",
-        _type: "Date",
+        _type: "Time",
       });
     });
   });
@@ -300,7 +300,7 @@ describe("CompDate", () => {
     it("should return string dump", () => {
       const date = new Date("2018-01-01T00:00:00+0900");
       const cd = v(date);
-      assert.deepStrictEqual(cd.stringify(), "Date { iso: \"2017-12-31T15:00:00.000Z\" }");
+      assert.deepStrictEqual(cd.stringify(), "Time { iso: \"2017-12-31T15:00:00.000Z\" }");
     });
   });
 });

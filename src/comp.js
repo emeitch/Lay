@@ -3,9 +3,9 @@ import _ from 'lodash';
 import Val from './val';
 import v from './v';
 
-export class CompArray extends Val {
+export class Arr extends Val {
   get typeName() {
-     return "Array";
+     return "Arr";
   }
 
   get jsObj() {
@@ -59,14 +59,14 @@ export class CompArray extends Val {
   }
 }
 
-export class CompMap extends Val {
+export class Obj extends Val {
   constructor(origin, type) {
     const o = Object.assign({}, origin, type ? {_type: type}: undefined);
     super(o);
   }
 
   get typeName() {
-     return "Map";
+     return "Obj";
   }
 
   get jsObj() {
@@ -101,7 +101,7 @@ export class CompMap extends Val {
     const ownProp = this.getOwnProp(key);
     if (ownProp) {
       const base = this.getOwnProp("_id");
-      if (store && base && ownProp instanceof CompMap) {
+      if (store && base && ownProp instanceof Obj) {
         const _id = store.path(base, key).keyString();
         return ownProp.patch({_id});
       }
@@ -178,16 +178,16 @@ export class CompMap extends Val {
 
   stringify(_indent=0) {
     const type = this.getOwnProp("_type");
-    const typestr = type.equals(v("Map")) ? "" : type.origin + " ";
+    const typestr = type.equals(v("Obj")) ? "" : type.origin + " ";
     const originstr = Object.assign({}, this.origin);
     delete originstr._type;
     return typestr + Val.stringify(originstr, _indent);
   }
 }
 
-export class CompDate extends Val {
+export class Time extends Val {
   get typeName() {
-     return "Date";
+     return "Time";
   }
 
   object(store) {
@@ -198,6 +198,6 @@ export class CompDate extends Val {
   }
 
   stringify(indent=0) {
-    return " ".repeat(indent) + "Date" + " { iso: \"" + this.origin.toISOString() + "\" }";
+    return " ".repeat(indent) + this.typeName + " { iso: \"" + this.origin.toISOString() + "\" }";
   }
 }

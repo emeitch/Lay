@@ -4,7 +4,7 @@ import Val from './val';
 import Act from './act';
 import Prim from './prim';
 import Path, { path } from './path';
-import { CompArray, CompMap } from './comp';
+import { Arr, Obj } from './comp';
 
 export default class Store {
   constructor(...imports) {
@@ -84,7 +84,7 @@ export default class Store {
 
   convertPropObjToIdPath(jsobj) {
     const convert = obj => {
-      if (!(obj instanceof CompMap)) {
+      if (!(obj instanceof Obj)) {
         return obj;
       }
 
@@ -110,7 +110,7 @@ export default class Store {
 
     const obj = v(val);
     const convert = this.convertPropObjToIdPath.bind(this);
-    const props = obj instanceof CompMap ? convert(obj.origin) : { _body: obj };
+    const props = obj instanceof Obj ? convert(obj.origin) : { _body: obj };
 
     const old = this.fetch(key);
     const orev = old && old.getOwnProp("_rev");
@@ -249,7 +249,7 @@ export default class Store {
   traversePropFromType(obj, key) {
     const tname = obj.getOwnProp("_type");
     const tobj = this.fetch(tname);
-    if (!tobj || !(tobj instanceof CompMap)) {
+    if (!tobj || !(tobj instanceof Obj)) {
       return undefined;
     }
 
@@ -258,7 +258,7 @@ export default class Store {
       return p;
     }
 
-    // Mapクラスの実態がCompMapのため、ifで無限再帰を抑制
+    // Mapクラスの実態がObjのため、ifで無限再帰を抑制
     if (!obj.equals(tobj)) {
       const p = this.traversePropFromType(tobj, key);
       if (p) {
@@ -382,7 +382,7 @@ export default class Store {
 
       if (tname.origin === cid.origin) {
         return true;
-      } else if (tname.origin === "Map") {
+      } else if (tname.origin === "Obj") {
         return false;
       } else {
         const c = this.fetch(tname);
@@ -412,7 +412,7 @@ export default class Store {
   }
 
   setAct(obj, key, val) {
-    const id = obj instanceof CompMap ? obj.getOwnProp("_id") : obj;
+    const id = obj instanceof Obj ? obj.getOwnProp("_id") : obj;
     return new Act(() => {
       this.set(id, key, val.unpack());
     });
@@ -425,7 +425,7 @@ export default class Store {
     }
 
     while(acts) {
-      if (!(acts instanceof CompArray)) {
+      if (!(acts instanceof Arr)) {
         break;
       }
 
@@ -438,7 +438,7 @@ export default class Store {
       }
 
       if (acts.origin.some(o => !(o instanceof Act || o === null))) {
-        throw `not all Act instances Array: ${acts.stringify()}`;
+        throw `not all Act instances Arr: ${acts.stringify()}`;
       }
 
       let lastAct;

@@ -4,7 +4,7 @@ import Act from './act';
 import Store from './store';
 import Prim from './prim';
 import Path from './path';
-import { CompArray, CompMap } from  './comp';
+import { Arr, Obj } from  './comp';
 import { exp } from './exp';
 import { kase, alt, grd, otherwise } from './case';
 import { func, LiftedNative } from './func';
@@ -159,7 +159,7 @@ export const std = new Store();
 }
 
 {
-  const arr = "Array";
+  const arr = "Arr";
 
   std.set(
     arr,
@@ -170,7 +170,7 @@ export const std = new Store();
         const val = args.shift();
         o.push(val instanceof Prim ? val.origin : val);
       }
-      return new CompArray(o);
+      return new Arr(o);
     }))
   );
 
@@ -233,10 +233,10 @@ export const std = new Store();
 }
 
 {
-  const map = "Map";
+  const o = "Obj";
 
   std.set(
-    map,
+    o,
     "new",
     func(new LiftedNative(function(...args) {
       const hsrc = args.shift();
@@ -250,7 +250,7 @@ export const std = new Store();
         const val = args.shift();
         o[key.origin] = val instanceof Prim ? val.origin : val;
       }
-      return new CompMap(o, head);
+      return new Obj(o, head);
     }))
   );
 }
@@ -352,7 +352,7 @@ export const std = new Store();
 export function n(...args) {
   const origin = args.pop();
   if (Array.isArray(origin)) {
-    return path("Array", ["new"].concat(origin));
+    return path("Arr", ["new"].concat(origin));
   } else if (origin instanceof Object && !(origin instanceof Val)) {
     const hsrc = args.pop();
     const head = hsrc ? v(hsrc) : v(null);
@@ -361,7 +361,7 @@ export function n(...args) {
       const val = o instanceof Val || typeof(o) === "string" ? o : v(o);
       return r.concat([k, val]);
     }, []);
-    return path("Map", ["new", head].concat(maparr));
+    return path("Obj", ["new", head].concat(maparr));
   } else {
     throw "not comp pattern args";
   }

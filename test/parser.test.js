@@ -10,7 +10,7 @@ import { parseObjs } from '../src/parser';
 describe("parseObjs", () => {
   it("should parse raw number", () => {
     const objs = parseObjs([{
-      _type: "Map",
+      _type: "Obj",
       _id: "urn:uuid:uuidexample",
       foo: 1
     }]);
@@ -22,7 +22,7 @@ describe("parseObjs", () => {
   context("string head", () => {
     it("should parse a string val", () => {
       const objs = parseObjs([{
-        _type: "Map",
+        _type: "Obj",
         _id: "urn:uuid:uuidexample",
         foo: "2"
       }]);
@@ -31,29 +31,28 @@ describe("parseObjs", () => {
     });
   });
 
-  context("array head", () => {
-    it("should parse a array val", () => {
+  context("arr head", () => {
+    it("should parse a arr val", () => {
       const objs = parseObjs([{
-        _type: "Map",
+        _type: "Obj",
         _id: "urn:uuid:uuidexample",
-        foo: {_type: "Array", origin: [1, 2, 3]}
+        foo: {_type: "Arr", origin: [1, 2, 3]}
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), v([1, 2, 3]));
     });
   });
 
-  context("array map head", () => {
-    it("should parse a array map val", () => {
+  context("arr obj head", () => {
+    it("should parse a arr obj val", () => {
       const objs = parseObjs([{
-        _type: "Map",
+        _type: "Obj",
         _id: "urn:uuid:uuidexample",
         foo: {
-          _type: "Array",
-          _head: "foo",
+          _type: "Arr",
           origin: [
             {
-              _type: "Map",
+              _type: "Obj",
               _head: "bar",
               a: 1,
               b: 2
@@ -62,34 +61,33 @@ describe("parseObjs", () => {
         },
       }]);
 
-      assert.deepStrictEqual(objs[0].get("foo"), v("foo", [v("bar", {a: 1, b: 2})]));
+      assert.deepStrictEqual(objs[0].get("foo"), v([v("bar", {a: 1, b: 2})]));
     });
   });
 
-  context("map array head", () => {
-    it("should parse a map array val", () => {
+  context("obj arr head", () => {
+    it("should parse a obj arr val", () => {
       const objs = parseObjs([{
-        _type: "Map",
+        _type: "Obj",
         _id: "urn:uuid:uuidexample",
         foo: {
-          _type: "Map",
+          _type: "Obj",
           _head: "foo",
           a: {
-            _type: "Array",
-            _head: "bar",
+            _type: "Arr",
             origin: [1, 2, 3]
           }
         },
       }]);
 
-      assert.deepStrictEqual(objs[0].get("foo"), v("foo", {a: v("bar", [1, 2, 3])}));
+      assert.deepStrictEqual(objs[0].get("foo"), v("foo", {a: v([1, 2, 3])}));
     });
   });
 
   context("path head", () => {
     it("should parse a path val", () => {
       const objs = parseObjs([{
-        _type: "Map",
+        _type: "Obj",
         _id: "urn:uuid:uuidexample",
         foo: {_type: "Path", origin: ["Foo", ["bar", "buz"]] },
       }]);
@@ -101,7 +99,7 @@ describe("parseObjs", () => {
   context("sym head", () => {
     it("should parse a sym val", () => {
       const objs = parseObjs([{
-        _type: "Map",
+        _type: "Obj",
         _id: "urn:uuid:uuidexample",
         foo: {_type: "Sym", origin: "Foo"},
       }]);
@@ -110,12 +108,12 @@ describe("parseObjs", () => {
     });
   });
 
-  context("date head", () => {
-    it("should parse a date val", () => {
+  context("time head", () => {
+    it("should parse a time val", () => {
       const objs = parseObjs([{
-        _type: "Map",
+        _type: "Obj",
         _id: "urn:uuid:uuidexample",
-        foo: {_type: "Date", origin: "2018-04-01T00:00:00z"},
+        foo: {_type: "Time", origin: "2018-04-01T00:00:00z"},
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), v(new Date("2018-04-01T00:00:00z")));

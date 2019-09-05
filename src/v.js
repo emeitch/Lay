@@ -1,6 +1,6 @@
 import Val from './val';
 import Prim from './prim';
-import {CompArray, CompMap, CompDate} from './comp';
+import {Arr, Obj, Time} from './comp';
 
 export default function v(...args) {
   const origin = args.pop();
@@ -24,16 +24,16 @@ export default function v(...args) {
     let orgn;
     if (Array.isArray(origin)) {
       orgn = origin.map(val => val instanceof Prim ? val.origin : val);
-      return new CompArray(orgn, type);
+      return new Arr(orgn, type);
     } else if (jstype === "object" && origin && origin.constructor === Object) {
       orgn = {};
       for (const key of Object.keys(origin)) {
         const val = origin[key];
         orgn[key] = val instanceof Prim ? val.origin : val;
       }
-      return new CompMap(orgn, type);
+      return new Obj(orgn, type);
     } else if (jstype === "object" && origin && origin.constructor === Date) {
-      return new CompDate(origin, type);
+      return new Time(origin, type);
     }
     throw `not supported origin: ${origin && origin.stringify ? origin.stringify() : origin}, type: ${type.stringify()}`;
   }

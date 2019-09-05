@@ -350,13 +350,13 @@ describe("stdlib", () => {
 
   context("accessing default Array methods", () => {
     describe("new", () => {
-      it("should create a array", () => {
-        const m = path("Array", ["new", v(1), v(2), v(3)]).reduce(store);
+      it("should create a arr", () => {
+        const m = path("Arr", ["new", v(1), v(2), v(3)]).reduce(store);
         assert.deepStrictEqual(m, v([1, 2, 3]));
       });
 
-      it("should create a nested array", () => {
-        const m = path("Array", ["new", v(1), v(2), path("Array", ["new", v(3), v(4)])]).reduce(store);
+      it("should create a nested arr", () => {
+        const m = path("Arr", ["new", v(1), v(2), path("Arr", ["new", v(3), v(4)])]).reduce(store);
         assert.deepStrictEqual(m, v([v(1), v(2), v([v(3), v(4)])]));
       });
     });
@@ -387,7 +387,7 @@ describe("stdlib", () => {
     });
 
     describe("count", () => {
-      it("should return size of array", () => {
+      it("should return size of a arr", () => {
         const count = path(v([1, 2, 3]), "count").reduce(store);
         assert.deepStrictEqual(count, v(3));
       });
@@ -401,15 +401,15 @@ describe("stdlib", () => {
     });
   });
 
-  context("accessing default Map methods", () => {
+  context("accessing default Obj methods", () => {
     describe("new", () => {
-      it("should create a map", () => {
-        const m = path("Map", ["new", "Foo", "bar", v(1), "buz", v(2)]).reduce(store);
+      it("should create a obj", () => {
+        const m = path("Obj", ["new", "Foo", "bar", v(1), "buz", v(2)]).reduce(store);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v(2)}));
       });
 
-      it("should create a nested map", () => {
-        const exp = path("Map", ["new", "Foo", "bar", v(1), "buz", path("Map", ["new", "Fiz", "faz", v(3)])]);
+      it("should create a nested obj", () => {
+        const exp = path("Obj", ["new", "Foo", "bar", v(1), "buz", path("Obj", ["new", "Fiz", "faz", v(3)])]);
         const m = exp.reduce(store);
         assert.deepStrictEqual(m, v("Foo", {bar: v(1), buz: v("Fiz", {faz: v(3)})}));
 
@@ -423,7 +423,7 @@ describe("stdlib", () => {
 
       context("illegal arguments", () => {
         it("should throw error", () => {
-          assert.throws(() => path("Map", ["new", "Foo", "bar", v(1), "buz"]).reduce(store), /short arguments error/);
+          assert.throws(() => path("Obj", ["new", "Foo", "bar", v(1), "buz"]).reduce(store), /short arguments error/);
         });
       });
     });
@@ -594,32 +594,32 @@ describe("stdlib", () => {
   });
 
   describe("n", () => {
-    it("should return array or map creation path", () => {
+    it("should return arr or obj creation path", () => {
       const arr = n([v(10), v(11), v(12)]);
       assert.deepStrictEqual(arr.constructor, Path);
       assert.deepStrictEqual(arr.reduce(store).get(v(0)), v(10));
-      assert.deepStrictEqual(arr.reduce(store).typeName, "Array");
+      assert.deepStrictEqual(arr.reduce(store).typeName, "Arr");
 
-      const map = n("Mp", {foo: v("bar"), fiz: v("buz")});
-      assert.deepStrictEqual(map.constructor, Path);
-      assert.deepStrictEqual(map.reduce(store).get("foo"), v("bar"));
-      assert.deepStrictEqual(map.reduce(store).get("_type"), v("Mp"));
-      assert.deepStrictEqual(map.reduce(store).typeName, "Map");
+      const obj = n("Mp", {foo: v("bar"), fiz: v("buz")});
+      assert.deepStrictEqual(obj.constructor, Path);
+      assert.deepStrictEqual(obj.reduce(store).get("foo"), v("bar"));
+      assert.deepStrictEqual(obj.reduce(store).get("_type"), v("Mp"));
+      assert.deepStrictEqual(obj.reduce(store).typeName, "Obj");
 
-      const nmap = n({foo: v("bar"), fiz: v("buz")});
-      assert.deepStrictEqual(nmap.constructor, Path);
-      assert.deepStrictEqual(nmap.reduce(store).get("foo"), v("bar"));
-      assert.deepStrictEqual(nmap.reduce(store).typeName, "Map");
+      const nobj = n({foo: v("bar"), fiz: v("buz")});
+      assert.deepStrictEqual(nobj.constructor, Path);
+      assert.deepStrictEqual(nobj.reduce(store).get("foo"), v("bar"));
+      assert.deepStrictEqual(nobj.reduce(store).typeName, "Obj");
 
       const nested = n({foo: {bar: v("baz")}, fiz: v("buz")});
       assert.deepStrictEqual(nested.constructor, Path);
       assert.deepStrictEqual(nested.reduce(store).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested.reduce(store).typeName, "Map");
+      assert.deepStrictEqual(nested.reduce(store).typeName, "Obj");
 
       const nested2 = n({foo: n({bar: v("baz")}), fiz: v("buz")});
       assert.deepStrictEqual(nested2.constructor, Path);
       assert.deepStrictEqual(nested2.reduce(store).reduce(store).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested2.reduce(store).typeName, "Map");
+      assert.deepStrictEqual(nested2.reduce(store).typeName, "Obj");
 
       assert.throws(() => n(1), /not comp pattern args/);
     });
@@ -628,16 +628,16 @@ describe("stdlib", () => {
       it("should return a reduced exp", () => {
         const e = exp(plus, v(1), v(2));
         const pth = path("self", "foo");
-        const nmap = n({foo: e, bar: pth});
-        const map = nmap.reduce(store);
+        const nobj = n({foo: e, bar: pth});
+        const obj = nobj.reduce(store);
 
-        assert.deepStrictEqual(map.get("foo"), v(3));
+        assert.deepStrictEqual(obj.get("foo"), v(3));
 
         // not reduced inner path
-        assert.deepStrictEqual(map.get("bar"), pth);
+        assert.deepStrictEqual(obj.get("bar"), pth);
 
         // reduced inner path
-        assert.deepStrictEqual(path(nmap, "bar").reduce(store), v(3));
+        assert.deepStrictEqual(path(nobj, "bar").reduce(store), v(3));
       });
     });
   });

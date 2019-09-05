@@ -77,7 +77,7 @@ class CaseAlt extends Val {
   }
 
   replace(matches) {
-    // todo: CompMapのfiledsにバインドしている物を除外できていないのを修正する必要あり
+    // todo: Objのfiledsにバインドしている物を除外できていないのを修正する必要あり
     const submatches = matches.filter(m =>
       m.target &&
       Object.keys(m.result).every(k =>
