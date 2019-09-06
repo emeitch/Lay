@@ -240,8 +240,8 @@ export const std = new Store();
     o,
     "new",
     func(new LiftedNative(function(...args) {
-      const hsrc = args.shift();
-      const head = hsrc.equals(v(null)) ? undefined : v(hsrc.origin);
+      const typesrc = args.shift();
+      const type = typesrc.equals(v(null)) ? undefined : v(typesrc.origin);
       const o = {};
       while(args.length > 0) {
         if (args.length == 1) {
@@ -251,7 +251,7 @@ export const std = new Store();
         const val = args.shift();
         o[key.origin] = val instanceof Prim ? val.origin : val;
       }
-      return new Obj(o, head);
+      return new Obj(o, type);
     }))
   );
 }
@@ -355,15 +355,15 @@ export function n(...args) {
   if (Array.isArray(origin)) {
     return path("Arr", ["new"].concat(origin));
   } else if (origin instanceof Object && !(origin instanceof Val)) {
-    const hsrc = args.pop();
-    const head = hsrc ? v(hsrc) : v(null);
+    const typesrc = args.pop();
+    const type = typesrc ? v(typesrc) : v(null);
     const maparr = Object.keys(origin).reduce((r, k) => {
       const o = origin[k];
       const val = o instanceof Val || typeof(o) === "string" ? o : v(o);
       return r.concat([k, val]);
     }, []);
-    return path("Obj", ["new", head].concat(maparr));
+    return path("Obj", ["new", type].concat(maparr));
   } else {
-    throw "not comp pattern args";
+    throw "not complex type pattern args";
   }
 }

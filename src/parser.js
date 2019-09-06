@@ -3,7 +3,6 @@ import { path } from './path';
 import v from './v';
 
 export function parseVal(raw) {
-  const head = !raw || raw._head === undefined ? null : parseVal(raw._head);
   const type = typeof(raw);
   if (
     raw === null ||
@@ -23,25 +22,23 @@ export function parseVal(raw) {
     if (type === "Arr") {
       return v(raw.origin.map(i => parseVal(i)));
     } else if (type === "Time") {
-      return v(head, new Date(raw.origin));
+      return v(new Date(raw.origin));
     } else if (type === "Sym") {
       return sym(raw.origin);
     } else if (type === "Path") {
       return path(...parseVal(raw.origin));
     } else {
-      const org = {};
+      const type = !raw._type ? null : parseVal(raw._type);
+      const orig = {};
+
       for (const key of Object.keys(raw)) {
         if (key == "_type" && type === "Obj") {
           continue;
         }
 
-        if (key == "_head") {
-          continue;
-        }
-
-        org[key] = parseVal(raw[key]);
+        orig[key] = parseVal(raw[key]);
       }
-      return v(head, org);
+      return v(type, orig);
     }
   }
 

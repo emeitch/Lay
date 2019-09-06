@@ -19,7 +19,7 @@ describe("parseObjs", () => {
     assert.deepStrictEqual(objs[0].get("foo"), v(1));
   });
 
-  context("string head", () => {
+  context("string", () => {
     it("should parse a string val", () => {
       const objs = parseObjs([{
         _type: "Obj",
@@ -31,7 +31,7 @@ describe("parseObjs", () => {
     });
   });
 
-  context("arr head", () => {
+  context("arr", () => {
     it("should parse a arr val", () => {
       const objs = parseObjs([{
         _type: "Obj",
@@ -43,17 +43,15 @@ describe("parseObjs", () => {
     });
   });
 
-  context("arr obj head", () => {
+  context("arr obj type", () => {
     it("should parse a arr obj val", () => {
       const objs = parseObjs([{
-        _type: "Obj",
         _id: "urn:uuid:uuidexample",
         foo: {
           _type: "Arr",
           origin: [
             {
-              _type: "Obj",
-              _head: "bar",
+              _type: "Foo",
               a: 1,
               b: 2
             }
@@ -61,18 +59,16 @@ describe("parseObjs", () => {
         },
       }]);
 
-      assert.deepStrictEqual(objs[0].get("foo"), v([v("bar", {a: 1, b: 2})]));
+      assert.deepStrictEqual(objs[0].get("foo"), v([v("Foo", {a: 1, b: 2})]));
     });
   });
 
-  context("obj arr head", () => {
+  context("obj arr type", () => {
     it("should parse a obj arr val", () => {
       const objs = parseObjs([{
-        _type: "Obj",
         _id: "urn:uuid:uuidexample",
         foo: {
-          _type: "Obj",
-          _head: "foo",
+          _type: "Foo",
           a: {
             _type: "Arr",
             origin: [1, 2, 3]
@@ -80,11 +76,11 @@ describe("parseObjs", () => {
         },
       }]);
 
-      assert.deepStrictEqual(objs[0].get("foo"), v("foo", {a: v([1, 2, 3])}));
+      assert.deepStrictEqual(objs[0].get("foo"), v("Foo", {a: v([1, 2, 3])}));
     });
   });
 
-  context("path head", () => {
+  context("path", () => {
     it("should parse a path val", () => {
       const objs = parseObjs([{
         _type: "Obj",
@@ -96,7 +92,7 @@ describe("parseObjs", () => {
     });
   });
 
-  context("sym head", () => {
+  context("sym", () => {
     it("should parse a sym val", () => {
       const objs = parseObjs([{
         _type: "Obj",
@@ -108,7 +104,7 @@ describe("parseObjs", () => {
     });
   });
 
-  context("time head", () => {
+  context("time", () => {
     it("should parse a time val", () => {
       const objs = parseObjs([{
         _type: "Obj",

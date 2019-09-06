@@ -621,7 +621,7 @@ describe("stdlib", () => {
       assert.deepStrictEqual(nested2.reduce(store).reduce(store).get("foo"), v({bar: v("baz")}));
       assert.deepStrictEqual(nested2.reduce(store).typeName, "Obj");
 
-      assert.throws(() => n(1), /not comp pattern args/);
+      assert.throws(() => n(1), /not complex type pattern args/);
     });
 
     describe("reduce", () => {

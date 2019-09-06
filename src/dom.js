@@ -37,10 +37,10 @@ dom.assign(
           }
         }
 
-        const tag = elm.getOwnProp("_type");
+        const tag = elm.getOwnProp("tagName");
         const attr = {};
         for (const key of Object.keys(elm.origin)) {
-          if (key === "children" || key === "_type") {
+          if (key === "children" || key === "tagName") {
             continue;
           }
 
@@ -169,7 +169,7 @@ dom.set(
   )
 );
 
-export function elm(head, ...children) {
+export function elm(tagName, ...children) {
   let attr = {};
   if (children[0].constructor === Object) {
     attr = Object.assign({}, children.shift());
@@ -179,7 +179,7 @@ export function elm(head, ...children) {
     Object.assign(attr, {children: n("children", children)});
   }
 
-  attr._type = head;
+  attr.tagName = tagName;
 
   return n(attr);
 }
@@ -307,6 +307,6 @@ const etags = [
   "video",
   "wbr"
 ];
-etags.forEach(etag => {
-  e[etag] = (...args) => elm(etag, ...args);
+etags.forEach(tagName => {
+  e[tagName] = (...args) => elm(tagName, ...args);
 });
