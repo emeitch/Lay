@@ -1,7 +1,9 @@
 import assert from 'assert';
 
 import Prim from '../src/prim';
-import {Obj, Arr, Time} from '../src/comp';
+import Obj from '../src/obj';
+import Arr from '../src/arr';
+import Time from '../src/time';
 
 import v from '../src/v';
 

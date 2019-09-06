@@ -1,6 +1,8 @@
 import Val from './val';
 import Prim from './prim';
-import {Arr, Obj, Time} from './comp';
+import Obj from './obj';
+import Arr from './arr';
+import Time from './time';
 
 export default function v(...args) {
   const origin = args.pop();

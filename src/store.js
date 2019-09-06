@@ -4,7 +4,8 @@ import Val from './val';
 import Act from './act';
 import Prim from './prim';
 import Path, { path } from './path';
-import { Arr, Obj } from './comp';
+import Obj from './obj';
+import Arr from './arr';
 
 export default class Store {
   constructor(...imports) {
