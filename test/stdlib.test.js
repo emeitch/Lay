@@ -169,7 +169,7 @@ describe("stdlib", () => {
         store.put({
           _id: "Foo"
         });
-        const act = path("Object", ["new", v({
+        const act = path("Object", ["create", v({
           _type: "Foo",
           foo: v("foo"),
           bar: path([plus, v(1), v(2)]),
@@ -463,7 +463,7 @@ describe("stdlib", () => {
           "new",
           func(
             path("Object", [
-              "new",
+              "create",
               v({
                 _type: "Foo"
               })

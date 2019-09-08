@@ -87,7 +87,7 @@ const d = new Store(std);
                   path(
                     "Object",
                     [
-                      "new",
+                      "create",
                       n({
                         "_type": "Task",
                         "title": path(sym("ev"), "value", "trim"),

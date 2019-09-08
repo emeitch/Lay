@@ -81,7 +81,7 @@ export const std = new Store();
 
   std.set(
     obj,
-    "new",
+    "create",
     func("props", new LiftedNative(function(pe) {
       return new Act(() => {
         const props = pe.reduce(this);
