@@ -77,10 +77,10 @@ export const std = new Store();
 }
 
 {
-  const obj = "Object";
+  const entity = "Entity";
 
   std.set(
-    obj,
+    entity,
     "create",
     func("props", new LiftedNative(function(pe) {
       return new Act(() => {
@@ -96,13 +96,13 @@ export const std = new Store();
   );
 
   std.set(
-    obj,
+    entity,
     "_status",
     v("active")
   );
 
   std.set(
-    obj,
+    entity,
     "set",
     func("key", "val", exp(new LiftedNative(function(self, key, val) {
       return this.setAct(self, key.reduce(this), val.reduce(this));
@@ -110,7 +110,7 @@ export const std = new Store();
   );
 
   std.set(
-    obj,
+    entity,
     "get",
     func("key", exp(new LiftedNative(function(self, key) {
       return self.get(key, this);
@@ -119,7 +119,7 @@ export const std = new Store();
 
   // todo: allはClassオブジェクト用のメソッドにしたい
   std.set(
-    obj,
+    entity,
     "all",
     exp(new LiftedNative(function(self) {
       return v(this.instanceIDs(self));
@@ -127,7 +127,7 @@ export const std = new Store();
   );
 
   std.set(
-    obj,
+    entity,
     "delete",
     exp(new LiftedNative(function(self) {
       return this.deleteAct(self);

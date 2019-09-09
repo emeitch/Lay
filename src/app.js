@@ -85,7 +85,7 @@ const d = new Store(std);
                   path(sym("ev"), "value", "trim", ["equals", v("")]),
                   v(null),
                   path(
-                    "Object",
+                    "Entity",
                     [
                       "create",
                       n({

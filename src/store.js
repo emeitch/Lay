@@ -293,7 +293,7 @@ export default class Store {
       }
     }
 
-    const ot = this.fetch("Object");
+    const ot = this.fetch("Entity");
     const op = ot && ot.getJSObjectProperty(key); // todo: getJSObjectPropertyはprivateなメソッドなので別のメソッド呼び出しに変えるべき
     if (op) {
       return op;

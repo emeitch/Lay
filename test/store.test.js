@@ -253,7 +253,7 @@ describe("Store", () => {
           context("with Object", () => {
             it("should return a Object property", () => {
               store.put({
-                _id: "Object",
+                _id: "Entity",
                 bar: v(4)
               });
               store.put({
