@@ -293,10 +293,16 @@ export default class Store {
       }
     }
 
-    const ot = this.fetch("Entity");
-    const op = ot && ot.getJSObjectProperty(key); // todo: getJSObjectPropertyはprivateなメソッドなので別のメソッド呼び出しに変えるべき
-    if (op) {
-      return op;
+    const vt = this.fetch("Val");
+    const vp = vt && vt.getJSObjectProperty(key); // todo: getJSObjectPropertyはprivateなメソッドなので別のメソッド呼び出しに変えるべき
+    if (vp) {
+      return vp;
+    }
+    
+    const et = this.fetch("Entity");
+    const ep = id && et && et.getJSObjectProperty(key); // todo: getJSObjectPropertyはprivateなメソッドなので別のメソッド呼び出しに変えるべき
+    if (ep) {
+      return ep;
     }
 
     return undefined;

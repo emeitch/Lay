@@ -250,8 +250,8 @@ describe("Store", () => {
             assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), v(4));
           });
 
-          context("with Object", () => {
-            it("should return a Object property", () => {
+          context("with Entity", () => {
+            it("should return a Entity's property", () => {
               store.put({
                 _id: "Entity",
                 bar: v(4)
@@ -264,7 +264,7 @@ describe("Store", () => {
                 _id: id0
               });
 
-              assert.deepStrictEqual(path(id0, id1, "bar").reduce(store), v(4));
+              assert.deepStrictEqual(path(id0, "bar").reduce(store), v(4));
             });
           });
         });

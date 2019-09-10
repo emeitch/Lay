@@ -77,6 +77,27 @@ export const std = new Store();
 }
 
 {
+  const val = "Val";
+
+  std.set(
+    val,
+    "get",
+    func("key", exp(new LiftedNative(function(self, key) {
+      return self.get(key, this);
+    }), "self", "key"))
+  );
+
+  // todo: valに"set"を定義するのは汎用的すぎるので是正したい
+  std.set(
+    val,
+    "set",
+    func("key", "val", exp(new LiftedNative(function(self, key, val) {
+      return this.setAct(self, key.reduce(this), val.reduce(this));
+    }), "self", "key", "val"))
+  );
+}
+
+{
   const entity = "Entity";
 
   std.set(
@@ -99,22 +120,6 @@ export const std = new Store();
     entity,
     "_status",
     v("active")
-  );
-
-  std.set(
-    entity,
-    "set",
-    func("key", "val", exp(new LiftedNative(function(self, key, val) {
-      return this.setAct(self, key.reduce(this), val.reduce(this));
-    }), "self", "key", "val"))
-  );
-
-  std.set(
-    entity,
-    "get",
-    func("key", exp(new LiftedNative(function(self, key) {
-      return self.get(key, this);
-    }), "self", "key"))
   );
 
   // todo: allはClassオブジェクト用のメソッドにしたい
