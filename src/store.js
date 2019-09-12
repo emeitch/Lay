@@ -298,9 +298,9 @@ export default class Store {
     if (vp) {
       return vp;
     }
-    
+
     const et = this.fetch("Entity");
-    const ep = id && et && et.getJSObjectProperty(key); // todo: getJSObjectPropertyはprivateなメソッドなので別のメソッド呼び出しに変えるべき
+    const ep = id && et && et.getOwnProp(key);
     if (ep) {
       return ep;
     }
