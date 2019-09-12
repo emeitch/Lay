@@ -22,14 +22,14 @@ export default class Obj extends Val {
     return ret;
   }
 
-  getJSObjectProperty(key) {
+  getOriginProperty(key) {
     const kstr = this.convertKeyString(key);
     const hasProp = Object.prototype.hasOwnProperty.call(this.origin, kstr);
     return hasProp ? v(this.origin[kstr]) : undefined;
   }
 
   getOwnProp(key) {
-    return this.getJSObjectProperty(key) || super.getOwnProp(key);
+    return this.getOriginProperty(key) || super.getOwnProp(key);
   }
 
   get(k, store) {

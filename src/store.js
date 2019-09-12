@@ -294,13 +294,13 @@ export default class Store {
     }
 
     const vt = this.fetch("Val");
-    const vp = vt && vt.getJSObjectProperty(key); // todo: getJSObjectPropertyはprivateなメソッドなので別のメソッド呼び出しに変えるべき
+    const vp = vt && vt.getOriginProperty(key);
     if (vp) {
       return vp;
     }
 
     const et = this.fetch("Entity");
-    const ep = id && et && et.getOwnProp(key);
+    const ep = id && et && et.getOriginProperty(key);
     if (ep) {
       return ep;
     }
