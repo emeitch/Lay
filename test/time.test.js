@@ -19,7 +19,7 @@ describe("Time", () => {
       const store = new Store();
       assert.deepStrictEqual(cd.object(store), {
         origin: "2018-01-01T00:00:00.000Z",
-        _type: "Time",
+        _proto: "Time",
       });
     });
   });

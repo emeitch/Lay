@@ -16,12 +16,12 @@ describe("Arr", () => {
         const store = new Store();
 
         assert.deepStrictEqual(v([1, 2, 3]).object(store), {
-          _type: "Arr",
+          _proto: "Arr",
           origin: [1, 2, 3]
         });
 
         assert.deepStrictEqual(v([v(1), v("foo"), v(true), v(null)]).object(store), {
-          _type: "Arr",
+          _proto: "Arr",
           origin: [
             1,
             "foo",
@@ -31,11 +31,11 @@ describe("Arr", () => {
         });
 
         assert.deepStrictEqual(v(["foo", v({bar: 1, buz: false})]).object(store), {
-          _type: "Arr",
+          _proto: "Arr",
           origin: [
             "foo",
             {
-              _type: "Obj",
+              _proto: "Obj",
               bar: 1,
               buz: false
             }

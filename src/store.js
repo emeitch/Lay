@@ -19,7 +19,7 @@ export default class Store {
     this.id = uuid();
     this.put({
       _id: this.id,
-      _type: "Store"
+      _proto: "Store"
     });
     this.assign("currentStore", path(this.id));
   }
@@ -32,7 +32,7 @@ export default class Store {
   putWithHandler(obj, block) {
     // todo: ロックが実現の為に下記の一連の処理がアトミックな操作となるよううまく保証する
 
-    const tprop = obj.getOwnProp("_type");
+    const tprop = obj.getOwnProp("_proto");
     if (tprop.constructor !== Prim || typeof(tprop.origin) !== "string") {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
@@ -64,7 +64,7 @@ export default class Store {
     const rev = v({
       _id: rid,
       _rev: rid,
-      _type: "Revision",
+      _proto: "Revision",
       at: v(new Date())
     });
 
@@ -248,7 +248,7 @@ export default class Store {
   }
 
   traversePropFromType(obj, key) {
-    const tname = obj.getOwnProp("_type");
+    const tname = obj.getOwnProp("_proto");
     const tobj = this.fetch(tname);
     if (!tobj || !(tobj instanceof Obj)) {
       return undefined;
@@ -385,7 +385,7 @@ export default class Store {
 
     const cid = cls.get("_id", this);
     const isKindOfClass = v => {
-      const tname = v.getOwnProp("_type");
+      const tname = v.getOwnProp("_proto");
 
       if (tname.origin === cid.origin) {
         return true;

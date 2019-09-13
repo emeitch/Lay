@@ -18,7 +18,7 @@ export function parseVal(raw) {
   }
 
   if (type === "object") {
-    const type = raw._type;
+    const type = raw._proto;
     if (type === "Arr") {
       return v(raw.origin.map(i => parseVal(i)));
     } else if (type === "Time") {
@@ -28,11 +28,11 @@ export function parseVal(raw) {
     } else if (type === "Path") {
       return path(...parseVal(raw.origin));
     } else {
-      const type = !raw._type ? null : parseVal(raw._type);
+      const type = !raw._proto ? null : parseVal(raw._proto);
       const orig = {};
 
       for (const key of Object.keys(raw)) {
-        if (key == "_type" && type === "Obj") {
+        if (key == "_proto" && type === "Obj") {
           continue;
         }
 

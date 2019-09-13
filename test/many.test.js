@@ -22,14 +22,14 @@ describe("Many", () => {
       const fid1 = uuid();
       store.put({
         _id: fid1,
-        _type: "Foo",
+        _proto: "Foo",
         bar: path(bid)
       });
 
       const fid2 = uuid();
       store.put({
         _id: fid2,
-        _type: "Foo",
+        _proto: "Foo",
         bar: path(bid)
       });
 
@@ -54,20 +54,20 @@ describe("Many", () => {
         const fid1 = uuid();
         store.put({
           _id: fid1,
-          _type: "Foo",
+          _proto: "Foo",
           bar: path(bid)
         });
 
         const fid2 = uuid();
         store.put({
           _id: fid2,
-          _type: "Foo",
+          _proto: "Foo",
           bar: path(bid)
         });
 
         store.put({
           _id: bid,
-          _type: "Bar",
+          _proto: "Bar",
           foo: new Many("Foo"),
         });
 

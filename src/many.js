@@ -16,7 +16,7 @@ export default class Many extends Val {
     const {type, prop} = this.origin;
     let p = prop;
     if (!p) {
-      const tref = obj.getOwnProp("_type");
+      const tref = obj.getOwnProp("_proto");
       p = tref && tref.keyString().replace(/^(.)/, s => s.toLowerCase());
     }
     return new this.constructor(type, p, obj);

@@ -192,12 +192,12 @@ describe("Path", () => {
       beforeEach(() => {
         store.put({
           _id: id,
-          _type: "parent"
+          _proto: "parent"
         });
 
         store.put({
           _id: "parent",
-          _type: "grandparent",
+          _proto: "grandparent",
           foo: v(2),
           bar: v(3)
         });
@@ -226,7 +226,7 @@ describe("Path", () => {
         const typeid = "Foo";
         store.put({
           _id: id,
-          _type: typeid
+          _proto: typeid
         });
       });
 
@@ -290,7 +290,7 @@ describe("Path", () => {
             });
 
             const c = v({
-              _type: "Foo",
+              _proto: "Foo",
               a: {
                 b: {
                   c: "d"
@@ -418,7 +418,7 @@ describe("Path", () => {
       const id = uuid("foo-bar-buz");
       const p = path(v("bar"), id, ["buz", "fiz"]);
       assert.deepStrictEqual(p.object(), {
-        _type: "Path",
+        _proto: "Path",
         origin: [
           "bar",
           ["urn:uuid:foo-bar-buz"],

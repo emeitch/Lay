@@ -13,7 +13,7 @@ export default class Val {
     return this.constructor.name;
   }
 
-  get __type() {
+  get __proto() {
     return new Prim(this.typeName);
   }
 
@@ -138,7 +138,7 @@ export default class Val {
 
   object(store) {
     return {
-      _type: this.__type.object(store),
+      _proto: this.__proto.object(store),
       origin: this.origin
     };
   }

@@ -10,7 +10,7 @@ import { parseObjs } from '../src/parser';
 describe("parseObjs", () => {
   it("should parse raw number", () => {
     const objs = parseObjs([{
-      _type: "Obj",
+      _proto: "Obj",
       _id: "urn:uuid:uuidexample",
       foo: 1
     }]);
@@ -22,7 +22,7 @@ describe("parseObjs", () => {
   context("string", () => {
     it("should parse a string val", () => {
       const objs = parseObjs([{
-        _type: "Obj",
+        _proto: "Obj",
         _id: "urn:uuid:uuidexample",
         foo: "2"
       }]);
@@ -34,9 +34,9 @@ describe("parseObjs", () => {
   context("arr", () => {
     it("should parse a arr val", () => {
       const objs = parseObjs([{
-        _type: "Obj",
+        _proto: "Obj",
         _id: "urn:uuid:uuidexample",
-        foo: {_type: "Arr", origin: [1, 2, 3]}
+        foo: {_proto: "Arr", origin: [1, 2, 3]}
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), v([1, 2, 3]));
@@ -48,10 +48,10 @@ describe("parseObjs", () => {
       const objs = parseObjs([{
         _id: "urn:uuid:uuidexample",
         foo: {
-          _type: "Arr",
+          _proto: "Arr",
           origin: [
             {
-              _type: "Foo",
+              _proto: "Foo",
               a: 1,
               b: 2
             }
@@ -68,9 +68,9 @@ describe("parseObjs", () => {
       const objs = parseObjs([{
         _id: "urn:uuid:uuidexample",
         foo: {
-          _type: "Foo",
+          _proto: "Foo",
           a: {
-            _type: "Arr",
+            _proto: "Arr",
             origin: [1, 2, 3]
           }
         },
@@ -83,9 +83,9 @@ describe("parseObjs", () => {
   context("path", () => {
     it("should parse a path val", () => {
       const objs = parseObjs([{
-        _type: "Obj",
+        _proto: "Obj",
         _id: "urn:uuid:uuidexample",
-        foo: {_type: "Path", origin: ["Foo", ["bar", "buz"]] },
+        foo: {_proto: "Path", origin: ["Foo", ["bar", "buz"]] },
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), path("Foo", ["bar", "buz"]));
@@ -95,9 +95,9 @@ describe("parseObjs", () => {
   context("sym", () => {
     it("should parse a sym val", () => {
       const objs = parseObjs([{
-        _type: "Obj",
+        _proto: "Obj",
         _id: "urn:uuid:uuidexample",
-        foo: {_type: "Sym", origin: "Foo"},
+        foo: {_proto: "Sym", origin: "Foo"},
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), sym("Foo"));
@@ -107,9 +107,9 @@ describe("parseObjs", () => {
   context("time", () => {
     it("should parse a time val", () => {
       const objs = parseObjs([{
-        _type: "Obj",
+        _proto: "Obj",
         _id: "urn:uuid:uuidexample",
-        foo: {_type: "Time", origin: "2018-04-01T00:00:00z"},
+        foo: {_proto: "Time", origin: "2018-04-01T00:00:00z"},
       }]);
 
       assert.deepStrictEqual(objs[0].get("foo"), v(new Date("2018-04-01T00:00:00z")));

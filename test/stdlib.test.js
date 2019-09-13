@@ -56,19 +56,19 @@ describe("stdlib", () => {
       const rid = uuid();
       const rev = v({
         _id: rid.keyVal(),
-        _type: "Revision",
+        _proto: "Revision",
         _rev: rid,
         at: v(new Date())
       });
       const obj1 = v({
         _id: uuid(),
-        _type: "Foo",
+        _proto: "Foo",
         _rev: rid,
         foo: 1
       });
       const obj2 = v({
         _id: uuid(),
-        _type: "Bar",
+        _proto: "Bar",
         _rev: rid,
         foo: 1
       });
@@ -119,17 +119,17 @@ describe("stdlib", () => {
         const id1 = uuid();
         store.put({
           _id: id1,
-          _type: "Foo"
+          _proto: "Foo"
         });
         const id2 = uuid();
         store.put({
           _id: id2,
-          _type: "Foo"
+          _proto: "Foo"
         });
         const id3 = uuid();
         store.put({
           _id: id3,
-          _type: "Foo",
+          _proto: "Foo",
           _status: v("deleted"), // not exists
         });
 
@@ -150,7 +150,7 @@ describe("stdlib", () => {
         const id1 = uuid();
         store.put({
           _id: id1,
-          _type: "Foo"
+          _proto: "Foo"
         });
 
         const ids = path("Foo", "all").reduce(store);
@@ -170,7 +170,7 @@ describe("stdlib", () => {
           _id: "Foo"
         });
         const act = path("Entity", ["create", v({
-          _type: "Foo",
+          _proto: "Foo",
           foo: v("foo"),
           bar: path([plus, v(1), v(2)]),
           buz: pack(path([plus, v(1), v(2)]))
@@ -211,7 +211,7 @@ describe("stdlib", () => {
           const id = uuid();
           store.put({
             _id: id,
-            _type: typeid
+            _proto: typeid
           });
 
           const p = new Path(id, ["set", "foo", exp(plus, v(1), v(2))]);
@@ -465,7 +465,7 @@ describe("stdlib", () => {
             path("Entity", [
               "create",
               v({
-                _type: "Foo"
+                _proto: "Foo"
               })
             ])
           )]
@@ -510,7 +510,7 @@ describe("stdlib", () => {
   context("accessing Store methods", () => {
     describe("Store", () => {
       it("should return a Store type object", () => {
-        assert.deepStrictEqual(path(store.id, "_type").reduce(store), v("Store"));
+        assert.deepStrictEqual(path(store.id, "_proto").reduce(store), v("Store"));
       });
     });
 
@@ -519,7 +519,7 @@ describe("stdlib", () => {
         const act = path("Store", ["generateAs", "foo"]).reduce(store);
         store.run(act);
 
-        assert.deepStrictEqual(path("foo", "_type").reduce(store), v("Store"));
+        assert.deepStrictEqual(path("foo", "_proto").reduce(store), v("Store"));
       });
 
       context("currentStore", () => {
@@ -527,7 +527,7 @@ describe("stdlib", () => {
           const act = path("currentStore", ["generateAs", "foo"]).reduce(store);
           store.run(act);
 
-          assert.deepStrictEqual(path("foo", "_type").reduce(store), v("Store"));
+          assert.deepStrictEqual(path("foo", "_proto").reduce(store), v("Store"));
         });
       });
 
@@ -536,7 +536,7 @@ describe("stdlib", () => {
           const act = path("currentStore", ["generateStoreAs", "foo"]).reduce(store);
           store.run(act);
 
-          assert.deepStrictEqual(path("foo", "_type").reduce(store), v("Store"));
+          assert.deepStrictEqual(path("foo", "_proto").reduce(store), v("Store"));
         });
       });
     });
@@ -603,7 +603,7 @@ describe("stdlib", () => {
       const obj = n("Mp", {foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(obj.constructor, Path);
       assert.deepStrictEqual(obj.reduce(store).get("foo"), v("bar"));
-      assert.deepStrictEqual(obj.reduce(store).get("_type"), v("Mp"));
+      assert.deepStrictEqual(obj.reduce(store).get("_proto"), v("Mp"));
       assert.deepStrictEqual(obj.reduce(store).typeName, "Obj");
 
       const nobj = n({foo: v("bar"), fiz: v("buz")});

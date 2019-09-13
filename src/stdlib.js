@@ -59,7 +59,7 @@ export const std = new Store();
       const filtered = [];
       const transactions = [];
       for (const obj of objs) {
-        const tref = obj.get("_type", store);
+        const tref = obj.get("_proto", store);
         const typename = tref.keyString();
         if (types.includes(typename)) {
           filtered.push(obj);

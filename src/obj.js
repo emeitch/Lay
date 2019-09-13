@@ -5,7 +5,7 @@ import v from './v';
 
 export default class Obj extends Val {
   constructor(origin, type) {
-    const o = Object.assign({}, origin, type ? {_type: type}: undefined);
+    const o = Object.assign({}, origin, type ? {_proto: type}: undefined);
     super(o);
   }
 
@@ -60,7 +60,7 @@ export default class Obj extends Val {
       return super.collate(target);
     }
 
-    if (!this.getOwnProp("_type").equals(target.getOwnProp("_type"))) {
+    if (!this.getOwnProp("_proto").equals(target.getOwnProp("_proto"))) {
       return { pattern: this, result: null };
     }
 
@@ -121,10 +121,10 @@ export default class Obj extends Val {
   }
 
   stringify(_indent=0) {
-    const type = this.getOwnProp("_type");
+    const type = this.getOwnProp("_proto");
     const typestr = type.equals(v("Obj")) ? "" : type.origin + " ";
     const originstr = Object.assign({}, this.origin);
-    delete originstr._type;
+    delete originstr._proto;
     return typestr + Val.stringify(originstr, _indent);
   }
 }

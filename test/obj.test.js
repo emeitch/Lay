@@ -27,19 +27,19 @@ describe("Obj", () => {
         const store = new Store();
 
         assert.deepStrictEqual(v({a: 1, b: 2}).object(store), {
-          _type: "Obj",
+          _proto: "Obj",
           a: 1,
           b: 2
         });
 
         assert.deepStrictEqual(v("Foo", {a: 1, b: 2}).object(store), {
-          _type: "Foo",
+          _proto: "Foo",
           a: 1,
           b: 2
         });
 
         assert.deepStrictEqual(v({foo: 1, bar: {buz: "2"}}).object(store), {
-          _type: "Obj",
+          _proto: "Obj",
           foo: 1,
           bar: {
             buz: "2"
@@ -48,9 +48,9 @@ describe("Obj", () => {
 
         const id = uuid("foo-bar-buz");
         assert.deepStrictEqual(v({foo: path(id), bar: ["2", false, null]}).object(store), {
-          _type: "Obj",
+          _proto: "Obj",
           foo: {
-            _type: "Path",
+            _proto: "Path",
             origin: [
               ["urn:uuid:foo-bar-buz"]
             ]
@@ -64,11 +64,11 @@ describe("Obj", () => {
 
         assert.deepStrictEqual(v({
           _id: id,
-          _type: "Foo",
+          _proto: "Foo",
           foo: v(1)
         }).object(store), {
           _id: "urn:uuid:foo-bar-buz",
-          _type: "Foo",
+          _proto: "Foo",
           foo: 1,
         });
       });

@@ -32,8 +32,8 @@ describe("Store", () => {
       assert.deepStrictEqual(store.fetch(id).get("foo"), v(1));
 
       const rev = path(id, "_rev").reduce(store);
-      assert.deepStrictEqual(path(rev, "_type").reduce(store), v("Revision"));
-      assert.deepStrictEqual(path(rev, "at", "_type").reduce(store), v("Time"));
+      assert.deepStrictEqual(path(rev, "_proto").reduce(store), v("Revision"));
+      assert.deepStrictEqual(path(rev, "at", "_proto").reduce(store), v("Time"));
     });
 
     context("with pack id", () => {
@@ -78,7 +78,7 @@ describe("Store", () => {
         assert.throws(() => {
           store.put({
             _id: uuid(),
-            _type: v(123) // error type
+            _proto: v(123) // error type
           });
         }, /bad type reference style:/);
       });
@@ -204,7 +204,7 @@ describe("Store", () => {
               _stereotype: "Bar"
             });
             store.put({
-              _type: "Foo",
+              _proto: "Foo",
               _id: id0
             });
 
@@ -229,7 +229,7 @@ describe("Store", () => {
         context("without _stereotype", () => {
           it("should behave a default type of the inner object", () => {
             store.put({
-              _type: "Foo",
+              _proto: "Foo",
               _id: id0
             });
 
@@ -260,7 +260,7 @@ describe("Store", () => {
                 _id: "Foo",
               });
               store.put({
-                _type: "Foo",
+                _proto: "Foo",
                 _id: id0
               });
 
@@ -707,10 +707,10 @@ describe("Store", () => {
       });
 
       const id0 = store.create({
-        _type: v("Foo")
+        _proto: v("Foo")
       });
       const id1 = store.create({
-        _type: v("Foo")
+        _proto: v("Foo")
       });
 
       const cls = store.fetch("Foo");
@@ -727,19 +727,19 @@ describe("Store", () => {
         });
 
         store.put({
-          _type: v("Foo"),
+          _proto: v("Foo"),
           _id: v("Bar") // start with uppercase id recognized for class
         });
         store.put({
-          _type: v("Foo"),
+          _proto: v("Foo"),
           _id: v("Buz") // start with uppercase id recognized for class
         });
 
         const id0 = store.create({
-          _type: v("Foo")
+          _proto: v("Foo")
         });
         const id1 = store.create({
-          _type: v("Foo")
+          _proto: v("Foo")
         });
 
         const cls = store.fetch("Foo");
@@ -761,7 +761,7 @@ describe("Store", () => {
         });
 
         store.put({
-          _type: v("Foo"),
+          _proto: v("Foo"),
           _id: cpath
         });
 
@@ -786,7 +786,7 @@ describe("Store", () => {
         });
 
         store.put({
-          _type: v("Foo"),
+          _proto: v("Foo"),
           _id: cpath
         });
 
@@ -804,15 +804,15 @@ describe("Store", () => {
         });
 
         store.put({
-          _type: v("Foo"),
+          _proto: v("Foo"),
           _id: v("Bar")
         });
 
         const id0 = store.create({
-          _type: v("Bar")
+          _proto: v("Bar")
         });
         const id1 = store.create({
-          _type: v("Bar")
+          _proto: v("Bar")
         });
 
         const cls = store.fetch("Foo");
@@ -832,7 +832,7 @@ describe("Store", () => {
       const cls = store.fetch("Foo");
 
       const id = store.create({
-        _type: v("Foo")
+        _proto: v("Foo")
       });
 
       const all = store.instanceIDs(cls);
@@ -852,7 +852,7 @@ describe("Store", () => {
         const cls = store.fetch("Foo");
 
         const id = store.create({
-          _type: v("Foo")
+          _proto: v("Foo")
         });
 
         const all = store.instanceIDs(cls);

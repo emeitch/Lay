@@ -24,7 +24,7 @@ const d = new Store(std);
 }
 
 {
-  d.set("todos", "_type", "App");
+  d.set("todos", "_proto", "App");
   d.set("todos", "var", v("0.2.0"));
   d.set("todos", "state", path("all"));
   d.set("todos", "newTaskTitle", v(""));
@@ -89,7 +89,7 @@ const d = new Store(std);
                     [
                       "create",
                       n({
-                        "_type": "Task",
+                        "_proto": "Task",
                         "title": path(sym("ev"), "value", "trim"),
                         "state": path("active"),
                       })
