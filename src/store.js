@@ -271,7 +271,7 @@ export default class Store {
   findPropFromStereotype(pth, key) {
     const receiver = pth.receiver;
     const parent = this.fetch(receiver);
-    const stname = parent.get("_stereotype", this);
+    const stname = parent.get("_stereo", this);
     const stype = stname && this.fetch(stname);
     return (stype && stype.get(key, this)) || undefined;
   }

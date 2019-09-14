@@ -193,7 +193,7 @@ describe("Store", () => {
           });
         });
 
-        context("with _stereotype", () => {
+        context("with _stereo", () => {
           it("should behave a default type of the inner object", () => {
             store.put({
               _id: "Bar",
@@ -201,7 +201,7 @@ describe("Store", () => {
             });
             store.put({
               _id: "Foo",
-              _stereotype: "Bar"
+              _stereo: "Bar"
             });
             store.put({
               _proto: "Foo",
@@ -226,7 +226,7 @@ describe("Store", () => {
           });
         });
 
-        context("without _stereotype", () => {
+        context("without _stereo", () => {
           it("should behave a default type of the inner object", () => {
             store.put({
               _proto: "Foo",

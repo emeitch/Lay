@@ -54,7 +54,7 @@ const d = new Store(std);
   const viewmodel = "viewmodel";
   d.put({
     _id: viewmodel,
-    _stereotype: "TaskView"
+    _stereo: "TaskView"
   });
 }
 
