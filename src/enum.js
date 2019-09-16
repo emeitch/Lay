@@ -8,7 +8,8 @@ export default class Enum extends Val {
     let newObj = obj.clone();
     for (const key of obj.keys) {
       const child = obj.get(key);
-      if (key[0].match(/[A-Z]/) && child instanceof Obj) {
+      const isConst = key[0].match(/[A-Z]/);
+      if (isConst && child instanceof Obj && !child.getOriginProperty("_proto")) {
         const c = child.patch({
           _proto: parent
         });
