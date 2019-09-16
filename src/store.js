@@ -37,6 +37,11 @@ export default class Store {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 
+    const proto = this.get(tprop);
+    if (proto) {
+      obj = proto.onPutByProto(obj);
+    }
+
     let id = obj.getOwnProp("_id");
     const pth = Path.parse(id);
     if (pth.isPartial()) {

@@ -158,6 +158,10 @@ export default class Val {
   get _toStr() {
     return this.keyVal();
   }
+
+  onPutByProto(obj) {
+    return obj;
+  }
 }
 
 /*********************************************************************/

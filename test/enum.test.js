@@ -34,4 +34,26 @@ describe("Enum", () => {
       });
     });
   });
+
+  context("implicit _proto specifing", () => {
+    describe("define child objects", () => {
+      it("should define enum values", () => {
+        store.put({
+          _proto: "Enum",
+          _id: "Foo",
+          foo: 3,
+          Bar: {},
+          Baz: {
+            foo: 4
+          }
+        });
+
+        assert.deepStrictEqual(path("Foo", "Bar", "foo").reduce(store), v(3));
+        assert.deepStrictEqual(path("Foo", "Baz", "foo").reduce(store), v(4));
+
+        // nested
+        assert.deepStrictEqual(path("Foo", "Bar", "Bar", "Bar", "foo").reduce(store), v(3));
+      });
+    });
+  });
 });

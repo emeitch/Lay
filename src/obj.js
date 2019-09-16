@@ -22,6 +22,14 @@ export default class Obj extends Val {
     return ret;
   }
 
+  get keys() {
+    return Object.keys(this.origin);
+  }
+
+  clone() {
+    return new this.constructor(this.origin);
+  }
+
   getOriginProperty(key) {
     const kstr = this.convertKeyString(key);
     const hasProp = Object.prototype.hasOwnProperty.call(this.origin, kstr);
