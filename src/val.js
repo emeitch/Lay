@@ -159,8 +159,8 @@ export default class Val {
     return this.keyVal();
   }
 
-  onPutByProto(obj) {
-    return obj;
+  _onPutByProto() {
+    return this;
   }
 }
 

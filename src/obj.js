@@ -50,9 +50,9 @@ export default class Obj extends Val {
       }
     }
 
-    const ownProp = this.getOwnProp(key);
+    const ownProp = this.getOriginProperty(key);
     if (ownProp) {
-      const base = this.getOwnProp("_id");
+      const base = this.getOriginProperty("_id");
       if (store && base && ownProp instanceof Obj) {
         const _id = store.path(base, key).keyString();
         return ownProp.patch({_id});

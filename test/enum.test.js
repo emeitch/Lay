@@ -78,4 +78,22 @@ describe("Enum", () => {
       });
     });
   });
+
+  context("external enum _proto referencing", () => {
+    it("should throw error", () => {
+      store.put({
+        _proto: "Enum",
+        _id: "Foo",
+        foo: 3,
+      });
+
+      assert.throws(() => {
+        store.put({
+          _proto: "Foo",
+          _id: "Fiz",
+          foo: 5
+        });
+      }, /should not specify external enum as _proto/);
+    });
+  });
 });

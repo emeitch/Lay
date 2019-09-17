@@ -37,9 +37,13 @@ export default class Store {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 
+    // todo: protoの有無をチェックしないでonPutByProtoのコールバックをしたい
     const proto = this.get(tprop);
     if (proto) {
-      obj = proto.onPutByProto(obj);
+      // todo: 本当はpathのreduceで対応したい
+      // obj = path(obj, ["onPutByProto"]).reduce(this);
+      const func = obj.get("onPutByProto", this);
+      obj = func.bind(obj)();
     }
 
     let id = obj.getOwnProp("_id");
@@ -255,13 +259,15 @@ export default class Store {
   traversePropFromType(obj, key) {
     const tname = obj.getOwnProp("_proto");
     const tobj = this.fetch(tname);
-    if (!tobj || !(tobj instanceof Obj)) {
+    if (!tobj) {
       return undefined;
     }
 
-    const p = tobj.getOwnProp(key);
-    if (p) {
-      return p;
+    if (tobj instanceof Obj) {
+      const p = tobj.getOriginProperty(key);
+      if (p) {
+        return p;
+      }
     }
 
     // Mapクラスの実態がObjのため、ifで無限再帰を抑制
@@ -271,6 +277,15 @@ export default class Store {
         return p;
       }
     }
+
+    {
+      const p = tobj.getOwnProp(key);
+      if (p) {
+        return p;
+      }
+    }
+
+    return undefined;
   }
 
   findPropFromStereotype(pth, key) {
