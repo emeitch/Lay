@@ -37,14 +37,11 @@ export default class Store {
       throw `bad type reference style: ${tprop.stringify()}`;
     }
 
-    // todo: protoの有無をチェックしないでonPutByProtoのコールバックをしたい
-    const proto = this.get(tprop);
-    if (proto) {
-      // todo: 本当はpathのreduceで対応したい
-      // obj = path(obj, ["onPutByProto"]).reduce(this);
-      const func = obj.get("onPutByProto", this);
-      obj = func.bind(obj)();
-    }
+    // todo: 本当はpathのreduceで対応したい
+    // しかしまだstore未登録のObjなのでpathが利用できない
+    // obj = path(obj, "onPutByProto").reduce(this);
+    const func = obj.get("onPutByProto", this);
+    obj = func.bind(obj)();
 
     let id = obj.getOwnProp("_id");
     const pth = Path.parse(id);
@@ -291,7 +288,7 @@ export default class Store {
   findPropFromStereotype(pth, key) {
     const receiver = pth.receiver;
     const parent = this.fetch(receiver);
-    const stname = parent.get("_stereo", this);
+    const stname = parent && parent.get("_stereo", this);
     const stype = stname && this.fetch(stname);
     return (stype && stype.get(key, this)) || undefined;
   }
