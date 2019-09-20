@@ -253,7 +253,7 @@ export default class Store {
     return false;
   }
 
-  traversePropFromType(obj, key) {
+  traversePropFromProto(obj, key) {
     const tname = obj.getOwnProp("_proto");
     const tobj = this.fetch(tname);
     if (!tobj) {
@@ -269,7 +269,7 @@ export default class Store {
 
     // Mapクラスの実態がObjのため、ifで無限再帰を抑制
     if (!obj.equals(tobj)) {
-      const p = this.traversePropFromType(tobj, key);
+      const p = this.traversePropFromProto(tobj, key);
       if (p) {
         return p;
       }
@@ -293,8 +293,8 @@ export default class Store {
     return (stype && stype.get(key, this)) || undefined;
   }
 
-  findPropFromType(obj, key) {
-    const p = this.traversePropFromType(obj, key);
+  findPropFromProto(obj, key) {
+    const p = this.traversePropFromProto(obj, key);
     if (p) {
       return p;
     }

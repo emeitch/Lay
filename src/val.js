@@ -43,7 +43,7 @@ export default class Val {
     const kstr = this.convertKeyString(key);
 
     if (store) {
-      const prop = store.findPropFromType(this, kstr);
+      const prop = store.findPropFromProto(this, kstr);
       if (prop) {
         return prop;
       }
