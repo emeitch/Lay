@@ -4,28 +4,28 @@ import { path } from './path';
 import { func } from './func';
 
 export default class Many extends Val {
-  constructor(type, prop, target) {
+  constructor(proto, prop, target) {
     super({
-      type,
+      proto,
       prop,
       target
     });
   }
 
   replaceSelfBy(obj) {
-    const {type, prop} = this.origin;
+    const {proto, prop} = this.origin;
     let p = prop;
     if (!p) {
       const tref = obj.getOwnProp("_proto");
       p = tref && tref.keyString().replace(/^(.)/, s => s.toLowerCase());
     }
-    return new this.constructor(type, p, obj);
+    return new this.constructor(proto, p, obj);
   }
 
   get(k, store) {
-    const {type, prop, target} = this.origin;
+    const {proto, prop, target} = this.origin;
     const p = path(
-      type,
+      proto,
       "all",
       [
         "filter",

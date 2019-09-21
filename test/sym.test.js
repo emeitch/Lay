@@ -27,7 +27,7 @@ describe("Sym", () => {
   });
 
   describe("#object", () => {
-    it("should return a persistent object without type", () => {
+    it("should return a persistent object without proto", () => {
       assert.deepStrictEqual(sym("foo").object(), {origin: "foo"});
     });
   });

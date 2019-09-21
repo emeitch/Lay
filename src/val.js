@@ -9,12 +9,12 @@ export default class Val {
     this.origin = origin;
   }
 
-  get typeName() {
+  get protoName() {
     return this.constructor.name;
   }
 
   get __proto() {
-    return new Prim(this.typeName);
+    return new Prim(this.protoName);
   }
 
   get jsObj() {
@@ -205,13 +205,13 @@ export class Prim extends Val {
     return JSON.stringify(this.origin);
   }
 
-  get typeName() {
+  get protoName() {
     if (this.origin === null) {
       return "Null";
     }
 
-    const type = typeof(this.origin);
-    return type[0].toUpperCase() + type.substring(1);
+    const jstype = typeof(this.origin);
+    return jstype[0].toUpperCase() + jstype.substring(1);
   }
 
   isUUID() {

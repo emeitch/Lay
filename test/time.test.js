@@ -4,10 +4,10 @@ import Store from '../src/store';
 import v from '../src/v';
 
 describe("Time", () => {
-  describe("#typeName", () => {
-    it("should return a sym to Date", () => {
+  describe("#protoName", () => {
+    it("should return the proto name string", () => {
       const cd = v(new Date());
-      assert.deepStrictEqual(cd.typeName, "Time");
+      assert.deepStrictEqual(cd.protoName, "Time");
     });
   });
 

@@ -16,9 +16,9 @@ describe("Obj", () => {
       });
     });
 
-    describe("#typeName", () => {
-      it("should return type sym", () => {
-        assert.deepStrictEqual(v({a: 1, b: 2}).typeName, "Obj");
+    describe("#protoName", () => {
+      it("should return the proto name string", () => {
+        assert.deepStrictEqual(v({a: 1, b: 2}).protoName, "Obj");
       });
     });
 

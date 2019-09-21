@@ -186,7 +186,7 @@ describe("Path", () => {
       });
     });
 
-    context("access a key which type has the key", () => {
+    context("access a key which proto has the key", () => {
       const id = uuid();
 
       beforeEach(() => {
@@ -207,7 +207,7 @@ describe("Path", () => {
         });
       });
 
-      it("should return the type's val", () => {
+      it("should return the proto's val", () => {
         const p1 = new Path(id, "foo");
         assert.deepStrictEqual(p1.reduce(store), v(2));
 
@@ -219,14 +219,14 @@ describe("Path", () => {
       });
     });
 
-    context("with type but it dosen't have the key", () => {
+    context("with proto but it dosen't have the key", () => {
       const id = uuid();
 
       beforeEach(() => {
-        const typeid = "Foo";
+        const protoName = "Foo";
         store.put({
           _id: id,
-          _proto: typeid
+          _proto: protoName
         });
       });
 
@@ -266,7 +266,7 @@ describe("Path", () => {
           assert.deepStrictEqual(path(c, "foo", "c").reduce(store), v("d"));
         });
 
-        context("abstruct type", () => {
+        context("abstruct proto", () => {
           it("should return based path", () => {
             const pth = path("self", "a");
 
@@ -281,7 +281,7 @@ describe("Path", () => {
           });
         });
 
-        context("with type", () => {
+        context("with proto", () => {
           it("should return nested val", () => {
             const pth = path("self", "a", "b");
             store.put({

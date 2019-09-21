@@ -4,14 +4,14 @@ import v from '../src/v';
 
 describe("Prim", () => {
   context("primitive value", () => {
-    describe("#type", () => {
-      it("should return type sym", () => {
-        assert.deepStrictEqual(prim(1).typeName, "Number");
+    describe("#protoName", () => {
+      it("should return the proto name string", () => {
+        assert.deepStrictEqual(prim(1).protoName, "Number");
 
-        assert.deepStrictEqual(v(1).typeName, "Number");
-        assert.deepStrictEqual(v("foo").typeName, "String");
-        assert.deepStrictEqual(v(true).typeName, "Boolean");
-        assert.deepStrictEqual(v(null).typeName, "Null");
+        assert.deepStrictEqual(v(1).protoName, "Number");
+        assert.deepStrictEqual(v("foo").protoName, "String");
+        assert.deepStrictEqual(v(true).protoName, "Boolean");
+        assert.deepStrictEqual(v(null).protoName, "Null");
       });
     });
 

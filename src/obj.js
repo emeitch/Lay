@@ -4,12 +4,12 @@ import Val from './val';
 import v from './v';
 
 export default class Obj extends Val {
-  constructor(origin, type) {
-    const o = Object.assign({}, origin, type ? {_proto: type}: undefined);
+  constructor(origin, protoName) {
+    const o = Object.assign({}, origin, protoName ? {_proto: protoName}: undefined);
     super(o);
   }
 
-  get typeName() {
+  get protoName() {
      return "Obj";
   }
 
@@ -129,10 +129,10 @@ export default class Obj extends Val {
   }
 
   stringify(_indent=0) {
-    const type = this.getOwnProp("_proto");
-    const typestr = type.equals(v("Obj")) ? "" : type.origin + " ";
+    const protoName = this.getOwnProp("_proto");
+    const protoStr = protoName.equals(v("Obj")) ? "" : protoName.origin + " ";
     const originstr = Object.assign({}, this.origin);
     delete originstr._proto;
-    return typestr + Val.stringify(originstr, _indent);
+    return protoStr + Val.stringify(originstr, _indent);
   }
 }

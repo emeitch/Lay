@@ -43,7 +43,7 @@ describe("parseObjs", () => {
     });
   });
 
-  context("arr obj type", () => {
+  context("arr and obj proto", () => {
     it("should parse a arr obj val", () => {
       const objs = parseObjs([{
         _id: "urn:uuid:uuidexample",
@@ -63,7 +63,7 @@ describe("parseObjs", () => {
     });
   });
 
-  context("obj arr type", () => {
+  context("obj and arr proto", () => {
     it("should parse a obj arr val", () => {
       const objs = parseObjs([{
         _id: "urn:uuid:uuidexample",

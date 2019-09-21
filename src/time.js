@@ -1,7 +1,7 @@
 import Val from './val';
 
 export default class Time extends Val {
-  get typeName() {
+  get protoName() {
      return "Time";
   }
 
@@ -13,6 +13,6 @@ export default class Time extends Val {
   }
 
   stringify(indent=0) {
-    return " ".repeat(indent) + this.typeName + " { iso: \"" + this.origin.toISOString() + "\" }";
+    return " ".repeat(indent) + this.protoName + " { iso: \"" + this.origin.toISOString() + "\" }";
   }
 }

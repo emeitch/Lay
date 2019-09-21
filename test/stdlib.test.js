@@ -207,11 +207,11 @@ describe("stdlib", () => {
     context("accessing Object's key", () => {
       describe("#set", () => {
         it("should return the Act which run set action", () => {
-          const typeid = "Foo";
+          const protoName = "Foo";
           const id = uuid();
           store.put({
             _id: id,
-            _proto: typeid
+            _proto: protoName
           });
 
           const p = new Path(id, ["set", "foo", exp(plus, v(1), v(2))]);
@@ -509,7 +509,7 @@ describe("stdlib", () => {
 
   context("accessing Store methods", () => {
     describe("Store", () => {
-      it("should return a Store type object", () => {
+      it("should return a Store proto object", () => {
         assert.deepStrictEqual(path(store.id, "_proto").reduce(store), v("Store"));
       });
     });
@@ -598,30 +598,30 @@ describe("stdlib", () => {
       const arr = n([v(10), v(11), v(12)]);
       assert.deepStrictEqual(arr.constructor, Path);
       assert.deepStrictEqual(arr.reduce(store).get(v(0)), v(10));
-      assert.deepStrictEqual(arr.reduce(store).typeName, "Arr");
+      assert.deepStrictEqual(arr.reduce(store).protoName, "Arr");
 
       const obj = n("Mp", {foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(obj.constructor, Path);
       assert.deepStrictEqual(obj.reduce(store).get("foo"), v("bar"));
       assert.deepStrictEqual(obj.reduce(store).get("_proto"), v("Mp"));
-      assert.deepStrictEqual(obj.reduce(store).typeName, "Obj");
+      assert.deepStrictEqual(obj.reduce(store).protoName, "Obj");
 
       const nobj = n({foo: v("bar"), fiz: v("buz")});
       assert.deepStrictEqual(nobj.constructor, Path);
       assert.deepStrictEqual(nobj.reduce(store).get("foo"), v("bar"));
-      assert.deepStrictEqual(nobj.reduce(store).typeName, "Obj");
+      assert.deepStrictEqual(nobj.reduce(store).protoName, "Obj");
 
       const nested = n({foo: {bar: v("baz")}, fiz: v("buz")});
       assert.deepStrictEqual(nested.constructor, Path);
       assert.deepStrictEqual(nested.reduce(store).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested.reduce(store).typeName, "Obj");
+      assert.deepStrictEqual(nested.reduce(store).protoName, "Obj");
 
       const nested2 = n({foo: n({bar: v("baz")}), fiz: v("buz")});
       assert.deepStrictEqual(nested2.constructor, Path);
       assert.deepStrictEqual(nested2.reduce(store).reduce(store).get("foo"), v({bar: v("baz")}));
-      assert.deepStrictEqual(nested2.reduce(store).typeName, "Obj");
+      assert.deepStrictEqual(nested2.reduce(store).protoName, "Obj");
 
-      assert.throws(() => n(1), /not complex type pattern args/);
+      assert.throws(() => n(1), /not Arr or Obj args pattern/);
     });
 
     describe("reduce", () => {

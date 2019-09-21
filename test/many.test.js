@@ -41,7 +41,7 @@ describe("Many", () => {
       assert.deepStrictEqual(path(bid, "foo", v(0)).reduce(store), fid1);
     });
 
-    context("the prop name is same the type name", () => {
+    context("the prop name is same the proto name", () => {
       it("should enumrate each objs", () => {
         const store = new Store(std);
 

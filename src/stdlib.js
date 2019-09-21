@@ -54,18 +54,18 @@ export const std = new Store();
 
   std.set("filterObjs", "_body", func("pattern", new LiftedNative(function(pattern) {
     const store = this;
-    const types = pattern.reduce(store).origin;
+    const protoPattern = pattern.reduce(store).origin;
     return new Act(objs => {
       const filtered = [];
       const transactions = [];
       for (const obj of objs) {
-        const tref = obj.get("_proto", store);
-        const typename = tref.keyString();
-        if (types.includes(typename)) {
+        const protoName = obj.get("_proto", store);
+        const protoStr = protoName.keyString();
+        if (protoPattern.includes(protoStr)) {
           filtered.push(obj);
         }
 
-        if (typename === "Revision") {
+        if (protoStr === "Revision") {
           transactions.push(obj);
         }
       }
@@ -245,8 +245,8 @@ export const std = new Store();
     o,
     "new",
     func(new LiftedNative(function(...args) {
-      const typesrc = args.shift();
-      const type = typesrc.equals(v(null)) ? undefined : v(typesrc.origin);
+      const protoSrc = args.shift();
+      const protoName = protoSrc.equals(v(null)) ? undefined : v(protoSrc.origin);
       const o = {};
       while(args.length > 0) {
         if (args.length == 1) {
@@ -256,7 +256,7 @@ export const std = new Store();
         const val = args.shift();
         o[key.origin] = val instanceof Prim ? val.origin : val;
       }
-      return new Obj(o, type);
+      return new Obj(o, protoName);
     }))
   );
 }
@@ -360,15 +360,15 @@ export function n(...args) {
   if (Array.isArray(origin)) {
     return path("Arr", ["new"].concat(origin));
   } else if (origin instanceof Object && !(origin instanceof Val)) {
-    const typesrc = args.pop();
-    const type = typesrc ? v(typesrc) : v(null);
+    const protoSrc = args.pop();
+    const protoName = protoSrc ? v(protoSrc) : v(null);
     const maparr = Object.keys(origin).reduce((r, k) => {
       const o = origin[k];
       const val = o instanceof Val || typeof(o) === "string" ? o : v(o);
       return r.concat([k, val]);
     }, []);
-    return path("Obj", ["new", type].concat(maparr));
+    return path("Obj", ["new", protoName].concat(maparr));
   } else {
-    throw "not complex type pattern args";
+    throw "not Arr or Obj args pattern";
   }
 }

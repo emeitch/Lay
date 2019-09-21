@@ -5,9 +5,9 @@ import v from '../src/v';
 
 describe("Arr", () => {
   context("complex value", () => {
-    describe("#typeName", () => {
-      it("should return type sym", () => {
-        assert.deepStrictEqual(v([1, 2, 3]).typeName, "Arr");
+    describe("#protoName", () => {
+      it("should return a proto name string", () => {
+        assert.deepStrictEqual(v([1, 2, 3]).protoName, "Arr");
       });
     });
 

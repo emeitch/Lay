@@ -14,9 +14,9 @@ describe("Val", () => {
       });
     });
 
-    describe("#typeName", () => {
-      it("should return type sym", () => {
-        assert.deepStrictEqual(val.typeName, "ExtendedVal");
+    describe("#protoName", () => {
+      it("should return the proto name string", () => {
+        assert.deepStrictEqual(val.protoName, "ExtendedVal");
       });
     });
 

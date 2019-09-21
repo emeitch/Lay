@@ -6,7 +6,7 @@ import Time from './time';
 
 export default function v(...args) {
   const origin = args.pop();
-  const typesrc = args.pop() || null;
+  const protoSrc = args.pop() || null;
   const jstype = typeof(origin);
 
   if (origin instanceof Val) {
@@ -28,13 +28,13 @@ export default function v(...args) {
       return new Time(origin);
     }
 
-    const type = !typesrc || typesrc instanceof Val ? typesrc : new Prim(typesrc);
+    const protoName = !protoSrc || protoSrc instanceof Val ? protoSrc : new Prim(protoSrc);
     const orgn = {};
     for (const key of Object.keys(origin)) {
       const val = origin[key];
       orgn[key] = val instanceof Prim ? val.origin : val;
     }
-    return new Obj(orgn, type);
+    return new Obj(orgn, protoName);
   }
 
   throw `not supported origin: ${origin}`;

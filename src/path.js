@@ -137,7 +137,7 @@ export default class Path extends Val {
         obj = obj.unpack();
       }
 
-      const gettingProp = obj !== store || (isMethodCalling && key.typeName == "String");
+      const gettingProp = obj !== store || (isMethodCalling && key.protoName == "String");
       let prop = gettingProp ? obj.get(key, store) : key;
       if (prop === undefined) {
         return this;

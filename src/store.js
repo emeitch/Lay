@@ -32,9 +32,9 @@ export default class Store {
   putWithHandler(obj, block) {
     // todo: ロックが実現の為に下記の一連の処理がアトミックな操作となるよううまく保証する
 
-    const tprop = obj.getOwnProp("_proto");
-    if (tprop.constructor !== Prim || typeof(tprop.origin) !== "string") {
-      throw `bad type reference style: ${tprop.stringify()}`;
+    const protoName = obj.getOwnProp("_proto");
+    if (protoName.constructor !== Prim || typeof(protoName.origin) !== "string") {
+      throw `Bad proto name style: ${protoName.stringify()}`;
     }
 
     // todo: 本当はpathのreduceで対応したい
@@ -288,9 +288,9 @@ export default class Store {
   findPropFromStereotype(pth, key) {
     const receiver = pth.receiver;
     const parent = this.fetch(receiver);
-    const stname = parent && parent.get("_stereo", this);
-    const stype = stname && this.fetch(stname);
-    return (stype && stype.get(key, this)) || undefined;
+    const steroName = parent && parent.get("_stereo", this);
+    const sterotype = steroName && this.fetch(steroName);
+    return (sterotype && sterotype.get(key, this)) || undefined;
   }
 
   findPropFromProto(obj, key) {

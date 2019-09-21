@@ -73,14 +73,14 @@ describe("Store", () => {
       });
     });
 
-    context("not a ref type", () => {
+    context("a not string as _proto", () => {
       it("should throw error", () => {
         assert.throws(() => {
           store.put({
             _id: uuid(),
-            _proto: v(123) // error type
+            _proto: v(123) // not string
           });
-        }, /bad type reference style:/);
+        }, /Bad proto name style:/);
       });
     });
 
@@ -194,7 +194,7 @@ describe("Store", () => {
         });
 
         context("with _stereo", () => {
-          it("should behave a default type of the inner object", () => {
+          it("should behave a default proto of the inner object", () => {
             store.put({
               _id: "Bar",
               bar: v(3)
@@ -227,7 +227,7 @@ describe("Store", () => {
         });
 
         context("without _stereo", () => {
-          it("should behave a default type of the inner object", () => {
+          it("should behave a default proto of the inner object", () => {
             store.put({
               _proto: "Foo",
               _id: id0

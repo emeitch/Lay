@@ -2,7 +2,7 @@ import Val from './val';
 import v from './v';
 
 export default class Arr extends Val {
-  get typeName() {
+  get protoName() {
      return "Arr";
   }
 
