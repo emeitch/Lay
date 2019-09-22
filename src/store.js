@@ -29,19 +29,19 @@ export default class Store {
     this.objs.set(id.keyString(), obj);
   }
 
-  putWithHandler(obj, block) {
+  putWithHandler(base, block) {
     // todo: ロックが実現の為に下記の一連の処理がアトミックな操作となるよううまく保証する
 
-    const protoName = obj.getOwnProp("_proto");
+    const protoName = base.getOwnProp("_proto");
     if (protoName.constructor !== Prim || typeof(protoName.origin) !== "string") {
       throw `Bad proto name style: ${protoName.stringify()}`;
     }
 
     // todo: 本当はpathのreduceで対応したい
     // しかしまだstore未登録のObjなのでpathが利用できない
-    // obj = path(obj, "onPutByProto").reduce(this);
-    const func = obj.get("onPutByProto", this);
-    obj = func.bind(obj)();
+    // e.g.) obj = path(obj, ["onPut"]).reduce(this);
+    const func = base.get("onPut", this);
+    let obj = func.bind(base)(this);
 
     let id = obj.getOwnProp("_id");
     const pth = Path.parse(id);
@@ -214,7 +214,17 @@ export default class Store {
 
   fetchObjWithoutImports(key) {
     const k = key.keyString();
-    return this.objs.get(k);
+    const p = Path.parse(k);
+    let obj = undefined;
+    if (p.isPartial()) {
+      for (key of p.keys) {
+        obj = obj ? obj.get(key) : this.objs.get(key.keyString());
+      }
+    } else {
+      obj = this.objs.get(k);
+    }
+
+    return obj;
   }
 
   fetchObj(key) {
@@ -254,29 +264,29 @@ export default class Store {
   }
 
   traversePropFromProto(obj, key) {
-    const tname = obj.getOwnProp("_proto");
-    const tobj = this.fetch(tname);
-    if (!tobj) {
+    const protoName = obj.getOwnProp("_proto");
+    const prototype = this.fetch(protoName);
+    if (!prototype) {
       return undefined;
     }
 
-    if (tobj instanceof Obj) {
-      const p = tobj.getOriginProperty(key);
+    if (prototype instanceof Obj) {
+      const p = prototype.getOriginProperty(key);
       if (p) {
         return p;
       }
     }
 
     // Mapクラスの実態がObjのため、ifで無限再帰を抑制
-    if (!obj.equals(tobj)) {
-      const p = this.traversePropFromProto(tobj, key);
+    if (!obj.equals(prototype)) {
+      const p = this.traversePropFromProto(prototype, key);
       if (p) {
         return p;
       }
     }
 
     {
-      const p = tobj.getOwnProp(key);
+      const p = prototype.getOwnProp(key);
       if (p) {
         return p;
       }

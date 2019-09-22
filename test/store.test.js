@@ -283,20 +283,21 @@ describe("Store", () => {
       });
 
       context("all str keys path", () => {
-        it("should return embeded object", () => {
+        it("should return the partial object", () => {
           const epath = store.path(id0, key0, key1);
           store.put({
-            _id: epath
+            _id: epath,
+            foo: 3
           });
 
           // not a independent obj, but a embeded obj
-          const inner = store.fetch(epath);
-          assert.deepStrictEqual(inner, undefined);
+          const partial = store.fetch(epath);
+          assert.deepStrictEqual(partial.get("foo"), v(3));
 
           const base = store.fetch(id0);
           const child1 = base.get(key0, store);
           const child2 = child1.get(key1, store);
-          assert(child2);
+          assert.deepStrictEqual(child2.get("foo"), v(3));
         });
 
         context("exist partial obj", () => {

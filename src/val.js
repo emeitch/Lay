@@ -159,7 +159,7 @@ export default class Val {
     return this.keyVal();
   }
 
-  _onPutByProto() {
+  _onPutByProto(_id) {
     return this;
   }
 }
@@ -223,6 +223,6 @@ export class Prim extends Val {
   }
 
   keyString() {
-    return this.origin.toString();
+    return this.origin === null ? "null" : this.origin.toString();
   }
 }

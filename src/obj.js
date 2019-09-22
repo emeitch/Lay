@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import Val from './val';
+import { path } from './path';
 import v from './v';
 
 export default class Obj extends Val {
@@ -90,6 +91,7 @@ export default class Obj extends Val {
     const remove = obj => {
       for (const k of Object.keys(obj)) {
         const prop = obj[k];
+
         if (prop === null || (prop.equals && prop.equals(v(null)))) {
           delete obj[k];
         }
@@ -134,5 +136,24 @@ export default class Obj extends Val {
     const originstr = Object.assign({}, this.origin);
     delete originstr._proto;
     return protoStr + Val.stringify(originstr, _indent);
+  }
+
+  _onPut(store) {
+    const recursiveOnPutByProto = (obj, pth) => {
+      const func = obj.get("onPutByProto", store);
+      const parent = func.bind(obj)(pth.keyString());
+
+      return parent.keys.reduce((o, k) => {
+        const child = o.get(k);
+        const p = path(...pth.origin.concat(k));
+        if (child instanceof Obj) {
+          return o.patch({[k]: recursiveOnPutByProto(child, p).origin});
+        } else {
+          return o;
+        }
+      }, parent);
+    };
+
+    return recursiveOnPutByProto(this, path(this));
   }
 }

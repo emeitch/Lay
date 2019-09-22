@@ -56,6 +56,27 @@ describe("Enum", () => {
       });
     });
 
+    context("child enum and ancestor enum", () => {
+      describe("define child objects", () => {
+        it("should define enum values", () => {
+          store.put({
+            _id: "Foo",
+            Bar: {
+              _proto: "Enum",
+              foo: 6,
+              Baz: {},
+              Fiz: {
+                foo: 7
+              }
+            },
+          });
+
+          assert.deepStrictEqual(path("Foo", "Bar", "Baz", "foo").reduce(store), v(6));
+          assert.deepStrictEqual(path("Foo", "Bar", "Fiz", "foo").reduce(store), v(7));
+        });
+      });
+    });
+
     context("already child obj specified _proto", () => {
       it("should define enum values", () => {
         store.put({

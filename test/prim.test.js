@@ -23,5 +23,14 @@ describe("Prim", () => {
         assert.deepStrictEqual(v(null).object(), null);
       });
     });
+
+    describe("#keyString", () => {
+      it("should return a javascript string", () => {
+        assert.deepStrictEqual(v(1).keyString(), "1");
+        assert.deepStrictEqual(v("foo").keyString(), "foo");
+        assert.deepStrictEqual(v(true).keyString(), "true");
+        assert.deepStrictEqual(v(null).keyString(), "null");
+      });
+    });
   });
 });
