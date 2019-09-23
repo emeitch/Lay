@@ -412,14 +412,14 @@ export default class Store {
 
     const cid = cls.get("_id", this);
     const isKindOfClass = v => {
-      const tname = v.getOwnProp("_proto");
+      const protoName = v.getOwnProp("_proto");
 
-      if (tname.origin === cid.origin) {
+      if (protoName.origin === cid.origin) {
         return true;
-      } else if (tname.origin === "Obj") {
+      } else if (protoName.origin === "Obj") {
         return false;
       } else {
-        const c = this.fetch(tname);
+        const c = this.fetch(protoName);
         if (c) {
           return isKindOfClass(c);
         } else {
