@@ -10,19 +10,18 @@ export default class Enum extends Val {
     }
 
     let newObj = this.clone();
-    for (const key of this.keys) {
+    return this.keys.reduce((a, key) => {
       const child = this.getOriginProperty(key);
       const isConst = key[0].match(/[A-Z]/);
       if (isConst && child instanceof Obj && !child.getOriginProperty("_proto")) {
-        const c = child.patch({
-          _proto: _id
+        return a.patch({
+          [key]: child.patch({
+            _proto: _id
+          })
         });
-        newObj = newObj.patch({
-          [key]: c
-        });
+      } else {
+        return a;
       }
-    }
-
-    return newObj;
+    }, newObj);
   }
 }
