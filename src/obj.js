@@ -141,7 +141,8 @@ export default class Obj extends Val {
   _onPut(store) {
     const recursiveOnPutByProto = (obj, pth) => {
       const func = obj.get("onPutByProto", store);
-      const parent = func.bind(obj)(pth.keyString());
+      const protoId = pth.keyString();
+      const parent = func.bind(obj)(protoId);
 
       return parent.keys.reduce((o, k) => {
         const child = o.get(k);
