@@ -100,6 +100,30 @@ describe("Enum", () => {
     });
   });
 
+  context("already ancestor obj specified _proto", () => {
+    it("should define enum values", () => {
+      store.put({
+        _id: "Fiz",
+        foo: 5
+      });
+      store.put({
+        _id: "Foo",
+        Bar: {
+          _proto: "Enum",
+          foo: 6,
+          Baz: {
+            _proto: "Fiz"
+          },
+          Fiz: {
+            foo: 7
+          }
+        },
+      });
+
+      assert.deepStrictEqual(path("Foo", "Bar", "Baz", "foo").reduce(store), v(5));
+    });
+  });
+
   context("external enum _proto referencing", () => {
     it("should throw error", () => {
       store.put({
