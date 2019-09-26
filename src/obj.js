@@ -146,7 +146,7 @@ export default class Obj extends Val {
 
       return parent.keys.reduce((o, k) => {
         const child = o.get(k);
-        const p = path(...pth.origin.concat(k));
+        const p = pth.child(k);
         if (child instanceof Obj) {
           return o.patch({[k]: recursiveOnPutByProto(child, p).origin});
         } else {

@@ -201,6 +201,10 @@ export default class Path extends Val {
     messages.pop(); // remove child
     return new Path(this.receiver, ...messages);
   }
+
+  child(key) {
+    return new Path(...this.origin.concat(key));
+  }
 }
 
 export function path(...args) {
