@@ -31,14 +31,14 @@ export default class Obj extends Val {
     return new this.constructor(this.origin);
   }
 
-  getOriginProperty(key) {
+  getOriginProp(key) {
     const kstr = this.convertKeyString(key);
     const hasProp = Object.prototype.hasOwnProperty.call(this.origin, kstr);
     return hasProp ? v(this.origin[kstr]) : undefined;
   }
 
   getOwnProp(key) {
-    return this.getOriginProperty(key) || super.getOwnProp(key);
+    return this.getOriginProp(key) || super.getOwnProp(key);
   }
 
   get(k, store) {
@@ -51,9 +51,9 @@ export default class Obj extends Val {
       }
     }
 
-    const ownProp = this.getOriginProperty(key);
+    const ownProp = this.getOriginProp(key);
     if (ownProp) {
-      const base = this.getOriginProperty("_id");
+      const base = this.getOriginProp("_id");
       if (store && base && ownProp instanceof Obj) {
         const _id = store.path(base, key).keyString();
         return ownProp.patch({_id});

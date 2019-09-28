@@ -271,7 +271,7 @@ export default class Store {
     }
 
     if (prototype instanceof Obj) {
-      const p = prototype.getOriginProperty(key);
+      const p = prototype.getOriginProp(key);
       if (p) {
         return p;
       }
@@ -322,13 +322,13 @@ export default class Store {
     }
 
     const vt = this.fetch("Val");
-    const vp = vt && vt.getOriginProperty(key);
+    const vp = vt && vt.getOriginProp(key);
     if (vp) {
       return vp;
     }
 
     const et = this.fetch("Entity");
-    const ep = id && et && et.getOriginProperty(key);
+    const ep = id && et && et.getOriginProp(key);
     if (ep) {
       return ep;
     }
