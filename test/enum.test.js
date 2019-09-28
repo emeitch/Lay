@@ -38,6 +38,7 @@ describe("Enum", () => {
   context("implicit _proto specifing", () => {
     describe("define child objects", () => {
       it("should define enum values", () => {
+        // add _proto for no _proto Obj children by Enum#__onPutByProto
         store.put({
           _proto: "Enum",
           _id: "Foo",
