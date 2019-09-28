@@ -9,11 +9,11 @@ export default class Enum extends Val {
       throw "should not specify external enum as _proto";
     }
 
-    let newObj = this.clone();
+    let clone = this.clone();
     return this.keys.reduce((a, key) => {
       const child = this.getOriginProperty(key);
-      const isConst = key[0].match(/[A-Z]/);
-      if (isConst && child instanceof Obj && !child.getOriginProperty("_proto")) {
+      const isConstKey = key[0].match(/[A-Z]/);
+      if (isConstKey && child instanceof Obj && !child.getOriginProperty("_proto")) {
         return a.patch({
           [key]: child.patch({
             _proto: _id
@@ -22,6 +22,6 @@ export default class Enum extends Val {
       } else {
         return a;
       }
-    }, newObj);
+    }, clone);
   }
 }
