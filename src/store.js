@@ -286,7 +286,8 @@ export default class Store {
     }
 
     {
-      const p = prototype.getOwnProp(key);
+      // JSPropは継承元prototypeのoriginPropを探索しきったあとで探索をかける
+      const p = prototype.getJSProp(key);
       if (p) {
         return p;
       }
