@@ -192,4 +192,14 @@ describe("Obj", () => {
       });
     });
   });
+
+  describe("#clone", () => {
+    it("should retrun a copied new obj", () => {
+      const o1 = v({foo: 3});
+      const o2 = o1.clone();
+
+      assert.deepStrictEqual(o1, o2);
+      assert(o1 !== o2); // not same JS Object
+    });
+  });
 });
