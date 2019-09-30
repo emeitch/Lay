@@ -202,4 +202,12 @@ describe("Obj", () => {
       assert(o1 !== o2); // not same JS Object
     });
   });
+
+  describe("#keys", () => {
+    it("shold return key names", () => {
+      const obj = v({foo: 1, bar: 2, buz: 3});
+
+      assert.deepStrictEqual(obj.keys, ["foo", "bar", "buz"]);
+    });
+  });
 });
