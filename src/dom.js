@@ -39,7 +39,7 @@ dom.assign(
 
         const tag = elm.getOwnProp("tagName");
         const attr = {};
-        for (const key of Object.keys(elm.origin)) {
+        for (const key of elm.keys) {
           if (key === "children" || key === "tagName") {
             continue;
           }

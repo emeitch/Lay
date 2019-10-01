@@ -16,7 +16,7 @@ export default class Obj extends Val {
 
   get jsObj() {
     let ret = {};
-    for (const key of Object.keys(this.origin)) {
+    for (const key of this.keys) {
       const val = this.origin[key];
       ret[key] = val instanceof Val ? val.jsObj : val;
     }
@@ -74,7 +74,7 @@ export default class Obj extends Val {
     }
 
     const result = {};
-    for (const key of Object.keys(this.origin)) {
+    for (const key of this.keys) {
       if (key[0] === "_") {
         continue;
       }
@@ -117,7 +117,7 @@ export default class Obj extends Val {
     const o = super.object(store);
     delete o.origin;
 
-    for (const key of Object.keys(this.origin)) {
+    for (const key of this.keys) {
       const val = this.origin[key];
       o[key] = val instanceof Val ? val.object(store) : val;
     }
