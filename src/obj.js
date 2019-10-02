@@ -138,6 +138,11 @@ export default class Obj extends Val {
     return protoStr + Val.stringify(originstr, _indent);
   }
 
+  parent(store) {
+    const pth = path(this).parent();
+    return pth ? store.fetch(pth) : undefined;
+  }
+
   _onPut(store) {
     const recursiveOnPutByProto = (obj, pth) => {
       const func = obj.get("onPutByProto", store);

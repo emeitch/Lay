@@ -392,6 +392,27 @@ describe("Store", () => {
     });
   });
 
+  describe("parent", () => {
+    it("return the parent obj", () => {
+      const id0 = uuid();
+      const key0 = v("foo");
+      const key1 = v("bar");
+      const epath = store.path(id0, key0, key1);
+      store.put({
+        _id: epath,
+        foo: 3
+      });
+
+      const base = store.fetch(id0);
+      const child1 = base.get(key0, store);
+      const child2 = child1.get(key1, store);
+
+      assert.deepStrictEqual(child2.parent(store), child1);
+      assert.deepStrictEqual(child1.parent(store), base);
+      assert.deepStrictEqual(base.parent(store), undefined);
+    });
+  });
+
   describe("#patch", () => {
     it("should patch the diff", () => {
       const id = uuid();

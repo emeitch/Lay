@@ -218,7 +218,7 @@ export default class Store {
     let obj = undefined;
     if (p.isPartial()) {
       for (key of p.keys) {
-        obj = obj ? obj.get(key) : this.objs.get(key.keyString());
+        obj = obj ? obj.get(key, this) : this.objs.get(key.keyString());
       }
     } else {
       obj = this.objs.get(k);

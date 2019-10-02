@@ -196,8 +196,11 @@ export default class Path extends Val {
   }
 
   parent() {
-    // todo: messagesが空なら親は存在しなのでエラーにする
     const messages = this.messages;
+    if (messages.length === 0) {
+      return undefined;
+    }
+
     messages.pop(); // remove child
     return new Path(this.receiver, ...messages);
   }

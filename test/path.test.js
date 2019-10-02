@@ -430,7 +430,14 @@ describe("Path", () => {
 
   describe("parent", () => {
     it("should return parent path", () => {
-      assert(path("foo", "bar", "buz").parent(), path("foo", "bar"));
+      const id0 = uuid();
+      assert.deepStrictEqual(path(id0, "bar", "buz").parent(), path(id0, "bar"));
+    });
+
+    context("not partial", () => {
+      it("should return undefined", () => {
+        assert.deepStrictEqual(path("foo").parent(), undefined);
+      });
     });
   });
 
