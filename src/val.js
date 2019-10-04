@@ -215,7 +215,7 @@ export class Prim extends Val {
   }
 
   isUUID() {
-    return typeof(this.origin) == "string" && !!this.origin.match(/^urn:uuid:/);
+    return typeof(this.origin) === "string" && !!this.origin.match(/^urn:uuid:/);
   }
 
   object(_store) {

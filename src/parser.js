@@ -32,7 +32,7 @@ export function parseVal(raw) {
       const orig = {};
 
       for (const key of Object.keys(raw)) {
-        if (key == "_proto" && proto === "Obj") {
+        if (key === "_proto" && proto === "Obj") {
           continue;
         }
 

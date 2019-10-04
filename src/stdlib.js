@@ -249,7 +249,7 @@ export const std = new Store();
       const protoName = protoSrc.equals(v(null)) ? undefined : v(protoSrc.origin);
       const o = {};
       while(args.length > 0) {
-        if (args.length == 1) {
+        if (args.length === 1) {
           throw "short arguments error";
         }
         const key = args.shift();

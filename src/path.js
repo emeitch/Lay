@@ -23,7 +23,7 @@ export default class Path extends Val {
         const pth = Path.parse(id);
         origin.push(...pth.origin);
       } else if (typeof(node) === "string") {
-        const val = node == "self" ? sym(node) : v(node);
+        const val = node === "self" ? sym(node) : v(node);
         origin.push([val]);
       } else if (Path.isMethodCallingNode(node)) {
         const applying = node.map(i => v(i));
@@ -88,11 +88,11 @@ export default class Path extends Val {
   }
 
   isPartial() {
-    return this.isMultiple() && this.keys.every((k, i) => i == 0 || (k instanceof Prim && !k.isUUID()));
+    return this.isMultiple() && this.keys.every((k, i) => i === 0 || (k instanceof Prim && !k.isUUID()));
   }
 
   isInner() {
-    return this.isMultiple() && this.keys.every((k, i) => i == 0 || k.isUUID());
+    return this.isMultiple() && this.keys.every((k, i) => i === 0 || k.isUUID());
   }
 
   stringify(indent=0) {
@@ -137,7 +137,7 @@ export default class Path extends Val {
         obj = obj.unpack();
       }
 
-      const gettingProp = obj !== store || (isMethodCalling && key.protoName == "String");
+      const gettingProp = obj !== store || (isMethodCalling && key.protoName === "String");
       let prop = gettingProp ? obj.get(key, store) : key;
       if (prop === undefined) {
         return this;

@@ -4,7 +4,7 @@ import { path } from './path';
 
 export default class Exp extends Val {
   constructor(...terms) {
-    super(terms.filter(t => t).map((t, i) => typeof(t) === "string" ? (i == 0 ? path(t) : sym(t)) : t));
+    super(terms.filter(t => t).map((t, i) => typeof(t) === "string" ? (i === 0 ? path(t) : sym(t)) : t));
   }
 
   get terms() {

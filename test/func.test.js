@@ -104,7 +104,7 @@ describe("Func", () => {
                 [
                   grd(
                     exp(
-                      func("x", x => x == 0),
+                      func("x", x => x === 0),
                       "y"
                     ),
                     "y"

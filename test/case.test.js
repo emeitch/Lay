@@ -155,7 +155,7 @@ describe("Case", () => {
           [
             grd(
               exp(
-                Func.func("x", "y", "z", (x, y, z) => x == y && y == z),
+                Func.func("x", "y", "z", (x, y, z) => x === y && y === z),
                 "x",
                 "y",
                 "z"
