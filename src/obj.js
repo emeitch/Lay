@@ -60,8 +60,23 @@ export default class Obj extends Val {
       }
       return ownProp;
     }
+    
+    const superProp = super.get(key, store);
+    if (superProp) {
+      return superProp;
+    }
+    
+    if (store) {
+      const parent = this.parent(store);
+      if (parent) {
+        const parentProp = parent.get(key, store);
+        if (parentProp) {
+          return parentProp;
+        }
+      }
+    }
 
-    return super.get(key, store);
+    return undefined;
   }
 
   collate(target) {

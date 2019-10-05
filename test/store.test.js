@@ -390,6 +390,24 @@ describe("Store", () => {
         assert.deepStrictEqual(val, v(3));
       });
     });
+    
+    context("child doesn't have the prop but parent has it", () => {
+      it("should return the parent prop", () => {
+        const id = uuid();
+        store.put({
+          _id: id,
+          foo: 3,
+          bar: 4,
+          baz: {
+            foo: 5
+          }
+        });
+        
+        const child = path(id, "baz").reduce(store);
+        assert.deepStrictEqual(child.get("foo", store), v(5));
+        assert.deepStrictEqual(child.get("bar", store), v(4));
+      });
+    });
   });
 
   describe("parent", () => {
