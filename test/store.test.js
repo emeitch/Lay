@@ -406,6 +406,8 @@ describe("Store", () => {
         const child = path(id, "baz").reduce(store);
         assert.deepStrictEqual(child.get("foo", store), v(5));
         assert.deepStrictEqual(child.get("bar", store), v(4));
+        
+        assert.deepStrictEqual(path(id, "baz", "bar").reduce(store), v(4));
       });
     });
   });
