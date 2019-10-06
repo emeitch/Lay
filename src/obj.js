@@ -66,6 +66,8 @@ export default class Obj extends Val {
       return superProp;
     }
     
+    // parent chain
+    // todo: 親階層にたまたま同名のプロパティがあった場合をどういう取り扱うのか考察したい
     if (store) {
       const parent = this.parent(store);
       if (parent) {
