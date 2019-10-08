@@ -5,8 +5,8 @@ import v from '../src/v';
 import { path } from '../src/path';
 import Act from '../src/act';
 import Store from '../src/store';
-// import { exp } from '../src/exp';
-// import { func, /* plus */ } from '../src/func';
+import { exp } from '../src/exp';
+import { func, plus } from '../src/func';
 
 describe("Store", () => {
   let store;
@@ -423,6 +423,21 @@ describe("Store", () => {
           });
           
           assert.deepStrictEqual(path(id, "bar", "baz").reduce(store), v(3));
+        });
+      });
+      
+      context("with func prop", () => {
+        it("should refer the parent value", () => {
+          const id = uuid();
+          store.put({
+            _id: id,
+            foo: 3,
+            bar: {
+              baz: func("x", exp(plus, "x", path("self", "foo")))
+            }
+          });
+          
+          assert.deepStrictEqual(path(id, "bar", ["baz", v(2)]).reduce(store), v(5));
         });
       });
     });
