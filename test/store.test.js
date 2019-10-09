@@ -440,6 +440,34 @@ describe("Store", () => {
           assert.deepStrictEqual(path(id, "bar", ["baz", v(2)]).reduce(store), v(5));
         });
       });
+      
+      context("with proto parent prop", () => {
+        it("should not refer the proto parent prop value", () => {
+          store.put({
+            _id: "Foo",
+            protoparentp: 3,
+            Bar: {
+              protop: 4,
+            }
+          });
+          
+          const id = uuid();
+          store.put({
+            _id: id,
+            parentp: 5,
+            baz: {
+              _proto: "Foo.Bar",
+              childp: 6
+            }
+          });
+
+          assert(path(id, "baz", "childp").reduce(store).equals(v(6))); // self owned prop
+          assert(path(id, "baz", "protop").reduce(store).equals(v(4))); // proto chain
+          assert(path(id, "baz", "parentp").reduce(store).equals(v(5))); // parent chain
+          assert(!path(id, "baz", "protoparentp").reduce(store).equals(v(3))); // proto parent not chained
+        });
+      });
+
     });
   });
 
