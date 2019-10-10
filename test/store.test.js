@@ -468,6 +468,32 @@ describe("Store", () => {
         });
       });
 
+      context("with parent proto prop", () => {
+        it("should not refer the proto parent prop value", () => {
+          store.put({
+            _id: "Foo",
+            parentProtoParentp: 3,
+            Bar: {
+              parentProtop: 4,
+            }
+          });
+          
+          const id = uuid();
+          store.put({
+            _proto: "Foo.Bar",
+            _id: id,
+            parentp: 5,
+            baz: {
+              childp: 6
+            }
+          });
+
+          assert(path(id, "baz", "childp").reduce(store).equals(v(6))); // self owned prop
+          assert(path(id, "baz", "parentp").reduce(store).equals(v(5))); // parent chain
+          assert(path(id, "baz", "parentProtop").reduce(store).equals(v(4))); // parent's proto chain
+          assert(!path(id, "baz", "protoProtoParentp").reduce(store).equals(v(3))); // parent's proto parent not chained
+        });
+      });
     });
   });
 
