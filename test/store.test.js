@@ -432,12 +432,22 @@ describe("Store", () => {
           store.put({
             _id: id,
             foo: 3,
-            bar: {
-              baz: func("x", exp(plus, "x", path("self", "foo")))
+            a: {
+              bar: 4,
+              b: {
+                baz: 5,
+                c: func("x",
+                  exp(plus,
+                    exp(plus,
+                      exp(plus, "x", path("self", "foo")),
+                      path("self", "bar")),
+                    path("self", "baz"))
+                  )
+              }
             }
           });
           
-          assert.deepStrictEqual(path(id, "bar", ["baz", v(2)]).reduce(store), v(5));
+          assert.deepStrictEqual(path(id, "a", "b", ["c", v(2)]).reduce(store), v(14));
         });
       });
       
