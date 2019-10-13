@@ -527,6 +527,30 @@ describe("Store", () => {
           assert(path(id, "foo", "childp").reduce(store).equals(v(3)));
         });
       });
+      
+      context("with proto parent prop as inherited parent proto prop", () => {
+        it("should not refer the proto parent prop value", () => {
+          store.put({
+            _id: "Foo",
+            parentProtop: 3,
+            Bar: {
+              protop: path("self", "parentProtop"),
+            }
+          });
+          
+          const id = uuid();
+          store.put({
+            _proto: "Foo",
+            _id: id,
+            foo: {
+              _proto: "Foo.Bar",
+              childp: path("self", "protop")
+            }
+          });
+
+          assert.deepStrictEqual(path(id, "foo", "childp").reduce(store), v(3));
+        });
+      });
     });
   });
 
