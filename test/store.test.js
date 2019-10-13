@@ -524,7 +524,7 @@ describe("Store", () => {
             }
           });
 
-          assert(path(id, "foo", "childp").reduce(store).equals(v(3)));
+          assert.deepStrictEqual(path(id, "foo", "childp").reduce(store), v(3));
         });
       });
       
