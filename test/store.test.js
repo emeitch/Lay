@@ -504,6 +504,29 @@ describe("Store", () => {
           assert(!path(id, "baz", "protoProtoParentp").reduce(store).equals(v(3))); // parent's proto parent not chained
         });
       });
+      
+      context("with proto who fetch inherited parent prop", () => {
+        it("should not refer the proto parent prop value", () => {
+          store.put({
+            _id: "Foo",
+            Bar: {
+              protop: path("self", "inheritedParentp"),
+            }
+          });
+          
+          const id = uuid();
+          store.put({
+            _id: id,
+            inheritedParentp: 3,
+            foo: {
+              _proto: "Foo.Bar",
+              childp: path("self", "protop")
+            }
+          });
+
+          assert(path(id, "foo", "childp").reduce(store).equals(v(3)));
+        });
+      });
     });
   });
 
