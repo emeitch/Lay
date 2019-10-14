@@ -446,6 +446,12 @@ describe("Path", () => {
       assert(path("foo", "bar").child("buz"), path("foo", "bar", "buz"));
     });
   });
+  
+  describe("parse", () => {
+    it("should a Path", () => {
+      assert.deepStrictEqual(Path.parse("foo.bar"), path("foo", "bar"));
+    });
+  });
 
   describe("stringify", () => {
     it("should return string dump", () => {
