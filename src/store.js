@@ -265,7 +265,12 @@ export default class Store {
 
   traversePropFromProto(obj, key) {
     const protoName = obj.getOwnProp("_proto");
-    const prototype = this.fetch(protoName);
+    
+    if (v(key).keyString() === protoName.keyString()) {
+      return undefined;
+    }
+    
+    const prototype = obj.get(protoName, this) || this.fetch(protoName);
     if (!prototype) {
       return undefined;
     }

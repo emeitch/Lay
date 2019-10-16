@@ -543,7 +543,7 @@ describe("Store", () => {
             _proto: "Foo",
             _id: id,
             foo: {
-              _proto: "Foo.Bar",
+              _proto: "Bar",
               childp: path("self", "protop")
             }
           });

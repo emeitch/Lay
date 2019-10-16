@@ -115,7 +115,7 @@ describe("Enum", () => {
           Baz: {
             _proto: "Fiz"
           },
-          Fiz: {
+          Diz: {
             foo: 7
           }
         },
