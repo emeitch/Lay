@@ -528,13 +528,15 @@ describe("Store", () => {
         });
       });
       
-      context("with proto parent prop as inherited parent proto prop", () => {
-        it("should not refer the proto parent prop value", () => {
+      context("with proto grand parent prop as inherited grand parent proto prop", () => {
+        it("should not refer the proto grapnd parent prop value", () => {
           store.put({
             _id: "Foo",
-            parentProtop: 3,
+            grandParentProtop: 3,
             Bar: {
-              protop: path("self", "parentProtop"),
+              Baz: {
+                protop: path("self", "grandParentProtop")
+              }
             }
           });
           
@@ -542,13 +544,16 @@ describe("Store", () => {
           store.put({
             _proto: "Foo",
             _id: id,
-            foo: {
-              _proto: "Bar",
-              childp: path("self", "protop")
+            bar: {
+              _proto: "Bar", // parent proto chain
+              baz: {
+                _proto: "Baz", // parent proto chain
+                childp: path("self", "protop")
+              }
             }
           });
 
-          assert.deepStrictEqual(path(id, "foo", "childp").reduce(store), v(3));
+          assert.deepStrictEqual(path(id, "bar", "baz", "childp").reduce(store), v(3));
         });
       });
     });
