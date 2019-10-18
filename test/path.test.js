@@ -446,12 +446,12 @@ describe("Path", () => {
       assert(path("foo", "bar").child("buz"), path("foo", "bar", "buz"));
     });
   });
-  
+
   describe("parse", () => {
     it("should a Path", () => {
       assert.deepStrictEqual(Path.parse("foo.bar"), path("foo", "bar"));
     });
-    
+  
     context("with self", () => {
       assert.deepStrictEqual(Path.parse("self.foo"), path("self", "foo"));
     });

@@ -60,12 +60,12 @@ export default class Obj extends Val {
       }
       return ownProp;
     }
-    
+
     const superProp = super.get(key, store);
     if (superProp) {
       return superProp;
     }
-    
+
     // parent chain
     if (store) {
       const parent = this.parent(store);
