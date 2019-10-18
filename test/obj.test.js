@@ -149,7 +149,7 @@ describe("Obj", () => {
       });
 
       context("with _body property", () => {
-        it("should reduce _val property", () => {
+        it("should reduce _body property", () => {
           const store = new Store();
 
           const val = v({a: 1, b: 2, _body: exp(plus, v(1), v(2))});

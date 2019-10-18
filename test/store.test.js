@@ -375,23 +375,23 @@ describe("Store", () => {
       });
     });
 
-    context("_val val", () => {
+    context("_body val", () => {
       it("should handle as value by calling #get", () => {
         const id = uuid();
         store.put({
           _id: id,
-          _val: 3
+          _body: 3
         });
 
-        const obj = store.fetch(id);
+        const obj = store.fetchObj(id);
         assert.deepStrictEqual(obj.getOwnProp("_id"), id);
-        assert.deepStrictEqual(obj.getOwnProp("_val"), v(3));
+        assert.deepStrictEqual(obj.getOwnProp("_body"), v(3));
 
         const val = store.get(id);
         assert.deepStrictEqual(val, v(3));
       });
     });
-    
+
     context("child doesn't have the prop but parent has it", () => {
       it("should return the parent prop", () => {
         const id = uuid();
@@ -403,14 +403,14 @@ describe("Store", () => {
             foo: 5
           }
         });
-        
+
         const child = path(id, "baz").reduce(store);
         assert.deepStrictEqual(child.get("foo", store), v(5));
         assert.deepStrictEqual(child.get("bar", store), v(4));
-        
+
         assert.deepStrictEqual(path(id, "baz", "bar").reduce(store), v(4));
       });
-      
+
       context("with path prop", () => {
         it("should refer the parent value", () => {
           const id = uuid();
@@ -421,11 +421,11 @@ describe("Store", () => {
               baz: path("self", "foo")
             }
           });
-          
+
           assert.deepStrictEqual(path(id, "bar", "baz").reduce(store), v(3));
         });
       });
-      
+
       context("with func prop", () => {
         it("should refer the parent value", () => {
           const id = uuid();
@@ -446,11 +446,11 @@ describe("Store", () => {
               }
             }
           });
-          
+
           assert.deepStrictEqual(path(id, "a", "b", ["c", v(2)]).reduce(store), v(14));
         });
       });
-      
+
       context("with proto parent prop", () => {
         it("should not refer the proto parent prop value", () => {
           store.put({
@@ -460,7 +460,7 @@ describe("Store", () => {
               protop: 4,
             }
           });
-          
+
           const id = uuid();
           store.put({
             _id: id,
@@ -487,7 +487,7 @@ describe("Store", () => {
               parentProtop: 4,
             }
           });
-          
+
           const id = uuid();
           store.put({
             _proto: "Foo.Bar",
@@ -504,7 +504,7 @@ describe("Store", () => {
           assert(!path(id, "baz", "protoProtoParentp").reduce(store).equals(v(3))); // parent's proto parent not chained
         });
       });
-      
+
       context("with proto who fetch inherited parent prop", () => {
         it("should not refer the proto parent prop value", () => {
           store.put({
@@ -513,7 +513,7 @@ describe("Store", () => {
               protop: path("self", "inheritedParentp"),
             }
           });
-          
+
           const id = uuid();
           store.put({
             _id: id,
@@ -527,7 +527,7 @@ describe("Store", () => {
           assert.deepStrictEqual(path(id, "foo", "childp").reduce(store), v(3));
         });
       });
-      
+
       context("with proto grand parent prop as inherited grand parent proto prop", () => {
         it("should not refer the proto grapnd parent prop value", () => {
           store.put({
@@ -539,7 +539,7 @@ describe("Store", () => {
               }
             }
           });
-          
+
           const id = uuid();
           store.put({
             _proto: "Foo",

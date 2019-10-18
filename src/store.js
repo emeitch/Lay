@@ -246,17 +246,7 @@ export default class Store {
   }
 
   get(key) {
-    const obj = this.fetch(key);
-    if (obj) {
-      const val = obj.getOwnProp("_val");
-      if (val) {
-        return val;
-      } else {
-        return obj;
-      }
-    }
-
-    return undefined;
+    return this.fetch(key);
   }
 
   match() {
@@ -265,11 +255,11 @@ export default class Store {
 
   traversePropFromProto(obj, key) {
     const protoName = obj.getOwnProp("_proto");
-    
+
     if (v(key).keyString() === protoName.keyString()) {
       return undefined;
     }
-    
+
     const prototype = obj.get(protoName, this) || this.fetch(protoName);
     if (!prototype) {
       return undefined;
