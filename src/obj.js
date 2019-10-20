@@ -178,4 +178,22 @@ export default class Obj extends Val {
 
     return recursiveOnPutByProto(this, path(this));
   }
+
+  equals(other) {
+    if (other.constructor !== this.constructor) {
+      return false;
+    }
+
+    const removeMetadataOrigin = obj => {
+      const orig = Object.assign({}, obj.origin);
+      for (const key of Object.keys(obj.origin)) {
+        if (key.match(/^_/)) {
+          delete orig[key];
+        }
+      }
+      return orig;
+    };
+
+    return _.isEqual(removeMetadataOrigin(this), removeMetadataOrigin(other));
+  }
 }

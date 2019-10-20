@@ -210,4 +210,29 @@ describe("Obj", () => {
       assert.deepStrictEqual(obj.keys, ["foo", "bar", "buz"]);
     });
   });
+
+  describe("#equals", () => {
+    it("should return the equality", () => {
+      const store = new Store();
+
+      const id1 = uuid("id1");
+      store.put({
+        _id: id1,
+        foo: 3,
+        bar: 4
+      });
+
+      const id2 = uuid("id2");
+      store.put({
+        _id: id2,
+        foo: 3,
+        bar: 4
+      });
+
+      const o1 = store.get(id1);
+      const o2 = store.get(id2);
+
+      assert(o1.equals(o2));
+    });
+  });
 });
