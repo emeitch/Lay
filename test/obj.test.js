@@ -229,10 +229,56 @@ describe("Obj", () => {
         bar: 4
       });
 
+      const id3 = uuid("id3");
+      store.put({
+        _id: id3,
+        foo: 5,
+        bar: 6
+      });
+
       const o1 = store.get(id1);
       const o2 = store.get(id2);
+      const o3 = store.get(id3);
 
       assert(o1.equals(o2));
+      assert(!o1.equals(o3));
+    });
+
+    context("with _proto", () => {
+      it("should return the equality", () => {
+        const store = new Store();
+
+        const id1 = uuid("id1");
+        store.put({
+          _proto: "Foo",
+          _id: id1,
+          foo: 3,
+          bar: 4
+        });
+
+        const id2 = uuid("id2");
+        store.put({
+          _proto: "Foo",
+          _id: id2,
+          foo: 3,
+          bar: 4
+        });
+
+        const id3 = uuid("id3");
+        store.put({
+          _proto: "Baz",
+          _id: id3,
+          foo: 3,
+          bar: 4
+        });
+
+        const o1 = store.get(id1);
+        const o2 = store.get(id2);
+        const o3 = store.get(id3);
+
+        assert(o1.equals(o2));
+        assert(!o1.equals(o3));
+      });
     });
   });
 });
