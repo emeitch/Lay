@@ -187,7 +187,7 @@ export default class Obj extends Val {
     const removeMetadataOrigin = obj => {
       const orig = Object.assign({}, obj.origin);
       for (const key of Object.keys(obj.origin)) {
-        if (key.match(/^_/) && key !== "_proto") {
+        if (key.match(/^_/) && key !== "_proto" && key !== "_status") {
           delete orig[key];
         }
       }
