@@ -5,6 +5,10 @@ import { path } from './path';
 import v from './v';
 
 export default class Obj extends Val {
+  static get managedKeys() {
+    return ["_id", "_rev", "_prev", "_key"];
+  }
+
   constructor(origin, protoName) {
     const o = Object.assign({}, origin, protoName ? {_proto: protoName}: undefined);
     super(o);
@@ -184,16 +188,16 @@ export default class Obj extends Val {
       return false;
     }
 
-    const removeMetadataOrigin = obj => {
+    const removeManagedProps = obj => {
       const orig = Object.assign({}, obj.origin);
       for (const key of Object.keys(obj.origin)) {
-        if (key.match(/^_/) && key !== "_proto" && key !== "_status") {
+        if (key.match(/^_/) && this.constructor.managedKeys.includes(key)) {
           delete orig[key];
         }
       }
       return orig;
     };
 
-    return _.isEqual(removeMetadataOrigin(this), removeMetadataOrigin(other));
+    return _.isEqual(removeManagedProps(this), removeManagedProps(other));
   }
 }
