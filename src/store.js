@@ -383,10 +383,6 @@ export default class Store {
     });
   }
 
-  get metaKeys() {
-    return ["_id", "_rev", "_prev"];
-  }
-
   copy(obj) {
     if (obj instanceof Prim) {
       const id = obj;
@@ -394,7 +390,7 @@ export default class Store {
     }
 
     const copied = Object.assign({}, obj.object(this));
-    this.metaKeys.forEach(mkey => {
+    Obj.managedKeys.forEach(mkey => {
       delete copied[mkey];
     });
     copied._src = obj.getOwnProp("_id");
