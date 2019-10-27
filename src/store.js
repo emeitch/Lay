@@ -224,6 +224,12 @@ export default class Store {
       obj = this.objs.get(k);
     }
 
+    if (!obj) {
+      const idstr = this.id.keyString();
+      const sobj = this.objs.get(idstr);
+      obj = sobj && sobj.getOriginProp(key);
+    }
+
     return obj;
   }
 

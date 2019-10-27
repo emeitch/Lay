@@ -1063,6 +1063,17 @@ describe("Store", () => {
         }, /the object dose not exist. id:/);
       });
     });
+
+    context("store obj props", () => {
+      it("should return a store obj prop as a top context prop", () => {
+        store.patch(store.id, {
+          Foo: v(3)
+        });
+
+        assert.deepStrictEqual(path(store.id, "Foo").reduce(store), v(3));
+        assert.deepStrictEqual(path("Foo").reduce(store), v(3));
+      });
+    });
   });
 
   describe("#copy", () => {
