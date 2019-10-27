@@ -1074,6 +1074,24 @@ describe("Store", () => {
         assert.deepStrictEqual(path("Foo").reduce(store), v(3));
       });
     });
+
+    context("put obj with _key", () => {
+      it("should return a store obj prop by _key", () => {
+        const id = uuid();
+        store.put({
+          _id: id,
+          _key: "Foo",
+          foo: 3,
+        });
+
+        assert.deepStrictEqual(path(store.id, "Foo", "foo").reduce(store), v(3));
+        assert.deepStrictEqual(path("Foo", "foo").reduce(store), v(3));
+
+        const obj = store.fetch(id);
+        assert.deepStrictEqual(obj.get("foo"), v(3));
+        assert.deepStrictEqual(obj.get("_key"), undefined);
+      });
+    });
   });
 
   describe("#copy", () => {

@@ -74,17 +74,26 @@ export default class Store {
       at: v(new Date())
     });
 
-    const meta = {
+    const managed = {
       _id: id.keyString(),
-      _rev: rid
+      _rev: rid,
+      _key: null
     };
     if (prid) {
-      meta._prev = prid;
+      managed._prev = prid;
     }
-    const o = obj.patch(meta);
+    const o = obj.patch(managed);
 
     this.doPut(rev);
     this.doPut(o);
+
+    const key = obj.getOwnProp("_key");
+    if (key) {
+      const k = key.keyString();
+      this.patch(this.id, {
+        [k]: path(id)
+      });
+    }
 
     block([rev, o]);
   }
