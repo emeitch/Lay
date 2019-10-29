@@ -1091,6 +1091,26 @@ describe("Store", () => {
         assert.deepStrictEqual(obj.get("foo"), v(3));
         assert.deepStrictEqual(obj.get("_key"), undefined);
       });
+
+      context("already exists _key", () => {
+        it("should store the latter _key", () => {
+          const id = uuid();
+          store.put({
+            _id: id,
+            _key: "Foo",
+            foo: 3,
+          });
+
+          const id2 = uuid();
+          store.put({
+            _id: id2,
+            _key: "Foo",
+            foo: 2,
+          });
+
+          assert.deepStrictEqual(path("Foo", "foo").reduce(store), v(2));
+        });
+      });
     });
   });
 
