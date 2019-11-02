@@ -1111,6 +1111,19 @@ describe("Store", () => {
           assert.deepStrictEqual(path("Foo", "foo").reduce(store), v(2));
         });
       });
+
+      context("downcase _key as variable", () => {
+        it("should throw a error", () => {
+          const id = uuid();
+          assert.throws(() => {
+            store.put({
+              _id: id,
+              _key: "foo",
+              foo: 3,
+            });
+          }, /cannot specify variable style string \(downcase start string\) for _key: "foo"/);
+        });
+      });
     });
   });
 

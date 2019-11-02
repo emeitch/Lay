@@ -90,6 +90,10 @@ export default class Store {
     const key = obj.getOwnProp("_key");
     if (key) {
       const k = key.keyString();
+      if (!Val.isConstantJSString(k)) {
+        throw `cannot specify variable style string (downcase start string) for _key: "${k}"`;
+      }
+
       this.patch(this.id, {
         [k]: path(id)
       });
