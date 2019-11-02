@@ -1,6 +1,10 @@
 import _ from 'lodash';
 
 export default class Val {
+  static isConstantJSString(jsstr) {
+    return typeof(jsstr) === "string" && jsstr.match(/^[A-Z]/) && !jsstr.match(/\./);
+  }
+
   constructor(origin) {
     if(this.constructor === Val) {
       throw "Can not create Val instances. 'Val' is abstruct class.";
@@ -64,7 +68,8 @@ export default class Val {
 
   isClass() {
     const id = this.getOwnProp("_id");
-    return typeof(id.origin) === "string" && id.origin.match(/^[A-Z]/) && !id.origin.match(/\./);
+    const jsstr = id.origin;
+    return Val.isConstantJSString(jsstr) && !jsstr.match(/\./);
   }
 
   step(_store) {

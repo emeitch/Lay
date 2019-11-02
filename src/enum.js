@@ -12,8 +12,7 @@ export default class Enum extends Val {
     let clone = this.clone();
     return this.keys.reduce((a, key) => {
       const child = this.getOriginProp(key);
-      const isConstKey = key[0].match(/[A-Z]/);
-      if (isConstKey && child instanceof Obj && !child.getOriginProp("_proto")) {
+      if (Val.isConstantJSString(key) && child instanceof Obj && !child.getOriginProp("_proto")) {
         return a.patch({
           [key]: child.patch({
             _proto: _id
