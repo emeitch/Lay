@@ -557,6 +557,68 @@ describe("Store", () => {
         });
       });
     });
+
+    context("store obj props", () => {
+      it("should return a store obj prop as a top context prop", () => {
+        store.patch(store.id, {
+          Foo: v(3)
+        });
+
+        assert.deepStrictEqual(path(store.id, "Foo").reduce(store), v(3));
+        assert.deepStrictEqual(path("Foo").reduce(store), v(3));
+      });
+    });
+
+    context("put obj with _key", () => {
+      it("should return a store obj prop by _key", () => {
+        const id = uuid();
+        store.put({
+          _id: id,
+          _key: "Foo",
+          foo: 3,
+        });
+
+        assert.deepStrictEqual(path(store.id, "Foo", "foo").reduce(store), v(3));
+        assert.deepStrictEqual(path("Foo", "foo").reduce(store), v(3));
+
+        const obj = store.fetch(id);
+        assert.deepStrictEqual(obj.get("foo"), v(3));
+        assert.deepStrictEqual(obj.get("_key"), undefined);
+      });
+
+      context("already exists _key", () => {
+        it("should store the latter _key", () => {
+          const id = uuid();
+          store.put({
+            _id: id,
+            _key: "Foo",
+            foo: 3,
+          });
+
+          const id2 = uuid();
+          store.put({
+            _id: id2,
+            _key: "Foo",
+            foo: 2,
+          });
+
+          assert.deepStrictEqual(path("Foo", "foo").reduce(store), v(2));
+        });
+      });
+
+      context("downcase _key as variable", () => {
+        it("should throw a error", () => {
+          const id = uuid();
+          assert.throws(() => {
+            store.put({
+              _id: id,
+              _key: "foo",
+              foo: 3,
+            });
+          }, /cannot specify variable style string \(downcase start string\) for _key: "foo"/);
+        });
+      });
+    });
   });
 
   describe("parent", () => {
@@ -1061,68 +1123,6 @@ describe("Store", () => {
         assert.throws(() => {
           store.delete(id);
         }, /the object dose not exist. id:/);
-      });
-    });
-
-    context("store obj props", () => {
-      it("should return a store obj prop as a top context prop", () => {
-        store.patch(store.id, {
-          Foo: v(3)
-        });
-
-        assert.deepStrictEqual(path(store.id, "Foo").reduce(store), v(3));
-        assert.deepStrictEqual(path("Foo").reduce(store), v(3));
-      });
-    });
-
-    context("put obj with _key", () => {
-      it("should return a store obj prop by _key", () => {
-        const id = uuid();
-        store.put({
-          _id: id,
-          _key: "Foo",
-          foo: 3,
-        });
-
-        assert.deepStrictEqual(path(store.id, "Foo", "foo").reduce(store), v(3));
-        assert.deepStrictEqual(path("Foo", "foo").reduce(store), v(3));
-
-        const obj = store.fetch(id);
-        assert.deepStrictEqual(obj.get("foo"), v(3));
-        assert.deepStrictEqual(obj.get("_key"), undefined);
-      });
-
-      context("already exists _key", () => {
-        it("should store the latter _key", () => {
-          const id = uuid();
-          store.put({
-            _id: id,
-            _key: "Foo",
-            foo: 3,
-          });
-
-          const id2 = uuid();
-          store.put({
-            _id: id2,
-            _key: "Foo",
-            foo: 2,
-          });
-
-          assert.deepStrictEqual(path("Foo", "foo").reduce(store), v(2));
-        });
-      });
-
-      context("downcase _key as variable", () => {
-        it("should throw a error", () => {
-          const id = uuid();
-          assert.throws(() => {
-            store.put({
-              _id: id,
-              _key: "foo",
-              foo: 3,
-            });
-          }, /cannot specify variable style string \(downcase start string\) for _key: "foo"/);
-        });
       });
     });
   });
