@@ -507,4 +507,17 @@ export default class Store {
   path(...args) {
     return path(...args);
   }
+
+  key(id) {
+    const storeObj = this.fetch("currentStore").reduce(this);
+
+    for (const key of Object.keys(storeObj.origin)) {
+      const pth = storeObj.get(key);
+      if (pth instanceof Path && !pth.isMultiple() && id.equals(pth.receiver)) {
+        return v(key);
+      }
+    }
+
+    return v(null);
+  }
 }

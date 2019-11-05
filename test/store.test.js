@@ -621,6 +621,20 @@ describe("Store", () => {
     });
   });
 
+  describe("key", () => {
+    it("return a key of the arg obj", () => {
+      const id = uuid();
+      store.put({
+        _id: id,
+        _key: "Foo",
+        foo: 3
+      });
+
+      assert.deepStrictEqual(store.key(id), v("Foo"));
+      assert.deepStrictEqual(store.key(v("not-found")), v(null));
+    });
+  });
+
   describe("parent", () => {
     it("return the parent obj", () => {
       const id0 = uuid();
