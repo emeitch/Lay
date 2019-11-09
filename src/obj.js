@@ -31,6 +31,11 @@ export default class Obj extends Val {
     return Object.keys(this.origin);
   }
 
+  __key(store) {
+    const id = this.getOwnProp("_id");
+    return store.key(id);
+  }
+
   clone() {
     return new this.constructor(this.origin);
   }

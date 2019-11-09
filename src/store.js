@@ -87,7 +87,7 @@ export default class Store {
     this.doPut(rev);
     this.doPut(o);
 
-    const key = obj.getOwnProp("_key");
+    const key = obj.getOriginProp("_key");
     if (key) {
       const k = key.keyString();
       if (!Val.isConstantJSString(k)) {
