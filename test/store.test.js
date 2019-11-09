@@ -569,18 +569,6 @@ describe("Store", () => {
       });
     });
 
-    describe("Obj#_key", () => {
-      it("should return the key string of obj", () => {
-        const id = uuid();
-        store.put({
-          _id: id,
-          _key: "Foo"
-        });
-
-        assert.deepStrictEqual(path(id, "_key").reduce(store), v("Foo"));
-      });
-    });
-
     context("put obj with _key", () => {
       it("should return a store obj prop by _key", () => {
         const id = uuid();
@@ -644,6 +632,18 @@ describe("Store", () => {
 
       assert.deepStrictEqual(store.key(id), v("Foo"));
       assert.deepStrictEqual(store.key(v("not-found")), v(null));
+    });
+
+    describe("Obj#_key", () => {
+      it("should return the key string of obj", () => {
+        const id = uuid();
+        store.put({
+          _id: id,
+          _key: "Foo"
+        });
+
+        assert.deepStrictEqual(path(id, "_key").reduce(store), v("Foo"));
+      });
     });
   });
 
