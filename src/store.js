@@ -57,6 +57,7 @@ export default class Store {
     }
 
     const old = this.fetch(id);
+    const okey = this.key(id);
     const orid = old && old.getOwnProp("_rev");
     const prid = obj.getOwnProp("_rev");
     if (orid && !prid) {
@@ -94,9 +95,18 @@ export default class Store {
         throw `cannot specify variable style string (downcase start string) for _key: "${k}"`;
       }
 
-      this.patch(this.id, {
+      const diff = {
         [k]: path(id)
-      });
+      };
+
+      // remove old props in store Obj
+      if (!okey.equals(v(null))) {
+        Object.assign(diff, {
+          [okey.origin]: null
+        });
+      }
+
+      this.patch(this.id, diff);
     }
 
     block([rev, o]);
@@ -509,7 +519,10 @@ export default class Store {
   }
 
   key(id) {
-    const storeObj = this.fetch("currentStore").reduce(this);
+    const storeObj = this.fetch(this.id);
+    if (!storeObj) {
+      return v(null);
+    }
 
     for (const key of Object.keys(storeObj.origin)) {
       const pth = storeObj.get(key);

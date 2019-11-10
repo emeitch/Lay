@@ -618,6 +618,29 @@ describe("Store", () => {
           }, /cannot specify variable style string \(downcase start string\) for _key: "foo"/);
         });
       });
+
+      context("changing _key", () => {
+        it("should throw a error", () => {
+          const id = uuid();
+          store.put({
+            _id: id,
+            _key: "Foo",
+            foo: 3,
+          });
+
+          assert.deepStrictEqual(path("Foo", "foo").reduce(store), v(3));
+
+          const o = store.fetch(id);
+          store.put(o.patch({
+            _key: "Bar"
+          }));
+          assert.deepStrictEqual(path("Bar", "foo").reduce(store), v(3));
+
+          const pth = path("Foo", "foo");
+          assert.deepStrictEqual(pth.reduce(store), pth);
+        });
+      });
+
     });
   });
 
