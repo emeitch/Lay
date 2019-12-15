@@ -185,24 +185,27 @@ describe("Store", () => {
             });
 
             store.put({
-              _id: "foo",
+              _key: "Foo",
+              _id: uuid(),
               bar: path(cpath0)
             });
 
             const inner = store.fetch(cpath2);
-            assert.deepStrictEqual(path("foo", "bar", id2, id3).reduce(store), inner);
+            assert.deepStrictEqual(path("Foo", "bar", id2, id3).reduce(store), inner);
           });
         });
 
         context("with _stereo", () => {
           it("should behave a default proto of the inner object", () => {
             store.put({
-              _id: "Bar",
+              _key: "Bar",
+              _id: uuid(),
               bar: v(3)
             });
             store.put({
-              _id: "Foo",
-              _stereo: "Bar"
+              _key: "Foo",
+              _id: uuid(),
+              _stereo: "Bar",
             });
             store.put({
               _proto: "Foo",
@@ -254,11 +257,13 @@ describe("Store", () => {
           context("with Entity", () => {
             it("should return a Entity's property", () => {
               store.put({
-                _id: "Entity",
+                _key: "Entity",
+                _id: uuid(),
                 bar: v(4)
               });
               store.put({
-                _id: "Foo",
+                _key: "Foo",
+                _id: uuid(),
               });
               store.put({
                 _proto: "Foo",
@@ -454,7 +459,8 @@ describe("Store", () => {
       context("with proto parent prop", () => {
         it("should not refer the proto parent prop value", () => {
           store.put({
-            _id: "Foo",
+            _key: "Foo",
+            _id: uuid(),
             protoparentp: 3,
             Bar: {
               protop: 4,
@@ -481,7 +487,8 @@ describe("Store", () => {
       context("with parent proto prop", () => {
         it("should not refer the proto parent prop value", () => {
           store.put({
-            _id: "Foo",
+            _key: "Foo",
+            _id: uuid(),
             parentProtoParentp: 3,
             Bar: {
               parentProtop: 4,
@@ -508,7 +515,8 @@ describe("Store", () => {
       context("with proto who fetch inherited parent prop", () => {
         it("should not refer the proto parent prop value", () => {
           store.put({
-            _id: "Foo",
+            _key: "Foo",
+            _id: uuid(),
             Bar: {
               protop: path("self", "inheritedParentp"),
             }
@@ -531,7 +539,8 @@ describe("Store", () => {
       context("with proto grand parent prop as inherited grand parent proto prop", () => {
         it("should not refer the proto grapnd parent prop value", () => {
           store.put({
-            _id: "Foo",
+            _key: "Foo",
+            _id: uuid(),
             grandParentProtop: 3,
             Bar: {
               Baz: {
@@ -573,8 +582,8 @@ describe("Store", () => {
       it("should return a store obj prop by _key", () => {
         const id = uuid();
         store.put({
-          _id: id,
           _key: "Foo",
+          _id: id,
           foo: 3,
         });
 
@@ -590,15 +599,15 @@ describe("Store", () => {
         it("should store the latter _key", () => {
           const id = uuid();
           store.put({
-            _id: id,
             _key: "Foo",
+            _id: id,
             foo: 3,
           });
 
           const id2 = uuid();
           store.put({
-            _id: id2,
             _key: "Foo",
+            _id: id2,
             foo: 2,
           });
 
@@ -611,8 +620,8 @@ describe("Store", () => {
           const id = uuid();
           assert.throws(() => {
             store.put({
-              _id: id,
               _key: "foo",
+              _id: id,
               foo: 3,
             });
           }, /cannot specify variable style string \(downcase start string\) for _key: "foo"/);
@@ -623,8 +632,8 @@ describe("Store", () => {
         it("should throw a error", () => {
           const id = uuid();
           store.put({
-            _id: id,
             _key: "Foo",
+            _id: id,
             foo: 3,
           });
 
@@ -648,8 +657,8 @@ describe("Store", () => {
     it("return a key of the arg obj", () => {
       const id = uuid();
       store.put({
-        _id: id,
         _key: "Foo",
+        _id: id,
         foo: 3
       });
 
@@ -661,8 +670,8 @@ describe("Store", () => {
       it("should return the key string of obj", () => {
         const id = uuid();
         store.put({
-          _id: id,
-          _key: "Foo"
+          _key: "Foo",
+          _id: id
         });
 
         assert.deepStrictEqual(path(id, "_key").reduce(store), v("Foo"));
@@ -753,22 +762,6 @@ describe("Store", () => {
       store.set(id, "foo", v(3));
 
       assert.deepStrictEqual(store.fetch(id).getOwnProp("foo"), v(3));
-    });
-
-    context("with direct stored obj and store obj prop", () => {
-      it("should be able to fetch prior the direct stored obj", () => {
-        store.set(store.id, "foo", v({bar: v(2)}));
-        store.put({
-          _id: "foo",
-          bar: 3
-        });
-
-        // fetched a store obj and get prop
-        assert.deepStrictEqual(store.fetch(store.id).getOwnProp("foo").getOwnProp("bar"), v(2));
-
-        // fetched prior a direct stored obj
-        assert.deepStrictEqual(store.fetch("foo").getOwnProp("bar"), v(3));
-      });
     });
 
     context("set obj as val", () => {

@@ -241,7 +241,7 @@ export default class Store {
     let obj = undefined;
     if (p.isPartial()) {
       for (key of p.keys) {
-        obj = obj ? obj.get(key, this) : this.objs.get(key.keyString());
+        obj = obj ? obj.get(key, this) : this.fetchObjWithoutImports(key);
       }
     } else {
       obj = this.objs.get(k);
@@ -250,7 +250,8 @@ export default class Store {
     if (!obj) {
       const idstr = this.id.keyString();
       const sobj = this.objs.get(idstr);
-      obj = sobj && sobj.getOriginProp(key);
+      const sprop = sobj && sobj.getOriginProp(key);
+      obj = sprop && sprop.reduce(this);
     }
 
     return obj;
