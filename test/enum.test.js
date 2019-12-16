@@ -2,6 +2,7 @@ import assert from 'assert';
 
 import { path } from '../src/path';
 import v from '../src/v';
+import { uuid } from '../src/uuid';
 import Store from '../src/store';
 
 import Enum from '../src/enum';
@@ -18,7 +19,8 @@ describe("Enum", () => {
       it("should define enum values", () => {
         store.put({
           _proto: "Enum",
-          _id: "Foo",
+          _key: "Foo",
+          _id: uuid(),
           foo: 3,
           Bar: {
             _proto: "Foo",
@@ -41,7 +43,8 @@ describe("Enum", () => {
         // add _proto for no _proto Obj children by Enum#__onPutByProto
         store.put({
           _proto: "Enum",
-          _id: "Foo",
+          _key: "Foo",
+          _id: uuid(),
           foo: 3,
           Bar: {},
           Baz: {
@@ -61,7 +64,8 @@ describe("Enum", () => {
       describe("define child objects", () => {
         it("should define enum values", () => {
           store.put({
-            _id: "Foo",
+            _key: "Foo",
+            _id: uuid(),
             Bar: {
               _proto: "Enum",
               foo: 6,
@@ -81,12 +85,14 @@ describe("Enum", () => {
     context("already child obj specified _proto", () => {
       it("should define enum values", () => {
         store.put({
-          _id: "Fiz",
+          _key: "Fiz",
+          _id: uuid(),
           foo: 5
         });
         store.put({
           _proto: "Enum",
-          _id: "Foo",
+          _key: "Foo",
+          _id: uuid(),
           foo: 3,
           Bar: {
             _proto: "Fiz"
@@ -104,11 +110,13 @@ describe("Enum", () => {
   context("already ancestor obj specified _proto", () => {
     it("should define enum values", () => {
       store.put({
-        _id: "Fiz",
+        _key: "Fiz",
+        _id: uuid(),
         foo: 5
       });
       store.put({
-        _id: "Foo",
+        _key: "Foo",
+        _id: uuid(),
         Bar: {
           _proto: "Enum",
           foo: 6,
@@ -129,14 +137,16 @@ describe("Enum", () => {
     it("should throw error", () => {
       store.put({
         _proto: "Enum",
-        _id: "Foo",
+        _key: "Foo",
+        _id: uuid(),
         foo: 3,
       });
 
       assert.throws(() => {
         store.put({
           _proto: "Foo",
-          _id: "Fiz",
+          _key: "Fiz",
+          _id: uuid(),
           foo: 5
         });
       }, /should not specify external enum as _proto/);
