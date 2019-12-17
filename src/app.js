@@ -7,6 +7,7 @@ import { path } from './path';
 import { func } from './func';
 import v from './v';
 import { sym } from './sym';
+import { uuid } from './uuid';
 import { dom, e } from './dom';
 
 const d = new Store(std);
@@ -51,9 +52,9 @@ const d = new Store(std);
 }
 
 {
-  const viewmodel = "viewmodel";
   d.put({
-    _id: viewmodel,
+    _key: "VIEW_MODEL",
+    _id: uuid(),
     _stereo: "TaskView"
   });
 }
@@ -198,7 +199,7 @@ const d = new Store(std);
                         path(sym("tid"), "state", "toStr"),
                         exp(
                           "if",
-                          path("viewmodel", sym("tid"), "editing"),
+                          path("VIEW_MODEL", sym("tid"), "editing"),
                           "editing",
                           v(null)
                         )
@@ -220,7 +221,7 @@ const d = new Store(std);
                     e.label({
                         ondblclick: func("ev",
                           path(
-                            "viewmodel",
+                            "VIEW_MODEL",
                             sym("tid"),
                             [
                               "set",
@@ -230,7 +231,7 @@ const d = new Store(std);
                             [
                               "then",
                               path(
-                                "viewmodel",
+                                "VIEW_MODEL",
                                 sym("tid"),
                                 [
                                   "set",
@@ -256,10 +257,10 @@ const d = new Store(std);
                   ),
                   e.input({
                     class: "edit",
-                    value: path("viewmodel", sym("tid"), "editingTitle"),
+                    value: path("VIEW_MODEL", sym("tid"), "editingTitle"),
                     afterUpdate: exp(
                       "if",
-                      path("viewmodel", sym("tid"), "editing"),
+                      path("VIEW_MODEL", sym("tid"), "editing"),
                       path("focusAfterAct"),
                       new Act(() => {})
                     ),
@@ -269,7 +270,7 @@ const d = new Store(std);
                         "if",
                         path(sym("ev"), "keyCode", ["equals", v(27)]),
                         path(
-                          "viewmodel",
+                          "VIEW_MODEL",
                           sym("tid"),
                           [
                             "set",
@@ -279,7 +280,7 @@ const d = new Store(std);
                           [
                             "then",
                             path(
-                              "viewmodel",
+                              "VIEW_MODEL",
                               sym("tid"),
                               [
                                 "set",
@@ -309,7 +310,7 @@ const d = new Store(std);
                                 )
                               ),
                               path(
-                                "viewmodel",
+                                "VIEW_MODEL",
                                 sym("tid"),
                                 [
                                   "set",
@@ -359,7 +360,7 @@ const d = new Store(std);
                               )
                             ),
                             path(
-                              "viewmodel",
+                              "VIEW_MODEL",
                               sym("tid"),
                               [
                                 "set",
@@ -395,7 +396,7 @@ const d = new Store(std);
                     oninput: func(
                       "ev",
                       path(
-                        "viewmodel",
+                        "VIEW_MODEL",
                         sym("tid"),
                         [
                           "set",
