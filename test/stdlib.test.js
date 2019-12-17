@@ -114,22 +114,23 @@ describe("stdlib", () => {
     describe("all", () => {
       it("should return self instances", () => {
         store.put({
-          _id: "Foo",
+          _key: "Foo",
+          _id: uuid(),
         });
         const id1 = uuid();
         store.put({
-          _id: id1,
-          _proto: "Foo"
+          _proto: "Foo",
+          _id: id1
         });
         const id2 = uuid();
         store.put({
-          _id: id2,
-          _proto: "Foo"
+          _proto: "Foo",
+          _id: id2
         });
         const id3 = uuid();
         store.put({
-          _id: id3,
           _proto: "Foo",
+          _id: id3,
           _status: v("deleted"), // not exists
         });
 
@@ -145,12 +146,13 @@ describe("stdlib", () => {
     describe("delete", () => {
       it("should delete the obj from all", () => {
         store.put({
-          _id: "Foo",
+          _key: "Foo",
+          _id: uuid(),
         });
         const id1 = uuid();
         store.put({
-          _id: id1,
-          _proto: "Foo"
+          _proto: "Foo",
+          _id: id1
         });
 
         const ids = path("Foo", "all").reduce(store);
@@ -167,7 +169,8 @@ describe("stdlib", () => {
     describe("new", () => {
       it("should return a instance creation act", () => {
         store.put({
-          _id: "Foo"
+          _key: "Foo",
+          _id: uuid()
         });
         const act = path("Entity", ["create", v({
           _proto: "Foo",
@@ -456,7 +459,8 @@ describe("stdlib", () => {
     describe("new", () => {
       it("should return a new Act instance", () => {
         store.put({
-          _id: "Foo"
+          _key: "Foo",
+          _id: uuid()
         });
 
         const act = path("Act", [

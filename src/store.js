@@ -432,11 +432,12 @@ export default class Store {
   instanceIDs(cls) {
     // todo: 線形探索なのを高速化
 
-    const cid = cls.get("_id", this);
+    const id = cls.get("_id", this);
+    const key = this.key(id);
     const isKindOfClass = v => {
       const protoName = v.getOwnProp("_proto");
 
-      if (protoName.origin === cid.origin) {
+      if (protoName.origin === id.origin || (key && protoName.origin === key.origin)) {
         return true;
       } else if (protoName.origin === "Obj") {
         return false;

@@ -16,7 +16,8 @@ describe("Many", () => {
       const bid = uuid();
 
       store.put({
-        _id: "Foo"
+        _key: "Foo",
+        _id: uuid()
       });
 
       const fid1 = uuid();

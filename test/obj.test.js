@@ -186,9 +186,9 @@ describe("Obj", () => {
     context("with _id", () => {
       it("should return a key string of id", () => {
         const cm = v({
-          _id: "foo"
+          _id: "uuid:xxxx"
         });
-        assert.deepStrictEqual(cm.keyString(), "foo");
+        assert.deepStrictEqual(cm.keyString(), "uuid:xxxx");
       });
     });
   });

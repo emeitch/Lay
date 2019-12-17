@@ -191,18 +191,21 @@ describe("Path", () => {
 
       beforeEach(() => {
         store.put({
-          _id: id,
-          _proto: "parent"
+          _proto: "Parent",
+          _id: id
         });
 
         store.put({
-          _id: "parent",
-          _proto: "grandparent",
+          _proto: "Grandparent",
+          _key: "Parent",
+          _id: uuid(),
           foo: v(2),
           bar: v(3)
         });
+
         store.put({
-          _id: "grandparent",
+          _key: "Grandparent",
+          _id: uuid(),
           baz: v(4)
         });
       });
@@ -271,7 +274,8 @@ describe("Path", () => {
             const pth = path("self", "a");
 
             store.put({
-              _id: "Foo",
+              _key: "Foo",
+              _id: uuid(),
               foo: pth,
               bar: path("self")
             });
@@ -285,7 +289,8 @@ describe("Path", () => {
           it("should return nested val", () => {
             const pth = path("self", "a", "b");
             store.put({
-              _id: "Foo",
+              _key: "Foo",
+              _id: uuid(),
               foo: pth
             });
 
@@ -451,7 +456,7 @@ describe("Path", () => {
     it("should a Path", () => {
       assert.deepStrictEqual(Path.parse("foo.bar"), path("foo", "bar"));
     });
-  
+
     context("with self", () => {
       assert.deepStrictEqual(Path.parse("self.foo"), path("self", "foo"));
     });
