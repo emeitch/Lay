@@ -151,13 +151,6 @@ export default class Store {
     this.put(o);
   }
 
-  merge(diff) {
-    for (const key of Object.keys(diff)) {
-      const val = diff[key];
-      this.patch(key, val);
-    }
-  }
-
   putWithoutHandler(obj) {
     const o = v(obj);
     this.doPut(o);
@@ -180,15 +173,13 @@ export default class Store {
     });
   }
 
-  patch(key, diff) {
+  patch(id, diff) {
     let d = v(diff).origin;
-    if (typeof(d) !== "object") {
-      this.assign(key, diff);
-      return;
-    }
-
-    const obj = this.fetch(key);
-    this.assign(key, obj ? obj.patch(d) : d);
+    const base = this.fetch(id) || v({_id: id});
+    const obj = base.patch(d);
+    const convert = this.convertPropObjToIdPath.bind(this);
+    const props = convert(obj.origin);
+    this.put(v(props));
   }
 
   set(id, key, val) {

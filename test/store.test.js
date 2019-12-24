@@ -780,59 +780,6 @@ describe("Store", () => {
     });
   });
 
-  describe("#merge", () => {
-    it("should merge the patch", () => {
-      store.merge({
-        foo: {
-          a: 1,
-          b: "c"
-        },
-        bar: 1
-      });
-
-      assert.deepStrictEqual(store.fetch("foo").getOwnProp("a"), v(1));
-      assert.deepStrictEqual(store.fetch("foo").getOwnProp("b"), v("c"));
-
-      assert.deepStrictEqual(store.fetch("bar"), v(1));
-    });
-
-    context("uuid", () => {
-      it("should merge the patch", () => {
-        const id = uuid();
-        const patch = {
-          [id.keyString()]: {
-            a: 1
-          }
-        };
-        store.merge(patch);
-
-        assert.deepStrictEqual(store.fetch(id).getOwnProp("a"), v(1));
-      });
-    });
-
-    context("an object exists", () => {
-      it("should merge the properties", () => {
-        store.merge({
-          foo: {
-            a: 1,
-          },
-        });
-
-        assert.deepStrictEqual(store.fetch("foo").getOwnProp("a"), v(1));
-
-        store.merge({
-          foo: {
-            b: 2,
-            c: 3
-          },
-        });
-        assert.deepStrictEqual(store.fetch("foo").getOwnProp("a"), v(1));
-        assert.deepStrictEqual(store.fetch("foo").getOwnProp("b"), v(2));
-        assert.deepStrictEqual(store.fetch("foo").getOwnProp("c"), v(3));
-      });
-    });
-  });
-
   describe("handle onPut", () => {
     it("should handle onPut handler", () => {
       let a = 0;
