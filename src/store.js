@@ -379,7 +379,7 @@ export default class Store {
       throw `the object already exists. id: ${id}`;
     }
 
-    this.assign(id, v(o));
+    this.patch(id, o);
     return id;
   }
 
