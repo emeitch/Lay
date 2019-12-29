@@ -139,14 +139,9 @@ export default class Store {
     const idprop = { _id: key };
 
     const obj = v(val);
-    const convert = this.convertPropObjToIdPath.bind(this);
-    const props = obj instanceof Obj ? convert(obj.origin) : { _body: obj };
+    const props = obj instanceof Obj ? obj.origin : { _body: obj };
 
-    const old = this.fetch(key);
-    const orev = old && old.getOwnProp("_rev");
-    const revprop = orev ? { _rev: orev } : {};
-
-    const jsobj = Object.assign({}, idprop, props, revprop);
+    const jsobj = Object.assign({}, idprop, props);
     const o = v(jsobj);
     this.put(o);
   }
