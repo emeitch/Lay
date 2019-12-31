@@ -136,14 +136,7 @@ export default class Store {
   }
 
   assign(key, val) {
-    const idprop = { _id: key };
-
-    const obj = v(val);
-    const props = obj instanceof Obj ? obj.origin : { _body: obj };
-
-    const jsobj = Object.assign({}, idprop, props);
-    const o = v(jsobj);
-    this.put(o);
+    this.patch(this.id, {[key]: val});
   }
 
   putWithoutHandler(obj) {
