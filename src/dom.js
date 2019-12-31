@@ -110,7 +110,7 @@ dom.assign(
 );
 
 dom.assign(
-  "beforePut",
+  "onPut",
   func(
     new LiftedNative(function() { return new Act(() => {
       dirty = true;
