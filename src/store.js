@@ -136,7 +136,7 @@ export default class Store {
   }
 
   assign(key, val) {
-    this.patch(this.id, {[key]: val});
+    this.set(this.id, key, val);
   }
 
   putWithoutHandler(obj) {
