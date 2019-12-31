@@ -168,9 +168,9 @@ export default class Obj extends Val {
     return pth ? store.fetch(pth) : undefined;
   }
 
-  _onPut(store) {
-    const recursiveOnPutByProto = (obj, pth) => {
-      const func = obj.get("onPutByProto", store);
+  _beforePut(store) {
+    const traverseBeforePutByProto = (obj, pth) => {
+      const func = obj.get("beforePutByProto", store);
       const protoId = pth.keyString();
       const parent = func.bind(obj)(protoId);
 
@@ -178,14 +178,14 @@ export default class Obj extends Val {
         const child = o.get(k);
         const p = pth.child(k);
         if (child instanceof Obj) {
-          return o.patch({[k]: recursiveOnPutByProto(child, p).origin});
+          return o.patch({[k]: traverseBeforePutByProto(child, p).origin});
         } else {
           return o;
         }
       }, parent);
     };
 
-    return recursiveOnPutByProto(this, path(this));
+    return traverseBeforePutByProto(this, path(this));
   }
 
   equals(other) {

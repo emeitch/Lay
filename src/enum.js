@@ -3,7 +3,7 @@ import Obj from './obj';
 import v from './v';
 
 export default class Enum extends Val {
-  _onPutByProto(_id) {
+  _beforePutByProto(_id) {
     const protoname = this.get("_proto");
     if (!protoname.equals(v("Enum"))) {
       throw "should not specify external enum as _proto";

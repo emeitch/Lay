@@ -580,7 +580,7 @@ const d = new Store(std);
     }
   });
 
-  d.assign("onPut", path(
+  d.assign("beforePut", path(
     exp("filterObjs", v(["Task"])),
     ["then", path("localStorage", ["appendObjs", v("todos-lay-objs")])],
     ["then", path("localStorage", ["write", v("todos-lay-objs")])]

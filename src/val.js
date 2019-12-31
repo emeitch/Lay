@@ -164,7 +164,7 @@ export default class Val {
     return this.keyVal();
   }
 
-  _onPutByProto(_id) {
+  _beforePutByProto(_id) {
     return this;
   }
 }
