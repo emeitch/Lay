@@ -178,7 +178,8 @@ export default class Store {
   }
 
   handleOnInport(other) {
-    const actexp = other.fetch("onImport");
+    const otherObj = other.fetch(other.id);
+    const actexp = otherObj.get("onImport", other);
     if (actexp) {
       const act = actexp.reduce(this);
       this.run(act);
