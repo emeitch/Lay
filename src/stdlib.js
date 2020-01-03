@@ -15,7 +15,7 @@ import { parseObjs } from './parser';
 export const std = new Store();
 
 {
-  std.set("if", "_body", func(
+  std.assign("if", func(
     "cond",
     "then",
     "else",
@@ -39,7 +39,7 @@ export const std = new Store();
     )
   ));
 
-  std.set("load", "_body", func(new LiftedNative(function() {
+  std.assign("load", func(new LiftedNative(function() {
     const store = this;
     return new Act(objsStr => {
       const jsobj = objsStr ? JSON.parse(objsStr) : [];
@@ -52,7 +52,7 @@ export const std = new Store();
   })));
 
 
-  std.set("filterObjs", "_body", func("pattern", new LiftedNative(function(pattern) {
+  std.assign("filterObjs", func("pattern", new LiftedNative(function(pattern) {
     const store = this;
     const protoPattern = pattern.reduce(store).origin;
     return new Act(objs => {
@@ -77,7 +77,9 @@ export const std = new Store();
 }
 
 {
-  const val = "Val";
+  const val = std.create({
+    _key: "Val",
+  });
 
   std.set(
     val,
@@ -98,7 +100,9 @@ export const std = new Store();
 }
 
 {
-  const entity = "Entity";
+  const entity = std.create({
+    _key: "Entity"
+  });
 
   std.set(
     entity,
@@ -141,7 +145,9 @@ export const std = new Store();
 }
 
 {
-  const str = "String";
+  const str = std.create({
+    _key: "String"
+  });
 
   std.set(
     str,
@@ -153,7 +159,9 @@ export const std = new Store();
 }
 
 {
-  const bool = "Boolean";
+  const bool = std.create({
+    _key: "Boolean"
+  });
 
   std.set(
     bool,
@@ -165,7 +173,9 @@ export const std = new Store();
 }
 
 {
-  const arr = "Arr";
+  const arr = std.create({
+    _key: "Arr"
+  });
 
   std.set(
     arr,
@@ -239,14 +249,16 @@ export const std = new Store();
 }
 
 {
-  const o = "Obj";
+  const o = std.create({
+    _key: "Obj"
+  });
 
   std.set(
     o,
     "new",
     func(new LiftedNative(function(...args) {
       const protoSrc = args.shift();
-      const protoName = protoSrc.equals(v(null)) ? undefined : v(protoSrc.origin);
+      const protoName = protoSrc.equals(v(null)) ? undefined : protoSrc.origin;
       const o = {};
       while(args.length > 0) {
         if (args.length === 1) {
@@ -262,7 +274,9 @@ export const std = new Store();
 }
 
 {
-  const act = "Act";
+  const act = std.create({
+    _key: "Act"
+  });
 
   std.set(
     act,
@@ -291,7 +305,9 @@ export const std = new Store();
 }
 
 {
-  const cnsl = "Console";
+  const cnsl = std.create({
+    _key: "Console"
+  });
 
   std.set(
     cnsl,
@@ -305,7 +321,9 @@ export const std = new Store();
 }
 
 {
-  const store = "Store";
+  const store = std.create({
+    _key: "Store"
+  });
 
   const findAndDecorateStore = (baseStore, targetStore, decorate) => {
     for (const i of baseStore.imports) {

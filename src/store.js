@@ -56,6 +56,11 @@ export default class Store {
       throw "intermediate object not found";
     }
 
+    const idstr = pth.receiver.origin;
+    if (typeof(idstr) !== "string" || !idstr.match(/^urn:uuid:/)) {
+      throw `cannot set not uuid str as id: ${pth.receiver.stringify()}`;
+    }
+
     const old = this.fetch(id);
     const okey = this.key(id);
     const orid = old && old.getOwnProp("_rev");
@@ -215,13 +220,13 @@ export default class Store {
     return result;
   }
 
-  fetchObjWithoutImports(key) {
+  fetchObjWithoutImports(key, store) {
     const k = key.keyString();
     const p = Path.parse(k);
     let obj = undefined;
     if (p.isPartial()) {
       for (key of p.keys) {
-        obj = obj ? obj.get(key, this) : this.fetchObjWithoutImports(key);
+        obj = obj ? obj.get(key, store) : this.fetchObjWithoutImports(key, store);
       }
     } else {
       obj = this.objs.get(k);
@@ -231,7 +236,7 @@ export default class Store {
       const idstr = this.id.keyString();
       const sobj = this.objs.get(idstr);
       const sprop = sobj && sobj.getOriginProp(key);
-      obj = sprop && sprop.reduce(this);
+      obj = sprop && sprop.reduce(store);
     }
 
     return obj;
@@ -242,7 +247,7 @@ export default class Store {
       key = v(key);
     }
 
-    return this.fetchObjWithoutImports(key) || this.fetchObjWithImports(store => store.fetchObjWithoutImports(key));
+    return this.fetchObjWithoutImports(key, this) || this.fetchObjWithImports(store => store.fetchObjWithoutImports(key, this));
   }
 
   fetch(key) {
@@ -252,6 +257,10 @@ export default class Store {
   }
 
   getOwnProp(key) {
+    if (v(key).origin === "_id") {
+      return this.id;
+    }
+
     return this.fetch(this.id).getOwnProp(key);
   }
 
@@ -417,7 +426,7 @@ export default class Store {
     const isKindOfClass = v => {
       const protoName = v.getOwnProp("_proto");
 
-      if (protoName.origin === id.origin || (key && protoName.origin === key.origin)) {
+      if (key && protoName.origin === key.origin) {
         return true;
       } else if (protoName.origin === "Obj") {
         return false;
@@ -439,8 +448,9 @@ export default class Store {
         continue;
       }
 
-      if (isKindOfClass(obj) && !obj.isClass()) {
-        const id = obj.getOwnProp("_id");
+      const id = obj.getOwnProp("_id");
+      const key = this.key(id);
+      if ((!key || !Val.isClassConstantJSString(key.origin)) && isKindOfClass(obj)) {
         results.push(id);
       }
     }

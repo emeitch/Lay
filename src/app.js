@@ -13,7 +13,11 @@ import { dom, e } from './dom';
 const d = new Store(std);
 
 {
-  d.set("Task",
+  const task = d.create({
+    _key: "Task"
+  });
+
+  d.set(task,
     "toggle",
     exp("if",
       path("self", "state", ["equals", path("active")]),
@@ -21,16 +25,18 @@ const d = new Store(std);
       path("self", ["set", "state", path("active")])
     )
   );
-  d.set("Task", "editing", v(false));
+  d.set(task, "editing", v(false));
 }
 
 {
-  d.set("todos", "_proto", "App");
-  d.set("todos", "var", v("0.2.0"));
-  d.set("todos", "state", path("all"));
-  d.set("todos", "newTaskTitle", v(""));
-  d.set("todos", "changeState", func("s", path("self", ["set", "state", sym("s")])));
-  d.set("todos", "changeStateByHash", func(
+  const todos = d.create({});
+  d.assign("todos", path(todos));
+  d.set(todos, "_proto", "App");
+  d.set(todos, "var", v("0.2.0"));
+  d.set(todos, "state", path("all"));
+  d.set(todos, "newTaskTitle", v(""));
+  d.set(todos, "changeState", func("s", path("self", ["set", "state", sym("s")])));
+  d.set(todos, "changeStateByHash", func(
     "hash",
     exp(
       "if",
@@ -48,7 +54,10 @@ const d = new Store(std);
 }
 
 {
-  d.set("TaskView", "editing", v(false));
+  const taskview = d.create({
+    _key: "TaskView"
+  });
+  d.set(taskview, "editing", v(false));
 }
 
 {
@@ -61,6 +70,8 @@ const d = new Store(std);
 
 {
   d.import(dom);
+  const document = d.create({});
+  d.assign("document", path(document));
   const domtree = e.body(
     {
       onhashchange: func("ev",
@@ -566,9 +577,8 @@ const d = new Store(std);
       )
     )
   );
-  d.set("document", "body", domtree);
-
-  d.patch("document", {
+  d.set(document, "body", domtree);
+  d.patch(document, {
     eventListeners: {
       DOMContentLoaded: func("win",
         path(

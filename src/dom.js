@@ -128,7 +128,8 @@ dom.assign(
   })
 );
 
-const localStorage = "localStorage";
+const localStorage = dom.create({});
+dom.assign("localStorage", path(localStorage));
 dom.set(
   localStorage,
   "read",

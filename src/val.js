@@ -5,6 +5,10 @@ export default class Val {
     return typeof(jsstr) === "string" && jsstr.match(/^[A-Z]/) && !jsstr.match(/\./);
   }
 
+  static isClassConstantJSString(jsstr) {
+    return this.isConstantJSString(jsstr) && !jsstr.match(/\./);
+  }
+
   constructor(origin) {
     if(this.constructor === Val) {
       throw "Can not create Val instances. 'Val' is abstruct class.";
@@ -68,8 +72,7 @@ export default class Val {
 
   isClass() {
     const id = this.getOwnProp("_id");
-    const jsstr = id.origin;
-    return Val.isConstantJSString(jsstr) && !jsstr.match(/\./);
+    return Val.isClassConstantJSString(id.origin);
   }
 
   step(_store) {

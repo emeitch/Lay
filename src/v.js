@@ -28,7 +28,7 @@ export default function v(...args) {
       return new Time(origin);
     }
 
-    const protoName = !protoSrc || protoSrc instanceof Val ? protoSrc : new Prim(protoSrc);
+    const protoName = !protoSrc || !(protoSrc instanceof Val) ? protoSrc : protoSrc.origin;
     const orgn = {};
     for (const key of Object.keys(origin)) {
       const val = origin[key];

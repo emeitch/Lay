@@ -650,6 +650,17 @@ describe("Store", () => {
         });
       });
 
+      context("not uuid to id", () => {
+        it("should throw a error", () => {
+          assert.throws(() => {
+            store.put({
+              _id: "Foo",
+              foo: 3
+            });
+          }, /cannot set not uuid str as id/);
+        });
+      });
+
     });
   });
 
@@ -943,7 +954,8 @@ describe("Store", () => {
   describe("#instanceIDs", () => {
     it("should return all instance ids", () => {
       store.put({
-        _id: v("Foo")
+        _key: v("Foo"),
+        _id: uuid()
       });
 
       const id0 = store.create({
@@ -963,16 +975,19 @@ describe("Store", () => {
     context("with inherited class", () => {
       it("should return all instances without inherited classes", () => {
         store.put({
-          _id: v("Foo")
+          _key: v("Foo"),
+          _id: uuid()
         });
 
         store.put({
           _proto: v("Foo"),
-          _id: v("Bar") // start with uppercase id recognized for class
+          _key: v("Bar"), // start with uppercase id recognized for class
+          _id: uuid()
         });
         store.put({
           _proto: v("Foo"),
-          _id: v("Buz") // start with uppercase id recognized for class
+          _key: v("Buz"), // start with uppercase id recognized for class
+          _id: uuid()
         });
 
         const id0 = store.create({
@@ -997,7 +1012,8 @@ describe("Store", () => {
         const cpath = store.path(id0, id1);
 
         store.put({
-          _id: v("Foo")
+          _key: v("Foo"),
+          _id: uuid()
         });
 
         store.put({
@@ -1014,15 +1030,18 @@ describe("Store", () => {
 
     context("inner object with class", () => {
       it("should return all with inner object", () => {
+        const id0 = uuid();
         store.put({
-          _id: v("Bar")
+          _key: v("Bar"),
+          _id: id0,
         });
         const id1 = store.create({});
-        const cpath = store.path("Bar", id1);
+        const cpath = store.path(id0, id1);
 
 
         store.put({
-          _id: v("Foo")
+          _key: v("Foo"),
+          _id: uuid()
         });
 
         store.put({
@@ -1040,12 +1059,14 @@ describe("Store", () => {
     context("with inherited objects", () => {
       it("should return all with inner object", () => {
         store.put({
-          _id: v("Foo")
+          _key: v("Foo"),
+          _id: uuid()
         });
 
         store.put({
           _proto: v("Foo"),
-          _id: v("Bar")
+          _key: v("Bar"),
+          _id: uuid()
         });
 
         const id0 = store.create({
@@ -1067,7 +1088,8 @@ describe("Store", () => {
   describe("#delete", () => {
     it("should delete the obj", () => {
       store.put({
-        _id: v("Foo")
+        _key: v("Foo"),
+        _id: uuid()
       });
       const cls = store.fetch("Foo");
 
@@ -1087,7 +1109,8 @@ describe("Store", () => {
     context("apply obj", () => {
       it("should delete the obj", () => {
         store.put({
-          _id: v("Foo")
+          _key: v("Foo"),
+          _id: uuid()
         });
         const cls = store.fetch("Foo");
 

@@ -28,7 +28,7 @@ export function parseVal(raw) {
     } else if (proto === "Path") {
       return path(...parseVal(raw.origin));
     } else {
-      const proto = !raw._proto ? null : parseVal(raw._proto);
+      const proto = !raw._proto ? null : raw._proto;
       const orig = {};
 
       for (const key of Object.keys(raw)) {

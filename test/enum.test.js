@@ -11,7 +11,7 @@ describe("Enum", () => {
   let store;
   beforeEach(() => {
     store = new Store();
-    store.set("Enum", "_body", new Enum());
+    store.assign("Enum", new Enum());
   });
 
   context("explicit _proto specifing", () => {

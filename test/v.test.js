@@ -33,7 +33,7 @@ describe("v function", () => {
       const val = v("Foo", {a: 1, b: 2});
       assert(val instanceof Obj);
       assert.deepStrictEqual(val.get("_proto"), v("Foo"));
-      assert.deepStrictEqual(val.origin, {_proto: v("Foo"), a: 1, b: 2});
+      assert.deepStrictEqual(val.origin, {_proto: "Foo", a: 1, b: 2});
       assert.deepStrictEqual(val.get("a"), v(1));
     });
   });
@@ -42,7 +42,7 @@ describe("v function", () => {
     it("should return a empty Obj", () => {
       const val = v("Foo", {});
       assert.deepStrictEqual(val.get("_proto"), v("Foo"));
-      assert.deepStrictEqual(val.origin, {_proto: v("Foo")});
+      assert.deepStrictEqual(val.origin, {_proto: "Foo"});
     });
   });
 
@@ -51,7 +51,7 @@ describe("v function", () => {
       const val = v("Foo", {a: v("Bar", {b: 1, c: 2})});
       assert(val instanceof Obj);
       assert.deepStrictEqual(val.get("_proto"), v("Foo"));
-      assert.deepStrictEqual(val.origin, {_proto: v("Foo"), a: v("Bar", {b: 1, c: 2})});
+      assert.deepStrictEqual(val.origin, {_proto: "Foo", a: v("Bar", {b: 1, c: 2})});
       assert.deepStrictEqual(val.get("a"), v("Bar", {b: 1, c: 2}));
     });
   });
