@@ -1170,6 +1170,13 @@ describe("Store", () => {
     });
   });
 
+  describe("#getOwnProp", () => {
+    it("should retrun the store prop", () => {
+      store.set(store.id, "foo", v(3));
+      assert.deepStrictEqual(store.getOwnProp("foo"), v(3));
+    });
+  });
+
   describe("#run", () => {
     it("should run act", () => {
       let a = 0;

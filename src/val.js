@@ -70,11 +70,6 @@ export default class Val {
     };
   }
 
-  isClass() {
-    const id = this.getOwnProp("_id");
-    return Val.isClassConstantJSString(id.origin);
-  }
-
   step(_store) {
     return this;
   }

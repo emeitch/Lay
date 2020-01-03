@@ -40,7 +40,7 @@ describe("v function", () => {
 
   context("with empty complex value as enum value", () => {
     it("should return a empty Obj", () => {
-      const val = v("Foo", {});
+      const val = v(v("Foo"), {});
       assert.deepStrictEqual(val.get("_proto"), v("Foo"));
       assert.deepStrictEqual(val.origin, {_proto: "Foo"});
     });
