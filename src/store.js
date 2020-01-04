@@ -56,9 +56,12 @@ export default class Store {
       throw "intermediate object not found";
     }
 
-    const idstr = pth.receiver.origin;
+    const idval = pth.receiver;
+    const idstr = idval.origin;
     if (typeof(idstr) !== "string" || !idstr.match(/^urn:uuid:/)) {
-      throw `cannot set not uuid str as id: ${pth.receiver.stringify()}`;
+      throw `cannot set not uuid str as id: ${idval.stringify()}`;
+    } else if (this.id.equals(idval) && obj.hasUUIDKeys()){
+      throw `cannot set a uuid key prop for the store obj: ${obj.stringify()}`;
     }
 
     const old = this.fetch(id);

@@ -835,6 +835,15 @@ describe("Store", () => {
     it("should return the store", () => {
       assert.deepStrictEqual(store.fetch("currentStore").reduce(store).get("_id"), store.id.keyVal());
     });
+
+    context("uuid key props", () => {
+      it("should throw a error", () => {
+        const id = uuid();
+        assert.throws(() => {
+          store.set(store.id, id, v(3));
+        }, /cannot set a uuid key prop for the store obj/);
+      });
+    });
   });
 
   describe("#create", () => {

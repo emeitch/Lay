@@ -205,4 +205,14 @@ export default class Obj extends Val {
 
     return _.isEqual(removeManagedProps(this), removeManagedProps(other));
   }
+
+  hasUUIDKeys() {
+    for (const key of Object.keys(this.origin)) {
+      if (key.match(/^urn:uuid:/)) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
 }
