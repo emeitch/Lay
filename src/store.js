@@ -438,9 +438,10 @@ export default class Store {
       } else if (protoName.origin === "Obj") {
         return false;
       } else {
-        const c = this.fetch(protoName);
-        if (c) {
-          return isKindOfClass(c.reduce(this));
+        const protoprop = this.fetch(protoName);
+        if (protoprop) {
+          const prototype = protoprop.reduce(this);
+          return isKindOfClass(prototype);
         } else {
           return false;
         }
