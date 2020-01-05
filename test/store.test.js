@@ -974,7 +974,7 @@ describe("Store", () => {
         _proto: v("Foo")
       });
 
-      const cls = store.fetch("Foo");
+      const cls = store.fetch("Foo").reduce(store);
       const all = store.instanceIDs(cls);
       assert.deepStrictEqual(all.length, 2);
       assert.deepStrictEqual(all[0], id0);
@@ -1006,7 +1006,7 @@ describe("Store", () => {
           _proto: v("Foo")
         });
 
-        const cls = store.fetch("Foo");
+        const cls = store.fetch("Foo").reduce(store);
         const all = store.instanceIDs(cls);
         assert.deepStrictEqual(all.length, 2);
         assert.deepStrictEqual(all[0], id0);
@@ -1030,7 +1030,7 @@ describe("Store", () => {
           _id: cpath
         });
 
-        const cls = store.fetch("Foo");
+        const cls = store.fetch("Foo").reduce(store);
         const all = store.instanceIDs(cls);
         assert.deepStrictEqual(all.length, 1);
         assert.deepStrictEqual(all[0], cpath.keyVal());
@@ -1058,7 +1058,7 @@ describe("Store", () => {
           _id: cpath
         });
 
-        const cls = store.fetch("Foo");
+        const cls = store.fetch("Foo").reduce(store);
         const all = store.instanceIDs(cls);
         assert.deepStrictEqual(all.length, 1);
         assert.deepStrictEqual(all[0], cpath.keyVal());
@@ -1085,7 +1085,7 @@ describe("Store", () => {
           _proto: v("Bar")
         });
 
-        const cls = store.fetch("Foo");
+        const cls = store.fetch("Foo").reduce(store);
         const all = store.instanceIDs(cls);
         assert.deepStrictEqual(all.length, 2);
         assert.deepStrictEqual(all[0], id0);
@@ -1100,7 +1100,7 @@ describe("Store", () => {
         _key: v("Foo"),
         _id: uuid()
       });
-      const cls = store.fetch("Foo");
+      const cls = store.fetch("Foo").reduce(store);
 
       const id = store.create({
         _proto: v("Foo")
@@ -1121,7 +1121,7 @@ describe("Store", () => {
           _key: v("Foo"),
           _id: uuid()
         });
-        const cls = store.fetch("Foo");
+        const cls = store.fetch("Foo").reduce(store);
 
         const id = store.create({
           _proto: v("Foo")

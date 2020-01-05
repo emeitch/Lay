@@ -229,7 +229,8 @@ export default class Store {
     let obj = undefined;
     if (p.isPartial()) {
       for (key of p.keys) {
-        obj = obj ? obj.get(key, store) : this.fetchObjWithoutImports(key, store);
+        const prop = obj ? obj.get(key, store) : this.fetchObjWithoutImports(key, store);
+        obj = prop && prop.reduce(this);
       }
     } else {
       obj = this.objs.get(k);
@@ -239,7 +240,7 @@ export default class Store {
       const idstr = this.id.keyString();
       const sobj = this.objs.get(idstr);
       const sprop = sobj && sobj.getOriginProp(key);
-      obj = sprop && sprop.reduce(store);
+      obj = sprop;
     }
 
     return obj;
@@ -282,11 +283,12 @@ export default class Store {
       return undefined;
     }
 
-    const prototype = obj.get(protoName, this) || this.fetch(protoName);
-    if (!prototype) {
+    const protoprop = obj.get(protoName, this) || this.fetch(protoName);
+    if (!protoprop) {
       return undefined;
     }
 
+    const prototype = protoprop.reduce(this);
     if (prototype instanceof Obj) {
       const p = prototype.getOriginProp(key);
       if (p) {
@@ -316,9 +318,10 @@ export default class Store {
   findPropFromStereotype(pth, key) {
     const receiver = pth.receiver;
     const parent = this.fetch(receiver);
-    const steroName = parent && parent.get("_stereo", this);
-    const sterotype = steroName && this.fetch(steroName);
-    return (sterotype && sterotype.get(key, this)) || undefined;
+    const stereoname = parent && parent.get("_stereo", this);
+    const stereoprop = stereoname && this.fetch(stereoname);
+    const stereotype = stereoprop && stereoprop.reduce(this);
+    return (stereotype && stereotype.get(key, this)) || undefined;
   }
 
   findPropFromProto(obj, key) {
@@ -338,13 +341,15 @@ export default class Store {
       }
     }
 
-    const vt = this.fetch("Val");
+    const vtprop = this.fetch("Val");
+    const vt = vtprop && vtprop.reduce(this);
     const vp = vt && vt.getOriginProp(key);
     if (vp) {
       return vp;
     }
 
-    const et = this.fetch("Entity");
+    const etprop = this.fetch("Entity");
+    const et = etprop && etprop.reduce(this);
     const ep = id && et && et.getOriginProp(key);
     if (ep) {
       return ep;
@@ -436,7 +441,7 @@ export default class Store {
       } else {
         const c = this.fetch(protoName);
         if (c) {
-          return isKindOfClass(c);
+          return isKindOfClass(c.reduce(this));
         } else {
           return false;
         }
