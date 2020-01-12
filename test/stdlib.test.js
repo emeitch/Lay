@@ -298,6 +298,22 @@ describe("stdlib", () => {
             assert.deepStrictEqual(path(id, "foo", "buz", "fiz").reduce(store), v(5));
           });
         });
+
+        context("with path referencing", () => {
+          it("should set a val for the referencing obj", () => {
+            const id = store.create({
+              foo: 3
+            });
+
+            store.assign("bar", path(id));
+            
+            const a = path("bar", ["set", "foo", v(4)]).reduce(store);
+            store.run(a);
+
+            const obj = store.fetch(id);
+            assert.deepStrictEqual(obj.getOwnProp("foo"), v(4));
+          });
+        });
       });
 
       describe("#get", () => {
