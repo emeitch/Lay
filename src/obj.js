@@ -133,11 +133,6 @@ export default class Obj extends Val {
     return new this.constructor(newObj);
   }
 
-  step(store) {
-    const body = this.getOwnProp("_body");
-    return body ? body.step(store) : super.step(store);
-  }
-
   object(store) {
     const o = super.object(store);
     delete o.origin;
@@ -212,7 +207,7 @@ export default class Obj extends Val {
         return true;
       }
     }
-    
+
     return false;
   }
 }

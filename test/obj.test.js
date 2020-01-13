@@ -2,8 +2,6 @@ import assert from 'assert';
 
 import Store from '../src/store';
 import { uuid } from '../src/uuid';
-import { exp } from '../src/exp';
-import { plus } from '../src/func';
 import { path } from '../src/path';
 import v from '../src/v';
 
@@ -146,15 +144,6 @@ describe("Obj", () => {
 
         const val = v({a: 1, b: 2});
         assert.deepStrictEqual(val.reduce(store), v({a: 1, b: 2}));
-      });
-
-      context("with _body property", () => {
-        it("should reduce _body property", () => {
-          const store = new Store();
-
-          const val = v({a: 1, b: 2, _body: exp(plus, v(1), v(2))});
-          assert.deepStrictEqual(val.reduce(store), v(3));
-        });
       });
     });
 

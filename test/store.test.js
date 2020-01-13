@@ -380,23 +380,6 @@ describe("Store", () => {
       });
     });
 
-    context("_body val", () => {
-      it("should handle as value by calling #get", () => {
-        const id = uuid();
-        store.put({
-          _id: id,
-          _body: 3
-        });
-
-        const obj = store.fetchObj(id);
-        assert.deepStrictEqual(obj.getOwnProp("_id"), id);
-        assert.deepStrictEqual(obj.getOwnProp("_body"), v(3));
-
-        const val = store.get(id);
-        assert.deepStrictEqual(val, v(3));
-      });
-    });
-
     context("child doesn't have the prop but parent has it", () => {
       it("should return the parent prop", () => {
         const id = uuid();
