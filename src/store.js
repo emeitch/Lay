@@ -39,7 +39,7 @@ export default class Store {
 
     // todo: 本当はpathのreduceで対応したい
     // しかしまだstore未登録のObjなのでpathが利用できない
-    // e.g.) obj = path(obj, ["beforePut"]).reduce(this);
+    // e.g.) obj = path(base, ["beforePut"]).reduce(this);
     const func = base.get("beforePut", this);
     let obj = func.bind(base)(this);
 
