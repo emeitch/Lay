@@ -17,8 +17,7 @@ const projector = createProjector();
 dom.assign(
   "onImport",
   func(
-    new LiftedNative(function() { return new Act(() => {
-      const store = this;
+    new LiftedNative((store) => { return new Act(() => {
       function render(elm) {
         if (elm === undefined) {
           return undefined;
@@ -112,7 +111,7 @@ dom.assign(
 dom.assign(
   "onPut",
   func(
-    new LiftedNative(function() { return new Act(() => {
+    new LiftedNative((_store) => { return new Act(() => {
       dirty = true;
     });
   }))
@@ -135,7 +134,7 @@ dom.set(
   "read",
   func(
     "key",
-    new LiftedNative(function(key) {
+    new LiftedNative((key, _store) => {
       return new Act(() => {
         return window.localStorage.getItem(key.origin);
       });
@@ -146,10 +145,10 @@ dom.set(
   localStorage,
   "appendObjs",
   func(
-    new LiftedNative(function(key) {
+    new LiftedNative((key, store) => {
       return new Act(objs => {
         const storage = JSON.parse(window.localStorage.getItem(key.origin)) || [];
-        storage.push(...objs.map(o => o.object(this)));
+        storage.push(...objs.map(o => o.object(store)));
         return JSON.stringify(storage);
       });
     })
@@ -160,7 +159,7 @@ dom.set(
   "write",
   func(
     "key",
-    new LiftedNative(function(key) {
+    new LiftedNative((key, _store) => {
       return new Act(str => {
         if (typeof(str) === "string") {
           window.localStorage.setItem(key.origin, str);

@@ -151,6 +151,7 @@ export default class Path extends Val {
         const f = prop;
         const boundf = f.bind(obj);
         const nativef = (...args) => {
+          const store = args.pop();
           const reducedargs = args.map(a => a.reduce(store));
           return boundf(...reducedargs.concat(store));
         };

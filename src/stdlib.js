@@ -39,8 +39,7 @@ export const std = new Store();
     )
   ));
 
-  std.assign("load", func(new LiftedNative(function() {
-    const store = this;
+  std.assign("load", func(new LiftedNative((store) => {
     return new Act(objsStr => {
       const jsobj = objsStr ? JSON.parse(objsStr) : [];
       const objs = parseObjs(jsobj);
@@ -52,8 +51,7 @@ export const std = new Store();
   })));
 
 
-  std.assign("filterObjs", func("pattern", new LiftedNative(function(pattern) {
-    const store = this;
+  std.assign("filterObjs", func("pattern", new LiftedNative((pattern, store) => {
     const protoPattern = pattern.reduce(store).origin;
     return new Act(objs => {
       const filtered = [];
@@ -84,8 +82,8 @@ export const std = new Store();
   std.set(
     val,
     "get",
-    func("key", exp(new LiftedNative(function(self, key) {
-      return self.get(key, this);
+    func("key", exp(new LiftedNative((self, key, store) => {
+      return self.get(key, store);
     }), "self", "key"))
   );
 
@@ -93,8 +91,8 @@ export const std = new Store();
   std.set(
     val,
     "set",
-    func("key", "val", exp(new LiftedNative(function(self, key, val) {
-      return this.setAct(self, key.reduce(this), val.reduce(this));
+    func("key", "val", exp(new LiftedNative((self, key, val, store) => {
+      return store.setAct(self, key.reduce(store), val.reduce(store));
     }), "self", "key", "val"))
   );
 }
@@ -107,15 +105,15 @@ export const std = new Store();
   std.set(
     entity,
     "create",
-    func("props", new LiftedNative(function(pe) {
+    func("props", new LiftedNative((pe, store) => {
       return new Act(() => {
-        const props = pe.reduce(this);
+        const props = pe.reduce(store);
         // todo: 本当はpの加工をしなくても良いようにしたい
         const p = {};
         for (const key in props.origin) {
           p[key] = props.get(key);
         }
-        return this.create(p);
+        return store.create(p);
       });
     }))
   );
@@ -130,16 +128,16 @@ export const std = new Store();
   std.set(
     entity,
     "all",
-    exp(new LiftedNative(function(self) {
-      return v(this.instanceIDs(self));
+    exp(new LiftedNative((self, store) => {
+      return v(store.instanceIDs(self));
     }), "self")
   );
 
   std.set(
     entity,
     "delete",
-    exp(new LiftedNative(function(self) {
-      return this.deleteAct(self);
+    exp(new LiftedNative((self, store) => {
+      return store.deleteAct(self);
     }), "self")
   );
 }
@@ -152,7 +150,7 @@ export const std = new Store();
   std.set(
     str,
     "trim",
-    exp(new LiftedNative(function(self) {
+    exp(new LiftedNative((self) => {
       return v(self.origin.trim());
     }), "self")
   );
@@ -166,7 +164,7 @@ export const std = new Store();
   std.set(
     bool,
     "not",
-    exp(new LiftedNative(function(self) {
+    exp(new LiftedNative((self) => {
       return v(!self.origin);
     }), "self")
   );
@@ -180,9 +178,12 @@ export const std = new Store();
   std.set(
     arr,
     "new",
-    func(new LiftedNative(function(...args) {
+    func(new LiftedNative((...args) => {
+      /* const store = */ args.pop();
+      const items = args;
+
       const o = [];
-      while(args.length > 0) {
+      while(items.length > 0) {
         const val = args.shift();
         o.push(val instanceof Prim ? val.origin : val);
       }
@@ -193,11 +194,11 @@ export const std = new Store();
   std.set(
     arr,
     "map",
-    func("fnc", exp(new LiftedNative(function(self, fnc) {
+    func("fnc", exp(new LiftedNative((self, fnc, store) => {
       const arr = self;
       const narr = arr.origin.map(o => {
         const e = exp(fnc, v(o));
-        return e.reduce(this);
+        return e.reduce(store);
       });
       return v(narr);
     }), "self", "fnc"))
@@ -206,11 +207,11 @@ export const std = new Store();
   std.set(
     arr,
     "every",
-    func("fnc", exp(new LiftedNative(function(self, fnc) {
+    func("fnc", exp(new LiftedNative((self, fnc, store) => {
       const arr = self;
       const result = arr.origin.every(o => {
         const e = exp(fnc, v(o));
-        const val = e.reduce(this);
+        const val = e.reduce(store);
         return !(val instanceof Path) && val.origin;
       });
       return v(result);
@@ -220,11 +221,11 @@ export const std = new Store();
   std.set(
     arr,
     "filter",
-    func("fnc", exp(new LiftedNative(function(self, fnc) {
+    func("fnc", exp(new LiftedNative((self, fnc, store) => {
       const arr = self;
       const narr = arr.origin.filter(o => {
         const e = exp(fnc, v(o));
-        const val = e.reduce(this);
+        const val = e.reduce(store);
         return !(val instanceof Path) && val.origin;
       });
       return v(narr);
@@ -234,7 +235,7 @@ export const std = new Store();
   std.set(
     arr,
     "count",
-    exp(new LiftedNative(function(self) {
+    exp(new LiftedNative((self) => {
       return v(self.origin.length);
     }), "self")
   );
@@ -242,7 +243,7 @@ export const std = new Store();
   std.set(
     arr,
     "join",
-    func("sep", exp(new LiftedNative(function(self, sep) {
+    func("sep", exp(new LiftedNative((self, sep) => {
       return v(self.jsObj.join(sep.jsObj));
     }), "self", "sep"))
   );
@@ -256,7 +257,8 @@ export const std = new Store();
   std.set(
     o,
     "new",
-    func(new LiftedNative(function(...args) {
+    func(new LiftedNative((...args) => {
+      /* const store = */ args.pop();
       const protoSrc = args.shift();
       const protoName = protoSrc.equals(v(null)) ? undefined : protoSrc.origin;
       const o = {};
@@ -281,8 +283,7 @@ export const std = new Store();
   std.set(
     act,
     "new",
-    func("func", exp(new LiftedNative(function(self, func) {
-      const store = this;
+    func("func", exp(new LiftedNative((self, func, store) => {
       return new Act(arg => {
         if (!arg) {
           return func;
@@ -296,9 +297,9 @@ export const std = new Store();
   std.set(
     act,
     "then",
-    func("next", exp(new LiftedNative(function(self, next) {
-      const act = self.reduce(this);
-      const nact = next.reduce(this);
+    func("next", exp(new LiftedNative((self, next, store) => {
+      const act = self.reduce(store);
+      const nact = next.reduce(store);
       return act.then(nact);
     }), "self", "next"))
   );
@@ -312,9 +313,9 @@ export const std = new Store();
   std.set(
     cnsl,
     "puts",
-    func("val", new LiftedNative(function(val) {
+    func("val", new LiftedNative((val, store) => {
       return new Act(() => {
-        console.log(val.reduce(this).origin);
+        console.log(val.reduce(store).origin);
       });
     }))
   );
@@ -338,25 +339,25 @@ export const std = new Store();
   std.set(
     store,
     "set",
-    func("id", "key", "val", exp(new LiftedNative(function(self, id, key, val) {
-      return findAndDecorateStore(this, self, s => s.setAct(id, key, val));
+    func("id", "key", "val", exp(new LiftedNative((self, id, key, val, store) => {
+      return findAndDecorateStore(store, self, s => s.setAct(id, key, val));
     }), "self", "id", "key", "val"))
   );
 
   std.set(
     store,
     "importedStores",
-    exp(new LiftedNative(function(self) {
-      return findAndDecorateStore(this, self, s => v(s.imports.map(i => i.id)));
+    exp(new LiftedNative((self, store) => {
+      return findAndDecorateStore(store, self, s => v(s.imports.map(i => i.id)));
     }), "self")
   );
 
   // todo: 本来は片方を参照して共通化したいが、うまく行かないのでJSレベルの値で共通化
-  const generateStoreFunc = func("name", exp(new LiftedNative(function(self, name) {
+  const generateStoreFunc = func("name", exp(new LiftedNative((self, name, store) => {
     const s = new Store();
-    const n = name.reduce(this).origin;
+    const n = name.reduce(store).origin;
     return new Act(() => {
-      return this.import(s, n);
+      return store.import(s, n);
     });
   }), "self", "name"));
 
