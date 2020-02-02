@@ -150,7 +150,7 @@ export const std = new Store();
   std.set(
     str,
     "trim",
-    exp(new LiftedNative((self) => {
+    exp(new LiftedNative((self, _store) => {
       return v(self.origin.trim());
     }), "self")
   );
@@ -164,7 +164,7 @@ export const std = new Store();
   std.set(
     bool,
     "not",
-    exp(new LiftedNative((self) => {
+    exp(new LiftedNative((self, _store) => {
       return v(!self.origin);
     }), "self")
   );
@@ -235,7 +235,7 @@ export const std = new Store();
   std.set(
     arr,
     "count",
-    exp(new LiftedNative((self) => {
+    exp(new LiftedNative((self, _store) => {
       return v(self.origin.length);
     }), "self")
   );
@@ -243,7 +243,7 @@ export const std = new Store();
   std.set(
     arr,
     "join",
-    func("sep", exp(new LiftedNative((self, sep) => {
+    func("sep", exp(new LiftedNative((self, sep, _store) => {
       return v(self.jsObj.join(sep.jsObj));
     }), "self", "sep"))
   );
