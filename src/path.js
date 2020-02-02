@@ -144,10 +144,6 @@ export default class Path extends Val {
       }
 
       if (prop instanceof Function) {
-        // LiftedNativeの基本仕様はthisでstoreを渡すだが
-        // 組み込みのメソッドの場合、thisで自身を参照したいケースが大半で
-        // storeを渡すわけにいかないので、自身の値をbindし
-        // 関数呼び出しの最後の引数としてstoreを渡す
         const f = prop;
         const boundf = f.bind(obj);
         const nativef = (...args) => {
