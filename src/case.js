@@ -17,7 +17,7 @@ export class Native extends Val {
     }
 
     const oargs = args.map(a => a.origin);
-    const orig = this.origin.apply(store, oargs);
+    const orig = this.origin(...oargs.concat(this));
     return v(orig);
   }
 
