@@ -31,7 +31,7 @@ const d = new Store(std);
   const todos = d.create({});
   d.assign("todos", path(todos));
   d.set(todos, "_proto", "App");
-  d.set(todos, "var", v("0.2.0"));
+  d.set(todos, "var", v("0.3.0"));
   d.set(todos, "state", path("all"));
   d.set(todos, "newTaskTitle", v(""));
   d.set(todos, "changeState", func("s", path("self", ["set", "state", sym("s")])));
@@ -582,7 +582,7 @@ const d = new Store(std);
       DOMContentLoaded: func("win",
         path(
           "todos", ["changeStateByHash", path(sym("win"), "location", "hash")],
-          ["then", path("localStorage", ["read", v("todos-lay-objs")])],
+          ["then", path("localStorage", ["read", v("todos-lay-objs-0.3")])],
           ["then", path("load")]
         )
       )
@@ -591,7 +591,7 @@ const d = new Store(std);
 
   d.assign("onPut", path(
     exp("filterObjs", v(["Task"])),
-    ["then", path("localStorage", ["appendObjs", v("todos-lay-objs")])],
-    ["then", path("localStorage", ["write", v("todos-lay-objs")])]
+    ["then", path("localStorage", ["appendObjs", v("todos-lay-objs-0.3")])],
+    ["then", path("localStorage", ["write", v("todos-lay-objs-0.3")])]
   ));
 }
