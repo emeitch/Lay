@@ -20,7 +20,7 @@
     "@babel/polyfill": "^7.2.5",
     "core-js": "3",
     "jssha": "^2.3.1",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.19",
     "maquette": "^3.2.1"
   },
   "devDependencies": {
