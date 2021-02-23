@@ -1,7 +1,7 @@
 {
   "license": "MIT",
   "scripts": {
-    "start": "webpack --watch -w & browser-sync start --server --no-ghost-mode --files build/bundle.js",
+    "start": "webpack --mode development --watch -w & browser-sync start --server --no-ghost-mode --files build/bundle.js",
     "test": "npm run lint && jest",
     "lint": "eslint src/*.js test/*.js"
   },
