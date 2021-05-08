@@ -21,7 +21,7 @@
     "core-js": "3.8.3",
     "jest": "^26.6.3",
     "jssha": "^3.2.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "maquette": "^3.4.1"
   },
   "devDependencies": {
